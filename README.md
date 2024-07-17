@@ -30,7 +30,8 @@
 <br>
 
 ## 3. 프로젝트 구조
-
+### 기획 문서
+[google docs](https://docs.google.com/spreadsheets/d/1m-osYYjbe7sdoePF93FguSynrAsAEDxvBsTLJgjsiM8/edit?usp=sharing)
 ```
 
 ```

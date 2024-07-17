@@ -5,4 +5,7 @@
 
 ## 7/16 (화)
 - 기획 마무리
-- erd 만들기 ![erd](./img/image.png)
+- erd 만들기  ![erd](./img/image.png)
+
+## 7/17 (수)
+- [API 명세서 작성](https://imminent-hamburger-1d8.notion.site/API-13d73c45eea24450ba6dafc0ba138e55)
