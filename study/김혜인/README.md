@@ -134,3 +134,28 @@ fetchCSRFToken()
     console.error(error.message);
   });
 ```
+
+
+---
+
+## 07.16 (화)
+
+### ✔ [기능명세서](https://docs.google.com/spreadsheets/d/1m-osYYjbe7sdoePF93FguSynrAsAEDxvBsTLJgjsiM8/edit?gid=1964034166#gid=1964034166)
+### ✔ [메뉴구조도](https://docs.google.com/spreadsheets/d/1m-osYYjbe7sdoePF93FguSynrAsAEDxvBsTLJgjsiM8/edit?gid=465542578#gid=465542578)
+
+---
+
+## 07.17 (수)
+
+
+### ✔ [Figma](https://www.figma.com/design/7WUqXjKvUcDPLKYMUa9P4Y/%EC%98%B7%EC%A7%B1?node-id=0-1&t=oNhZxN2dwO8eLkQ9-0) 목업 만들기 
+
+| 1depth | 2depth | 3depth | Type | ID | 접근권한 | 목업 담당 | 목업 진행상태 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 메인 화면 | 오늘의 옷 코디 추천 | 옷 코디 추천 페이지 이동 | page | M_0.0.0 | 회원 | 김혜인 | done |
+|  | 내 옷장 | 전체 보기 버튼 | page | M_0.0.1 | 회원 | 김혜인 | done |
+| 옷 코디 추천 | 오늘의 날씨 정보 | 일주일 간 날씨 선택 버튼 | page | M_0.3.0 | 회원 | 김혜인 | In progress |
+|  | 스타일 태그 설정 | 태그 버튼으로 그리기 | page | M_0.3.1 | 회원 | 김혜인 | In progress |
+|  | 코디 추천 결과 | 무한 스크롤(가로)로 자동 생성1개씩 띄우기 | page | M_0.3.2 | 회원 | 김혜인 | In progress |
+|  |  | 공유 버튼 | page | M_0.3.3 | 회원 | 김혜인 | In progress |
+|  |  | 저장 버튼 | page | M_0.3.4 | 회원 | 김혜인 | In progress |
