@@ -4,11 +4,11 @@
 
 |    날짜    |                                          팀 목표                                          |    개인 목표    |   기타    |
 | :--------: | :---------------------------------------------------------------------------------------: | :-------------: | :-------: |
-| 07/14 (일) | `팀 온라인 회의` 방향성 재정비 및 기획 회의 <br> `팀 온라인 회의` 아이디어 선정 및 구체화        | 아이디어 구체화 |           |
-| 07/15 (월) |                       컨설턴트님 미팅 <br> 기획 선정 및 MVP 타겟팅                           |   기획 구체화   |           |
-| 07/16 (화) |                       기능 명세서 작성 <br> ERD 작성 및 검토                                |                 | 면접 공가 |
-| 07/17 (수) |                       ERD 검토<br> API 명세서 작성 <br> 목업 만들기                         |  목업 만들기     |           |
-| 07/18 (목) |                                                                                           |                 |           |
+| 07/14 (일) | `팀 온라인 회의` 방향성 재정비 및 기획 회의 <br> `팀 온라인 회의` 아이디어 선정 및 구체화 | 아이디어 구체화 |           |
+| 07/15 (월) |                       컨설턴트님 미팅 <br> 기획 선정 및 MVP 타겟팅                        |   기획 구체화   |           |
+| 07/16 (화) |                          기능 명세서 작성 <br> ERD 작성 및 검토                           |                 | 면접 공가 |
+| 07/17 (수) |                       ERD 검토<br> API 명세서 작성 <br> 목업 만들기                       |   목업 만들기   |           |
+| 07/18 (목) |                   API 명세서 작성 <br> API 명세서 검토 <br> 목업 만들기                   |   목업 만들기   |           |
 | 07/19 (금) |                                                                                           |                 |           |
 
 ## 07.14 (일)
@@ -31,25 +31,20 @@
 3. **기획 구체화**
    - 상대적으로 볼륨 작은 그림판, 정산 서비스 제외 나머지 두 기획 구체화
 
-
-
 ## 07.15 (월)
 
 1. **컨설턴트님 미팅 (10:00)**
+
    - 노션 문제집, 옷장 서비스 기반 팀 컨설팅
 
 2. **옷장 관리 및 코디 추천 서비스(옷짱) 구체화 및 MVP 타겟팅**
-      ![MVP Targeting](src/MVP_Targeting.png)
-
-
+   ![MVP Targeting](src/MVP_Targeting.png)
 
 ## 07.16 (화)
 
 1. **기능 명세서 작성**
 
 2. **ERD 작성 및 검토**
-
-
 
 ## 07.17 (수)
 
@@ -59,8 +54,22 @@
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
   <img src="src/메뉴구조도.png" alt="메뉴 구조도">
-  <img src="src/U_1.0.0.png" alt="목업 1" style="width: 24%;">
-  <img src="src/U_1.0.0-1.png" alt="목업 2" style="width: 24%;">
-  <img src="src/U_1.1.1.png" alt="목업 3" style="width: 24%;">
-  <img src="src/U_1.1.2.png" alt="목업 4" style="width: 24%;">
+  <img src="src/U_1.0.0.png" alt="목업 1" style="width: 20%;">
+  <img src="src/U_1.0.0-1.png" alt="목업 2" style="width: 20%;">
+  <img src="src/U_1.1.1.png" alt="목업 3" style="width: 20%;">
+  <img src="src/U_1.1.2.png" alt="목업 4" style="width: 20%;">
+</div>
+
+## 08. 18 (목)
+
+1. **API 명세서 검토**
+
+2. **목업 만들기**
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+  <img src="src/메뉴구조도(07.18).png" alt="메뉴 구조도">
+  <img src="src/M_0.5.0.png" alt="목업 1" style="width: 20%;">
+  <img src="src/M_0.5.1.png" alt="목업 2" style="width: 20%;">
+  <img src="src/M_0.5.2.png" alt="목업 3" style="width: 20%;">
+  <img src="src/M_0.5.3.png" alt="목업 4" style="width: 20%;">
 </div>
