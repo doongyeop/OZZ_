@@ -718,3 +718,62 @@ dashboard에서 계속 작업하기 전에, 데이터가 조금 필요할 것이
     - 이 폴더에는 데이터베이스 시드에 사용되는 `route.ts` 라는 Next.js Route Handler가 포함되어 있다. 이것은 브라우저에서 접근하여 데이터베이스를 채우기 시작할 수 있는 server-side endpoint가 생성된다.
   - 전체적으로 설명하자면, 스크립트는 SQL을 사용하여 테이블을 만들고 `placeholder-data.ts` 파일로부터 데이터를 사용하여 테이블을 만든 후 채운다.
   - [localhost:3000/seed](http://localhost:3000/seed로) 로 이동했을때 "Database seeded successfully”라는 메세지가 뜬다면 성공이다.
+
+## 7/17(수)
+
+- 리액트 공부
+
+## JavaScript 기본
+
+- Javascript는 자바스크립트 엔진이라는 프로그램을 통해 실행된다. 해석을 해줌 (= 게임 구동기)
+  - 크롬이나 사파리같은 웹 브라우저에 기본으로 탑재되어있음
+- VSCODE
+  - error lens : 에러가 발생하면 뭐때문에 에러가 났는지 하이라이트 표시
+  - live server
+    - 코드 변경사항이 발생하면 자동으로 새로고침
+    - 하단에 🚫표시를 누르면 라이브 서버를 종료할 수 있다
+- JS 문법
+  - const 상수는 초기값을 반드시 할당해야한다 (이후 재할당이 불가하기 때문)
+  - undefined : 아무런 값도 할당하지 않았을 때 자동으로 들어가는 값. 변수를 초기화하지 못했거나 존재하지 않는 값을 불러올 때
+  - null : 직접 ‘아무 값도 아니다’를 표시하는 값
+  - null 병합 연산자
+    - 존재하는 값을 추려내는 기능 (null, undefined가 아닌 값을 찾아내는 연산자)
+      ```tsx
+      let var1;
+      let var2 = 10;
+      let var3 = 20;
+
+      let var4 = var1 ?? var2; // 10
+      let var5 = var1 ?? var3; // 20
+      let var6 = var3 ?? var2; // 앞의 값 = var3이 리턴
+
+      let userName;
+      let userNickName = "Winterlood";
+
+      let displayName = userName ?? userNickName; // Winterlood
+      ```
+  - typeof 연산자
+    ```tsx
+    let var1 = 1;
+    var1 = "hello";
+
+    let t1 = typeof var1; // string
+    ```
+  - 함수
+    - 익명함수 : 선언과 동시에 값을 할당하면 functio OOO() 이 부분에 이름은 어차피 호출을 못하는 이름이기 때문에 생략이 가능하다.
+    - 화살표함수 : function마저 없애버리고 = > 를 추가한다.
+      ```tsx
+      let f = () => {
+        return 1;
+      };
+      ```
+    - 콜백함수 : 자신이 아닌 다른 함수에 인수로써 전달된 함수를 의미
+      ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/d51cbaf0-9492-4156-90cf-14cb81b94923/f8c018b5-e42b-461e-a6a3-b8a08222343c/Untitled.png)
+      - 매개변수로 함수로 전달하면 그 함수 내에서 매개변수로 호출이 가능
+      - 다른 함수main에 인수로써 전달된 함수sub를 콜백함수라 한다.
+      ```tsx
+      main(() => {
+        console.log("sub"); //이렇게 축약할 수도 있다.
+      });
+      ```
+    - 응용 : 중복 코드를 줄일 수 있다.
