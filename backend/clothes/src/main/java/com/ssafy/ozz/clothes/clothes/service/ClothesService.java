@@ -12,13 +12,13 @@ import java.util.List;
 public interface ClothesService {
     Clothes getClothes(Long clothesId);
 
+    Long saveClothes(Long userId, ClothesCreateRequest request);
+
     Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable);
 
     void updateClothes(Long clothesId, ClothesUpdateRequest request);
 
     void deleteClothes(Long clothesId);
-
-    Long saveClothes(ClothesCreateRequest request);
 
     List<Clothes> getClothesInCoordinate(Long coordinateId);
 
