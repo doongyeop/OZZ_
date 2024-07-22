@@ -15,10 +15,7 @@ import java.time.LocalDateTime;
 public class Clothes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long clothesId;
-
-    @Column(columnDefinition = "BIT(32)")
-    private Integer color;
+    private Long clothesId;
 
     @Column(length = 255)
     private String name;
@@ -28,9 +25,6 @@ public class Clothes {
 
     @Column
     private Byte fit;
-
-    @Column(columnDefinition = "BIT(32)")
-    private Integer texture;
 
     @Column(length = 255)
     private String memo;
@@ -45,7 +39,14 @@ public class Clothes {
     private String purchaseSite;
 
     @Column(length = 100)
-    private LocalDateTime createDate;
+    @Builder.Default
+    private LocalDateTime createDate = LocalDateTime.now();
+
+    @Column(columnDefinition = "BIT(32)")
+    private Integer color;
+
+    @Column(columnDefinition = "BIT(32)")
+    private Integer texture;
 
     @Column(columnDefinition = "BIT(32)")
     private Integer style;
