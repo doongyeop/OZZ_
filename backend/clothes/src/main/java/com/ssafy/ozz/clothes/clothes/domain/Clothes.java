@@ -29,7 +29,7 @@ public class Clothes {
     @Column
     private Byte fit;
 
-    @Column(columnDefinition = "BIT(20)")
+    @Column(columnDefinition = "BIT(32)")
     private Integer texture;
 
     @Column(length = 255)
@@ -47,11 +47,11 @@ public class Clothes {
     @Column(length = 100)
     private LocalDateTime createDate;
 
-    @Column(columnDefinition = "BIT(10)")
-    private Short style;
+    @Column(columnDefinition = "BIT(32)")
+    private Integer style;
 
     @Column(columnDefinition = "BIT(4)")
-    private Byte season;
+    private Integer season;
 
     /* FOREIGN KEY */
     @Column
