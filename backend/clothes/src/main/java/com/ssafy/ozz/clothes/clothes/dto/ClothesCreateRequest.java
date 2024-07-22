@@ -45,8 +45,8 @@ public class ClothesCreateRequest {
     public Clothes toEntity(CategoryLow categoryLow, Long imageFileId, Long userId) {
         return Clothes.builder()
                 .name(name)
-                .size(size.toByte())
-                .fit(fit.toByte())
+                .size(size)
+                .fit(fit)
                 .memo(memo)
                 .brand(brand)
                 .purchaseDate(purchaseDate)
