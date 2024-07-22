@@ -2,6 +2,7 @@ package com.ssafy.ozz.clothes.category.enums;
 
 import lombok.Getter;
 
+@Deprecated(forRemoval = true)
 @Getter
 public enum CategoryHigh {
     TOP("상의", new CategoryLow[] {

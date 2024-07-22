@@ -2,6 +2,7 @@ package com.ssafy.ozz.clothes.category.enums;
 
 import lombok.Getter;
 
+@Deprecated(forRemoval = true)
 @Getter
 public enum CategoryLow {
         // 상의 세부 카테고리
