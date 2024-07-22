@@ -1,6 +1,8 @@
 package com.ssafy.ozz.clothes.clothes.domain;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
+import com.ssafy.ozz.clothes.clothes.properties.Fit;
+import com.ssafy.ozz.clothes.clothes.properties.Size;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,11 +22,11 @@ public class Clothes {
     @Column(length = 255)
     private String name;
 
-    @Column
-    private Byte size;
+    @Column(columnDefinition = "TINYINT")
+    private Size size;
 
-    @Column
-    private Byte fit;
+    @Column(columnDefinition = "TINYINT")
+    private Fit fit;
 
     @Column(length = 255)
     private String memo;

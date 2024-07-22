@@ -1,14 +1,12 @@
 package com.ssafy.ozz.clothes.clothes.controller;
 
 import com.ssafy.ozz.clothes.clothes.dto.ClothesCreateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.ClothesResponse;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +21,10 @@ public class ClothesController {
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clothesService.saveClothes(userId, request));
+    }
+
+    @GetMapping("/{clothesId}")
+    public ResponseEntity<ClothesResponse> getClothes(@PathVariable Long clothesId) {
+        return ResponseEntity.ok(new ClothesResponse(clothesService.getClothes(clothesId)));
     }
 }
