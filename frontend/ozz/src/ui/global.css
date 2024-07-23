@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;s
+
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+  html,
+  body {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(250, 250, 250, 1);
+  }
+
+  textarea {
+    border: none;
+    line-height: 1.2;
+    width: 100%;
+    height: auto;
+    resize: none;
+    overflow: hidden;
+  }
+  
+  textarea:focus {
+    outline: none;
+  }
+  
+  textarea::placeholder {
+    color: rgb(153, 153, 153);
+  }
+  
+  button:hover {
+    cursor: pointer;
+  }
+
+  button,
+  input {
+    background-color: none;
+    border: none;
+  }
