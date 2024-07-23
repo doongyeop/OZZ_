@@ -21,4 +21,12 @@ public class CategoryLow {
     @ManyToOne
     @JoinColumn(name = "category_high_id")
     CategoryHigh categoryHigh;
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof CategoryLow c) {
+            return categoryLowId.equals(c.categoryLowId);
+        }
+        return false;
+    }
 }

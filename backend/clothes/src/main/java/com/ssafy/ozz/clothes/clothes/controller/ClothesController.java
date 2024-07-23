@@ -1,6 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.controller;
 
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
@@ -34,6 +35,11 @@ public class ClothesController {
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<Slice<ClothesBasicResponse>> getClothesOfUser(@PathVariable Long userId, @ModelAttribute SearchCondition condition, Pageable pageable) {
-        return ResponseEntity.ok(clothesService.getClothesOfUser(userId,condition,pageable).map(ClothesBasicResponse::new));
+        return ResponseEntity.ok(clothesService.getClothesOfUser(userId, condition, pageable).map(ClothesBasicResponse::new));
+    }
+
+    @PutMapping("/{clothesId}")
+    public ResponseEntity<ClothesResponse> updateClothes(@PathVariable Long clothesId, @RequestBody ClothesUpdateRequest request) {
+        return ResponseEntity.ok().body(new ClothesResponse(clothesService.updateClothes(clothesId, request)));
     }
 }
