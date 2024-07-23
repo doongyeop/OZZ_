@@ -34,13 +34,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     public Slice<Clothes> getClothesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
-        if(condition.categoryLowId() != null){
-            return clothesRepository.findByUserIdAndCategoryLowId(userId, condition.categoryLowId(), pageable);
-        }else if(condition.categoryHighId() != null){
-            return clothesRepository.findByUserIdAndCategoryHighId(userId, condition.categoryHighId(), pageable);
-        }else{
-            return getClothesOfUser(userId, pageable);
-        }
+        return clothesRepository.findByUserId(userId, condition, pageable);
     }
 
     @Override
