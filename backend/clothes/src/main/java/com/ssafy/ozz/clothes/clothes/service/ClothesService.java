@@ -1,9 +1,9 @@
 package com.ssafy.ozz.clothes.clothes.service;
 
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-import com.ssafy.ozz.clothes.clothes.dto.ClothesCreateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.ClothesUpdateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.SearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import org.springframework.data.domain.Page;
 
 import java.awt.print.Pageable;

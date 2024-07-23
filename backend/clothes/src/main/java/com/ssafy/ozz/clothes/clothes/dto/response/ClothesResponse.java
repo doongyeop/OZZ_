@@ -1,12 +1,10 @@
-package com.ssafy.ozz.clothes.clothes.dto;
+package com.ssafy.ozz.clothes.clothes.dto.response;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;

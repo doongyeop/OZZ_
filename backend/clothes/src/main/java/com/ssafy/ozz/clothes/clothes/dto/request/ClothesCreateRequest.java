@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.clothes.dto;
+package com.ssafy.ozz.clothes.clothes.dto.request;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;

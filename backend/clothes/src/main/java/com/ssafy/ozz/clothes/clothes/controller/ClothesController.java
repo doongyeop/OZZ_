@@ -1,7 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.controller;
 
-import com.ssafy.ozz.clothes.clothes.dto.ClothesCreateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.ClothesResponse;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
