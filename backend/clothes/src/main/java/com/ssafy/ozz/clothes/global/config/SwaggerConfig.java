@@ -36,7 +36,16 @@ public class SwaggerConfig {
 
     @Bean
     GroupedOpenApi allApi() {
+        return GroupedOpenApi.builder().group("ozz-clothes-all").pathsToMatch("/api/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi clothesApi() {
         return GroupedOpenApi.builder().group("ozz-clothes").pathsToMatch("/api/clothes/**").build();
     }
 
+    @Bean
+    GroupedOpenApi categoryApi() {
+        return GroupedOpenApi.builder().group("ozz-categories").pathsToMatch("/api/categories/**").build();
+    }
 }
