@@ -26,7 +26,7 @@ return (
       <div className="flex items-center mb-5 ">
         <input type="text" id="name" name="name" placeholder="이름 입력" autoComplete='off'
             className="flex-1 py-2 text-center bg-secondary font-extrabold text-lg
-                    text-gray-light outline-none"/>
+                    text-primary-400 placeholder:text-gray-light outline-none"/>
       </div>
 
       <div className="flex items-center mb-5">
