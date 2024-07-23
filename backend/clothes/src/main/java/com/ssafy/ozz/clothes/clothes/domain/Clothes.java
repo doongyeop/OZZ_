@@ -42,7 +42,7 @@ public class Clothes {
 
     @Column(length = 100)
     @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @Column(columnDefinition = "BIT(32)")
     private Integer color;
