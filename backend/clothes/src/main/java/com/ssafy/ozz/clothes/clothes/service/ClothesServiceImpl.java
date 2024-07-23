@@ -81,7 +81,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     public void deleteClothes(Long clothesId) {
-
+        clothesRepository.deleteById(clothesId);
     }
 
     @Override

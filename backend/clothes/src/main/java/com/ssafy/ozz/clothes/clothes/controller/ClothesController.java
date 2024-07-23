@@ -42,4 +42,10 @@ public class ClothesController {
     public ResponseEntity<ClothesResponse> updateClothes(@PathVariable Long clothesId, @RequestBody ClothesUpdateRequest request) {
         return ResponseEntity.ok().body(new ClothesResponse(clothesService.updateClothes(clothesId, request)));
     }
+
+    @DeleteMapping("/{clothesId}")
+    public ResponseEntity<Void> deleteClothes(@PathVariable Long clothesId) {
+        clothesService.deleteClothes(clothesId);
+        return ResponseEntity.noContent().build();
+    }
 }
