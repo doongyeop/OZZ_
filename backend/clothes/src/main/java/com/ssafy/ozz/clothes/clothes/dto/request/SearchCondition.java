@@ -1,4 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.dto.request;
 
-public class SearchCondition {
-}
+public record SearchCondition (
+    Long categoryHighId,
+    Long categoryLowId
+){ }
