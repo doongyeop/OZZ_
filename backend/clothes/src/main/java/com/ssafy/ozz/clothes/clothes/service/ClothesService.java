@@ -21,7 +21,7 @@ public interface ClothesService {
 
     Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable);
 
-    void updateClothes(Long clothesId, ClothesUpdateRequest request);
+    Clothes updateClothes(Long clothesId, ClothesUpdateRequest request);
 
     void deleteClothes(Long clothesId);
 
