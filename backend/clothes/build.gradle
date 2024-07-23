@@ -27,6 +27,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
 	// 쿼리 파라미터 로그
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0' // spring에 버전 정보가 없기에 직접 버전 입력해야함
 
