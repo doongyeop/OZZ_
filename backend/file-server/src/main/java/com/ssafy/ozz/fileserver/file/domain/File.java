@@ -3,6 +3,9 @@ package com.ssafy.ozz.fileserver.file.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Table
 @Entity
@@ -13,13 +16,17 @@ import lombok.*;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int fildId;
+    private int fileId;
 
+    @Column(length = 100, nullable = false)
     private String name;
 
-    private String url;
+    @Column(nullable = false)
+    private String path;
 
+    @Column(length = 25, nullable = false)
     private String type;
 
-    private String uploadDate;
+    @CreationTimestamp
+    private LocalDateTime uploadDate;
 }
