@@ -10,9 +10,10 @@ import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.ClothesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -27,8 +28,24 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
+    public Slice<Clothes> getClothesOfUser(Long userId, org.springframework.data.domain.Pageable pageable) {
+        return clothesRepository.findByUserId(userId,pageable);
+    }
+
+    @Override
+    public Slice<Clothes> getClothesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
+        if(condition.categoryLowId() != null){
+            return clothesRepository.findByUserIdAndCategoryLowId(userId, condition.categoryLowId(), pageable);
+        }else if(condition.categoryHighId() != null){
+            return clothesRepository.findByUserIdAndCategoryHighId(userId, condition.categoryHighId(), pageable);
+        }else{
+            return getClothesOfUser(userId, pageable);
+        }
+    }
+
+    @Override
     public Long saveClothes(Long userId, ClothesCreateRequest request) {
-        CategoryLow categoryLow = categoryService.getCategoryLow(request.getCategoryLowId());
+        CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
         // TODO : 이미지 파일 저장 후 id 값 가져오기
         Long imageFileId = 1L;
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId)).getClothesId();

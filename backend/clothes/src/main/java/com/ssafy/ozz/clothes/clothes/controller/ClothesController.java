@@ -1,9 +1,13 @@
 package com.ssafy.ozz.clothes.clothes.controller;
 
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
+import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +30,10 @@ public class ClothesController {
     @GetMapping("/{clothesId}")
     public ResponseEntity<ClothesResponse> getClothes(@PathVariable Long clothesId) {
         return ResponseEntity.ok(new ClothesResponse(clothesService.getClothes(clothesId)));
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Slice<ClothesBasicResponse>> getClothesOfUser(@PathVariable Long userId, @ModelAttribute SearchCondition condition, Pageable pageable) {
+        return ResponseEntity.ok(clothesService.getClothesOfUser(userId,condition,pageable).map(ClothesBasicResponse::new));
     }
 }
