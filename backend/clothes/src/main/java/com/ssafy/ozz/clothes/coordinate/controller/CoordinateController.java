@@ -19,6 +19,6 @@ public class CoordinateController {
         // TODO: 실제 유저 번호 받아오기
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(coordinateService.createCoordinate(userId,imageFile,request));
+                .body(coordinateService.createCoordinate(userId,imageFile,request).getCoordinateId());
     }
 }

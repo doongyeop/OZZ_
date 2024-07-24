@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface CoordinateService {
-    Long createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request);
+    Coordinate createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request);
 
     Coordinate getCoordinate(Long coordinateId);
 

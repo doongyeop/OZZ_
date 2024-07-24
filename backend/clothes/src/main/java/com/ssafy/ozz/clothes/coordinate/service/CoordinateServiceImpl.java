@@ -6,6 +6,7 @@ import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     private final ClothesService clothesService;
 
     @Override
-    public Long createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
+    public Coordinate createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
         // TODO: image file 저장 및 id 받아오기
         Long imageFileId = 1L;
 
@@ -38,25 +39,25 @@ public class CoordinateServiceImpl implements CoordinateService {
             coordinateClothesRepository.save(coordinateClothes.toEntity(coordinate, clothes));
         });
 
-        return coordinate.getCoordinateId();
+        return coordinate;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Coordinate getCoordinate(Long coordinateId) {
-        return null;
+        return coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition) {
-        return List.of();
+        return coordinateRepository.findByUserId(userId, condition);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Slice<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
-        return null;
+        return coordinateRepository.findByUserId(userId, condition, pageable);
     }
 
     @Override
