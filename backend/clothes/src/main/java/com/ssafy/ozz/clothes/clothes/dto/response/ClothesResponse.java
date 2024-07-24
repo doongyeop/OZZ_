@@ -1,13 +1,12 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
-import com.ssafy.ozz.clothes.category.domain.CategoryLow;
+import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "옷 상세정보 DTO")
@@ -23,7 +22,7 @@ public record ClothesResponse(
         List<Texture> textureList,
         List<Season> seasonList,
         List<Style> styleList,
-        CategoryLow categoryLow
+        CategoryLowResponse categoryLow
 ) {
     public ClothesResponse(Clothes clothes) {
         this(
@@ -38,7 +37,7 @@ public record ClothesResponse(
                 EnumBitwiseConverter.toEnums(Texture.class, clothes.getTexture()),
                 EnumBitwiseConverter.toEnums(Season.class, clothes.getSeason()),
                 EnumBitwiseConverter.toEnums(Style.class, clothes.getStyle()),
-                clothes.getCategoryLow()
+                new CategoryLowResponse(clothes.getCategoryLow())
         );
     }
 }
