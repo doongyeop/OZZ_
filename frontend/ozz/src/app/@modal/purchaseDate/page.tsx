@@ -21,10 +21,10 @@ const PurchaseDateModal: React.FC<{
 }> = ({ onClose, setValue }) => {
   const [purchaseDate, setPurchaseDate] = useState<Date | undefined>()
 
-  const handleSave = () => {
-    if (purchaseDate) {
-      setPurchaseDate(purchaseDate)
-      setValue(format(purchaseDate, 'yyyy-MM-dd')) // 날짜를 문자열로 변환하여 전달
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setPurchaseDate(date)
+      setValue(format(date, 'yyyy-MM-dd')) // 날짜를 문자열로 변환하여 전달
     }
     onClose()
   }
@@ -52,7 +52,7 @@ const PurchaseDateModal: React.FC<{
           <Calendar
             mode="single"
             selected={purchaseDate}
-            onSelect={handleSave}
+            onSelect={handleDateSelect}
             initialFocus
           />
         </PopoverContent>
