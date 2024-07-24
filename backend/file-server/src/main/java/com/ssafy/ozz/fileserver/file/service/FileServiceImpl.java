@@ -43,6 +43,12 @@ public class FileServiceImpl implements FileService {
 
         return new FileInfoResponse(fileEntity);
     }
+
+    @Transactional()
+    public void deleteFile(long fileId) throws Exception {
+        //TODO : 폴더에서 파일 삭제 - db에 접근해서 path값에 접근을 해야하는데...
+        fileRepository.deleteById(fileId);
+    }
 //
 //
 //    /**

@@ -17,4 +17,10 @@ public class FileController {
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws Exception {
         return ResponseEntity.ok(fileService.saveFile(file));
     }
+
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<?> delete(@PathVariable("fileId")long fileId) throws Exception {
+        fileService.deleteFile(fileId);
+        return ResponseEntity.noContent().build();
+    }
 }
