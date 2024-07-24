@@ -1,11 +1,11 @@
-import "@/ui/global.css"
-import localFont from "next/font/local"
+import '@/styles/global.css'
+import localFont from 'next/font/local'
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
-  display: "swap",
-  weight: "45 290",
-  variable: "--font-pretendard",
+  src: '../../public/fonts/PretendardVariable.woff2',
+  display: 'swap',
+  weight: '45 290',
+  variable: '--font-pretendard',
 })
 
 export const metadata = {
@@ -14,16 +14,15 @@ export const metadata = {
 }
 
 export default function RootLayout({
-  children, modal,
+  children,
+  modal,
 }: {
-  children: React.ReactNode, modal: React.ReactNode
+  children: React.ReactNode
+  modal: React.ReactNode
 }) {
   return (
     <html lang="en" className={`${pretendard.variable}`}>
-      <body className={`${pretendard.className}`}>
-        {children}
-        {modal}
-      </body>
+      <body className={`${pretendard.className}`}>{children}</body>
     </html>
   )
 }

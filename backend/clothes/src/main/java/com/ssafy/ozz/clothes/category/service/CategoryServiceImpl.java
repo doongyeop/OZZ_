@@ -8,6 +8,8 @@ import com.ssafy.ozz.clothes.category.repository.CategoryLowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -17,6 +19,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryHigh getCategoryHigh(Long categoryHighId) {
         return categoryHighRepository.findById(categoryHighId).orElseThrow(CategoryNotFoundException::new);
+    }
+
+    @Override
+    public List<CategoryHigh> getAllCategoryHigh() {
+        return categoryHighRepository.findAll();
     }
 
     @Override
