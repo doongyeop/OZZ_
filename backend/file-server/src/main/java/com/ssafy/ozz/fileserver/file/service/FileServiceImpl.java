@@ -49,6 +49,30 @@ public class FileServiceImpl implements FileService {
         //TODO : 폴더에서 파일 삭제 - db에 접근해서 path값에 접근을 해야하는데...
         fileRepository.deleteById(fileId);
     }
+
+    @Transactional
+    public FileInfoResponse updateFile(long fileId, MultipartFile file) throws Exception {
+        Files oldFileEntity = fileRepository.findById(fileId).orElseThrow();
+        File oldFile = new File(uploadDir, oldFileEntity.getName());
+        oldFile.deleteOnExit();
+        String originalFileName = file.getOriginalFilename();
+        String storedFileName = UUID.randomUUID().toString() + "." + originalFileName;
+        String mimeType = file.getContentType();
+
+        //MIMETYPE 체크
+        if (!FileUtil.isImageFile(mimeType)) {
+            throw new UnsupportedFormatException();
+        }
+
+        oldFileEntity.setType(mimeType);
+        oldFileEntity.setName(originalFileName);
+        oldFileEntity.setPath("/"+storedFileName);
+        File newFile = new File(uploadDir, storedFileName);
+        file.transferTo(newFile.toPath());
+
+        return new FileInfoResponse(oldFileEntity);
+    }
+
 //
 //
 //    /**

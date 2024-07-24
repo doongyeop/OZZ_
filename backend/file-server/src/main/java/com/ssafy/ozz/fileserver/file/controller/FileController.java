@@ -23,4 +23,9 @@ public class FileController {
         fileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(path="/{fileId}",consumes = "multipart/form-data")
+    public ResponseEntity<?> update(@PathVariable("fileId")long fileId, @RequestParam("file")MultipartFile file) throws Exception {
+        return ResponseEntity.ok().body(fileService.updateFile(fileId, file));
+    }
 }
