@@ -121,11 +121,10 @@ public class Clothes {
     //== 테스트 기능 ==//
 
     // Method to create a mock Clothes object
-    public static Clothes mock(CategoryHigh categoryHigh) {
+    public static Clothes mock(Long userId, CategoryHigh categoryHigh) {
         Clothes clothes = new Clothes();
         Random RANDOM = new Random();
 
-        clothes.clothesId = (long) RANDOM.nextInt(1000); // Random Long
         clothes.name = "Name" + RANDOM.nextInt(1000); // Random String
         clothes.size = Size.values()[RANDOM.nextInt(Size.values().length)]; // Random enum value
         clothes.fit = Fit.values()[RANDOM.nextInt(Fit.values().length)]; // Random enum value
@@ -140,7 +139,7 @@ public class Clothes {
         clothes.season = RANDOM.nextInt(16); // Random integer (4-bit)
         clothes.imageFileId = (long) RANDOM.nextInt(1000); // Random Long
         clothes.categoryLow = categoryHigh.getCategoryLowList().get(RANDOM.nextInt(categoryHigh.getCategoryLowList().size())); // Assume CategoryLow has a no-args constructor
-        clothes.userId = (long) RANDOM.nextInt(1000); // Random Long
+        clothes.userId = userId;
 
         return clothes;
     }

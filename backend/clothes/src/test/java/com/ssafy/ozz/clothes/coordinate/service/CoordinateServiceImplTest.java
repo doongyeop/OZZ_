@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 
 @SpringBootTest
 @Transactional
+//@Rollback(value = false)
 @ActiveProfiles("test")
 class CoordinateServiceImplTest {
     @Autowired
@@ -47,14 +49,13 @@ class CoordinateServiceImplTest {
     // 픽스처
     List<Clothes> clothesList = new ArrayList<>();
     Long userId = 1L;
-    Long imageFileId = 1L;
 
     @BeforeEach
     void setUp() {
         // 상위 카테고리별로 1개씩 옷 생성
         List<CategoryHigh> categoryHighList = categoryService.getAllCategoryHigh();
         categoryHighList.forEach(categoryHigh -> {
-            clothesList.add(clothesRepository.save(Clothes.mock(categoryHigh)));
+            clothesList.add(clothesRepository.save(Clothes.mock(userId,categoryHigh)));
         });
     }
 
@@ -70,7 +71,7 @@ class CoordinateServiceImplTest {
                         CoordinateClothesCreateRequest.builder().clothesId(clothes.getClothesId()).offset(1).build()).toList())
                 .build();
         // when
-        Long coordinateId = coordinateService.createCoordinate(userId, imageFileId, request);
+        Long coordinateId = coordinateService.createCoordinate(userId, null, request);
 
         // then
         Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow();
