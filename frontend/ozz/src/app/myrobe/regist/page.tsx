@@ -1,11 +1,10 @@
-import Form from '@/containers/myRobe-page/create-from'
+import Form from '@/containers/myrobe-page/create-form'
 
 export default function Page() {
-
-    return (
-        <main>
-        <p>옷 등록 페이지</p>
-        <Form />
-        </main>
-    )
+  return (
+    <main>
+      <p>옷 등록 페이지</p>
+      <Form />
+    </main>
+  )
 }

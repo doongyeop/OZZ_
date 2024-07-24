@@ -1,0 +1,40 @@
+import React, { useState, useEffect } from 'react'
+import Modal from '@/components/Modal'
+import Image from 'next/image'
+import PencilIcon from '../../../../public/icons/pencil.svg'
+
+const BrandModal: React.FC<{
+  onClose: () => void
+  setValue: (value: string) => void
+}> = ({ onClose, setValue }) => {
+  const [brand, setBrand] = useState<string>('')
+
+  const handleSave = () => {
+    setValue(brand)
+    onClose()
+  }
+
+  return (
+    <Modal title="브랜드" onClose={onClose}>
+      <div className="flex justify-between border-2 border-primary-400 pl-1 pr-2">
+        <Image src={PencilIcon} alt="pencil" width={20} />
+        <input
+          className="w-full pt-1 pb-1 bg-secondary text-primary-400 outline-none text-right font-bold"
+          type="text"
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+        />
+      </div>
+      <div className="mt-2 flex w-full justify-center">
+        <button
+          className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
+          onClick={handleSave}
+        >
+          저장
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
+export default BrandModal
