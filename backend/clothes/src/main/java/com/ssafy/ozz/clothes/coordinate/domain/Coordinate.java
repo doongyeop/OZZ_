@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table
 @Entity
@@ -29,10 +29,9 @@ public class Coordinate {
     @Builder.Default
     private LocalDateTime createdDate = LocalDateTime.now();
 
-    @OneToMany
-    @JoinColumn(name = "clothes_id")
+    @OneToMany(mappedBy = "coordinate")
     @Builder.Default
-    private Set<CoordinateClothes> coordinateClothes = new HashSet<>();
+    private List<CoordinateClothes> coordinateClothesList = new ArrayList<>();
 
     /* FOREIGN KEY */
     private Long userId;
