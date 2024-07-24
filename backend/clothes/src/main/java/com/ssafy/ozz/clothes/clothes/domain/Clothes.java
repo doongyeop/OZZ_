@@ -1,5 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.domain;
 
+import com.ssafy.ozz.clothes.category.domain.CategoryHigh;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.properties.Fit;
 import com.ssafy.ozz.clothes.clothes.properties.Size;
@@ -7,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Table
 @Entity
@@ -68,7 +70,6 @@ public class Clothes {
     Long userId;
 
     //== 비즈니스 로직 ==//
-
     public void changeCategoryLow(CategoryLow categoryLow) {
         if(categoryLow != null) this.categoryLow = categoryLow;
     }
@@ -115,5 +116,32 @@ public class Clothes {
 
     public void changeStyle(Integer style){
         if(style != null) this.style = style;
+    }
+
+    //== 테스트 기능 ==//
+
+    // Method to create a mock Clothes object
+    public static Clothes mock(CategoryHigh categoryHigh) {
+        Clothes clothes = new Clothes();
+        Random RANDOM = new Random();
+
+        clothes.clothesId = (long) RANDOM.nextInt(1000); // Random Long
+        clothes.name = "Name" + RANDOM.nextInt(1000); // Random String
+        clothes.size = Size.values()[RANDOM.nextInt(Size.values().length)]; // Random enum value
+        clothes.fit = Fit.values()[RANDOM.nextInt(Fit.values().length)]; // Random enum value
+        clothes.memo = "Memo" + RANDOM.nextInt(1000); // Random String
+        clothes.brand = "Brand" + RANDOM.nextInt(1000); // Random String
+        clothes.purchaseDate = LocalDateTime.now().minusDays(RANDOM.nextInt(365)); // Random past date
+        clothes.purchaseSite = "Site" + RANDOM.nextInt(1000); // Random String
+        clothes.createdDate = LocalDateTime.now(); // Current date-time
+        clothes.color = RANDOM.nextInt(256); // Random integer (8-bit)
+        clothes.texture = RANDOM.nextInt(256); // Random integer (8-bit)
+        clothes.style = RANDOM.nextInt(256); // Random integer (8-bit)
+        clothes.season = RANDOM.nextInt(16); // Random integer (4-bit)
+        clothes.imageFileId = (long) RANDOM.nextInt(1000); // Random Long
+        clothes.categoryLow = categoryHigh.getCategoryLowList().get(RANDOM.nextInt(categoryHigh.getCategoryLowList().size())); // Assume CategoryLow has a no-args constructor
+        clothes.userId = (long) RANDOM.nextInt(1000); // Random Long
+
+        return clothes;
     }
 }
