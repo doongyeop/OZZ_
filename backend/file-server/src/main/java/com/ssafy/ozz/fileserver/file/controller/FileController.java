@@ -15,7 +15,6 @@ public class FileController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws Exception {
-        //TODO : 사진 업로드
         return ResponseEntity.ok(fileService.saveFile(file));
     }
 }

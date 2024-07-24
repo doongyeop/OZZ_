@@ -2,11 +2,11 @@ package com.ssafy.ozz.fileserver.file.service;
 
 import com.ssafy.ozz.fileserver.file.domain.Files;
 import com.ssafy.ozz.fileserver.file.dto.response.FileInfoResponse;
+import com.ssafy.ozz.fileserver.file.exception.UnsupportedFormatException;
 import com.ssafy.ozz.fileserver.file.repository.FileRepository;
 import com.ssafy.ozz.fileserver.global.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService {
 
         //MIMETYPE 체크
         if (!FileUtil.isImageFile(mimeType)) {
-            throw new FileUploadException("이미지 파일만 업로드할 수 있습니다.");
+            throw new UnsupportedFormatException();
         }
         Files fileEntity = Files.builder()
                 .type(mimeType)
