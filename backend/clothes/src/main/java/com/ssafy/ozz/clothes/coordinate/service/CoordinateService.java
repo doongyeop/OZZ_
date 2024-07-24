@@ -10,7 +10,7 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 public interface CoordinateService {
-    Long createCoordinate(CoordinateCreateRequest request);
+    Long createCoordinate(Long userId, Long imageFileId, CoordinateCreateRequest request);
 
     Coordinate getCoordinate(Long coordinateId);
 
