@@ -5,12 +5,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CameraIcon from '../../../public/icons/camera.svg'
 import PencilIcon from '../../../public/icons/pencil.svg'
-import BrandModal from '@/app/@modal/brand/page' // Adjust imports based on your directory structure
+import BrandModal from '@/app/@modal/brand/page'
+import CategoryModal from '@/app/@modal/category/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
   const [openModal, setOpenModal] = useState<string | null>(null)
   const [brandName, setBrandName] = useState<string>('')
+  const [categoryName, setCategoryName] = useState<string>('')
 
   const closeModal = () => setOpenModal(null)
 
@@ -22,7 +24,13 @@ export default function Form() {
       value: brandName,
       setValue: setBrandName,
     },
-    { label: '카테고리', path: 'category' },
+    {
+      label: '카테고리',
+      path: 'category',
+      component: CategoryModal,
+      value: categoryName,
+      setValue: setCategoryName,
+    },
     { label: '구매일자', path: 'purchase-date' },
     { label: '구매처', path: 'purchase-place' },
     { label: '계절감', path: 'season' },
