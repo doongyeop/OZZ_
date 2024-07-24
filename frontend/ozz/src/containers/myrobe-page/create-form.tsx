@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import CameraIcon from '../../../public/icons/camera.svg'
-import PencilIcon from '../../../public/icons/pencil.svg'
 import BrandModal from '@/app/@modal/brand/page'
 import CategoryModal from '@/app/@modal/category/page'
+import PurchaseDateModal from '@/app/@modal/purchaseDate/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
   const [openModal, setOpenModal] = useState<string | null>(null)
   const [brandName, setBrandName] = useState<string>('')
   const [categoryName, setCategoryName] = useState<string>('')
+  const [purchaseDate, setPurchaseDate] = useState<string>('')
 
   const closeModal = () => setOpenModal(null)
 
@@ -31,7 +31,13 @@ export default function Form() {
       value: categoryName,
       setValue: setCategoryName,
     },
-    { label: '구매일자', path: 'purchase-date' },
+    {
+      label: '구매일자',
+      path: 'purchase-date',
+      component: PurchaseDateModal,
+      value: purchaseDate,
+      setValue: setPurchaseDate,
+    },
     { label: '구매처', path: 'purchase-place' },
     { label: '계절감', path: 'season' },
     { label: '사이즈', path: 'size' },
