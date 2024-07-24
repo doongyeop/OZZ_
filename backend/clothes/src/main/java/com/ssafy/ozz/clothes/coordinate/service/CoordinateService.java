@@ -6,11 +6,12 @@ import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface CoordinateService {
-    Long createCoordinate(Long userId, Long imageFileId, CoordinateCreateRequest request);
+    Long createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request);
 
     Coordinate getCoordinate(Long coordinateId);
 

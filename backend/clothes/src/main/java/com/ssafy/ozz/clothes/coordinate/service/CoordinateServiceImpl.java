@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,7 +26,10 @@ public class CoordinateServiceImpl implements CoordinateService {
     private final ClothesService clothesService;
 
     @Override
-    public Long createCoordinate(Long userId, Long imageFileId, CoordinateCreateRequest request) {
+    public Long createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
+        // TODO: image file 저장 및 id 받아오기
+        Long imageFileId = 1L;
+
         Coordinate coordinate = request.toEntity(userId,imageFileId);
         coordinateRepository.save(coordinate);
 
