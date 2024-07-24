@@ -1,14 +1,14 @@
 package com.ssafy.ozz.fileserver.file.dto.response;
 
-import com.ssafy.ozz.fileserver.file.domain.File;
+import com.ssafy.ozz.fileserver.file.domain.Files;
 
 public record FileInfoResponse(
-        String fileId,
-        String fileUrl,
+        int fileId,
+        String fileDir,
         String fileName,
         String fileType
 ){
-//    FileInfoResponse(File file){
-//        this(file.getFileId(), file.get, null, null);
-//    }
+    public FileInfoResponse(Files file){
+        this(file.getFileId(), file.getPath(), file.getName(),file.getType());
+    }
 }
