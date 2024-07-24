@@ -26,7 +26,7 @@ public class FileServiceImpl implements FileService {
     @Transactional()
     public FileInfoResponse saveFile(MultipartFile file) throws IOException {
         String originalFileName = file.getOriginalFilename();
-        String storedFileName = UUID.randomUUID().toString() + "." + originalFileName;
+        String storedFileName = UUID.randomUUID()+ "." + originalFileName;
         String mimeType = file.getContentType();
 
         //MIMETYPE 체크
@@ -45,7 +45,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Transactional()
-    public void deleteFile(long fileId) throws Exception {
+    public void deleteFile(long fileId) {
         //TODO : 폴더에서 파일 삭제 - db에 접근해서 path값에 접근을 해야하는데...
         fileRepository.deleteById(fileId);
     }
@@ -56,7 +56,7 @@ public class FileServiceImpl implements FileService {
         File oldFile = new File(uploadDir, oldFileEntity.getName());
         oldFile.deleteOnExit();
         String originalFileName = file.getOriginalFilename();
-        String storedFileName = UUID.randomUUID().toString() + "." + originalFileName;
+        String storedFileName = UUID.randomUUID() + "." + originalFileName;
         String mimeType = file.getContentType();
 
         //MIMETYPE 체크
