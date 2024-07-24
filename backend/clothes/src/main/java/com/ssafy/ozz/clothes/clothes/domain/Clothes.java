@@ -1,16 +1,12 @@
 package com.ssafy.ozz.clothes.clothes.domain;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
-import com.ssafy.ozz.clothes.clothes.properties.Color;
 import com.ssafy.ozz.clothes.clothes.properties.Fit;
 import com.ssafy.ozz.clothes.clothes.properties.Size;
-import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 
 @Table
 @Entity
