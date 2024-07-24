@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Modal from '@/components/Modal'
-import Image from 'next/image'
-import PencilIcon from '../../../../public/icons/pencil.svg'
 
 type CategoryType = {
   상의: string[]
