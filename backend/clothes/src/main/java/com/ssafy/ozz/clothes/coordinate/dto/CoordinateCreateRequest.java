@@ -18,6 +18,8 @@ public record CoordinateCreateRequest (
         return Coordinate.builder()
                 .name(name)
                 .style(toBits(styleList))
+                .userId(userId)
+                .imageFileId(imageFileId)
                 .build();
     }
 }
