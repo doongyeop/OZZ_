@@ -17,7 +17,7 @@ public class EnumBitwiseConverter {
         return value;
     }
 
-    public static <E extends Enum<E>> List<E> getEnumsFromInteger(Class<E> enumClass, int value) {
+    public static <E extends Enum<E>> List<E> toEnums(Class<E> enumClass, int value) {
         List<E> enums = new ArrayList<>();
         int index = 0;
         while (value != 0) {
