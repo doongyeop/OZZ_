@@ -2,26 +2,25 @@ import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 import { HiPencil } from 'react-icons/hi'
 
-const BrandModal: React.FC<{
+const PurchaseSiteModal: React.FC<{
   onClose: () => void
   setValue: (value: string) => void
 }> = ({ onClose, setValue }) => {
-  const [brand, setBrand] = useState<string>('')
-
+  const [purchaseSite, setPurchaseSite] = useState<string>('')
   const handleSave = () => {
-    setValue(brand)
+    setValue(purchaseSite)
     onClose()
   }
 
   return (
-    <Modal title="브랜드" onClose={onClose}>
+    <Modal title="구매처" onClose={onClose}>
       <div className="flex justify-between border-2 border-primary-400 pl-1 pr-2">
         <HiPencil className="text-primary-400" size={28} />
         <input
           className="w-full pt-1 pb-1 bg-secondary text-primary-400 outline-none text-right font-bold"
           type="text"
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
+          value={purchaseSite}
+          onChange={(e) => setPurchaseSite(e.target.value)}
         />
       </div>
       <div className="mt-2 flex w-full justify-center">
@@ -36,4 +35,4 @@ const BrandModal: React.FC<{
   )
 }
 
-export default BrandModal
+export default PurchaseSiteModal

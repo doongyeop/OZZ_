@@ -6,6 +6,7 @@ import CameraIcon from '../../../public/icons/camera.svg'
 import BrandModal from '@/app/@modal/brand/page'
 import CategoryModal from '@/app/@modal/category/page'
 import PurchaseDateModal from '@/app/@modal/purchaseDate/page'
+import PurchaseSiteModal from '@/app/@modal/purchaseSite/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -13,6 +14,7 @@ export default function Form() {
   const [brandName, setBrandName] = useState<string>('')
   const [categoryName, setCategoryName] = useState<string>('')
   const [purchaseDate, setPurchaseDate] = useState<string>('')
+  const [purchaseSite, setPurchaseSite] = useState<string>('')
 
   const closeModal = () => setOpenModal(null)
 
@@ -38,7 +40,13 @@ export default function Form() {
       value: purchaseDate,
       setValue: setPurchaseDate,
     },
-    { label: '구매처', path: 'purchase-place' },
+    {
+      label: '구매처',
+      path: 'purchase-site',
+      component: PurchaseSiteModal,
+      value: purchaseSite,
+      setValue: setPurchaseSite,
+    },
     { label: '계절감', path: 'season' },
     { label: '사이즈', path: 'size' },
     { label: '핏', path: 'fit' },
