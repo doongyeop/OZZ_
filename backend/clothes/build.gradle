@@ -45,8 +45,11 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	//==QueryDsl==//
 
-	// MSA 관련 설정 - discovery client eureka
+	//// MSA 관련 설정
+	//- discovery client eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	//- micro service 간 통신 feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 
