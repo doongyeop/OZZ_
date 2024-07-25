@@ -2,7 +2,7 @@ import Modal from '@/components/Modal'
 
 const sizes = ['FREE', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
-const SizeModel: React.FC<{
+const SizeModal: React.FC<{
   onClose: () => void
   setValue: (value: string) => void
 }> = ({ onClose, setValue }) => {
@@ -29,4 +29,4 @@ const SizeModel: React.FC<{
   )
 }
 
-export default SizeModel
+export default SizeModal
