@@ -17,10 +17,8 @@ spring:
           - id: file-router
             uri : lb://OZZ-FILE
             predicates:
-              - Path=/api/file/**
+              - Path=/api/file/**, /uploads/**
           - id: clothe-router
             uri: lb://OZZ-CLOTHES
             predicates:
-              - Path=/api/clothes/**
-              - Path=/api/categories/**
-              - Path=/api/coordinates/**
+              - Path=/api/clothes/**, /api/categories/**, /api/coordinates/**
