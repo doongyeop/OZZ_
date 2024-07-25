@@ -36,15 +36,15 @@ const PurchaseDateModal: React.FC<{
           <Button
             variant={'outline'}
             className={cn(
-              'w-[280px] justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal bg-secondary border-2 border-primary-400 ',
               !purchaseDate && 'text-muted-foreground',
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4 text-primary-400" />
             {purchaseDate ? (
               format(purchaseDate, 'PPP')
             ) : (
-              <span>구매일자 선택</span>
+              <span className="text-primary-400">구매일자 선택</span>
             )}
           </Button>
         </PopoverTrigger>
