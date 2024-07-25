@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
         //JWTFilter
         http
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -77,6 +77,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll() // 루트경로
+                        .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated()); // 로그인한 사용자가 접근 가능
         //세션 설정 : STATELESS
         http

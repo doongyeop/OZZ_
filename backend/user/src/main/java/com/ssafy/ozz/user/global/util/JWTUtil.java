@@ -1,6 +1,7 @@
 package com.ssafy.ozz.user.global.util;
 
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,44 +15,36 @@ import java.util.Date;
 public class JWTUtil {
 
     private final SecretKey secretKey;
-    private final long jwtExpiration;
 
 
-    public JWTUtil(@Value("${jwt.secret}")String secret, @Value("${jwt.expiration}") Long jwtExpiration) {
+    public JWTUtil(@Value("${jwt.secret}") String secret) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
-        this.jwtExpiration = jwtExpiration;
     }
 
+    // 토큰에서 userId 추출
     public String getUserId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", String.class);
     }
-    public String getUsername(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
-    }
 
-    public String getRole(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    // 토큰 access인지 refesh인지 추출
+    public String getCategory(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
-
-    public String createJwt(Long id) {
+    // 토큰 발급하기
+    public String createJwt(String category, Long id, Long expiredMs) {
         return Jwts.builder()
+                .claim("category", category)
                 .claim("id", id)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
-//public String createJwt(String username) {
-//
-//    return Jwts.builder()
-//            .claim("username", username)
-//            .issuedAt(new Date(System.currentTimeMillis()))
-//            .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
-//            .signWith(secretKey)
-//            .compact();
-//}
+    public Date getExpirationDate(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
+    }
 }
