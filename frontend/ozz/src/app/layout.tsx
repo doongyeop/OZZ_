@@ -1,3 +1,4 @@
+import Navbar from '@/components/Navbar'
 import '@/styles/global.css'
 import localFont from 'next/font/local'
 
@@ -22,7 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${pretendard.variable}`}>
-      <body className={`${pretendard.className}`}>{children}</body>
+      <body className={`${pretendard.className}`}>
+        {children}
+        <Navbar />
+      </body>
     </html>
   )
 }

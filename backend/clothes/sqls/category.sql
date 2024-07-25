@@ -51,4 +51,5 @@ INSERT INTO category_low (name, category_high_id) VALUES ('기타', 6);
 INSERT INTO category_low (name, category_high_id) VALUES ('모자', 6);
 
 -- 가방 (category_high_id = 7)
--- 가방 카테고리에는 하위 카테고리가 없으므로 삽입할 필요 없음
+INSERT INTO category_low (name, category_high_id) VALUES ('백팩', 7);
+INSERT INTO category_low (name, category_high_id) VALUES ('힙색', 7);
