@@ -3,6 +3,8 @@ package com.ssafy.ozz.clothes.coordinate.service;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
+import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
@@ -33,11 +35,7 @@ public class CoordinateServiceImpl implements CoordinateService {
 
         Coordinate coordinate = request.toEntity(userId,imageFileId);
         coordinateRepository.save(coordinate);
-
-        request.clothes().forEach((coordinateClothes)-> {
-            Clothes clothes = clothesService.getClothes(coordinateClothes.clothesId());
-            coordinateClothesRepository.save(coordinateClothes.toEntity(coordinate, clothes));
-        });
+        saveCoordinateClothesList(coordinate, request.clothesList());
 
         return coordinate;
     }
@@ -61,12 +59,27 @@ public class CoordinateServiceImpl implements CoordinateService {
     }
 
     @Override
-    public Coordinate updateCoordinate(CoordinateUpdateRequest request) {
-        return null;
+    public Coordinate updateCoordinate(Long coordinateId, CoordinateUpdateRequest request) {
+        Coordinate coordinate = getCoordinate(coordinateId);
+        coordinate.updateName(request.name());
+        coordinate.updateStyle(request.styleList());
+
+        coordinateClothesRepository.deleteAll(coordinateClothesRepository.findByCoordinate(coordinate));
+        coordinate.setCoordinateClothesList(saveCoordinateClothesList(coordinate, request.clothesList()));
+
+        return coordinate;
     }
 
     @Override
     public void deleteCoordinate(Long coordinateId) {
+        coordinateClothesRepository.deleteAll(coordinateClothesRepository.findByCoordinateId(coordinateId));
+        coordinateRepository.deleteById(coordinateId);
+    }
 
+    private List<CoordinateClothes> saveCoordinateClothesList(Coordinate coordinate, List<CoordinateClothesCreateRequest> clothesList) {
+        return coordinateClothesRepository.saveAll(clothesList.stream().map(coordinateClothes-> {
+            Clothes clothes = clothesService.getClothes(coordinateClothes.clothesId());
+            return coordinateClothes.toEntity(coordinate, clothes);
+        }).toList());
     }
 }
