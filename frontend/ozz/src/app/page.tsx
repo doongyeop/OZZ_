@@ -1,3 +1,10 @@
+import Header from '@/components/Header'
+
 export default function Home() {
-  return <h1>하잉</h1>
+  return (
+    <>
+      <Header title="OZZ" />
+      <h1>메인 페이지</h1>
+    </>
+  )
 }
