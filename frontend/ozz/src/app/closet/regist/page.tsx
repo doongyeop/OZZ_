@@ -1,4 +1,4 @@
-import Form from '@/containers/myrobe-page/create-form'
+import Form from '@/containers/closet-page/create-form'
 
 export default function Page() {
   return (

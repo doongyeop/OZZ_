@@ -36,11 +36,11 @@ const PurchaseDateModal: React.FC<{
           <Button
             variant={'outline'}
             className={cn(
-              'w-full justify-start text-left font-normal bg-secondary border-2 border-primary-400 active:bg-primary-400',
-              !purchaseDate && 'text-muted-foreground',
+              'w-full justify-start text-left font-normal ',
+              // !purchaseDate && 'text-muted-foreground',
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 text-primary-400" />
+            <CalendarIcon className="mr-2 h-4 w-4 " />
             {purchaseDate ? (
               format(purchaseDate, 'PPP')
             ) : (
@@ -48,12 +48,12 @@ const PurchaseDateModal: React.FC<{
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 border-2 border-primary-400 bg-secondary text-primary-400">
+        <PopoverContent className="w-auto p-0 bg-secondary border-2 border-primary-400">
           <Calendar
             mode="single"
             selected={purchaseDate}
             onSelect={handleDateSelect}
-            className="bg-secondary text-primary-400 active:bg-primary-400"
+            className=""
             initialFocus
           />
         </PopoverContent>
