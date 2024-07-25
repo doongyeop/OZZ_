@@ -8,11 +8,7 @@ import { HiHashtag, HiHome } from 'react-icons/hi'
 
 const links = [
   { name: 'Home', href: '/', icon: HiHome },
-  {
-    name: 'closet',
-    href: '/closet',
-    icon: BiCloset,
-  },
+  { name: 'closet', href: '/closet', icon: BiCloset },
   { name: 'coordi', href: '/coordi', icon: GiClothes },
   { name: 'community', href: '/community', icon: HiHashtag },
   { name: 'mypage', href: '/mypage', icon: BiSolidUser },
