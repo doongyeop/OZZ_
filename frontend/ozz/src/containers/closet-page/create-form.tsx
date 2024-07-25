@@ -8,7 +8,8 @@ import CategoryModal from '@/app/@modal/category/page'
 import PurchaseDateModal from '@/app/@modal/purchaseDate/page'
 import PurchaseSiteModal from '@/app/@modal/purchaseSite/page'
 import SeasonModal from '@/app/@modal/season/page'
-import SizeModel from '@/app/@modal/size/page'
+import SizeModal from '@/app/@modal/size/page'
+import FitModal from '@/app/@modal/fit/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -19,6 +20,7 @@ export default function Form() {
   const [purchaseSite, setPurchaseSite] = useState<string>('')
   const [season, setSeason] = useState<string[]>([])
   const [size, setSize] = useState<string>()
+  const [fit, setFit] = useState<string>()
 
   const closeModal = () => setOpenModal(null)
 
@@ -61,11 +63,17 @@ export default function Form() {
     {
       label: '사이즈',
       path: 'size',
-      component: SizeModel,
+      component: SizeModal,
       value: size,
       setValue: setSize,
     },
-    { label: '핏', path: 'fit' },
+    {
+      label: '핏',
+      path: 'fit',
+      component: FitModal,
+      value: fit,
+      setValue: setFit,
+    },
     { label: '소재', path: 'material' },
     { label: '색', path: 'color' },
     { label: '스타일', path: 'style' },
