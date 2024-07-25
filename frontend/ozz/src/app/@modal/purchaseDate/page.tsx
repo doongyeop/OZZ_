@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import Modal from '@/components/Modal'
-import Image from 'next/image'
-import PencilIcon from '../../../../public/icons/pencil.svg'
 
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
