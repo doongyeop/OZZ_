@@ -27,45 +27,53 @@ const SignIn = () => {
       const { Kakao } = window as any
       if (Kakao) {
         Kakao.init('YOUR_KAKAO_CLIENT_ID')
-        Kakao.Auth.createLoginButton({
-          container: '#kakao-login-btn',
-          success: (authObj: any) => {
-            console.log(authObj)
-          },
-          fail: (err: any) => {
-            console.error(err)
-          },
-        })
       }
     }
     document.head.appendChild(kakaoScript)
   }, [])
 
+  const handleKakaoLogin = () => {
+    const { Kakao } = window as any
+    if (Kakao) {
+      Kakao.Auth.login({
+        success: (authObj: any) => {
+          console.log(authObj)
+        },
+        fail: (err: any) => {
+          console.error(err)
+        },
+      })
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen">
-      <img
-        src="images/logo_filled_green.png"
-        alt="OZZ LOGO"
-        className="mb-8 w-40"
-      />
-      <h2 className="text-xl font-bold w-full max-w-xs text-center mt-4 mb-4">
-        간편 로그인
-      </h2>
-      <div className="flex flex-col items-center space-y-4">
+    <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">
+      <img src="images/logo_3e3e3e.png" alt="OZZ LOGO" className="mb-8 w-40" />
+      <h2 className="text-xl w-full text-left my-10">간편 로그인</h2>
+      <div className="flex flex-col items-center space-y-2 w-full">
         <div
-          id="kakao-login-btn"
-          className="w-full max-w-xs h-12 flex items-center justify-center"
-        ></div>
+          onClick={handleKakaoLogin}
+          className="w-full h-10 flex items-center bg-[#FEE500] mx-3 rounded-md"
+        >
+          <img
+            src="images/kakao_logo.png"
+            alt="카카오 로그인"
+            className="h-full object-contain"
+          />
+          <span className="flex-grow text-center text-black">
+            카카오 로그인
+          </span>
+        </div>
         <div
           id="naverIdLogin"
-          className="w-full max-w-xs h-12 flex items-center bg-[#03C75A] rounded-md"
+          className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
         >
           <img
             src="images/btnG_아이콘사각.png"
             alt="네이버 로그인"
             className="h-full object-contain"
           />
-          <span className="flex-grow text-center text-gray-light">
+          <span className="flex-grow text-center text-white">
             네이버 로그인
           </span>
         </div>
