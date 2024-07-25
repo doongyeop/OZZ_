@@ -11,6 +11,7 @@ import SeasonModal from '@/app/@modal/season/page'
 import SizeModal from '@/app/@modal/size/page'
 import FitModal from '@/app/@modal/fit/page'
 import TextureModal from '@/app/@modal/texture/page'
+import ColorModal from '@/app/@modal/color/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -23,6 +24,9 @@ export default function Form() {
   const [size, setSize] = useState<string>()
   const [fit, setFit] = useState<string>()
   const [texture, setTexture] = useState<string[]>([])
+  const [color, setColor] = useState<{ name: string; code: string } | null>(
+    null,
+  )
 
   const closeModal = () => setOpenModal(null)
 
@@ -83,7 +87,13 @@ export default function Form() {
       value: texture.join(', '),
       setValue: setTexture,
     },
-    { label: '색', path: 'color' },
+    {
+      label: '색',
+      path: 'color',
+      component: ColorModal,
+      value: color ? color.name : '',
+      setValue: setColor,
+    },
     { label: '스타일', path: 'style' },
     { label: '패턴', path: 'pattern' },
     { label: '메모', path: 'memo' },
@@ -133,9 +143,25 @@ export default function Form() {
               >
                 <span>{item.label}</span>
 
-                <div>
+                <div className="flex items-center">
                   {item.value && (
-                    <span className="text-primary-400 mr-2">{item.value}</span>
+                    <>
+                      {item.label === '색' && color ? (
+                        <>
+                          <span
+                            className="inline-block w-5 h-5 rounded-full mr-1.5"
+                            style={{ backgroundColor: color.code }}
+                          ></span>
+                          <span className="text-primary-400 mr-2">
+                            {color.name}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-primary-400 mr-2">
+                          {item.value}
+                        </span>
+                      )}
+                    </>
                   )}
                   <button
                     onClick={() => setOpenModal(item.path)}
