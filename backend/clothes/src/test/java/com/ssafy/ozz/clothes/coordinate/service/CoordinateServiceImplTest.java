@@ -75,7 +75,7 @@ class CoordinateServiceImplTest {
         return CoordinateCreateRequest.builder()
                 .name(name)
                 .styleList(styleList)
-                .clothes(clothesList.stream().map(clothes ->
+                .clothesList(clothesList.stream().map(clothes ->
                         CoordinateClothesCreateRequest.builder().clothesId(clothes.getClothesId()).offset(1).build()).toList())
                 .build();
     }
