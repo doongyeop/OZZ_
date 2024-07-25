@@ -9,6 +9,7 @@ import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -43,16 +45,13 @@ class CoordinateServiceImplTest {
     private CategoryService categoryService;
 
     // 픽스처
-    List<Clothes> clothesList = new ArrayList<>();
+    List<CategoryHigh> categoryHighList;
     Long userId = 1L;
 
     @BeforeEach
     void setUp() {
         // 상위 카테고리별로 1개씩 옷 생성
-        List<CategoryHigh> categoryHighList = categoryService.getAllCategoryHigh();
-        categoryHighList.forEach(categoryHigh -> {
-            clothesList.add(clothesRepository.save(Clothes.mock(userId,categoryHigh)));
-        });
+        categoryHighList = categoryService.getAllCategoryHigh();
     }
 
     @Test
@@ -60,7 +59,8 @@ class CoordinateServiceImplTest {
         // given
         String name = "서터릿 코디";
         List<Style> styleList = Arrays.asList(Style.STREET, Style.CASUAL);
-        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList);
+        List<Clothes> clothesList = saveAndGetClothesList();
+        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList, clothesList);
         // when
         Coordinate coordinate = coordinateService.createCoordinate(userId, null, request);
 
@@ -71,21 +71,13 @@ class CoordinateServiceImplTest {
         Assertions.assertThat(coordinate.getStyle()).isEqualTo(toBits(styleList));
     }
 
-    CoordinateCreateRequest getCoordinateCreateRequest(String name, List<Style> styleList) {
-        return CoordinateCreateRequest.builder()
-                .name(name)
-                .styleList(styleList)
-                .clothesList(clothesList.stream().map(clothes ->
-                        CoordinateClothesCreateRequest.builder().clothesId(clothes.getClothesId()).offset(1).build()).toList())
-                .build();
-    }
-
     @Test
     void getCoordinate() {
         // given
         String name = "캐주얼 코디";
         List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
-        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList);
+        List<Clothes> clothesList = saveAndGetClothesList();
+        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList, clothesList);
         Long coordinateId = coordinateService.createCoordinate(userId, null, request).getCoordinateId();
 
         // when
@@ -101,12 +93,14 @@ class CoordinateServiceImplTest {
         // given
         String name = "캐주얼 코디";
         List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
-        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList);
+        List<Clothes> clothesList = saveAndGetClothesList();
+        CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList, clothesList);
         coordinateService.createCoordinate(userId, null, request);
 
         String name2 = "캐주얼 코디";
         List<Style> styleList2 = Arrays.asList(Style.CASUAL, Style.STREET);
-        CoordinateCreateRequest request2 = getCoordinateCreateRequest(name2, styleList2);
+        List<Clothes> clothesList2 = saveAndGetClothesList();
+        CoordinateCreateRequest request2 = getCoordinateCreateRequest(name2, styleList2, clothesList2);
         coordinateService.createCoordinate(userId, null, request2);
 
         SearchCondition condition = SearchCondition.builder()
@@ -121,14 +115,60 @@ class CoordinateServiceImplTest {
     }
 
     @Test
-    void testGetCoordinatesOfUser() {
+    void getCoordinatesOfUserWithPagination() {
     }
 
     @Test
     void updateCoordinate() {
+        // given
+        String name = "캐주얼 코디";
+        List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
+        List<Clothes> originClothesList = saveAndGetClothesList();
+        CoordinateCreateRequest createRequest = getCoordinateCreateRequest(name, styleList, originClothesList);
+        Coordinate coordinate = coordinateService.createCoordinate(userId, null, createRequest);
+
+        List<Clothes> updateClothesList = saveAndGetClothesList();
+        CoordinateUpdateRequest updateRequest = CoordinateUpdateRequest.builder()
+                .name("스트릿 코디")
+                .styleList(List.of(Style.STREET, Style.GENDERLESS))
+                .clothesList(getCoordinateClothesCreateRequests(updateClothesList))
+                .build();
+        // when
+        Coordinate updatedCoordinate = coordinateService.updateCoordinate(coordinate.getCoordinateId(), updateRequest);
+        Integer totalCoordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate).size();
+
+        // then
+        Assertions.assertThat(updatedCoordinate.getName()).isEqualTo(updateRequest.name());
+        Assertions.assertThat(updatedCoordinate.getStyle()).isEqualTo(toBits(updateRequest.styleList()));
+        Assertions.assertThat(updatedCoordinate.getCoordinateClothesList().size()).isEqualTo(totalCoordinateClothes);
+//        System.out.println(totalCoordinateClothes);
     }
 
     @Test
     void deleteCoordinate() {
+    }
+
+    private CoordinateCreateRequest getCoordinateCreateRequest(String name, List<Style> styleList, List<Clothes> clothesList) {
+        return CoordinateCreateRequest.builder()
+                .name(name)
+                .styleList(styleList)
+                .clothesList(getCoordinateClothesCreateRequests(clothesList))
+                .build();
+    }
+
+    private List<CoordinateClothesCreateRequest> getCoordinateClothesCreateRequests(List<Clothes> clothesList) {
+        return clothesList.stream().map(clothes ->
+                CoordinateClothesCreateRequest.builder()
+                        .clothesId(clothes.getClothesId())
+                        .offset(1).build()
+        ).toList();
+    }
+
+    private List<Clothes> saveAndGetClothesList(){
+        List<Clothes> clothesList = new ArrayList<>();
+        categoryHighList.forEach(categoryHigh -> {
+            clothesList.add(clothesRepository.save(Clothes.mock(userId,categoryHigh)));
+        });
+        return clothesList;
     }
 }
