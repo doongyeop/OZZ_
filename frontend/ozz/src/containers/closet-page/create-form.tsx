@@ -10,6 +10,7 @@ import PurchaseSiteModal from '@/app/@modal/purchaseSite/page'
 import SeasonModal from '@/app/@modal/season/page'
 import SizeModal from '@/app/@modal/size/page'
 import FitModal from '@/app/@modal/fit/page'
+import TextureModal from '@/app/@modal/texture/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -21,6 +22,7 @@ export default function Form() {
   const [season, setSeason] = useState<string[]>([])
   const [size, setSize] = useState<string>()
   const [fit, setFit] = useState<string>()
+  const [texture, setTexture] = useState<string[]>([])
 
   const closeModal = () => setOpenModal(null)
 
@@ -74,7 +76,13 @@ export default function Form() {
       value: fit,
       setValue: setFit,
     },
-    { label: '소재', path: 'material' },
+    {
+      label: '소재',
+      path: 'texture',
+      component: TextureModal,
+      value: texture.join(', '),
+      setValue: setTexture,
+    },
     { label: '색', path: 'color' },
     { label: '스타일', path: 'style' },
     { label: '패턴', path: 'pattern' },
