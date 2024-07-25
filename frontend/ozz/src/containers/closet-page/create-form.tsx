@@ -12,6 +12,7 @@ import SizeModal from '@/app/@modal/size/page'
 import FitModal from '@/app/@modal/fit/page'
 import TextureModal from '@/app/@modal/texture/page'
 import ColorModal from '@/app/@modal/color/page'
+import StyleModal from '@/app/@modal/style/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -27,6 +28,7 @@ export default function Form() {
   const [color, setColor] = useState<{ name: string; code: string } | null>(
     null,
   )
+  const [style, setStyle] = useState<string[]>([])
 
   const closeModal = () => setOpenModal(null)
 
@@ -94,7 +96,13 @@ export default function Form() {
       value: color ? color.name : '',
       setValue: setColor,
     },
-    { label: '스타일', path: 'style' },
+    {
+      label: '스타일',
+      path: 'style',
+      component: StyleModal,
+      value: style.join(', '),
+      setValue: setStyle,
+    },
     { label: '패턴', path: 'pattern' },
     { label: '메모', path: 'memo' },
   ]
