@@ -1,17 +1,16 @@
 package com.ssafy.ozz.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "users")
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder(toBuilder = true)
 public class User {
 
     @Id
@@ -47,4 +46,12 @@ public class User {
         createdDate = new Date();
     }
 
+    public void updateUser(String nickname, Date birth) {
+        this.nickname = nickname;
+        this.birth = birth;
+    }
+
+    public void updateProfileImg(Long profileFileId) {
+        this.profileFileId = profileFileId;
+    }
 }

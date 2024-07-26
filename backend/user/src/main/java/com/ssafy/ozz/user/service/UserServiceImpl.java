@@ -19,16 +19,20 @@ public class UserServiceImpl implements UserService {
 
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id).map(user -> {
-            user.setNickname(updatedUser.getNickname());
-            user.setBirth(updatedUser.getBirth());
-            return userRepository.save(user);
+            User updated = user.toBuilder()
+                    .nickname(updatedUser.getNickname())
+                    .birth(updatedUser.getBirth())
+                    .build();
+            return userRepository.save(updated);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public User updateProfileImg(Long id, User updatedUser) {
         return userRepository.findById(id).map(user -> {
-            user.setProfileFileId(updatedUser.getProfileFileId());
-            return userRepository.save(user);
+            User updated = user.toBuilder()
+                    .profileFileId(updatedUser.getProfileFileId())
+                    .build();
+            return userRepository.save(updated);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }
 

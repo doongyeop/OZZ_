@@ -49,19 +49,22 @@ public class UserController {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setNickname(updates.get("nickname"));
+            User.UserBuilder userBuilder = user.toBuilder();
 
-            String birthStr = updates.get("birth");
-            if (birthStr != null) {
+            String nickname = updates.get("nickname");
+            if (nickname != null) {
+                userBuilder.nickname(nickname);
+            }
+            String birthstr = updates.get("birth");
+            if (birthstr != null) {
                 try {
-                    Date birth = new SimpleDateFormat("yyyy-MM-dd").parse(birthStr);
-                    user.setBirth(birth);
+                    Date birth = new SimpleDateFormat("yyyy-MM-dd").parse(birthstr);
+                    userBuilder.birth(birth);
                 } catch (ParseException e) {
                     return ResponseEntity.badRequest().body("yyyy-MM-dd로 입력해주세요.");
                 }
             }
-
-            userService.updateUser(userId, user);
+            userService.updateUser(userId, userBuilder.build());
             return ResponseEntity.ok("성공적으로 수정되었습니다.");
         } else {
             return ResponseEntity.status(404).body("User not found");
@@ -79,8 +82,10 @@ public class UserController {
             try {
                 Map<String, Object> fileInfo = fileService.saveFile(file);
                 User user = userOptional.get();
-                user.setProfileFileId((Long) fileInfo.get("fileId"));
-                userService.updateProfileImg(userId, user);
+                User updatedUser = user.toBuilder()
+                        .profileFileId((Long) fileInfo.get("fileId"))
+                        .build();
+                userService.updateUser(userId, updatedUser);
                 return ResponseEntity.ok(fileInfo);
             } catch (IOException e) {
                 return ResponseEntity.status(500).body("파일 업로드 실패");
@@ -91,7 +96,7 @@ public class UserController {
     }
 
     @DeleteMapping("/")
-    @Operation(summary="회원 탈퇴")
+    @Operation(summary = "회원 탈퇴")
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
         String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
         Long userId = Long.parseLong(userIdStr);
