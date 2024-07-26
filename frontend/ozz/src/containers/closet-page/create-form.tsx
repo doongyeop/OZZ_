@@ -119,6 +119,59 @@ export default function Form() {
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // 필수 입력 필드 확인
+    if (!name || !categoryName || !imageFile) {
+      alert('이름, 카테고리 및 이미지는 필수 입력 사항입니다.')
+      return
+    }
+
+    const categoryLowId = categoryName.split(' > ').pop() || ''
+
+    const jsonData = {
+      name,
+      size: size || 'FREE',
+      fit: fit ? fitMap[fit] : '',
+      memo: memo || '',
+      brand: brandName || '',
+      purchaseDate: purchaseDate || '',
+      purchaseSite: purchaseSite || '',
+      colorList: color ? [colorMap[color.name]] : [],
+      textureList: texture.map((t) => textureMap[t]),
+      seasonList: season ? season.map((s) => seasonMap[s]) : [],
+      styleList: style ? style.map((s) => styleMap[s]) : [],
+      categoryLowId,
+    }
+
+    const formData = new FormData()
+    formData.append('imageFile', imageFile as File)
+    formData.append(
+      'data',
+      new Blob([JSON.stringify(jsonData)], { type: 'application/json' }),
+    )
+
+    console.log('옷 등록할게요 ><')
+    for (const x of formData.entries()) {
+      console.log(x)
+    }
+
+    // try {
+    //   const response = await fetch('/api/clothes', {
+    //     method: 'POST',
+    //     body: formData,
+    //   })
+    //   if (response.ok) {
+    //     console.log('옷 등록 성공!')
+    //   } else {
+    //     console.log('옷 등록 실패!')
+    //   }
+    // } catch (error) {
+    //   console.error('옷 등록 에러:', error)
+    // }
+  }
+
   const closeModal = () => setOpenModal(null)
 
   const modalItems = [
