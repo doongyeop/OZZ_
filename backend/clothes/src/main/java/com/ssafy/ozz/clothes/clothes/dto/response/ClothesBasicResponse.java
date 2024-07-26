@@ -1,6 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
+import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
@@ -17,7 +18,7 @@ public record ClothesBasicResponse(
         String name,
         LocalDateTime createdDate,
         Long imageFileId,
-        CategoryLow categoryLow
+        CategoryLowResponse categoryLow
 ) {
     public ClothesBasicResponse(Clothes clothes) {
         this(
@@ -25,7 +26,7 @@ public record ClothesBasicResponse(
                 clothes.getName(),
                 clothes.getCreatedDate(),
                 clothes.getImageFileId(),
-                clothes.getCategoryLow()
+                new CategoryLowResponse(clothes.getCategoryLow())
         );
     }
 }

@@ -3,7 +3,7 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Texture {
+public enum Texture implements Property {
     FUR("퍼"),
     KNIT("니트"),
     MOUTON("무스탕"),
@@ -33,5 +33,15 @@ public enum Texture {
 
     Texture(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public String getCode() {
+        return this.name();
+    }
+
+    @Override
+    public String getName() {
+        return this.displayName;
     }
 }

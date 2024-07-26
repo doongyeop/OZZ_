@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface CoordinateService {
-    Long createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request);
+    Coordinate createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request);
 
     Coordinate getCoordinate(Long coordinateId);
 
@@ -19,7 +19,7 @@ public interface CoordinateService {
 
     Slice<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition, Pageable pageable);
 
-    Coordinate updateCoordinate(CoordinateUpdateRequest request);
+    Coordinate updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request);
 
     void deleteCoordinate(Long coordinateId);
 }
