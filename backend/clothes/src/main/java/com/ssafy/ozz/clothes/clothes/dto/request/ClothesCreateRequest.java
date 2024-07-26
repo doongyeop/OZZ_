@@ -6,6 +6,7 @@ import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public record ClothesCreateRequest(
         Fit fit,
         String memo,
         String brand,
-        LocalDateTime purchaseDate,
+        LocalDate purchaseDate,
         String purchaseSite,
         List<Color> colorList,
         List<Texture> textureList,

@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.clothes.exception;
+package com.ssafy.ozz.clothes.global.exception;
 
 import com.ssafy.ozz.clothes.global.error.ErrorCode;
 import com.ssafy.ozz.clothes.global.error.ServiceException;
