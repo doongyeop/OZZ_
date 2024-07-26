@@ -12,8 +12,8 @@ const FitModal: React.FC<{
   }
 
   return (
-    <Modal title="핏" onClose={onClose}>
-      <div className="flex flex-wrap justify-center w-full l-1 pr-2">
+    <Modal title="핏" onClose={onClose} width="w-[200px]">
+      <div className="flex flex-wrap  w-full l-1 pr-2">
         {fits.map((fit) => (
           <button
             key={fit}

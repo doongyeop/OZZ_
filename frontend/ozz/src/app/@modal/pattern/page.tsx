@@ -41,7 +41,7 @@ const PatternModal: React.FC<{
   }
 
   return (
-    <Modal title="패턴" onClose={onClose}>
+    <Modal title="패턴" onClose={onClose} width="w-[300px]">
       <div className="flex flex-wrap w-full">
         {patterns.map((pattern) => (
           <button

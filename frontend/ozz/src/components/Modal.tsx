@@ -4,12 +4,15 @@ interface ModalProps {
   onClose: () => void
   title: string
   children: React.ReactNode
+  width?: string
 }
 
-const Modal: React.FC<ModalProps> = ({ onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({ onClose, title, children, width }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-secondary bg-opacity-50">
-      <div className="bg-secondary rounded-xl shadow-lg overflow-hidden w-[250px] max-w-lg">
+      <div
+        className={`bg-secondary rounded-xl shadow-lg overflow-hidden ${width || 'w-[250px]'} max-w-lg`}
+      >
         <div className="flex justify-between items-center pt-3 pl-4 pr-3">
           <h3 className="text-lg font-semibold text-primary-400">{title}</h3>
           <button onClick={onClose} className="text-primary-400">
