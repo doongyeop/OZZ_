@@ -1,8 +1,8 @@
 package com.ssafy.ozz.clothes.coordinate.controller;
 
-import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateResponse;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
 import com.ssafy.ozz.clothes.coordinate.service.CoordinateService;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +37,10 @@ public class CoordinateController {
         // TODO: 실제 유저 번호 받아오기
         Long userId = 1L;
         return ResponseEntity.ok(coordinateService.getCoordinatesOfUser(userId,condition,pageable).map(CoordinateResponse::new));
+    }
+
+    @PutMapping(path = "/{coordinateId}", consumes = {"multipart/form-data","application/json"})
+    public ResponseEntity<CoordinateResponse> updateCoordinate(@PathVariable final Long coordinateId, @RequestPart final MultipartFile imageFile, @RequestPart final CoordinateUpdateRequest request) {
+        return ResponseEntity.ok(new CoordinateResponse(coordinateService.updateCoordinate(coordinateId,imageFile,request)));
     }
 }
