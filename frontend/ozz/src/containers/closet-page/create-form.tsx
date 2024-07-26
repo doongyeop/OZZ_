@@ -126,7 +126,7 @@ export default function Form() {
   ]
 
   return (
-    <div className="py-32 px-10 min-h-screen flex flex-col justify-center items-center">
+    <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
       <form action="">
         <div className="flex justify-center mb-3">
           <input type="file" name="image" id="image" className="sr-only" />
