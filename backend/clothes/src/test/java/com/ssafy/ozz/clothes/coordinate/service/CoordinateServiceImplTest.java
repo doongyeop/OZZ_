@@ -142,7 +142,7 @@ class CoordinateServiceImplTest {
                 .clothesList(getCoordinateClothesCreateRequests(updateClothesList))
                 .build();
         // when
-        Coordinate updatedCoordinate = coordinateService.updateCoordinate(coordinate.getCoordinateId(), updateRequest);
+        Coordinate updatedCoordinate = coordinateService.updateCoordinate(coordinate.getCoordinateId(), null, updateRequest);
         Integer totalCoordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate).size();
 
         // then
