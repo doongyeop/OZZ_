@@ -8,7 +8,8 @@ public enum PropertySelector {
     SEASON(Season.class),
     SIZE(Size.class),
     STYLE(Style.class),
-    TEXTURE(Texture.class);
+    TEXTURE(Texture.class),
+    PATTERN(Pattern.class);
 
     private final Class<? extends Property> propertyClass;
 

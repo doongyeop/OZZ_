@@ -8,7 +8,6 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.ClothesRepository;
-import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +34,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<Clothes> getClothesOfUser(Long userId, org.springframework.data.domain.Pageable pageable) {
+    public Slice<Clothes> getClothesOfUser(Long userId, Pageable pageable) {
         return clothesRepository.findByUserId(userId,pageable);
     }
 
@@ -76,6 +75,7 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changeTexture(toBits(request.textureList()));
         clothes.changeSeason(toBits(request.seasonList()));
         clothes.changeStyle(toBits(request.styleList()));
+        clothes.changePattern(toBits(request.patternList()));
         return clothes;
     }
 
