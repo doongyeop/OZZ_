@@ -10,6 +10,8 @@ public class EnumBitwiseConverter {
     }
 
     public static <E extends Enum<E>> Integer toBits(List<E> enums){
+        if(enums == null) return null;
+
         int value = 0;
         for (E enumInstance : enums) {
             value |= toBit(enumInstance);
