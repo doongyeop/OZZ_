@@ -3,7 +3,7 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Color {
+public enum Color implements ColorProperty{
     BLACK("블랙", "#000000"),
     KHAKI("카키", "#F0E68C"),
     WHITE("화이트", "#FFFFFF"),
@@ -31,5 +31,20 @@ public enum Color {
     Color(String displayName, String colorCode) {
         this.displayName = displayName;
         this.colorCode = colorCode;
+    }
+
+    @Override
+    public String getCode() {
+        return this.name();
+    }
+
+    @Override
+    public String getName() {
+        return this.displayName;
+    }
+
+    @Override
+    public String getColorCode() {
+        return this.colorCode;
     }
 }
