@@ -3,14 +3,11 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Fit {
-    OVERSIZE("오버핏"),
-    LARGE("커요"),
-    SLIGHTLY_LARGE("조금 커요"),
-    FIT("딱 맞아요"),
-    SLIGHTLY_SMALL("조금 작아요"),
-    SMALL("작아요"),
-    VERY_SMALL("엄청 작아요");
+public enum Fit implements Property {
+    OVERFIT("오버핏"),
+    SEMI_OVERFIT("세미오버핏"),
+    REGULAR_FIT("레귤러핏"),
+    SLIM_FIT("슬림핏");
 
     private final String displayName;
 
@@ -18,7 +15,13 @@ public enum Fit {
         this.displayName = displayName;
     }
 
-    public Byte toByte(){
-        return (byte) ordinal();
+    @Override
+    public String getCode() {
+        return this.name();
+    }
+
+    @Override
+    public String getName() {
+        return this.displayName;
     }
 }
