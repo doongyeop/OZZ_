@@ -8,12 +8,15 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.ClothesRepository;
+import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
+import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,6 +28,7 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
     private final CategoryService categoryService;
+    private final FileClient fileClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,10 +49,12 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
-    public Long saveClothes(Long userId, ClothesCreateRequest request) {
+    public Long saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
         // TODO : 이미지 파일 저장 후 id 값 가져오기
-        Long imageFileId = 1L;
+        System.out.println(imageFile);
+        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        Long imageFileId = fileInfo.fileId();
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId)).getClothesId();
     }
 

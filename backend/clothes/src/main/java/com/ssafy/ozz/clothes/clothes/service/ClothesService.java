@@ -7,6 +7,7 @@ import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface ClothesService {
 
     Slice<Clothes> getClothesOfUser(Long userId, SearchCondition condition, Pageable pageable);
 
-    Long saveClothes(Long userId, ClothesCreateRequest request);
+    Long saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
 
     Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable);
 

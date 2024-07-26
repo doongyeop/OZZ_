@@ -17,6 +17,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,12 +31,12 @@ public class ClothesController {
 
     @PostMapping
     @Operation(summary = "새 옷 추가", description = "데이터베이스에 새 옷을 추가합니다.")
-    public ResponseEntity<Long> addClothes(@RequestBody ClothesCreateRequest request) {
+    public ResponseEntity<Long> addClothes(@RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
 //        Long userId = (Long) authentication.getPrincipal();
         // TODO : 실제 유저 번호 받아오기
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(clothesService.saveClothes(userId, request));
+                .body(clothesService.saveClothes(userId, imageFile, request));
     }
 
     @GetMapping("/{clothesId}")
