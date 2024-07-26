@@ -1,7 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.dto;
 
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 
