@@ -5,6 +5,9 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.ColorResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.PropertyResponse;
+import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +17,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,5 +66,18 @@ public class ClothesController {
     public ResponseEntity<Void> deleteClothes(@PathVariable Long clothesId) {
         clothesService.deleteClothes(clothesId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/properties/colors")
+    @Operation(summary = "색상 목록 정보 조회", description = "색상 목록 정보를 조회합니다.")
+    public ResponseEntity<List<ColorResponse>> getColorList() {
+        return ResponseEntity.ok().body(Arrays.stream(Color.values()).map(ColorResponse::new).toList());
+    }
+
+    @GetMapping("/properties")
+    @Operation(summary = "옷 속성 목록 정보 조회", description = "옷 속성 목록 정보를 조회합니다. [FIT, SEASON, SIZE, STYLE, TEXTURE] 중 택1")
+    public ResponseEntity<List<PropertyResponse>> getPropertyList(@RequestParam("property") PropertySelector property) {
+        return ResponseEntity.ok()
+                .body(Arrays.stream(property.getPropertyClass().getEnumConstants()).map(PropertyResponse::new).toList());
     }
 }

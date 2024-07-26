@@ -7,6 +7,7 @@ import com.ssafy.ozz.clothes.clothes.properties.Size;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -37,7 +38,7 @@ public class Clothes {
     private String brand;
 
     @Column
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
 
     @Column(length = 100)
     private String purchaseSite;
@@ -94,7 +95,7 @@ public class Clothes {
         if(brand != null) this.brand = brand;
     }
 
-    public void changePurchaseDate(LocalDateTime purchaseDate) {
+    public void changePurchaseDate(LocalDate purchaseDate) {
         if(purchaseDate != null) this.purchaseDate = purchaseDate;
     }
 
@@ -130,7 +131,7 @@ public class Clothes {
         clothes.fit = Fit.values()[RANDOM.nextInt(Fit.values().length)]; // Random enum value
         clothes.memo = "Memo" + RANDOM.nextInt(1000); // Random String
         clothes.brand = "Brand" + RANDOM.nextInt(1000); // Random String
-        clothes.purchaseDate = LocalDateTime.now().minusDays(RANDOM.nextInt(365)); // Random past date
+        clothes.purchaseDate = LocalDate.now().minusDays(RANDOM.nextInt(365)); // Random past date
         clothes.purchaseSite = "Site" + RANDOM.nextInt(1000); // Random String
         clothes.createdDate = LocalDateTime.now(); // Current date-time
         clothes.color = RANDOM.nextInt(256); // Random integer (8-bit)

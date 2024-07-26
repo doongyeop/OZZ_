@@ -12,7 +12,7 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 public record CoordinateCreateRequest (
     String name,
     List<Style> styleList,
-    List<CoordinateClothesCreateRequest> clothes
+    List<CoordinateClothesCreateRequest> clothesList
 ){
     public Coordinate toEntity(Long userId, Long imageFileId){
         return Coordinate.builder()
