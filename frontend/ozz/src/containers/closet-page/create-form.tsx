@@ -16,25 +16,108 @@ import StyleModal from '@/app/@modal/style/page'
 import PatternModal from '@/app/@modal/pattern/page'
 import MemoModal from '@/app/@modal/memo/page'
 
+const colorMap: { [key: string]: string } = {
+  흰색: 'WHITE',
+  검정: 'BLACK',
+  회색: 'GRAY',
+  빨강: 'RED',
+  분홍: 'PINK',
+  주황: 'ORANGE',
+  베이지: 'BEIGE',
+  노랑: 'YELLOW',
+  갈색: 'BROWN',
+  초록: 'GREEN',
+  카키: 'KHAKI',
+  민트: 'MINT',
+  파랑: 'BLUE',
+  남색: 'NAVY',
+  하늘: 'SKY',
+  보라: 'PURPLE',
+  연보라: 'LAVENDER',
+  와인: 'WINE',
+  네온: 'NEON',
+  골드: 'GOLD',
+}
+
+const textureMap: { [key: string]: string } = {
+  무지: 'PLAIN',
+  줄무늬: 'STRIPED',
+  지그재그: 'ZIGZAG',
+  호피: 'LEOPARD',
+  지브라: 'ZEBRA',
+  아가일: 'ARGYLE',
+  도트: 'DOT',
+  페이즐리: 'PAISLEY',
+  카모플라쥬: 'CAMOUFLAGE',
+  플로럴: 'FLORAL',
+  레터링: 'LETTERING',
+  그래픽: 'GRAPHIC',
+  해골: 'SKULL',
+  타이다이: 'TIE_DYE',
+  깅엄: 'GINGHAM',
+  그라데이션: 'GRADATION',
+  체크: 'CHECK',
+  하운즈투스: 'HOUNDSTOOTH',
+}
+
+const seasonMap: { [key: string]: string } = {
+  봄: 'SPRING',
+  여름: 'SUMMER',
+  가을: 'AUTUMN',
+  겨울: 'WINTER',
+}
+
+const styleMap: { [key: string]: string } = {
+  캐주얼: 'CASUAL',
+  포멀: 'FORMAL',
+  스트릿: 'STREET',
+  스포츠: 'SPORTS',
+  빈티지: 'VINTAGE',
+}
+
+const fitMap: { [key: string]: string } = {
+  오버핏: 'OVERSIZE',
+  세이오버핏: 'SEMIOVER',
+  레귤러핏: 'REGULAR',
+  슬림핏: 'SLIM',
+}
+
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
   const [openModal, setOpenModal] = useState<string | null>(null)
+  const [name, setName] = useState<string>('')
   const [brandName, setBrandName] = useState<string>('')
-  const [categoryName, setCategoryName] = useState<string>('')
-  const [purchaseDate, setPurchaseDate] = useState<string>('')
-  const [purchaseSite, setPurchaseSite] = useState<string>('')
-  const [season, setSeason] = useState<string[]>([])
-  const [size, setSize] = useState<string>()
-  const [fit, setFit] = useState<string>()
+  const [categoryName, setCategoryName] = useState<string | null>('')
+  const [purchaseDate, setPurchaseDate] = useState<string | null>('')
+  const [purchaseSite, setPurchaseSite] = useState<string | null>('')
+  const [season, setSeason] = useState<string[] | null>([])
+  const [size, setSize] = useState<string | null>()
+  const [fit, setFit] = useState<string | null>('')
   const [texture, setTexture] = useState<string[]>([])
   const [color, setColor] = useState<{ name: string; code: string } | null>(
     null,
   )
-  const [style, setStyle] = useState<string[]>([])
+  const [style, setStyle] = useState<string[] | null>([])
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
     null,
   )
-  const [memo, setMemo] = useState<string>('')
+  const [memo, setMemo] = useState<string | null>('')
+
+  // 이미지 관련 상태
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const closeModal = () => setOpenModal(null)
 
@@ -43,7 +126,8 @@ export default function Form() {
       label: '브랜드',
       path: 'brand',
       component: BrandModal,
-      value: brandName,
+      value:
+        brandName.length > 10 ? `${brandName.substring(0, 10)}...` : brandName,
       setValue: setBrandName,
     },
     {
@@ -92,7 +176,10 @@ export default function Form() {
       label: '소재',
       path: 'texture',
       component: TextureModal,
-      value: texture.join(', '),
+      value:
+        texture.join(', ').length > 10
+          ? `${texture.join(', ')}...`
+          : texture.join(', '),
       setValue: setTexture,
     },
     {
@@ -106,7 +193,10 @@ export default function Form() {
       label: '스타일',
       path: 'style',
       component: StyleModal,
-      value: style.join(', '),
+      value:
+        style.join(', ').length > 10
+          ? `${style.join(', ')}...`
+          : style.join(', '),
       setValue: setStyle,
     },
     {
@@ -127,24 +217,40 @@ export default function Form() {
 
   return (
     <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
-      <form action="">
+      <form onSubmit={handleSubmit}>
         <div className="flex justify-center mb-3">
-          <input type="file" name="image" id="image" className="sr-only" />
+          <input
+            type="file"
+            name="image"
+            id="image"
+            className="sr-only"
+            onChange={handleImageChange}
+          />
           <label
             htmlFor="image"
-            className="relative flex min-h-[300px] min-w-[300px] items-center justify-center rounded-lg border border-secondary p-12 text-center"
+            className={`relative flex min-h-[300px] min-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
           >
-            <div>
+            {imagePreview ? (
               <Image
-                src={CameraIcon}
-                alt="camera"
-                width={100}
-                className="opacity-50"
+                src={imagePreview}
+                alt="Preview"
+                width={300}
+                height={300}
+                className="p-6"
               />
-              <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
-                옷 이미지 등록
-              </span>
-            </div>
+            ) : (
+              <div>
+                <Image
+                  src={CameraIcon}
+                  alt="camera"
+                  width={100}
+                  className="opacity-50"
+                />
+                <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
+                  옷 이미지 등록
+                </span>
+              </div>
+            )}
           </label>
         </div>
         <div className="bg-secondary p-5 max-w-[300px] rounded-lg">
@@ -153,8 +259,10 @@ export default function Form() {
               type="text"
               id="name"
               name="name"
+              value={name}
               placeholder="이름 입력"
               autoComplete="off"
+              onChange={(e) => setName(e.target.value)}
               className="flex-1 py-2 text-center bg-secondary font-extrabold text-lg
                     text-primary-400 placeholder:text-gray-light outline-none"
             />
@@ -178,12 +286,18 @@ export default function Form() {
                             className="inline-block w-5 h-5 rounded-full mr-1.5"
                             style={{ backgroundColor: color.code }}
                           ></span>
-                          <span className="text-primary-400 mr-2">
+                          <span
+                            className="text-primary-400 mr-2"
+                            onClick={() => setOpenModal(item.path)}
+                          >
                             {color.name}
                           </span>
                         </>
                       ) : (
-                        <span className="text-primary-400 mr-2">
+                        <span
+                          className="text-primary-400 mr-2"
+                          onClick={() => setOpenModal(item.path)}
+                        >
                           {item.value}
                         </span>
                       )}
@@ -194,7 +308,7 @@ export default function Form() {
                     className=""
                     type="button"
                   >
-                    {/* <Image src={PencilIcon} alt="pencil" width={20} /> */}+
+                    +
                   </button>
                 </div>
               </div>
@@ -202,7 +316,10 @@ export default function Form() {
           </div>
 
           <div className="flex items-center justify-center align-middle">
-            <button className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold">
+            <button
+              type="submit"
+              className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
+            >
               등록하기
             </button>
           </div>
