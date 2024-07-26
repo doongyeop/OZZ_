@@ -14,6 +14,7 @@ import TextureModal from '@/app/@modal/texture/page'
 import ColorModal from '@/app/@modal/color/page'
 import StyleModal from '@/app/@modal/style/page'
 import PatternModal from '@/app/@modal/pattern/page'
+import MemoModal from '@/app/@modal/memo/page'
 
 // export default function Form({clothes} : {clothes: ClothesField}) {
 export default function Form() {
@@ -33,6 +34,7 @@ export default function Form() {
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
     null,
   )
+  const [memo, setMemo] = useState<string>('')
 
   const closeModal = () => setOpenModal(null)
 
@@ -108,13 +110,19 @@ export default function Form() {
       setValue: setStyle,
     },
     {
-      label: '패턴', // Add this object
+      label: '패턴',
       path: 'pattern',
       component: PatternModal,
       value: pattern ? pattern.name : '',
       setValue: setPattern,
     },
-    { label: '메모', path: 'memo' },
+    {
+      label: '메모',
+      path: 'memo',
+      component: MemoModal,
+      value: memo.length > 10 ? `${memo.substring(0, 10)}...` : memo,
+      setValue: setMemo,
+    },
   ]
 
   return (
