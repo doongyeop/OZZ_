@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Fit implements Property {
-    OVERFIT("오버핏"),
-    SEMI_OVERFIT("세미오버핏"),
+    OVER_FIT("오버핏"),
+    SEMI_OVER_FIT("세미오버핏"),
     REGULAR_FIT("레귤러핏"),
     SLIM_FIT("슬림핏");
 
