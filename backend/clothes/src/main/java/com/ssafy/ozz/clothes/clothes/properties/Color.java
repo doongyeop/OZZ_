@@ -3,8 +3,7 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Color {
-
+public enum Color implements ColorProperty{
     WHITE("흰색", "#FFFFFF"),
     BLACK("검정", "#000000"),
     GRAY("회색", "#E7E7E7"),
