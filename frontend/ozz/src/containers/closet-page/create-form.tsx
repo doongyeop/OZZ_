@@ -208,7 +208,7 @@ export default function Form() {
       label: '계절감',
       path: 'season',
       component: SeasonModal,
-      value: season.join(', '),
+      value: season ? season.join(', ') : '',
       setValue: setSeason,
     },
     {
@@ -246,10 +246,11 @@ export default function Form() {
       label: '스타일',
       path: 'style',
       component: StyleModal,
-      value:
-        style.join(', ').length > 10
+      value: style
+        ? style.join(', ').length > 10
           ? `${style.join(', ')}...`
-          : style.join(', '),
+          : style.join(', ')
+        : '',
       setValue: setStyle,
     },
     {
@@ -263,7 +264,11 @@ export default function Form() {
       label: '메모',
       path: 'memo',
       component: MemoModal,
-      value: memo.length > 10 ? `${memo.substring(0, 10)}...` : memo,
+      value: memo
+        ? memo.length > 10
+          ? `${memo.substring(0, 10)}...`
+          : memo
+        : '',
       setValue: setMemo,
     },
   ]
