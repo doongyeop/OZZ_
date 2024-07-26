@@ -3,7 +3,7 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Style {
+public enum Style implements Property {
     CASUAL("캐주얼"),
     CLASSIC("클래식"),
     MANNISH("매니시"),
@@ -35,5 +35,15 @@ public enum Style {
 
     Style(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public String getCode() {
+        return this.name();
+    }
+
+    @Override
+    public String getName() {
+        return this.displayName;
     }
 }

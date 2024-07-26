@@ -3,7 +3,7 @@ package com.ssafy.ozz.clothes.clothes.properties;
 import lombok.Getter;
 
 @Getter
-public enum Fit {
+public enum Fit implements Property {
     OVERSIZE("오버핏"),
     LARGE("커요"),
     SLIGHTLY_LARGE("조금 커요"),
@@ -18,7 +18,13 @@ public enum Fit {
         this.displayName = displayName;
     }
 
-    public Byte toByte(){
-        return (byte) ordinal();
+    @Override
+    public String getCode() {
+        return this.name();
+    }
+
+    @Override
+    public String getName() {
+        return this.displayName;
     }
 }
