@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.ssafy.ozz.fileserver.global.util.FileUtil.getFileExt;
+
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
@@ -27,14 +29,13 @@ public class FileServiceImpl implements FileService {
     public FileInfoResponse saveFile(MultipartFile file) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String storedFileName = UUID.randomUUID()+ "." + originalFileName;
-        String mimeType = file.getContentType();
 
-        //MIMETYPE 체크
-        if (!FileUtil.isImageFile(mimeType)) {
+        if (!FileUtil.isImageFile(originalFileName)) {
             throw new UnsupportedFormatException();
         }
+        String ext = getFileExt(originalFileName);
         Files fileEntity = Files.builder()
-                .type(mimeType)
+                .type(ext)
                 .name(originalFileName)
                 .path("/"+storedFileName).build();
         fileRepository.save(fileEntity);
