@@ -19,7 +19,7 @@ public interface CoordinateService {
 
     Slice<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition, Pageable pageable);
 
-    Coordinate updateCoordinate(Long coordinateId, CoordinateUpdateRequest request);
+    Coordinate updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request);
 
     void deleteCoordinate(Long coordinateId);
 }

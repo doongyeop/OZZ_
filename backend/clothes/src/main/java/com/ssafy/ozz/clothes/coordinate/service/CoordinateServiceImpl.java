@@ -59,7 +59,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     }
 
     @Override
-    public Coordinate updateCoordinate(Long coordinateId, CoordinateUpdateRequest request) {
+    public Coordinate updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request) {
         Coordinate coordinate = getCoordinate(coordinateId);
         coordinate.updateName(request.name());
         coordinate.updateStyle(request.styleList());
