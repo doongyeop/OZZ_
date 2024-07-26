@@ -11,14 +11,14 @@ import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.CoordinateRepository;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -26,14 +26,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-//@Rollback(value = false)
 @ActiveProfiles("test")
 class CoordinateServiceImplTest {
     @Autowired
     private CoordinateService coordinateService;
+
+    @Autowired
+    private CoordinateRepository coordinateRepository;
 
     @Autowired
     private ClothesRepository clothesRepository;
@@ -50,6 +54,10 @@ class CoordinateServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        coordinateClothesRepository.deleteAll();
+        clothesRepository.deleteAll();
+        coordinateRepository.deleteAll();
+
         // 상위 카테고리별로 1개씩 옷 생성
         categoryHighList = categoryService.getAllCategoryHigh();
     }
@@ -66,9 +74,9 @@ class CoordinateServiceImplTest {
 
         // then
         List<CoordinateClothes> coordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate);
-        Assertions.assertThat(coordinateClothes.size()).isEqualTo(clothesList.size());
-        Assertions.assertThat(coordinate.getName()).isEqualTo(name);
-        Assertions.assertThat(coordinate.getStyle()).isEqualTo(toBits(styleList));
+        assertThat(coordinateClothes.size()).isEqualTo(clothesList.size());
+        assertThat(coordinate.getName()).isEqualTo(name);
+        assertThat(coordinate.getStyle()).isEqualTo(toBits(styleList));
     }
 
     @Test
@@ -84,7 +92,7 @@ class CoordinateServiceImplTest {
         Coordinate coordinate = coordinateService.getCoordinate(coordinateId);
 
         // then
-        Assertions.assertThat(coordinate.getCoordinateId()).isEqualTo(coordinateId);
+        assertThat(coordinate.getCoordinateId()).isEqualTo(coordinateId);
     }
 
     @Test
@@ -111,7 +119,7 @@ class CoordinateServiceImplTest {
         List<Coordinate> coordinateList = coordinateService.getCoordinatesOfUser(userId, condition);
 
         // then
-        Assertions.assertThat(coordinateList.size()).isEqualTo(2);
+        assertThat(coordinateList.size()).isEqualTo(2);
     }
 
     @Test
@@ -138,14 +146,26 @@ class CoordinateServiceImplTest {
         Integer totalCoordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate).size();
 
         // then
-        Assertions.assertThat(updatedCoordinate.getName()).isEqualTo(updateRequest.name());
-        Assertions.assertThat(updatedCoordinate.getStyle()).isEqualTo(toBits(updateRequest.styleList()));
-        Assertions.assertThat(updatedCoordinate.getCoordinateClothesList().size()).isEqualTo(totalCoordinateClothes);
+        assertThat(updatedCoordinate.getName()).isEqualTo(updateRequest.name());
+        assertThat(updatedCoordinate.getStyle()).isEqualTo(toBits(updateRequest.styleList()));
+        assertThat(updatedCoordinate.getCoordinateClothesList().size()).isEqualTo(totalCoordinateClothes);
 //        System.out.println(totalCoordinateClothes);
     }
 
     @Test
     void deleteCoordinate() {
+        // given
+        String name = "캐주얼 코디";
+        List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
+        List<Clothes> originClothesList = saveAndGetClothesList();
+        CoordinateCreateRequest createRequest = getCoordinateCreateRequest(name, styleList, originClothesList);
+        Coordinate coordinate = coordinateService.createCoordinate(userId, null, createRequest);
+
+        // when
+        coordinateService.deleteCoordinate(coordinate.getCoordinateId());
+
+        // then
+        assertThatThrownBy(()->coordinateService.getCoordinate(coordinate.getCoordinateId())).isInstanceOf(CoordinateNotFoundException.class);
     }
 
     private CoordinateCreateRequest getCoordinateCreateRequest(String name, List<Style> styleList, List<Clothes> clothesList) {
