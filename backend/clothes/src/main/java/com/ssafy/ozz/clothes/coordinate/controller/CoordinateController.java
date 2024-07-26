@@ -43,4 +43,10 @@ public class CoordinateController {
     public ResponseEntity<CoordinateResponse> updateCoordinate(@PathVariable final Long coordinateId, @RequestPart final MultipartFile imageFile, @RequestPart final CoordinateUpdateRequest request) {
         return ResponseEntity.ok(new CoordinateResponse(coordinateService.updateCoordinate(coordinateId,imageFile,request)));
     }
+
+    @DeleteMapping("/{coordinateId}")
+    public ResponseEntity<Void> deleteCoordinate(@PathVariable final Long coordinateId) {
+        coordinateService.deleteCoordinate(coordinateId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
