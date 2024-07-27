@@ -15,6 +15,13 @@ import ColorModal from '@/app/@modal/color/page'
 import StyleModal from '@/app/@modal/style/page'
 import PatternModal from '@/app/@modal/pattern/page'
 import MemoModal from '@/app/@modal/memo/page'
+import { ClothingData } from '@/types/clothing'
+
+interface ClothingFormProps {
+  initialData?: ClothingData
+  onSubmit: (data: any, imageFile: File | null) => void
+  submitButtonText: string
+}
 
 const colorMap: { [key: string]: string } = {
   흰색: 'WHITE',
@@ -82,8 +89,11 @@ const fitMap: { [key: string]: string } = {
   슬림핏: 'SLIM',
 }
 
-// export default function Form({clothes} : {clothes: ClothesField}) {
-export default function Form() {
+export const ClothingForm: React.FC<ClothingFormProps> = ({
+  initialData,
+  onSubmit,
+  submitButtonText,
+}) => {
   const [openModal, setOpenModal] = useState<string | null>(null)
   const [name, setName] = useState<string>('')
   const [brandName, setBrandName] = useState<string>('')
@@ -138,6 +148,7 @@ export default function Form() {
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
+
       colorList: color ? [colorMap[color.name]] : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
@@ -151,6 +162,8 @@ export default function Form() {
       'data',
       new Blob([JSON.stringify(jsonData)], { type: 'application/json' }),
     )
+
+    onSubmit(formData)
 
     console.log('옷 등록할게요 ><')
     for (const x of formData.entries()) {
@@ -325,7 +338,6 @@ export default function Form() {
                     text-primary-400 placeholder:text-gray-light outline-none"
             />
           </div>
-
           {/* Form */}
           <div className="w-full max-w-md text-gray-light rounded-lg shadow-md space-y-2 mb-4">
             {modalItems.map((item, index) => (
@@ -372,17 +384,15 @@ export default function Form() {
               </div>
             ))}
           </div>
-
           <div className="flex items-center justify-center align-middle">
             <button
               type="submit"
               className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
             >
-              등록하기
+              {submitButtonText}
             </button>
           </div>
-
-          {/* Modals */}
+          z {/* Modals */}
           {modalItems.map(
             ({ path, component: ModalComponent, setValue }) =>
               openModal === path && (
