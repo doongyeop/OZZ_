@@ -19,10 +19,10 @@ spring:
     static-path-pattern: /uploads/**
   web:
     resources:
-      static-locations: file:${file.upload-dir}
+      static-locations: file:${FILE_UPLOAD_DIR}
 
 file:
-  upload-dir: src/main/resources/static/uploads/
+  upload-dir: ${FILE_UPLOAD_DIR}
 
 eureka:
   client:

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PW}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ozz}
+    username: ${DB_USER:root}
+    password: ${DB_PW:1308}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -15,15 +15,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
       location: /tmp
-  mvc:
-    static-path-pattern: /uploads/**
-  web:
-    resources:
-      static-locations: file:${file.upload-dir}
 
 file:
-  upload-dir: src/main/resources/static/uploads/
-
+  upload-dir: ${FILE_UPLOAD_DIR:/data/uploads}
 eureka:
   client:
     fetch-registry: true

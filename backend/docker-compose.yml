@@ -41,13 +41,16 @@ services:
   ozz-file:
     build: ./file-server
     ports:
-      - "8082:8082"
+      - "9000:9000"
+    volumes:
+      - file-data:/data/uploads
     environment:
       SPRING_PROFILES_ACTIVE : dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: root
       DB_PW: 1308
+      FILE_UPLOAD_DIR: /data/uploads
     networks:
       - spring-cloud-network
     depends_on:
@@ -69,6 +72,7 @@ services:
 
 volumes:
   mysql-data:
+  file-data:
 
 networks:
   spring-cloud-network:
