@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
 
         String ext = getFileExt(originalFileName);
         Files fileEntity = Files.builder()
-                .type(ext)
+                .type("image/"+ext)
                 .name(originalFileName)
                 .path(storedFileName).build();
         fileRepository.save(fileEntity);
@@ -78,7 +78,7 @@ public class FileServiceImpl implements FileService {
         file.transferTo(newFile.toPath());
 
         String ext = getFileExt(originalFileName);
-        oldFileEntity.setType(ext);
+        oldFileEntity.setType("image/"+ext);
         oldFileEntity.setName(originalFileName);
         oldFileEntity.setPath(storedFileName);
 
