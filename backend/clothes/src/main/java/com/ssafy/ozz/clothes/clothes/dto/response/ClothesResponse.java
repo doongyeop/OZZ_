@@ -22,6 +22,7 @@ public record ClothesResponse(
         List<Texture> textureList,
         List<Season> seasonList,
         List<Style> styleList,
+        List<Pattern> patternList,
         CategoryLowResponse categoryLow
 ) {
     public ClothesResponse(Clothes clothes) {
@@ -37,6 +38,7 @@ public record ClothesResponse(
                 EnumBitwiseConverter.toEnums(Texture.class, clothes.getTexture()),
                 EnumBitwiseConverter.toEnums(Season.class, clothes.getSeason()),
                 EnumBitwiseConverter.toEnums(Style.class, clothes.getStyle()),
+                EnumBitwiseConverter.toEnums(Pattern.class, clothes.getPattern()),
                 new CategoryLowResponse(clothes.getCategoryLow())
         );
     }
