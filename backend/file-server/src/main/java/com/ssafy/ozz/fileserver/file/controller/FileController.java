@@ -1,10 +1,19 @@
 package com.ssafy.ozz.fileserver.file.controller;
 
 import com.ssafy.ozz.fileserver.file.service.FileService;
+import com.ssafy.ozz.fileserver.global.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 @RestController
@@ -27,5 +36,22 @@ public class FileController {
     @PutMapping(path="/{fileId}",consumes = "multipart/form-data")
     public ResponseEntity<?> update(@PathVariable("fileId")long fileId, @RequestParam("file")MultipartFile file) throws Exception {
         return ResponseEntity.ok().body(fileService.updateFile(fileId, file));
+    }
+
+    @GetMapping("/download/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        Resource resource = fileService.loadFileAsResource(fileName);
+        if (resource.exists() || resource.isReadable()) {
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+
+            String contentType = "image/" + FileUtil.getFileExt(fileName);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"")
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
