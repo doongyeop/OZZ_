@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -37,12 +38,6 @@ dependencies {
 
 	// 쿼리 파라미터 로그
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0' // spring에 버전 정보가 없기에 직접 버전 입력해야함
-
-	// SLF4J API
-	implementation 'org.slf4j:slf4j-api:1.7.32'
-
-	// Logback Classic
-	implementation 'ch.qos.logback:logback-classic:1.2.6'
 
 	//==QueryDsl==//
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
