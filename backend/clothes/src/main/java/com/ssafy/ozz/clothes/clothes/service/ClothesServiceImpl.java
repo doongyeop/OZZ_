@@ -102,6 +102,15 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
+    public ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile) {
+        Clothes clothes = updateClothes(clothesId, request);
+        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        clothes.updateImageFile(fileInfo.fileId());
+
+        return new ClothesWithFileResponse(clothes, fileInfo);
+    }
+
+    @Override
     public void deleteClothes(Long clothesId) {
         clothesRepository.deleteById(clothesId);
     }

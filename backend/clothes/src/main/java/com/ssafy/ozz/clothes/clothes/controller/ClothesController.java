@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,12 +53,13 @@ public class ClothesController {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
     }
 
-    @PutMapping("/{clothesId}")
+    @PutMapping(value = "/{clothesId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "옷 정보 수정", description = "ID를 통해 특정 옷의 세부 정보를 수정합니다.")
-    public ResponseEntity<ClothesResponse> updateClothes(
+    public ResponseEntity<ClothesWithFileResponse> updateClothes(
             @PathVariable Long clothesId,
-            @RequestBody ClothesUpdateRequest request) {
-        return ResponseEntity.ok().body(new ClothesResponse(clothesService.updateClothes(clothesId, request)));
+            @RequestPart MultipartFile imageFile,
+            @RequestPart ClothesUpdateRequest request) {
+        return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, request, imageFile));
     }
 
     @DeleteMapping("/{clothesId}")
