@@ -57,7 +57,7 @@ public class ClothesController {
     @Operation(summary = "옷 정보 수정", description = "ID를 통해 특정 옷의 세부 정보를 수정합니다.")
     public ResponseEntity<ClothesWithFileResponse> updateClothes(
             @PathVariable Long clothesId,
-            @RequestPart MultipartFile imageFile,
+            @RequestPart(required = false) MultipartFile imageFile,
             @RequestPart ClothesUpdateRequest request) {
         return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, request, imageFile));
     }

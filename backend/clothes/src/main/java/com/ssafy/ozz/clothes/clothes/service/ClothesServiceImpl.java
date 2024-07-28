@@ -104,8 +104,15 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile) {
         Clothes clothes = updateClothes(clothesId, request);
-        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
-        clothes.updateImageFile(fileInfo.fileId());
+        FeignFileInfo fileInfo;
+        if(imageFile != null){
+            // 이미지 파일 수정
+            fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+            clothes.updateImageFile(fileInfo.fileId());
+        }else{
+            // 기존 이미지 파일 불러오기
+            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow();
+        }
 
         return new ClothesWithFileResponse(clothes, fileInfo);
     }
