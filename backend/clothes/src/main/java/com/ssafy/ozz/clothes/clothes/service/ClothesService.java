@@ -1,6 +1,8 @@
 package com.ssafy.ozz.clothes.clothes.service;
 
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
+import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
@@ -9,16 +11,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface ClothesService {
     Clothes getClothes(Long clothesId);
+    ClothesWithFileResponse getClothesWithFile(Long clothesId);
 
-    Slice<Clothes> getClothesOfUser(Long userId, Pageable pageable);
+    Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, SearchCondition condition, Pageable pageable);
 
     Slice<Clothes> getClothesOfUser(Long userId, SearchCondition condition, Pageable pageable);
 
-    Long saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
+    Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
 
     Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable);
 

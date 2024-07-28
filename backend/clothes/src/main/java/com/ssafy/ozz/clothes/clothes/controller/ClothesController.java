@@ -3,10 +3,7 @@ package com.ssafy.ozz.clothes.clothes.controller;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.ColorResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.PropertyResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,22 +34,22 @@ public class ClothesController {
         // TODO : 실제 유저 번호 받아오기
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(clothesService.saveClothes(userId, imageFile, request));
+                .body(clothesService.saveClothes(userId, imageFile, request).getClothesId());
     }
 
     @GetMapping("/{clothesId}")
     @Operation(summary = "옷 상세 조회", description = "ID를 통해 특정 옷의 세부 정보를 조회합니다.")
-    public ResponseEntity<ClothesResponse> getClothes(@PathVariable Long clothesId) {
-        return ResponseEntity.ok(new ClothesResponse(clothesService.getClothes(clothesId)));
+    public ResponseEntity<ClothesWithFileResponse> getClothes(@PathVariable Long clothesId) {
+        return ResponseEntity.ok(clothesService.getClothesWithFile(clothesId));
     }
 
     @GetMapping("/users/{userId}")
     @Operation(summary = "사용자의 옷 조회", description = "특정 사용자의 옷 목록을 슬라이스 형태로 조회합니다.")
-    public ResponseEntity<Slice<ClothesBasicResponse>> getClothesOfUser(
+    public ResponseEntity<Slice<ClothesBasicWithFileResponse>> getClothesOfUser(
             @PathVariable Long userId,
             @ModelAttribute SearchCondition condition,
             Pageable pageable) {
-        return ResponseEntity.ok(clothesService.getClothesOfUser(userId, condition, pageable).map(ClothesBasicResponse::new));
+        return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
     }
 
     @PutMapping("/{clothesId}")
