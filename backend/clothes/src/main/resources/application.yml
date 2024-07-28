@@ -6,3 +6,7 @@ spring:
     name: ozz-clothes
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+
+logging:
+  level:
+    root: info
