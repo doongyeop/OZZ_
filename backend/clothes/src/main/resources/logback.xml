@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%boldMagenta(%d{MM-dd HH:mm:ss}) [%boldYellow(%-5level)] %cyan(%logger{5}.%M) - %msg %n</pattern>
         </encoder>
     </appender>
 
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>app.log</file>
-        <append>true</append>
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>D:/logs/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>D:/logs/backup/error%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%boldMagenta(%d{MM-dd HH:mm:ss}) [%boldYellow(%-5level)] %cyan(%logger{5}.%M) - %msg %n</pattern>
+            <ImmediateFlush>true</ImmediateFlush>
         </encoder>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="console" />
-        <appender-ref ref="file" />
+    <logger name="jdbc" level="OFF" />
+    <logger name="jdbc.sql only" level="OFF" />
+    <logger name="jdbc.sliding" level="OFF" />
+    <logger name="jdbc.audit" level="OFF" />
+    <logger name="jdbc.result" level="OFF" />
+    <logger name="jdbc.result-settable" level="OFF" />
+    <logger name="jdbc.connection" level="OFF" />
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="error" />
     </root>
-
 </configuration>
