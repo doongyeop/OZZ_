@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toEnums;
+
 @Schema(description = "옷 상세정보 DTO")
 public record ClothesResponse(
         String name,
@@ -34,11 +36,11 @@ public record ClothesResponse(
                 clothes.getBrand(),
                 clothes.getPurchaseDate(),
                 clothes.getPurchaseSite(),
-                EnumBitwiseConverter.toEnums(Color.class, clothes.getColor()),
-                EnumBitwiseConverter.toEnums(Texture.class, clothes.getTexture()),
-                EnumBitwiseConverter.toEnums(Season.class, clothes.getSeason()),
-                EnumBitwiseConverter.toEnums(Style.class, clothes.getStyle()),
-                EnumBitwiseConverter.toEnums(Pattern.class, clothes.getPattern()),
+                toEnums(Color.class, clothes.getColor()),
+                toEnums(Texture.class, clothes.getTexture()),
+                toEnums(Season.class, clothes.getSeason()),
+                toEnums(Style.class, clothes.getStyle()),
+                toEnums(Pattern.class, clothes.getPattern()),
                 new CategoryLowResponse(clothes.getCategoryLow())
         );
     }
