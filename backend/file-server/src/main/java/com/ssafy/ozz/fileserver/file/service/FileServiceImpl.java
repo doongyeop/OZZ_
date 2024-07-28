@@ -86,6 +86,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public FileInfoResponse getFile(Long fileId) {
+        return new FileInfoResponse(fileRepository.findById(fileId).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
     public Resource loadFileAsResource(String fileName) {
         Path path = Paths.get(uploadDir).resolve(fileName);
         try {

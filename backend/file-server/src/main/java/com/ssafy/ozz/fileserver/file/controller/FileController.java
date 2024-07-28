@@ -38,6 +38,11 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.updateFile(fileId, file));
     }
 
+    @GetMapping("/{fileId}")
+    public ResponseEntity<?> getFile(@PathVariable("fileId") Long fileId) {
+        return ResponseEntity.ok().body(fileService.getFile(fileId));
+    }
+
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         Resource resource = fileService.loadFileAsResource(fileName);

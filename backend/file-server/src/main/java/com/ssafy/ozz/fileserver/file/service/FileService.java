@@ -14,5 +14,7 @@ public interface FileService {
     FileInfoResponse saveFile(MultipartFile file) throws Exception;
     void deleteFile(long fileId) throws Exception;
     FileInfoResponse updateFile(long fileId, MultipartFile file) throws Exception;
+    FileInfoResponse getFile(Long fileId);
+
     Resource loadFileAsResource(String fileName);
 }
