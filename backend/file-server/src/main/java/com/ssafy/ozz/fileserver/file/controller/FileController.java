@@ -43,13 +43,13 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.getFile(fileId));
     }
 
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
-        Resource resource = fileService.loadFileAsResource(fileName);
+    @GetMapping("/download/{filePath}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filePath) {
+        Resource resource = fileService.loadFileAsResource(filePath);
         if (resource.exists() || resource.isReadable()) {
-            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+            String encodedFileName = URLEncoder.encode(filePath, StandardCharsets.UTF_8).replace("+", "%20");
 
-            String contentType = "image/" + FileUtil.getFileExt(fileName);
+            String contentType = "image/" + FileUtil.getFileExt(filePath);
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
