@@ -126,7 +126,7 @@ export function DatePicker() {
           <Button
             variant={'outline'}
             className={cn(
-              'w-[280px] justify-between text-left font-normal border-primary-400',
+              'w-[360px] justify-between text-left font-normal border-primary-400',
               !selectedDate && 'text-muted-foreground',
             )}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
