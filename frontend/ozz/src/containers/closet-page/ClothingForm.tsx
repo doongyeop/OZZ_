@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import CameraIcon from '../../../public/icons/camera.svg'
 import BrandModal from '@/app/@modal/brand/page'
@@ -19,7 +19,7 @@ import { ClothingData } from '@/types/clothing'
 
 interface ClothingFormProps {
   initialData?: ClothingData
-  onSubmit: (data: any, imageFile: File | null) => void
+  onSubmit: (data: FormData) => void
   submitButtonText: string
 }
 
@@ -95,27 +95,50 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
   submitButtonText,
 }) => {
   const [openModal, setOpenModal] = useState<string | null>(null)
-  const [name, setName] = useState<string>('')
-  const [brandName, setBrandName] = useState<string>('')
-  const [categoryName, setCategoryName] = useState<string | null>('')
-  const [purchaseDate, setPurchaseDate] = useState<string | null>('')
-  const [purchaseSite, setPurchaseSite] = useState<string | null>('')
-  const [season, setSeason] = useState<string[] | null>([])
-  const [size, setSize] = useState<string | null>()
-  const [fit, setFit] = useState<string | null>('')
+
+  const [name, setName] = useState('')
+  const [brandName, setBrandName] = useState('')
+  const [categoryName, setCategoryName] = useState<string | null>(null)
+  const [purchaseDate, setPurchaseDate] = useState<string | null>(null)
+  const [purchaseSite, setPurchaseSite] = useState<string | null>(null)
+  const [season, setSeason] = useState<string[]>([])
+  const [size, setSize] = useState<string | null>(null)
+  const [fit, setFit] = useState<string | null>(null)
   const [texture, setTexture] = useState<string[]>([])
   const [color, setColor] = useState<{ name: string; code: string } | null>(
     null,
   )
-  const [style, setStyle] = useState<string[] | null>([])
+  const [style, setStyle] = useState<string[]>([])
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
     null,
   )
-  const [memo, setMemo] = useState<string | null>('')
+  const [memo, setMemo] = useState<string | null>(null)
 
-  // 이미지 관련 상태
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name || '')
+      setBrandName(initialData.brandName || '')
+      setCategoryName(initialData.categoryName || null)
+      setPurchaseDate(initialData.purchaseDate || null)
+      setPurchaseSite(initialData.purchaseSite || null)
+      setSeason(initialData.season || [])
+      setSize(initialData.size || null)
+      setFit(initialData.fit || null)
+      setTexture(initialData.texture || [])
+      setColor(initialData.color || null)
+      setStyle(initialData.style || [])
+      setPattern(initialData.pattern || null)
+      setMemo(initialData.memo || null)
+
+      // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
+      if (initialData.image) {
+        setImagePreview(URL.createObjectURL(initialData.image))
+      }
+    }
+  }, [initialData])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
