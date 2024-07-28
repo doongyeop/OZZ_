@@ -9,6 +9,7 @@ public enum PropertySelector {
     SIZE(Size.class),
     STYLE(Style.class),
     TEXTURE(Texture.class),
+    COLOR(Color.class),
     PATTERN(Pattern.class);
 
     private final Class<? extends Property> propertyClass;

@@ -4,7 +4,6 @@ import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
-import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
