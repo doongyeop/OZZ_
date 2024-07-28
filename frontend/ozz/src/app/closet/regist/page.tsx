@@ -1,10 +1,21 @@
-import Form from '@/containers/closet-page/create-form'
+import Header from '@/components/Header'
+import { ClothingData } from '@/types/clothing'
+import { createClothing } from '@/services/clothingApi'
+import { ClothingForm } from '@/containers/closet-page/ClothingForm'
 
 export default function Page() {
+  // const handleSubmit = async (data: FormData) => {
+  //   try {
+  //     await createClothing(data)
+  //     // 성공 처리 (예: 알림 표시, 페이지 이동 등)
+  //   } catch (error) {
+  //     // 에러 처리
+  //   }
+  // }
   return (
     <main>
-      <p>옷 등록 페이지</p>
-      <Form />
+      <Header title="나의 옷짱" />
+      <ClothingForm onSubmit={createClothing} submitButtonText="등록하기" />
     </main>
   )
 }
