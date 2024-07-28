@@ -15,7 +15,7 @@ const links = [
 ]
 
 export default function Navbar() {
-  const pathname = usePathname()
+  const path = usePathname().split('/')[1]
 
   return (
     <nav className="fixed bottom-0 inset-x-0 bg-secondary text-gray-dark py-4">
@@ -25,7 +25,9 @@ export default function Navbar() {
             <li key={link.name}>
               <Link
                 href={link.href}
-                className={pathname === link.href ? 'text-primary-400' : ''}
+                className={
+                  path === link.href.split('/')[1] ? 'text-primary-400' : ''
+                }
               >
                 <link.icon size="32" />
               </Link>
