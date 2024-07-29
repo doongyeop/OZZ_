@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { fetchMockClothingList } from '@/services/clothingApi'
 import SearchArea from '@/containers/closet-page/SearchArea'
 import CategorySidebar from '@/components/Button/CategorySidebar'
+import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 
 interface ClosetPageContainerProps {
   isSidebarOpen: boolean
@@ -87,6 +88,7 @@ export default function ClosetPageContainer({
           </Link>
         ))}
       </div>
+      <ClothesRegistButton />
     </div>
   )
 }
