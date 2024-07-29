@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PW}
+    url: jdbc:mysql://localhost:3306/ozz?serverTimezone=UTC
+    username: ssafy
+    password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -11,8 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-  jackson:
-    time-zone: Asia/Seoul
 
   security:
     oauth2:
@@ -23,12 +21,12 @@ spring:
             client-secret: yTFwpt0_aB
             redirect-uri: "http://localhost:8080/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
-            scope: email, profile_image, birthday, birthyear, name, mobile
+            scope: email, profile_image, birthday, birthyear
           kakao:
             client-id: c0033eb7caa88a531ad2b79765bed2c9
             redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
-            scope: account_email, profile_image, birthday, birthyear, name, phone_number
+            scope: account_email, profile_image, birthday, birthyear
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize

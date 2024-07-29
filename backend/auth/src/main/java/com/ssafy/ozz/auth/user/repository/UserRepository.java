@@ -1,10 +1,12 @@
-package com.ssafy.ozz.user.user.repository;
+package com.ssafy.ozz.auth.user.repository;
 
-import com.ssafy.ozz.user.user.domain.User;
+import com.ssafy.ozz.auth.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
+import java.util.Optional;
 
-    User findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
+    Optional<User> findByUserIdFromProvider(String userIdFromProvider);
+    Optional<User> findByNameAndPhoneNumber(String name, String phoneNumber);
 }

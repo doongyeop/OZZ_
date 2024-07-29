@@ -1,10 +1,10 @@
-package com.ssafy.ozz.user.global.filter;
+package com.ssafy.ozz.auth.global.filter;
 
-import com.ssafy.ozz.user.auth.dto.UserDTO;
-import com.ssafy.ozz.user.auth.service.CustomOAuth2User;
-import com.ssafy.ozz.user.auth.service.CustomUserDetails;
-import com.ssafy.ozz.user.global.util.JWTUtil;
-import com.ssafy.ozz.user.user.domain.User;
+import com.ssafy.ozz.auth.auth.dto.UserDTO;
+import com.ssafy.ozz.auth.auth.service.CustomOAuth2User;
+import com.ssafy.ozz.auth.auth.service.CustomUserDetails;
+import com.ssafy.ozz.auth.global.util.JWTUtil;
+import com.ssafy.ozz.auth.user.domain.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -66,7 +66,9 @@ public class JWTFilter extends OncePerRequestFilter {
         String userId = jwtUtil.getUserId(accessToken);
 
         User user = new User();
-        user.setId(Long.parseLong(userId));
+        user.builder()
+                .id(Long.parseLong(userId))
+                .build();
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 

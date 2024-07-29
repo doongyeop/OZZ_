@@ -1,10 +1,10 @@
-package com.ssafy.ozz.user;
+package com.ssafy.ozz.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserApplicationTests {
+class AuthApplicationTests {
 
     @Test
     void contextLoads() {
