@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: ${DB_URL} # jdbc:mysql://localhost:3306/ozz?serverTimezone=Asia/Seoul
+    url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PW}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,12 +23,12 @@ spring:
             client-secret: yTFwpt0_aB
             redirect-uri: "http://localhost:8080/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
-            scope: email, profile_image, birthday, birthyear
+            scope: email, profile_image, birthday, birthyear, name, mobile
           kakao:
             client-id: c0033eb7caa88a531ad2b79765bed2c9
             redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
-            scope: account_email, profile_image, birthday, birthyear
+            scope: account_email, profile_image, birthday, birthyear, name, phone_number
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize

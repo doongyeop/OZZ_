@@ -18,11 +18,17 @@ public class User {
     @Column(name = "users_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 63)
+    @Column(nullable = false, length = 31)
     private String email;
 
-    @Column(nullable = true, length = 15)
+    @Column(unique = true)
     private String nickname;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String phoneNumber;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
@@ -37,9 +43,10 @@ public class User {
     private Long profileFileId;
 
     @Column(nullable = false, length = 7)
-    private String provider;
+    private String provider; // 최초 로그인 프로바이더
 
-    private String username;
+    @Column(name = "pu_id")
+    private String userIdFromProvider; // provider 제공 아이디 providerUserId
 
     @PrePersist // user entity가 저장될 때 현재 날짜로 설정
     protected void onCreate() {

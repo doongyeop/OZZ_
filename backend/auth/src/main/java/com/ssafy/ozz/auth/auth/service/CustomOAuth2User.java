@@ -20,7 +20,9 @@ public class CustomOAuth2User implements OAuth2User {
     public Map<String, Object> getAttributes() {
         return Map.of(
                 "email", userDTO.getEmail(),
-                "birth", userDTO.getBirth()
+                "birth", userDTO.getBirth(),
+                "name", userDTO.getBirth(),
+                "phoneNumber", userDTO.getPhoneNumber()
         );
     }
 
