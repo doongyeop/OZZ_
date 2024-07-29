@@ -1,15 +1,14 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
-import com.ssafy.ozz.clothes.category.domain.CategoryLow;
+import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
-import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+
+import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toEnums;
 
 @Schema(description = "옷 상세정보 DTO")
 public record ClothesResponse(
@@ -18,13 +17,14 @@ public record ClothesResponse(
         Fit fit,
         String memo,
         String brand,
-        LocalDateTime purchaseDate,
+        LocalDate purchaseDate,
         String purchaseSite,
         List<Color> colorList,
         List<Texture> textureList,
         List<Season> seasonList,
         List<Style> styleList,
-        CategoryLow categoryLow
+        List<Pattern> patternList,
+        CategoryLowResponse categoryLow
 ) {
     public ClothesResponse(Clothes clothes) {
         this(
@@ -35,11 +35,12 @@ public record ClothesResponse(
                 clothes.getBrand(),
                 clothes.getPurchaseDate(),
                 clothes.getPurchaseSite(),
-                EnumBitwiseConverter.getEnumsFromInteger(Color.class, clothes.getColor()),
-                EnumBitwiseConverter.getEnumsFromInteger(Texture.class, clothes.getTexture()),
-                EnumBitwiseConverter.getEnumsFromInteger(Season.class, clothes.getSeason()),
-                EnumBitwiseConverter.getEnumsFromInteger(Style.class, clothes.getStyle()),
-                clothes.getCategoryLow()
+                toEnums(Color.class, clothes.getColor()),
+                toEnums(Texture.class, clothes.getTexture()),
+                toEnums(Season.class, clothes.getSeason()),
+                toEnums(Style.class, clothes.getStyle()),
+                toEnums(Pattern.class, clothes.getPattern()),
+                new CategoryLowResponse(clothes.getCategoryLow())
         );
     }
 }

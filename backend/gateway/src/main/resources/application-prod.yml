@@ -1,0 +1,24 @@
+server:
+  port: 8000
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE}
+
+spring:
+  application:
+    name: ozz-gateway
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: file-router
+            uri : lb://OZZ-FILE
+            predicates:
+              - Path=/api/file/**, /uploads/**
+          - id: clothe-router
+            uri: lb://OZZ-CLOTHES
+            predicates:
+              - Path=/api/clothes/**, /api/categories/**, /api/coordinates/**

@@ -8,18 +8,14 @@ import { HiHashtag, HiHome } from 'react-icons/hi'
 
 const links = [
   { name: 'Home', href: '/', icon: HiHome },
-  {
-    name: 'closet',
-    href: '/closet',
-    icon: BiCloset,
-  },
+  { name: 'closet', href: '/closet', icon: BiCloset },
   { name: 'coordi', href: '/coordi', icon: GiClothes },
   { name: 'community', href: '/community', icon: HiHashtag },
   { name: 'mypage', href: '/mypage', icon: BiSolidUser },
 ]
 
 export default function Navbar() {
-  const pathname = usePathname()
+  const path = usePathname().split('/')[1]
 
   if (pathname.includes('login')) {
     return null
@@ -33,7 +29,9 @@ export default function Navbar() {
             <li key={link.name}>
               <Link
                 href={link.href}
-                className={pathname === link.href ? 'text-primary-400' : ''}
+                className={
+                  path === link.href.split('/')[1] ? 'text-primary-400' : ''
+                }
               >
                 <link.icon size="32" />
               </Link>

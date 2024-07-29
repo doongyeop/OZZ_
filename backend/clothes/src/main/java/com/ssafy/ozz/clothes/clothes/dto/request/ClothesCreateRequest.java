@@ -3,11 +3,12 @@ package com.ssafy.ozz.clothes.clothes.dto.request;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
-import com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+
+import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "옷 생성 요청 DTO")
 public record ClothesCreateRequest(
@@ -16,12 +17,13 @@ public record ClothesCreateRequest(
         Fit fit,
         String memo,
         String brand,
-        LocalDateTime purchaseDate,
+        LocalDate purchaseDate,
         String purchaseSite,
         List<Color> colorList,
         List<Texture> textureList,
         List<Season> seasonList,
         List<Style> styleList,
+        List<Pattern> patternList,
         Long categoryLowId
 ) {
     public Clothes toEntity(CategoryLow categoryLow, Long imageFileId, Long userId) {
@@ -33,10 +35,11 @@ public record ClothesCreateRequest(
                 .brand(brand)
                 .purchaseDate(purchaseDate)
                 .purchaseSite(purchaseSite)
-                .color(EnumBitwiseConverter.toBits(colorList))
-                .texture(EnumBitwiseConverter.toBits(textureList))
-                .style(EnumBitwiseConverter.toBits(styleList))
-                .season(EnumBitwiseConverter.toBits(seasonList))
+                .color(toBits(colorList))
+                .texture(toBits(textureList))
+                .style(toBits(styleList))
+                .season(toBits(seasonList))
+                .pattern(toBits(patternList))
                 .categoryLow(categoryLow)
                 .imageFileId(imageFileId)
                 .userId(userId)
