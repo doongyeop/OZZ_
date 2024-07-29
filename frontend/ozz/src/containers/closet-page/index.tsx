@@ -22,7 +22,11 @@ export default function ClosetPageContainer({
   setIsSidebarOpen,
 }: ClosetPageContainerProps) {
   const [clothingList, setClothingList] = useState<any[]>([])
-  const [selectCategory, setSelectCategory] = useState<string>('')
+  const [filteredClothes, setFilteredClothes] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null,
+  )
 
   useEffect(() => {
     // 실제 API 요청을 여기서 수행하여 옷 데이터를 가져옵니다.
@@ -31,11 +35,28 @@ export default function ClosetPageContainer({
     setClothingList(fetchMockClothingList().content)
   }, [])
 
+  const handleSelectCategory = async (
+    category: string,
+    subcategory: string,
+  ) => {
+    setSelectedCategory(category)
+    setSelectedSubcategory(subcategory)
+    isSidebarOpen = false // Close the sidebar after selecting
+    try {
+      // const clothes = await fetchFilteredClothes(subcategory);
+      // setFilteredClothes(clothes);
+
+      console.log(subcategory, '로 검색')
+    } catch (error) {
+      console.error('Failed to fetch filtered clothes', error)
+    }
+  }
+
   return (
     <div>
       {isSidebarOpen ? (
         <CategorySidebar
-          onSelectCategory={setSelectCategory}
+          onSelectCategory={handleSelectCategory}
           onClose={() => setIsSidebarOpen(false)}
         />
       ) : null}
