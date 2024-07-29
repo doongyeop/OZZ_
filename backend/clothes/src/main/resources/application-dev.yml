@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/ozz}
     username: ${DB_USER:root}
-    password: ${DB_PW:1308}
+    password: ${DB_PW:ssafy}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
