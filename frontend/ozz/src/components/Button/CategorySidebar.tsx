@@ -51,22 +51,21 @@ export default function CategorySidebar({
           {Object.entries(categories).map(([category, subcategories]) => (
             <div key={category} className="mb-2">
               <button
-                className="w-full flex justify-between items-center p-2 text-left text-gray-light"
+                className={`w-full flex justify-center items-center p-2 text-center text-lg ${
+                  expandedCategory === category
+                    ? 'text-primary-400'
+                    : 'text-gray-light'
+                }`}
                 onClick={() => toggleCategory(category)}
               >
                 {category}
-                {expandedCategory === category ? (
-                  <IoChevronUp />
-                ) : (
-                  <IoChevronDown />
-                )}
               </button>
               {expandedCategory === category && (
                 <div className="ml-4">
                   {subcategories.map((subcategory) => (
                     <button
                       key={subcategory}
-                      className="block w-full text-left p-2 text-gray-light"
+                      className="block w-full text-right p-1 text-gray-light hover:text-primary-400"
                       onClick={() => onSelectCategory(category, subcategory)}
                     >
                       {subcategory}
