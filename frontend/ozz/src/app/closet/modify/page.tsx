@@ -49,7 +49,6 @@ export default function ModifyPage({ params }: { params: { id: string } }) {
   if (!initialData) return <div>Loading...</div>
   return (
     <main>
-      <Header title="나의 옷짱" />
       <ClothingForm
         initialData={initialData}
         onSubmit={handleSubmit}

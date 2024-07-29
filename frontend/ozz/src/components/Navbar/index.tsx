@@ -17,10 +17,6 @@ const links = [
 export default function Navbar() {
   const path = usePathname().split('/')[1]
 
-  if (pathname.includes('login')) {
-    return null
-  }
-
   return (
     <nav className="fixed bottom-0 inset-x-0 bg-secondary text-gray-dark py-4">
       <ul className="container mx-auto flex justify-around items-center">
