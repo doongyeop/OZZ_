@@ -4,42 +4,25 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fetchMockClothingList } from '@/services/clothingApi'
+import CategorySidebar from '@/components/Button/CategorySidebar'
 
-// const mockClothingData: ClothingItem[] = [
-//   {
-//     id: '1',
-//     name: 'SPRAY CARTOON GRAPHIC SS WHITE',
-//     purchaseDate: '2024.07.17',
-//     imageUrl: '/images/sample-shirt.png', // 이미지 경로를 실제 이미지로 바꿔야 합니다.
-//   },
-//   // 필요에 따라 더 많은 목업 데이터를 추가합니다.
-//   {
-//     id: '2',
-//     name: 'SPRAY CARTOON GRAPHIC SS WHITE',
-//     purchaseDate: '2024.07.17',
-//     imageUrl: '/images/sample-shirt.png', // 이미지 경로를 실제 이미지로 바꿔야 합니다.
-//   },
-//   {
-//     id: '3',
-//     name: 'SPRAY CARTOON GRAPHIC SS WHITE',
-//     purchaseDate: '2024.07.17',
-//     imageUrl: '/images/sample-shirt.png', // 이미지 경로를 실제 이미지로 바꿔야 합니다.
-//   },
-//   {
-//     id: '4',
-//     name: 'SPRAY CARTOON GRAPHIC SS WHITE',
-//     purchaseDate: '2024.07.17',
-//     imageUrl: '/images/sample-shirt.png', // 이미지 경로를 실제 이미지로 바꿔야 합니다.
-//   },
-// ]
+interface ClosetPageContainerProps {
+  isSidebarOpen: boolean
+}
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   return date.toISOString().split('T')[0]
 }
 
-export default function ClosetPageContainer() {
+export default function ClosetPageContainer({
+  isSidebarOpen,
+}: ClosetPageContainerProps) {
   const [clothingList, setClothingList] = useState<any[]>([])
+
+  const filteredData = isSidebarOpen
+    ? clothingList.filter((item) => item.category === isSidebarOpen)
+    : clothingList
 
   useEffect(() => {
     // 실제 API 요청을 여기서 수행하여 옷 데이터를 가져옵니다.
@@ -50,6 +33,13 @@ export default function ClosetPageContainer() {
 
   return (
     <>
+      <div
+        className={`closet-page-container ${isSidebarOpen ? 'sidebar-open' : ''}`}
+      >
+        {/* 사이드바와 옷 목록 등 */}
+        {isSidebarOpen && <div className="sidebar">사이드바 내용</div>}
+        <div className="closet-content">{/* 옷 목록 */}</div>
+      </div>
       <div className="flex flex-col justify-start items-center h-96">
         {clothingList.map((item) => (
           <Link
