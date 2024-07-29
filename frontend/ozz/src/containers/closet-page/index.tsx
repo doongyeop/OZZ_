@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fetchMockClothingList } from '@/services/clothingApi'
+import SearchArea from '@/containers/closet-page/SearchArea'
 import CategorySidebar from '@/components/Button/CategorySidebar'
 
 interface ClosetPageContainerProps {
@@ -31,13 +32,14 @@ export default function ClosetPageContainer({
   }, [])
 
   return (
-    <>
+    <div>
       {isSidebarOpen ? (
         <CategorySidebar
           onSelectCategory={setSelectCategory}
           onClose={() => setIsSidebarOpen(false)}
         />
       ) : null}
+      <SearchArea />
       <div className="flex flex-col justify-start items-center h-96">
         {clothingList.map((item) => (
           <Link
@@ -64,6 +66,6 @@ export default function ClosetPageContainer({
           </Link>
         ))}
       </div>
-    </>
+    </div>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Header from '@/components/Header'
-import SearchArea from '@/containers/closet-page/SearchArea'
 import { HeaderButton } from '@/components/Button/HeaderButton'
 import ClosetPageContainer from '@/containers/closet-page'
 
@@ -34,7 +33,6 @@ export default function Closet() {
         leftButton={leftButton}
         rightButton={rightButton}
       />
-      <SearchArea />
       <ClosetPageContainer
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
