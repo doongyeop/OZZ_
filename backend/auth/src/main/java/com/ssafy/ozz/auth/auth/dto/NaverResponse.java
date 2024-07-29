@@ -1,4 +1,4 @@
-package com.ssafy.ozz.user.auth.dto;
+package com.ssafy.ozz.auth.auth.dto;
 
 import java.util.Map;
 

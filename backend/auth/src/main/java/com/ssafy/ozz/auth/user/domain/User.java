@@ -1,17 +1,16 @@
-package com.ssafy.ozz.user.user.domain;
+package com.ssafy.ozz.auth.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "users")
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(toBuilder = true)
+@Getter
 public class User {
 
     @Id

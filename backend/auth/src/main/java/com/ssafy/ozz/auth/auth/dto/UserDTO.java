@@ -1,14 +1,16 @@
-package com.ssafy.ozz.user.auth.dto;
+package com.ssafy.ozz.auth.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
 @Getter
-@Setter
+//@Setter
+@Builder(toBuilder = true)
 public class UserDTO {
 
     private Long id;

@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: ${DB_URL} # jdbc:mysql://localhost:3306/ozz?serverTimezone=Asia/Seoul
-    username: ${DB_USER}
-    password: ${DB_PW}
+    url: jdbc:mysql://localhost:3306/ozz?serverTimezone=UTC
+    username: ssafy
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -10,8 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-  jackson:
-    time-zone: Asia/Seoul
 
   security:
     oauth2:

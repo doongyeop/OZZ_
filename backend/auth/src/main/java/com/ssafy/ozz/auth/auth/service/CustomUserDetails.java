@@ -1,6 +1,6 @@
-package com.ssafy.ozz.user.auth.service;
+package com.ssafy.ozz.auth.auth.service;
 
-import com.ssafy.ozz.user.user.domain.User;
+import com.ssafy.ozz.auth.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +15,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user) {
         this.user = user;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

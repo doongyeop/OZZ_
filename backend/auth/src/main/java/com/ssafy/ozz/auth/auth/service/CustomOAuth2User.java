@@ -1,6 +1,6 @@
-package com.ssafy.ozz.user.auth.service;
+package com.ssafy.ozz.auth.auth.service;
 
-import com.ssafy.ozz.user.auth.dto.UserDTO;
+import com.ssafy.ozz.auth.auth.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
