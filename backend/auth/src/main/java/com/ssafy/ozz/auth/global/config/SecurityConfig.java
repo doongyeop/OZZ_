@@ -77,7 +77,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll() // 루트경로
                         .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/auth/link").authenticated() // 연동 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()); // 로그인한 사용자가 접근 가능
         //세션 설정 : STATELESS
         http
