@@ -1,5 +1,6 @@
 package com.ssafy.ozz.auth.global.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,5 +47,9 @@ public class JWTUtil {
     }
     public Date getExpirationDate(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).build().parseSignedClaims(token).getBody();
     }
 }
