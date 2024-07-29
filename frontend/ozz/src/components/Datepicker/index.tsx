@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { format, addMonths, subMonths, addYears, subYears } from 'date-fns'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Popover,
   PopoverContent,
@@ -124,10 +124,10 @@ export function DatePicker() {
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant={'outline'}
+            variant={'light'}
             className={cn(
               'w-[360px] justify-between text-left font-normal border-primary-400',
-              !selectedDate && 'text-muted-foreground',
+              !selectedDate,
             )}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
           >
