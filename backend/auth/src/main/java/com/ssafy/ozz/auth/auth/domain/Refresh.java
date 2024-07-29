@@ -1,14 +1,15 @@
-package com.ssafy.ozz.user.auth.domain;
+package com.ssafy.ozz.auth.auth.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Getter
-@Setter
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Refresh {
 
     @Id

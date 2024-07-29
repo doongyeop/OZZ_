@@ -4,8 +4,5 @@ server:
 spring:
   application:
     name: ozz-eureka
-
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}

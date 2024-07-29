@@ -1,9 +1,9 @@
-package com.ssafy.ozz.user.global.handler;
+package com.ssafy.ozz.auth.global.handler;
 
-import com.ssafy.ozz.user.auth.domain.Refresh;
-import com.ssafy.ozz.user.auth.repository.RefreshRepository;
-import com.ssafy.ozz.user.auth.service.CustomOAuth2User;
-import com.ssafy.ozz.user.global.util.JWTUtil;
+import com.ssafy.ozz.auth.auth.domain.Refresh;
+import com.ssafy.ozz.auth.auth.repository.RefreshRepository;
+import com.ssafy.ozz.auth.auth.service.CustomOAuth2User;
+import com.ssafy.ozz.auth.global.util.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,10 +38,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("refresh", refresh));
 
         // Refresh 토큰을 데이터베이스에 저장
-        Refresh refreshToken = new Refresh();
-        refreshToken.setUserId(userId);
-        refreshToken.setRefresh(refresh);
-        refreshToken.setExpiration(new Date(System.currentTimeMillis() + 86400000L)); // 24시간 후 만료
+        Refresh refreshToken = Refresh.builder()
+                .userId(userId)
+                .refresh(refresh)
+                .expiration(new Date(System.currentTimeMillis() + 86400000L))
+                .build();
 
         refreshRepository.save(refreshToken);
 

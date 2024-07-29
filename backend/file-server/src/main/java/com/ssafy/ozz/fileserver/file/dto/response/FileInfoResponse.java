@@ -4,7 +4,7 @@ import com.ssafy.ozz.fileserver.file.domain.Files;
 
 public record FileInfoResponse(
         int fileId,
-        String fileDir,
+        String filePath,
         String fileName,
         String fileType
 ){

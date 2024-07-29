@@ -1,6 +1,6 @@
-package com.ssafy.ozz.user.auth.service;
+package com.ssafy.ozz.auth.auth.service;
 
-import com.ssafy.ozz.user.auth.dto.UserDTO;
+import com.ssafy.ozz.auth.auth.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -20,7 +20,9 @@ public class CustomOAuth2User implements OAuth2User {
     public Map<String, Object> getAttributes() {
         return Map.of(
                 "email", userDTO.getEmail(),
-                "birth", userDTO.getBirth()
+                "birth", userDTO.getBirth(),
+                "name", userDTO.getBirth(),
+                "phoneNumber", userDTO.getPhoneNumber()
         );
     }
 

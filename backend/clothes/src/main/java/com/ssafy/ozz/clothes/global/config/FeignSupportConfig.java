@@ -12,11 +12,7 @@ import org.springframework.web.client.RestTemplate;
 public class FeignSupportConfig {
     @Bean
     public Encoder multipartFormEncoder() {
-        return new SpringFormEncoder(new SpringEncoder(new ObjectFactory<HttpMessageConverters>() {
-            @Override
-            public HttpMessageConverters getObject() throws BeansException {
-                return new HttpMessageConverters(new RestTemplate().getMessageConverters());
-            }
-        }));
+        return new SpringFormEncoder(new SpringEncoder(() ->
+                new HttpMessageConverters(new RestTemplate().getMessageConverters())));
     }
 }

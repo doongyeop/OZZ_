@@ -1,9 +1,9 @@
-package com.ssafy.ozz.user.global.config;
+package com.ssafy.ozz.auth.global.config;
 
-import com.ssafy.ozz.user.auth.service.CustomOAuth2UserService;
-import com.ssafy.ozz.user.global.filter.JWTFilter;
-import com.ssafy.ozz.user.global.handler.CustomSuccessHandler;
-import com.ssafy.ozz.user.global.util.JWTUtil;
+import com.ssafy.ozz.auth.auth.service.CustomOAuth2UserService;
+import com.ssafy.ozz.auth.global.filter.JWTFilter;
+import com.ssafy.ozz.auth.global.handler.CustomSuccessHandler;
+import com.ssafy.ozz.auth.global.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,6 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
-
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
@@ -34,7 +33,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // cors : 교차 출처 리소스 공유
+        // cors설정
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -78,6 +77,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll() // 루트경로
                         .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/auth/link").authenticated() // 연동 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()); // 로그인한 사용자가 접근 가능
         //세션 설정 : STATELESS
         http

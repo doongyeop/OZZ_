@@ -1,4 +1,4 @@
-package com.ssafy.ozz.user.global.config;
+package com.ssafy.ozz.auth.global.config;
 
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

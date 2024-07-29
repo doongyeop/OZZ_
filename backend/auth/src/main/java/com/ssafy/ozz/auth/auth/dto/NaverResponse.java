@@ -1,4 +1,4 @@
-package com.ssafy.ozz.user.auth.dto;
+package com.ssafy.ozz.auth.auth.dto;
 
 import java.util.Map;
 
@@ -30,6 +30,11 @@ public class NaverResponse implements OAuth2Response {
     }
 
     @Override
+    public String getPhoneNumber() {
+        return attribute.get("mobile") != null ? attribute.get("mobile").toString() : "010-0000-0000";
+    }
+
+    @Override
     public String getBirthYear() {
         return attribute.get("birthyear") != null ? attribute.get("birthyear").toString() : "2000";
     }
@@ -41,6 +46,6 @@ public class NaverResponse implements OAuth2Response {
 
     @Override
     public String getProfileImageUrl() {
-        return attribute.get("profileImage") != null ? attribute.get("profileImage").toString() : "x";
+        return attribute.get("profile_image") != null ? attribute.get("profile_image").toString() : "x";
     }
 }
