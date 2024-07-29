@@ -1,8 +1,8 @@
 package com.ssafy.ozz.clothes.global.fegin.file.dto;
 
 public record FeignFileInfo(
-        int fileId,
-        String fileDir,
+        Long fileId,
+        String filePath,
         String fileName,
         String fileType
 ){

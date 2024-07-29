@@ -37,9 +37,6 @@ class CoordinateServiceImplTest {
     private CoordinateService coordinateService;
 
     @Autowired
-    private CoordinateRepository coordinateRepository;
-
-    @Autowired
     private ClothesRepository clothesRepository;
 
     @Autowired
@@ -54,10 +51,6 @@ class CoordinateServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        coordinateClothesRepository.deleteAll();
-        clothesRepository.deleteAll();
-        coordinateRepository.deleteAll();
-
         // 상위 카테고리별로 1개씩 옷 생성
         categoryHighList = categoryService.getAllCategoryHigh();
     }

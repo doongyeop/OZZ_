@@ -143,6 +143,11 @@ public class Clothes {
     public void changePattern(Integer pattern){
         if(pattern != null) this.pattern = pattern;
     }
+
+    public void updateImageFile(Long imageFileId) {
+        if(imageFileId != null) this.imageFileId = imageFileId;
+    }
+
     //== 테스트 기능 ==//
 
     // Method to create a mock Clothes object

@@ -2,18 +2,29 @@ package com.ssafy.ozz.fileserver.file.service;
 
 import com.ssafy.ozz.fileserver.file.domain.Files;
 import com.ssafy.ozz.fileserver.file.dto.response.FileInfoResponse;
+import com.ssafy.ozz.fileserver.file.exception.FileNotFoundException;
 import com.ssafy.ozz.fileserver.file.exception.UnsupportedFormatException;
 import com.ssafy.ozz.fileserver.file.repository.FileRepository;
 import com.ssafy.ozz.fileserver.global.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
+
+import static com.ssafy.ozz.fileserver.global.util.FileUtil.getFileExt;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +38,19 @@ public class FileServiceImpl implements FileService {
     public FileInfoResponse saveFile(MultipartFile file) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String storedFileName = UUID.randomUUID()+ "." + originalFileName;
-        String mimeType = file.getContentType();
 
-        //MIMETYPE 체크
-        if (!FileUtil.isImageFile(mimeType)) {
+        if (!FileUtil.isImageFile(originalFileName)) {
             throw new UnsupportedFormatException();
         }
-        Files fileEntity = Files.builder()
-                .type(mimeType)
-                .name(originalFileName)
-                .path("/"+storedFileName).build();
-        fileRepository.save(fileEntity);
         File saveFile = new File(uploadDir, storedFileName);
         file.transferTo(saveFile.toPath());
+
+        String ext = getFileExt(originalFileName);
+        Files fileEntity = Files.builder()
+                .type("image/"+ext)
+                .name(originalFileName)
+                .path(storedFileName).build();
+        fileRepository.save(fileEntity);
 
         return new FileInfoResponse(fileEntity);
     }
@@ -57,20 +68,36 @@ public class FileServiceImpl implements FileService {
         oldFile.deleteOnExit();
         String originalFileName = file.getOriginalFilename();
         String storedFileName = UUID.randomUUID() + "." + originalFileName;
-        String mimeType = file.getContentType();
 
-        //MIMETYPE 체크
-        if (!FileUtil.isImageFile(mimeType)) {
+        // 이미지 파일 체크
+        if (!FileUtil.isImageFile(originalFileName)) {
             throw new UnsupportedFormatException();
         }
 
-        oldFileEntity.setType(mimeType);
-        oldFileEntity.setName(originalFileName);
-        oldFileEntity.setPath("/"+storedFileName);
         File newFile = new File(uploadDir, storedFileName);
         file.transferTo(newFile.toPath());
 
+        String ext = getFileExt(originalFileName);
+        oldFileEntity.setType("image/"+ext);
+        oldFileEntity.setName(originalFileName);
+        oldFileEntity.setPath(storedFileName);
+
         return new FileInfoResponse(oldFileEntity);
+    }
+
+    @Override
+    public FileInfoResponse getFile(Long fileId) {
+        return new FileInfoResponse(fileRepository.findById(fileId).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
+    public Resource loadFileAsResource(String fileName) {
+        Path path = Paths.get(uploadDir).resolve(fileName);
+        try {
+            return new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new FileNotFoundException(e);
+        }
     }
 
 //

@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ozz-clothes
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+logging:
+  level:
+    root: info

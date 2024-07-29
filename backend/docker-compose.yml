@@ -1,0 +1,79 @@
+version: '3.1'
+
+services:
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ssafy
+      MYSQL_DATABASE: ozz
+      MYSQL_USER: ssafy
+      MYSQL_PASSWORD: ssafy
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - spring-cloud-network
+  ozz-eureka:
+    build: ./eureka
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE : dev
+    networks:
+      - spring-cloud-network
+  ozz-clothes:
+    build: ./clothes
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE : dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+  ozz-file:
+    build: ./file-server
+    ports:
+      - "9000:9000"
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      SPRING_PROFILES_ACTIVE : dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      FILE_UPLOAD_DIR: /data/uploads
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+  ozz-gateway:
+    build: ./gateway
+    ports:
+      - "8000:8000"
+    environment:
+      SPRING_PROFILES_ACTIVE : dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - ozz-eureka
+      - ozz-file
+      - ozz-clothes
+
+volumes:
+  mysql-data:
+  file-data:
+
+networks:
+  spring-cloud-network:
+    driver: bridge
