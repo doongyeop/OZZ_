@@ -8,6 +8,7 @@ import CategorySidebar from '@/components/Button/CategorySidebar'
 
 interface ClosetPageContainerProps {
   isSidebarOpen: boolean
+  setIsSidebarOpen: (isOpen: boolean) => void
 }
 
 const formatDate = (dateString: string): string => {
@@ -17,12 +18,10 @@ const formatDate = (dateString: string): string => {
 
 export default function ClosetPageContainer({
   isSidebarOpen,
+  setIsSidebarOpen,
 }: ClosetPageContainerProps) {
   const [clothingList, setClothingList] = useState<any[]>([])
-
-  const filteredData = isSidebarOpen
-    ? clothingList.filter((item) => item.category === isSidebarOpen)
-    : clothingList
+  const [selectCategory, setSelectCategory] = useState<string>('')
 
   useEffect(() => {
     // 실제 API 요청을 여기서 수행하여 옷 데이터를 가져옵니다.
@@ -33,13 +32,12 @@ export default function ClosetPageContainer({
 
   return (
     <>
-      <div
-        className={`closet-page-container ${isSidebarOpen ? 'sidebar-open' : ''}`}
-      >
-        {/* 사이드바와 옷 목록 등 */}
-        {isSidebarOpen && <div className="sidebar">사이드바 내용</div>}
-        <div className="closet-content">{/* 옷 목록 */}</div>
-      </div>
+      {isSidebarOpen ? (
+        <CategorySidebar
+          onSelectCategory={setSelectCategory}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      ) : null}
       <div className="flex flex-col justify-start items-center h-96">
         {clothingList.map((item) => (
           <Link

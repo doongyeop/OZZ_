@@ -12,13 +12,11 @@ import { GiClothes } from 'react-icons/gi'
 export default function Closet() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const handleCategoryButtonClick = () => {
-    setIsSidebarOpen((prevState) => !prevState)
+  const toggleSidabar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
   }
 
-  const leftButton = (
-    <HeaderButton icon={<FaBars />} onClick={handleCategoryButtonClick} />
-  )
+  const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidabar} />
 
   const rightButton = (
     <HeaderButton
@@ -37,7 +35,10 @@ export default function Closet() {
         rightButton={rightButton}
       />
       <SearchArea />
-      <ClosetPageContainer isSidebarOpen={isSidebarOpen} />
+      <ClosetPageContainer
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
     </>
   )
 }

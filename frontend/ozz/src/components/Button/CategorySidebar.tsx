@@ -1,32 +1,34 @@
 // src/components/CategorySidebar.tsx
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { IoClose } from 'react-icons/io5'
 
 interface CategorySidebarProps {
   onSelectCategory: (category: string) => void
+  onClose: () => void
 }
 
 const categories = ['상의', '하의', '아우터', '액세서리']
 
-const CategorySidebar: React.FC<CategorySidebarProps> = ({
+export default function CategorySidebar({
   onSelectCategory,
-}) => {
-  const [isOpen, setIsOpen] = useState(false)
-
+  onClose,
+}: CategorySidebarProps) {
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-md transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform`}
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-secondary shadow-md transform translate-x-0 transition-transform`}
     >
-      <button
-        className="absolute top-4 right-4"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? 'Close' : 'Open'}
-      </button>
-      <div className="p-4">
-        <h2 className="text-xl font-bold mb-4">카테고리</h2>
+      <div className="p-4 flex flex-col">
+        <div className="text-right">
+          <button onClick={onClose} className="text-primary-400 w-6 h-6">
+            <IoClose width={40} hanging={40} />
+          </button>
+        </div>
         <ul>
           {categories.map((category) => (
-            <li key={category} className="mb-2">
+            <li
+              key={category}
+              className="flex justify-center mt-2 mb-2 text-gray-light"
+            >
               <button onClick={() => onSelectCategory(category)}>
                 {category}
               </button>
@@ -37,5 +39,3 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     </div>
   )
 }
-
-export default CategorySidebar
