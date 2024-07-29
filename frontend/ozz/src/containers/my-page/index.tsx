@@ -1,5 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import Modal from '@/components/Modal'
 
 const MyPageIndex = () => {
   const user = {
@@ -8,9 +10,15 @@ const MyPageIndex = () => {
     profile_file_id: null,
   }
   const router = useRouter()
+  const [modal, setModal] = useState(false)
 
   const goEdit = () => {
     router.push('/mypage/edit')
+  }
+
+  const logOut = async () => {
+    console.log('로그아웃 완료')
+    setModal(false) // 로그아웃 후 모달을 닫음
   }
 
   const profileSrc = user.profile_file_id
@@ -33,7 +41,7 @@ const MyPageIndex = () => {
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="round-full w-16 h-16"
+            className="rounded-full w-16 h-16"
           >
             <path
               d="M10 9C11.6569 9 13 7.65685 13 6C13 4.34315 11.6569 3 10 3C8.34315 3 7 4.34315 7 6C7 7.65685 8.34315 9 10 9Z"
@@ -68,14 +76,15 @@ const MyPageIndex = () => {
           />
         </svg>
       </div>
-      <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-sm rounded">
-        <button className="flex-1 py-2 border-r border-primary-400 flex flex-col items-center justify-center h-24">
+      <div className="flex mt-4 mb-6 border border-primary-400 w-full w-96 rounded-lg h-24 font-medium text-sm">
+        <button className="flex-1 py-2 flex flex-col items-center justify-center h-24 ">
           <svg
             width="20"
             height="20"
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="mb-2"
           >
             <path
               fillRule="evenodd"
@@ -86,13 +95,15 @@ const MyPageIndex = () => {
           </svg>
           코디샷
         </button>
-        <button className="flex-1 py-2 border-r border-primary-400 flex flex-col items-center justify-center">
+        <span className="w-px bg-primary-400 my-8"></span>
+        <button className="flex-1 py-2 flex flex-col items-center justify-center">
           <svg
             width="20"
             height="20"
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="mb-2"
           >
             <path
               d="M10 2C6.68632 2 4.00003 4.68629 4.00003 8V11.5858L3.29292 12.2929C3.00692 12.5789 2.92137 13.009 3.07615 13.3827C3.23093 13.7564 3.59557 14 4.00003 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L16 11.5858V8C16 4.68629 13.3137 2 10 2Z"
@@ -105,6 +116,7 @@ const MyPageIndex = () => {
           </svg>
           알림
         </button>
+        <span className="w-px bg-primary-400 my-8"></span>
         <button className="flex-1 py-2 flex flex-col items-center justify-center">
           <svg
             width="20"
@@ -112,6 +124,7 @@ const MyPageIndex = () => {
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="mb-2"
           >
             <path
               fillRule="evenodd"
@@ -128,7 +141,30 @@ const MyPageIndex = () => {
         <button className="py-2 text-left">서비스 소개</button>
         <button className="py-2 text-left">약관 및 정책</button>
         <button className="py-2 text-left">오픈소스 라이브러리</button>
-        <button className="py-2 text-left">로그아웃</button>
+        <button className="py-2 text-left" onClick={() => setModal(true)}>
+          로그아웃
+        </button>
+        {modal && (
+          <Modal onClose={() => setModal(false)}>
+            <p className="font-bold text-base text-center text-primary-400">
+              로그아웃 하시겠습니까?
+            </p>
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setModal(false)}
+                className="font-bold mr-4 p-1 w-14 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
+              >
+                아니오
+              </button>
+              <button
+                onClick={logOut}
+                className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
+              >
+                예
+              </button>
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   )
