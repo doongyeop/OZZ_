@@ -1,6 +1,6 @@
-package com.ssafy.ozz.user.auth.repository;
+package com.ssafy.ozz.auth.auth.repository;
 
-import com.ssafy.ozz.user.auth.domain.Refresh;
+import com.ssafy.ozz.auth.auth.domain.Refresh;
 import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 

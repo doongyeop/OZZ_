@@ -1,4 +1,4 @@
-package com.ssafy.ozz.user.auth.dto;
+package com.ssafy.ozz.auth.auth.dto;
 
 import java.util.Map;
 
@@ -7,6 +7,7 @@ public class KakaoResponse implements OAuth2Response {
     private final Map<String, Object> kakaoAccount;
     private final Map<String, Object> properties;
 
+    // 경고무시
     @SuppressWarnings("unchecked")
     public KakaoResponse(Map<String, Object> attributes) {
         this.attributes = attributes;
@@ -25,13 +26,23 @@ public class KakaoResponse implements OAuth2Response {
     }
 
     @Override
+    public String getProfileImageUrl() {
+        return properties.get("profile_image") != null ? properties.get("profile_image").toString() : "";
+    }
+
+    @Override
     public String getEmail() {
         return kakaoAccount.get("email") != null ? kakaoAccount.get("email").toString() : "";
     }
 
     @Override
     public String getName() {
-        return properties.get("nickname") != null ? properties.get("nickname").toString() : "";
+        return kakaoAccount.get("name") != null ? kakaoAccount.get("name").toString() : "";
+    }
+
+    @Override
+    public String getPhoneNumber() {
+        return kakaoAccount.get("phone_number") != null ? kakaoAccount.get("phone_number").toString() : "";
     }
 
     @Override
@@ -44,8 +55,4 @@ public class KakaoResponse implements OAuth2Response {
         return kakaoAccount.get("birthday") != null ? kakaoAccount.get("birthday").toString() : "";
     }
 
-    @Override
-    public String getProfileImageUrl() {
-        return properties.get("profile_image") != null ? properties.get("profile_image").toString() : "";
-    }
 }

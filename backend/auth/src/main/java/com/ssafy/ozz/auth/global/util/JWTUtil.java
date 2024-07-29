@@ -1,4 +1,4 @@
-package com.ssafy.ozz.user.global.util;
+package com.ssafy.ozz.auth.global.util;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
