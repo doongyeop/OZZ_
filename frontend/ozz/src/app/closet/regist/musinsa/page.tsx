@@ -1,5 +1,5 @@
-import MusinsaContainer from '@/containers/closet-page/RegistMenu/Musinsa'
+import MusinsaLogin from '@/containers/closet-page/RegistMenu/MusinsaLogin'
 
 export default function Musinsa() {
-  return <MusinsaContainer />
+  return <MusinsaLogin />
 }
