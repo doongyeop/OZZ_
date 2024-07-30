@@ -8,7 +8,7 @@ import java.util.List;
 
 @Schema(description = "옷 수정 요청 DTO")
 public record ClothesUpdateRequest(
-        Long categoryLowId,
+        Byte categoryLowId,
         String name,
         Size size,
         Fit fit,
