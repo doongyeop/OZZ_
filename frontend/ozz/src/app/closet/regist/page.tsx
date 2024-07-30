@@ -14,7 +14,6 @@ export default function Page() {
   // }
   return (
     <main>
-      <Header title="나의 옷짱" />
       <ClothingForm onSubmit={createClothing} submitButtonText="등록하기" />
     </main>
   )
