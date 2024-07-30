@@ -35,7 +35,9 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      SPRING_ELASTICSEARCH_URLS: http://elasticsearch:9200
+      SPRING_ELASTICSEARCH_USERNAME: ${SPRING_ELASTICSEARCH_USERNAME}
+      SPRING_ELASTICSEARCH_PASSWORD: ${SPRING_ELASTICSEARCH_PASSWORD}
     networks:
       - spring-cloud-network
     depends_on:
@@ -84,9 +86,9 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock= true
       - xpack.security.enabled= false
-#      - xpack.security.enrollment.enabled=false
+      - xpack.security.enrollment.enabled=false
       - xpack.license.self_generated.type=basic
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -101,18 +103,15 @@ services:
     environment:
       - http.host=0.0.0.0
       - http.port=9600
-      - xpack.monitoring.enabled=false
+      - xpack.monitoring.enabled=true
       - xpack.monitoring.elasticsearch.hosts=["http://elasticsearch:9200"]
       - path.data=/usr/share/logstash/data
       - DB_USER=${DB_USER}
       - DB_PW=${DB_PW}
     volumes:
-      - ./es/logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
-      - ./es/logstash/config/log4j2.properties:/usr/share/logstash/config/log4j2.properties
-      - ./es/logstash/config:/usr/share/logstash/config
-      - ./es/logstash/pipeline:/usr/share/logstash/pipeline
-      - ./es/logstash/logs:/usr/share/logstash/logs
-      - ./es/logstash/jars/mysql-connector-java-8.3.0.jar:/usr/share/logstash/mysql-connector-java-8.3.0.jar
+      - ./es/logstash/config/:/usr/share/logstash/config/
+      - ./es/logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./es/logstash/jars/mysql-connector-java-8.3.0.jar:/usr/share/logstash/logstash-core/lib/jars/mysql-connector-java-8.3.0.jar
     ports:
       - "5044:5044" # Beats input
       - "9600:9600" # Logstash monitoring API
@@ -138,8 +137,11 @@ services:
 
 volumes:
   mysql-data:
+    driver: local
   file-data:
+    driver: local
   es-data:
+    driver: local
 
 networks:
   spring-cloud-network:
