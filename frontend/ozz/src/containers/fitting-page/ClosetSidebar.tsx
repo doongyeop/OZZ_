@@ -9,21 +9,60 @@ type ClothingItem = {
   id: string
   image: string
   category: string
+  purchaseDate: string
+  name: string
 }
 
-export default function ClosetSidebar() {
+type ClosetSidebarProps = {
+  category: string | null
+  onSelectItem: (item: ClothingItem) => void
+}
+
+export default function ClosetSidebar({
+  category,
+  onSelectItem,
+}: ClosetSidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [category, setCategory] = useState('카테고리')
 
   // 이 부분은 실제 데이터를 가져오는 로직으로 대체해야 합니다.
   // TODO : 사용자의 옷장 목록 가져오기 API 구현
   const dummyClothes: ClothingItem[] = [
-    { id: '1', image: '/images/mockup/tops01.png', category: 'top' },
-    { id: '2', image: '/images/mockup/pants01.png', category: 'bottom' },
-    { id: '3', image: '/images/mockup/outer01.png', category: 'outer' },
-    { id: '4', image: '/images/mockup/shoes01.png', category: 'shoes' },
-    { id: '5', image: '/images/mockup/shoes02.png', category: 'shoes' },
+    {
+      id: '1',
+      image: '/images/mockup/tops01.png',
+      category: '반팔',
+      purchaseDate: '2023-05-15',
+      name: 'Basic White T-shirt',
+    },
+    {
+      id: '2',
+      image: '/images/mockup/pants01.png',
+      category: '바지',
+      purchaseDate: '2023-05-15',
+      name: 'Basic White T-shirt',
+    },
+    {
+      id: '3',
+      image: '/images/mockup/outer01.png',
+      category: '재킷',
+      purchaseDate: '2023-05-15',
+      name: 'Basic White T-shirt',
+    },
+    {
+      id: '4',
+      image: '/images/mockup/shoes01.png',
+      category: '운동화',
+      purchaseDate: '2023-05-15',
+      name: 'Basic White T-shirt',
+    },
+    {
+      id: '5',
+      image: '/images/mockup/shoes02.png',
+      category: '운동화',
+      purchaseDate: '2023-05-15',
+      name: 'Basic White T-shirt',
+    },
   ]
 
   return (
@@ -62,7 +101,7 @@ export default function ClosetSidebar() {
       {isModalOpen && (
         <CategoryModal
           onClose={() => setIsModalOpen(false)}
-          setValue={setCategory}
+          setValue={(e) => (category = e.toString)}
         />
       )}
     </>

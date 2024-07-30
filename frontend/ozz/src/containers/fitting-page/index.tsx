@@ -30,6 +30,8 @@ const formatDate = (dateString: string): string => {
 }
 
 export default function FittingContainer() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>([
     { type: 'accessory', image: null },
     { type: 'onepiece', image: null },
@@ -76,6 +78,20 @@ export default function FittingContainer() {
     setClothingItems((prev) =>
       prev.map((item) =>
         item.type === type ? { ...item, image: null } : item,
+      ),
+    )
+  }
+
+  const handlePlaceholderClick = (category: string) => {
+    setSelectedCategory(category)
+    setIsSidebarOpen(true)
+  }
+
+  const handleSelectClothingItem = (item: ClothingItem) => {
+    const newImage = '/images/sample_clothing.jpg'
+    setClothingItems((prev) =>
+      prev.map((item) =>
+        item.type === selectedCategory ? { ...item, image: newImage } : item,
       ),
     )
   }
@@ -181,7 +197,10 @@ passHref
           <ShareCommunityButton />
         </div>
       </div>
-      <ClosetSidebar />
+      <ClosetSidebar
+        category={selectedCategory}
+        onSelectItem={handleSelectClothingItem}
+      />
     </>
   )
 }
