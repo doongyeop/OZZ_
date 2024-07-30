@@ -15,15 +15,20 @@ const MyPageIndex = () => {
   const goEdit = () => {
     router.push('/mypage/edit')
   }
+  const goSetting = () => {
+    router.push('/mypage/settings')
+  }
+
+  const goCoordiShot = () => {
+    router.push('/coordishot')
+  }
 
   const logOut = async () => {
     console.log('로그아웃 완료')
-    setModal(false) // 로그아웃 후 모달을 닫음
+    setModal(false)
   }
 
-  const profileSrc = user.profile_file_id
-    ? `/images/${user.profile_file_id}`
-    : null
+  const profileSrc = user.profile_file_id ? user.profile_file_id : null
 
   return (
     <div className="flex flex-col items-center p-4 min-h-screen">
@@ -76,8 +81,11 @@ const MyPageIndex = () => {
           />
         </svg>
       </div>
-      <div className="flex mt-4 mb-6 border border-primary-400 w-full w-96 rounded-lg h-24 font-medium text-sm">
-        <button className="flex-1 py-2 flex flex-col items-center justify-center h-24 ">
+      <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-96 rounded-lg h-24 font-medium text-sm">
+        <button
+          onClick={goCoordiShot}
+          className="flex-1 py-2 flex flex-col items-center justify-center h-24 "
+        >
           <svg
             width="20"
             height="20"
@@ -117,7 +125,10 @@ const MyPageIndex = () => {
           알림
         </button>
         <span className="w-px bg-primary-400 my-8"></span>
-        <button className="flex-1 py-2 flex flex-col items-center justify-center">
+        <button
+          onClick={goSetting}
+          className="flex-1 py-2 flex flex-col items-center justify-center"
+        >
           <svg
             width="20"
             height="20"

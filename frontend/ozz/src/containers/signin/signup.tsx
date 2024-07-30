@@ -14,15 +14,15 @@ const SignUp = () => {
   }
 
   return (
-    <div className="w-full m-4">
+    <div className="w-[360px] m-4 mx-auto">
       <h1 className="text-2xl mt-4 mb-14 font-extrabold text-center">
         회원가입
       </h1>
       <div className="flex flex-col items-center">
-        <div className="w-full max-w-md">
-          <div className="mb-10">
-            <div className="font-bold w-full my-4">닉네임 입력하기</div>
-            <div className="flex space-x-2 mb-1">
+        <div className="w-full max-w-md mx-auto">
+          <div className="mb-10 w-[360px] mx-auto">
+            <div className="font-bold w-[360px] my-4">닉네임 입력하기</div>
+            <div className="flex space-x-2 mb-1 w-full">
               <input
                 type="text"
                 placeholder="닉네임을 입력하세요"
@@ -34,9 +34,12 @@ const SignUp = () => {
             </div>
             <span className="text-xs">사용할 수 없는 닉네임입니다</span>
           </div>
-          <div className="mt-5 mb-10">
+          <div className="mt-5 mb-10 mx-auto w-[360px]">
             <div className="font-bold my-4">생년월일</div>
-            <DatePicker />
+            <DatePicker
+              defaultValue={'2000-10-20'}
+              buttonClassName={'w-[360px]'}
+            />
           </div>
           <div className="flex justify-center space-x-3 w-full mt-5">
             <button
