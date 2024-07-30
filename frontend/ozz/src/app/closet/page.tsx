@@ -7,6 +7,7 @@ import ClosetPageContainer from '@/containers/closet-page'
 
 import { FaBars } from 'react-icons/fa'
 import { GiClothes } from 'react-icons/gi'
+import { Link } from 'lucide-react'
 
 export default function Closet() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -17,14 +18,7 @@ export default function Closet() {
 
   const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidabar} />
 
-  const rightButton = (
-    <HeaderButton
-      icon={<GiClothes />}
-      onClick={() => {
-        /* 가상 피팅룸 로직 */
-      }}
-    />
-  )
+  const rightButton = <HeaderButton icon={<GiClothes />} href="/fitting" />
 
   return (
     <>
