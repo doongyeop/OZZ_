@@ -3,6 +3,7 @@ package com.ssafy.ozz.auth.global.handler;
 import com.ssafy.ozz.auth.global.domain.Refresh;
 import com.ssafy.ozz.auth.global.repository.RefreshRepository;
 import com.ssafy.ozz.auth.auth.service.CustomOAuth2User;
+import com.ssafy.ozz.auth.global.service.RefreshService;
 import com.ssafy.ozz.auth.global.util.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,35 +19,25 @@ import java.util.Date;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
-    public CustomSuccessHandler(JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomSuccessHandler(JWTUtil jwtUtil, RefreshService refreshService) {
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshService = refreshService;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         Long userId = customUserDetails.getId();
-        
+
         // 유저 ID로 토큰 생성
         String access = jwtUtil.createJwt("access", userId, 600000L); // User ID로 JWT 생성
-        String refresh = jwtUtil.createJwt("refresh", userId, 86400000L);
+        String refresh = refreshService.createAndSaveRefreshToken(userId);
 
         response.setHeader("access", access);
-        saveRefreshToken(userId.toString(), refresh);
+        response.setHeader("refresh", refresh);
 
         response.sendRedirect("http://localhost:3000/");
-    }
-
-    private void saveRefreshToken(String userId, String refreshToken) {
-        Refresh refresh = Refresh.builder()
-                .id(userId)
-                .refreshToken(refreshToken)
-                .expiration(new Date(System.currentTimeMillis() + 86400000L))
-                .build();
-
-        refreshRepository.save(refresh);
     }
 }

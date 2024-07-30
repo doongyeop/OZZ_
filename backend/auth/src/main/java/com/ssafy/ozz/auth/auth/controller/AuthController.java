@@ -1,8 +1,7 @@
 package com.ssafy.ozz.auth.auth.controller;
 
 import com.ssafy.ozz.auth.global.domain.Refresh;
-import com.ssafy.ozz.auth.global.repository.RefreshRepository;
-import com.ssafy.ozz.auth.auth.service.CustomOAuth2UserService;
+import com.ssafy.ozz.auth.global.service.RefreshService;
 import com.ssafy.ozz.auth.global.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,20 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
-    public AuthController(CustomOAuth2UserService customOAuth2UserService, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
-        this.customOAuth2UserService = customOAuth2UserService;
+    public AuthController(JWTUtil jwtUtil, RefreshService refreshService) {
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshService = refreshService;
     }
 
     @PostMapping("/reissue")
@@ -56,32 +51,22 @@ public class AuthController {
         String userId = jwtUtil.getUserId(refresh);
 
         // 리프레시 토큰 검증
-        Refresh storedRefreshToken = refreshRepository.findByRefreshToken(refresh);
+        Refresh storedRefreshToken = refreshService.findByRefreshToken(refresh);
         if (storedRefreshToken == null || !storedRefreshToken.getRefreshToken().equals(refresh)) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
         // 새로운 access + refresh 토큰 발급
         String newAccess = jwtUtil.createJwt("access", Long.parseLong(userId), 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", Long.parseLong(userId), 86400000L); // 1일
+        String newRefresh = refreshService.createAndSaveRefreshToken(Long.parseLong(userId)); // 1일
 
-        refreshRepository.deleteByRefreshToken(refresh); // rotate 적용
-        saveRefreshToken(userId, newRefresh);
+        // 기존 리프레시 토큰 삭제
+        refreshService.deleteRefreshToken(refresh); // rotate 적용
 
-        //response
+        // response
         response.setHeader("access", newAccess);
         response.setHeader("Refresh", newRefresh);
 
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private void saveRefreshToken(String userId, String refreshToken) {
-        Refresh refresh = Refresh.builder()
-                .id(userId)
-                .refreshToken(refreshToken)
-                .expiration(new Date(System.currentTimeMillis() + 86400000L))
-                .build();
-
-        refreshRepository.save(refresh);
     }
 }
