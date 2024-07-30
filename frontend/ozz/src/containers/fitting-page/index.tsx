@@ -7,6 +7,7 @@ import styles from '@/styles/FittingPage.module.css'
 import { ClothingData } from '@/types/clothing'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
+import ClosetSidebar from './ClosetSidebar'
 
 type ClothingItem = {
   type: 'accessory' | 'onepiece' | 'top' | 'outer' | 'bottom' | 'shoes' | 'bag'
@@ -180,6 +181,7 @@ passHref
           <ShareCommunityButton />
         </div>
       </div>
+      <ClosetSidebar />
     </>
   )
 }
