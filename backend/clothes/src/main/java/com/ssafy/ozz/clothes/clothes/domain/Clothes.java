@@ -7,6 +7,8 @@ import com.ssafy.ozz.clothes.clothes.properties.Size;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +47,10 @@ public class Clothes {
     @Column(length = 100)
     @CreatedDate
     private LocalDateTime createdDate = LocalDateTime.now();
+
+    @LastModifiedDate
+    @Column
+    private LocalDateTime updatedDate;
 
     @Column(columnDefinition = "BIT(32)")
     private Integer color;
