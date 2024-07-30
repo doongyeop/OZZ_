@@ -1,7 +1,9 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
+import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
+import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
 import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -21,6 +23,15 @@ public record ClothesBasicWithFileResponse(
                 clothes.getName(),
                 clothes.getCreatedDate(),
                 new CategoryLowResponse(clothes.getCategoryLow()),
+                fileInfo
+        );
+    }
+    public ClothesBasicWithFileResponse(ClothesDocument clothes, CategoryLow categoryLow, FeignFileInfo fileInfo) {
+        this(
+                clothes.getClothesId(),
+                clothes.getName(),
+                clothes.getCreatedDate(),
+                new CategoryLowResponse(categoryLow),
                 fileInfo
         );
     }
