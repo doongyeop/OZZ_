@@ -12,4 +12,6 @@ public interface UserService {
     public User updateProfileImg(Long id, User updatedUser);
 
     public void deleteUser(Long id);
+
+    public Boolean existsByNickname(String nickname);
 }
