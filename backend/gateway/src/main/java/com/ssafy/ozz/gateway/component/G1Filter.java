@@ -1,8 +1,9 @@
 package com.ssafy.ozz.gateway.component;
 
 import com.ssafy.ozz.auth.global.util.JWTUtil;
+// implementation 'com.ssafy.ozz:ozz-auth:1.0.0' Gradle에 추가하면 끌어 쓸 수 있음.
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,7 @@ public class G1Filter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // MS 이전 (pre)
         HttpHeaders headers = exchange.getRequest().getHeaders();
-        // 프론트에서 request 헤더에 Authorization 토큰 필요
+        // Authorization 헤더에 토큰 필요
         String token = headers.getFirst(HttpHeaders.AUTHORIZATION);
 
         if (token == null || !token.startsWith("Bearer ")) {
@@ -33,6 +34,11 @@ public class G1Filter implements GlobalFilter {
         String userId;
         try {
             userId = jwtUtil.getUserId(token);
+            // JWT 유효성 검사
+            if (jwtUtil.isExpired(token)) {
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
         } catch (Exception e) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
@@ -44,10 +50,18 @@ public class G1Filter implements GlobalFilter {
             return exchange.getResponse().setComplete();
         }
 
-        // 사용자 ID를 다른 서비스로 전달하는 경우, 헤더에 추가
-        exchange.getRequest().mutate().header("X-User-Id", userId).build();
+        // Gateway에서 전달한 사용자 ID와 JWT에서 추출한 사용자 ID가 일치하는지 확인
+        String gatewayUserId = headers.getFirst("X-User-Id");
 
-        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+        if (gatewayUserId != null && !gatewayUserId.equals(userId)) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        // 사용자 ID를 다른 서비스로 전달, 헤더에 추가
+        ServerWebExchange modifiedExchange = exchange.mutate().request(r -> r.header("X-User-Id", userId)).build();
+
+        return chain.filter(modifiedExchange).then(Mono.fromRunnable(() -> {
             // MS 이후 (post)
         }));
     }
