@@ -52,6 +52,14 @@ public class ClothesController {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "키워드로 옷 검색", description = "검색된 옷 목록을 슬라이스 형태로 조회합니다.")
+    public ResponseEntity<Slice<ClothesBasicWithFileResponse>> searchClothes(
+            @ModelAttribute SearchCondition condition,
+            Pageable pageable) {
+        return ResponseEntity.ok(clothesService.searchClothes(condition, pageable));
+    }
+
     @PutMapping(value = "/{clothesId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "옷 정보 수정", description = "ID를 통해 특정 옷의 세부 정보를 수정합니다.")
     public ResponseEntity<ClothesWithFileResponse> updateClothes(

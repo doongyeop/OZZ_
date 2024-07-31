@@ -17,7 +17,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryLowRepository categoryLowRepository;
 
     @Override
-    public CategoryHigh getCategoryHigh(Long categoryHighId) {
+    public CategoryHigh getCategoryHigh(Byte categoryHighId) {
         return categoryHighRepository.findById(categoryHighId).orElseThrow(CategoryNotFoundException::new);
     }
 
@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryLow getCategoryLow(Long categoryLowId) {
+    public CategoryLow getCategoryLow(Byte categoryLowId) {
         return categoryLowRepository.findById(categoryLowId).orElseThrow(CategoryNotFoundException::new);
     }
 }
