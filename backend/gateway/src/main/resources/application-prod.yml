@@ -23,8 +23,8 @@ spring:
           - id: user-router
             uri : lb://OZZ-USER
             predicates:
-              - Path=/api/user
+              - Path=/api/user/*
           - id: auth-router
             uri : lb://OZZ-AUTH
             predicates:
-              - Path=/api/auth
+              - Path=/api/auth/*
