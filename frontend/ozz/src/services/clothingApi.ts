@@ -26,48 +26,65 @@ export const updateClothing = async (id: number, data: FormData) => {
   return response.data
 }
 
-export const fetchMockClothingList = () => ({
-  size: 1,
-  content: [
-    {
-      clothesId: 1,
-      name: 'SPRAY CARTOON GRAPHIC SS WHITE',
-      createdDate: '2024-07-27T01:14:35.702Z',
-      categoryLow: {
-        categoryLowId: '1',
-        name: '반팔',
+export const fetchMockClothingList = () => [
+  {
+    size: 2,
+    content: [
+      {
+        clothesId: 1,
+        name: 'SPRAY CARTOON GRAPHIC SS WHITE',
+        createdDate: '2024-07-27T01:14:35.702Z',
+        categoryLow: {
+          categoryLowId: '1',
+          name: '반팔',
+        },
+        imageFile: {
+          fileId: 1,
+          filePath: '/images/sample-shirt.png', // 실제 이미지 파일 경로로 대체
+          fileName: 'sample-shirt.png',
+          fileType: 'image/png',
+        },
       },
-      imageFile: {
-        fileId: 1,
-        filePath: '/images/sample-shirt.png', // 실제 이미지 파일 경로로 대체
-        fileName: 'sample-shirt.png',
-        fileType: 'image/png',
+      {
+        clothesId: 2,
+        name: '기본 반팔티',
+        createdDate: '2024-07-30T01:14:35.702Z',
+        categoryLow: {
+          categoryLowId: '1',
+          name: '반팔',
+        },
+        imageFile: {
+          fileId: 1,
+          filePath: '/images/mockup/tops02.png', // 실제 이미지 파일 경로로 대체
+          fileName: 'sample-shirt.png',
+          fileType: 'image/png',
+        },
       },
-    },
-  ],
-  number: 0,
-  sort: {
-    empty: true,
-    sorted: true,
-    unsorted: true,
-  },
-  pageable: {
-    offset: 0,
+    ],
+    number: 0,
     sort: {
       empty: true,
       sorted: true,
       unsorted: true,
     },
-    paged: true,
-    pageNumber: 0,
-    pageSize: 1,
-    unpaged: true,
+    pageable: {
+      offset: 0,
+      sort: {
+        empty: true,
+        sorted: true,
+        unsorted: true,
+      },
+      paged: true,
+      pageNumber: 0,
+      pageSize: 1,
+      unpaged: true,
+    },
+    first: true,
+    last: true,
+    numberOfElements: 1,
+    empty: false,
   },
-  first: true,
-  last: true,
-  numberOfElements: 1,
-  empty: false,
-})
+]
 
 export const fetchMockClothing = (id: number): ClothingData => ({
   id,

@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 
+type CategoryModalProps = {
+  onClose: () => void
+  setValue: React.Dispatch<React.SetStateAction<string>>
+}
+
 type CategoryType = {
   상의: string[]
   하의: string[]
@@ -31,10 +36,10 @@ const categories = {
   액세서리: ['주얼리', '모자', '기타'],
 }
 
-const CategoryModal: React.FC<{
-  onClose: () => void
-  setValue: React.Dispatch<React.SetStateAction<string>>
-}> = ({ onClose, setValue }) => {
+export default function CategoryModal({
+  onClose,
+  setValue,
+}: CategoryModalProps) {
   const [category, setCategory] = useState<string>('')
   const [selectedMainCategory, setSelectedMainCategory] = useState<
     keyof CategoryType | null
@@ -105,5 +110,3 @@ const CategoryModal: React.FC<{
     </Modal>
   )
 }
-
-export default CategoryModal

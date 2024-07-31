@@ -1,11 +1,13 @@
 import Modal from '@/components/Modal'
 
-const fits = ['오버핏', '세미오버핏', '레귤러핏', '슬림핏']
-
-const FitModal: React.FC<{
+type FitModalProps = {
   onClose: () => void
   setValue: (value: string) => void
-}> = ({ onClose, setValue }) => {
+}
+
+const fits = ['오버핏', '세미오버핏', '레귤러핏', '슬림핏']
+
+export default function FitModal({ onClose, setValue }: FitModalProps) {
   const handleSave = (fit: string) => {
     setValue(fit)
     onClose()
@@ -28,5 +30,3 @@ const FitModal: React.FC<{
     </Modal>
   )
 }
-
-export default FitModal
