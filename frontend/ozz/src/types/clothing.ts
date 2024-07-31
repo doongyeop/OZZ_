@@ -9,7 +9,7 @@ export interface ClothingData {
   size: string | null
   fit: string | null
   texture: string[]
-  color: { name: string; code: string } | null
+  color: { name: string; code: string }[] | null
   style: string[] | null
   pattern: { name: string; img: string } | null
   memo: string | null

@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 import { HiPencil } from 'react-icons/hi'
 
-const MemoModal: React.FC<{
+type MemoModalProps = {
   onClose: () => void
   setValue: (value: string) => void
-}> = ({ onClose, setValue }) => {
+}
+
+export default function MemoModal({ onClose, setValue }: MemoModalProps) {
   const [memo, setMemo] = useState<string>('')
   const maxChars = 100
 
@@ -51,4 +53,4 @@ const MemoModal: React.FC<{
   )
 }
 
-export default MemoModal
+MemoModal

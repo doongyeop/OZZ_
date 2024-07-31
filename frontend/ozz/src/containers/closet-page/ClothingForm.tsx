@@ -17,7 +17,7 @@ import PatternModal from '@/app/@modal/pattern/page'
 import MemoModal from '@/app/@modal/memo/page'
 import { ClothingData } from '@/types/clothing'
 
-interface ClothingFormProps {
+type ClothingFormProps = {
   initialData?: ClothingData
   onSubmit: (data: FormData) => void
   submitButtonText: string
@@ -89,11 +89,11 @@ const fitMap: { [key: string]: string } = {
   슬림핏: 'SLIM',
 }
 
-export const ClothingForm: React.FC<ClothingFormProps> = ({
+export default function ClothingForm({
   initialData,
   onSubmit,
   submitButtonText,
-}) => {
+}: ClothingFormProps) {
   const [openModal, setOpenModal] = useState<string | null>(null)
 
   const [name, setName] = useState('')
@@ -105,8 +105,8 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
   const [size, setSize] = useState<string | null>(null)
   const [fit, setFit] = useState<string | null>(null)
   const [texture, setTexture] = useState<string[]>([])
-  const [color, setColor] = useState<{ name: string; code: string } | null>(
-    null,
+  const [color, setColor] = useState<{ name: string; code: string }[] | null>(
+    [],
   )
   const [style, setStyle] = useState<string[]>([])
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
@@ -128,7 +128,7 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
       setSize(initialData.size || null)
       setFit(initialData.fit || null)
       setTexture(initialData.texture || [])
-      setColor(initialData.color || null)
+      setColor(initialData.color || [])
       setStyle(initialData.style || [])
       setPattern(initialData.pattern || null)
       setMemo(initialData.memo || null)
@@ -172,7 +172,7 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
 
-      colorList: color ? [colorMap[color.name]] : [],
+      colorList: color ? color.map((c) => colorMap[c.name]) : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
@@ -217,49 +217,49 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
       component: BrandModal,
       value:
         brandName.length > 10 ? `${brandName.substring(0, 10)}...` : brandName,
-      setValue: setBrandName,
+      setValue: (brand: string) => setBrandName(brand),
     },
     {
       label: '카테고리',
       path: 'category',
       component: CategoryModal,
       value: categoryName,
-      setValue: setCategoryName,
+      setValue: (category: string) => setCategoryName(category),
     },
     {
       label: '구매일자',
       path: 'purchase-date',
       component: PurchaseDateModal,
       value: purchaseDate,
-      setValue: setPurchaseDate,
+      setValue: (purchaseDate: string) => setPurchaseDate(purchaseDate),
     },
     {
       label: '구매처',
       path: 'purchase-site',
       component: PurchaseSiteModal,
       value: purchaseSite,
-      setValue: setPurchaseSite,
+      setValue: (purchaseSite: string) => setPurchaseSite(purchaseSite),
     },
     {
       label: '계절감',
       path: 'season',
       component: SeasonModal,
       value: season ? season.join(', ') : '',
-      setValue: setSeason,
+      setValue: (season: string[]) => setSeason(season),
     },
     {
       label: '사이즈',
       path: 'size',
       component: SizeModal,
       value: size,
-      setValue: setSize,
+      setValue: (size: string) => setSize(size),
     },
     {
       label: '핏',
       path: 'fit',
       component: FitModal,
       value: fit,
-      setValue: setFit,
+      setValue: (fit: string) => setFit(fit),
     },
     {
       label: '소재',
@@ -269,14 +269,14 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
         texture.join(', ').length > 10
           ? `${texture.join(', ')}...`
           : texture.join(', '),
-      setValue: setTexture,
+      setValue: (texture: string[]) => setTexture(texture),
     },
     {
       label: '색',
       path: 'color',
       component: ColorModal,
-      value: color ? color.name : '',
-      setValue: setColor,
+      value: color ? color : '',
+      setValue: (colors: { name: string; code: string }[]) => setColor(colors),
     },
     {
       label: '스타일',
@@ -287,14 +287,14 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
           ? `${style.join(', ')}...`
           : style.join(', ')
         : '',
-      setValue: setStyle,
+      setValue: (style: string[]) => setStyle(style),
     },
     {
       label: '패턴',
       path: 'pattern',
       component: PatternModal,
       value: pattern ? pattern.name : '',
-      setValue: setPattern,
+      setValue: (pattern: { name: string; img: string }) => setPattern(pattern),
     },
     {
       label: '메모',
@@ -305,7 +305,7 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
           ? `${memo.substring(0, 10)}...`
           : memo
         : '',
-      setValue: setMemo,
+      setValue: (memo: string) => setMemo(memo),
     },
   ]
 
@@ -363,35 +363,42 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
           </div>
           {/* Form */}
           <div className="w-full max-w-md text-gray-light rounded-lg shadow-md space-y-2 mb-4">
-            {modalItems.map((item, index) => (
+            {modalItems.map((item, index: number) => (
               <div
                 key={index}
                 className="flex justify-between items-center border-b border-[#000000] border-opacity-30 py-2"
               >
                 <span>{item.label}</span>
 
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                   {item.value && (
                     <>
                       {item.label === '색' && color ? (
                         <>
-                          <span
-                            className="inline-block w-5 h-5 rounded-full mr-1.5"
-                            style={{ backgroundColor: color.code }}
-                          ></span>
-                          <span
-                            className="text-primary-400 mr-2"
-                            onClick={() => setOpenModal(item.path)}
-                          >
-                            {color.name}
-                          </span>
+                          {color.slice(0, 3).map((c, index) => (
+                            <div key={c.code} className="flex">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                style={{ backgroundColor: c.code }}
+                              ></span>
+                              <span
+                                className="text-primary-400 mr-2"
+                                onClick={() => setOpenModal(item.path)}
+                              >
+                                {c.name}
+                              </span>
+                            </div>
+                          ))}
+                          {color.length > 3 && (
+                            <span className="text-primary-400 mr-2">...</span>
+                          )}
                         </>
                       ) : (
                         <span
                           className="text-primary-400 mr-2"
                           onClick={() => setOpenModal(item.path)}
                         >
-                          {item.value}
+                          {typeof item.value === 'string' ? item.value : ''}
                         </span>
                       )}
                     </>
@@ -422,6 +429,7 @@ export const ClothingForm: React.FC<ClothingFormProps> = ({
                 <ModalComponent
                   key={path}
                   onClose={closeModal}
+                  // setValue의 타입이 여러가지라 발생하는 에러 -> 타입 명시해서
                   setValue={setValue}
                 />
               ),
