@@ -1,6 +1,7 @@
 package com.ssafy.ozz.gateway.component;
 
 import com.ssafy.ozz.auth.global.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -11,14 +12,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class G1Filter implements GlobalFilter {
 
     private final JWTUtil jwtUtil;
-
-    @Autowired
-    public G1Filter(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
