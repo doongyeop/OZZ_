@@ -429,7 +429,7 @@ export default function ClothingForm({
                 <ModalComponent
                   key={path}
                   onClose={closeModal}
-                  // setValue의 타입이 여러가지라 발생하는 에러 -> 타입 명시해서
+                  // setValue의 타입이 여러가지라 발생하는 에러
                   setValue={setValue}
                 />
               ),
