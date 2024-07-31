@@ -1,5 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
+import com.ssafy.ozz.clothes.category.dto.CategoryHighBasicResponse;
+import com.ssafy.ozz.clothes.category.dto.CategoryHighResponse;
 import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.*;
@@ -25,6 +27,7 @@ public record ClothesWithFileResponse(
         List<Season> seasonList,
         List<Style> styleList,
         List<Pattern> patternList,
+        CategoryHighBasicResponse categoryHigh,
         CategoryLowResponse categoryLow,
         FeignFileInfo imageFile
 ) {
@@ -42,6 +45,7 @@ public record ClothesWithFileResponse(
                 toEnums(Season.class, clothes.getSeason()),
                 toEnums(Style.class, clothes.getStyle()),
                 toEnums(Pattern.class, clothes.getPattern()),
+                new CategoryHighBasicResponse(clothes.getCategoryLow().getCategoryHigh()),
                 new CategoryLowResponse(clothes.getCategoryLow()),
                 fileInfo
         );
