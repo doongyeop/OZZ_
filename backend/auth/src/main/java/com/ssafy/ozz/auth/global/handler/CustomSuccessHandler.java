@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static com.ssafy.ozz.auth.global.config.JWTConfig.ACCESS;
-import static com.ssafy.ozz.auth.global.config.JWTConfig.REFRESH;
-
 @RequiredArgsConstructor
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -29,11 +26,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Long userId = customUserDetails.getId();
 
         // 유저 ID로 토큰 생성
-        String access = jwtUtil.createJwt(ACCESS, userId, 600000L); // User ID로 JWT 생성
+        String access = jwtUtil.createJwt("access", userId, 600000L); // User ID로 JWT 생성
         String refresh = refreshService.createAndSaveRefreshToken(userId);
 
-        response.setHeader(ACCESS, access);
-        response.setHeader(REFRESH, refresh);
+        response.setHeader("access", access);
+        response.setHeader("refresh", refresh);
 
         response.sendRedirect("http://localhost:3000/");
     }
