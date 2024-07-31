@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import Modal from '@/components/Modal'
 
+type ColorModalProps = {
+  onClose: () => void
+  setValue: (value: { name: string; code: string }[]) => void
+}
+
 const colors = [
   { name: '흰색', code: '#FFFFFF' },
   { name: '검정', code: '#000000' },
@@ -24,19 +29,28 @@ const colors = [
   { name: '골드', code: '#E6C345' },
 ]
 
-const ColorModal: React.FC<{
-  onClose: () => void
-  setValue: (value: { name: string; code: string }) => void
-}> = ({ onClose, setValue }) => {
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+export default function ColorModal({ onClose, setValue }: ColorModalProps) {
+  const [selectedColor, setSelectedColor] = useState<
+    { name: string; code: string }[]
+  >([])
 
   const handleColorClick = (color: { name: string; code: string }) => {
-    if (selectedColor === color.name) {
-      setValue(color)
-      onClose()
+    const isSelected = selectedColor.find((c) => c.name === color.name)
+
+    if (isSelected) {
+      // 이미 선택된 색상일 경우 배열에서 제거
+      setSelectedColor((prevColors) =>
+        prevColors.filter((selectedColor) => selectedColor.name !== color.name),
+      )
     } else {
-      setSelectedColor(color.name)
+      // 선택된 색상이 아니면 배열에 추가
+      setSelectedColor((prevColors) => [...prevColors, color])
     }
+  }
+
+  const handleSave = () => {
+    setValue(selectedColor)
+    onClose()
   }
 
   return (
@@ -47,7 +61,9 @@ const ColorModal: React.FC<{
             key={color.name}
             type="button"
             className={`p-1 mr-1 mb-1 rounded-xl text-xs font-semibold border-2 border-primary-400 ${
-              selectedColor === color.name
+              selectedColor.some(
+                (selectedColor) => selectedColor.name === color.name,
+              )
                 ? 'bg-primary-400 text-secondary'
                 : 'bg-secondary text-primary-400'
             }`}
@@ -63,8 +79,14 @@ const ColorModal: React.FC<{
           </button>
         ))}
       </div>
+      <div className="mt-2 flex w-full justify-center">
+        <button
+          className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
+          onClick={handleSave}
+        >
+          저장
+        </button>
+      </div>
     </Modal>
   )
 }
-
-export default ColorModal

@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 import { HiPencil } from 'react-icons/hi'
 
-const PurchaseSiteModal: React.FC<{
+type PurchaseDateModalProps = {
   onClose: () => void
   setValue: (value: string) => void
-}> = ({ onClose, setValue }) => {
+}
+
+export default function PurchaseSiteModal({
+  onClose,
+  setValue,
+}: PurchaseDateModalProps) {
   const [purchaseSite, setPurchaseSite] = useState<string>('')
   const handleSave = () => {
     setValue(purchaseSite)
@@ -34,5 +39,3 @@ const PurchaseSiteModal: React.FC<{
     </Modal>
   )
 }
-
-export default PurchaseSiteModal

@@ -1,5 +1,11 @@
 import React, { useState } from 'react'
 import Modal from '@/components/Modal'
+import { Style } from 'util'
+
+type StyleModalProps = {
+  onClose: () => void
+  setValue: (value: string[]) => void
+}
 
 const styles = [
   '포멀',
@@ -14,10 +20,7 @@ const styles = [
   '캐주얼',
 ]
 
-const StyleModal: React.FC<{
-  onClose: () => void
-  setValue: (value: string[]) => void
-}> = ({ onClose, setValue }) => {
+export default function StyleModal({ onClose, setValue }: StyleModalProps) {
   const [style, setStyle] = useState<{ [key: string]: boolean }>({
     포멀: false,
     매니시: false,
@@ -73,5 +76,3 @@ const StyleModal: React.FC<{
     </Modal>
   )
 }
-
-export default StyleModal

@@ -13,10 +13,15 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-const PurchaseDateModal: React.FC<{
+type PurchaseDateModalProps = {
   onClose: () => void
   setValue: (value: string) => void
-}> = ({ onClose, setValue }) => {
+}
+
+export default function PurchaseDateModal({
+  onClose,
+  setValue,
+}: PurchaseDateModalProps) {
   const [purchaseDate, setPurchaseDate] = useState<Date | undefined>()
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -59,5 +64,3 @@ const PurchaseDateModal: React.FC<{
     </Modal>
   )
 }
-
-export default PurchaseDateModal

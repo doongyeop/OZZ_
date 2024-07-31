@@ -1,7 +1,7 @@
 import Header from '@/components/Header'
 import { ClothingData } from '@/types/clothing'
 import { createClothing } from '@/services/clothingApi'
-import { ClothingForm } from '@/containers/closet-page/ClothingForm'
+import ClothingForm from '@/containers/closet-page/ClothingForm'
 
 export default function Page() {
   // const handleSubmit = async (data: FormData) => {
