@@ -61,7 +61,7 @@ export default function HeroSection() {
         <Carousel
           setApi={setApi}
           plugins={[plugin.current]}
-          className="pt-3 px-4 flex justify-center "
+          className="pt-4 px-4 flex justify-center "
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
           opts={{

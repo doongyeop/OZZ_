@@ -1,4 +1,5 @@
 export interface ClothingData {
+  id: number
   name: string
   brandName: string
   categoryName: string | null

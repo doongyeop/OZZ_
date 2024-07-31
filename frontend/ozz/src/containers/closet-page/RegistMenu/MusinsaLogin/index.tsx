@@ -3,18 +3,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import axios from 'axios'
+import Loading from '@/app/closet/loading'
 
 const FormSchema = z.object({
   userId: z.string().min(1, { message: '아이디를 입력해 주세요.' }),
@@ -29,15 +28,38 @@ export function InputForm() {
       password: '',
     },
   })
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false) // 로딩 상태 추가
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data))
+    setIsLoading(true) // 요청 시작 시 로딩 상태를 true로 설정
     try {
-      const response = await axios.get('/api/musinsa-login')
-      console.log(response.data)
+      const response = await fetch('/api/musinsa-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (result.error) {
+        alert(result.error)
+        setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
+      } else {
+        console.log(result)
+        router.push('/closet')
+      }
     } catch (error) {
       console.error('Error fetching order lists:', error)
+      alert('아이디 또는 비밀번호를 확인하세요.')
+      setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
     }
+  }
+
+  if (isLoading) {
+    return <Loading /> // 로딩 중일 때 로딩 컴포넌트를 표시
   }
 
   return (
@@ -78,7 +100,7 @@ export function InputForm() {
   )
 }
 
-export default function MusinsaContainer() {
+export default function MusinsaLogin() {
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="my-1 w-full h-10 bg-black text-white px-6 py-2 flex items-center justify-center">

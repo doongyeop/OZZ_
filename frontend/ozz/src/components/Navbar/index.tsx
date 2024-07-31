@@ -17,7 +17,7 @@ const links = [
 export default function Navbar() {
   const path = usePathname().split('/')[1]
 
-  if (pathname.includes('login')) {
+  if (path.includes('login')) {
     return null
   }
 
