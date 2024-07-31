@@ -28,7 +28,7 @@ public class CategoryController {
 
     @GetMapping("/{categoryHighId}")
     @Operation(summary = "특정 상위 카테고리의 하위 카테고리 목록 조회", description = "특정 상위 카테고리의 하위 카테고리 목록 조회합니다.")
-    public ResponseEntity<CategoryHighResponse> getCategoryHigh(@PathVariable Long categoryHighId) {
+    public ResponseEntity<CategoryHighResponse> getCategoryHigh(@PathVariable Byte categoryHighId) {
         return ResponseEntity.ok(new CategoryHighResponse(categoryService.getCategoryHigh(categoryHighId)));
     }
 }

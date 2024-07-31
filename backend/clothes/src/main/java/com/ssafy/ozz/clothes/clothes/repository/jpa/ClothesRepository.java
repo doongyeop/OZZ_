@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.clothes.repository;
+package com.ssafy.ozz.clothes.clothes.repository.jpa;
 
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.repository.querydsl.ClothesQueryRepository;
