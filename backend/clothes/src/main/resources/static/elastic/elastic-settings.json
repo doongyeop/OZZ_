@@ -1,0 +1,26 @@
+{
+  "analysis": {
+    "analyzer": {
+      "korean": {
+        "type": "nori"
+      },
+      "synonym_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "synonym_filter"
+        ]
+    },
+    "filter": {
+      "synonym_filter": {
+        "type": "synonym",
+        "synonyms": [
+          "회색 청바지, 회색 바지, 그레이색 바지, 그레이 바지",
+          "blue 진, blue jean, 데님 바지, 데님 진"
+        ]
+      }
+    }
+  }
+}
+

@@ -23,7 +23,7 @@ public interface ClothesService {
 
     Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
 
-    Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable);
+    Slice<ClothesBasicWithFileResponse> searchClothes(SearchCondition condition, Pageable pageable);
 
     Clothes updateClothes(Long clothesId, ClothesUpdateRequest request);
     ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile);

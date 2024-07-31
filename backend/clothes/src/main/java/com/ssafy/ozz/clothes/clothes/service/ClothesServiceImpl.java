@@ -9,13 +9,13 @@ import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
-import com.ssafy.ozz.clothes.clothes.repository.ClothesRepository;
+import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
+import com.ssafy.ozz.clothes.clothes.repository.elasticsearch.ClothesSearchRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
 import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
 import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 @Slf4j
 public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
+    private final ClothesSearchRepository clothesSearchRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
 
@@ -72,13 +73,6 @@ public class ClothesServiceImpl implements ClothesService {
 
         Long imageFileId = fileInfo.fileId();
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Clothes> searchClothes(SearchCondition condition, Pageable pageable) {
-        // TODO : 다이나믹 서치 적용
-        return null;
     }
 
     @Override
@@ -132,5 +126,26 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public List<Clothes> getClothesInRecCoordinate(Long coordinateId) {
         return List.of();
+    }
+
+    /* Elasticsearch */
+//    @PostConstruct
+//    public void syncData() {
+//        List<Clothes> clothesList = clothesRepository.findAll();
+//        clothesSearchRepository.saveAll(clothesList.stream().map(ClothesDocument::new).toList());
+//    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ClothesBasicWithFileResponse> searchClothes(SearchCondition condition, Pageable pageable) {
+        // TODO : 다이나믹 서치 적용
+        return clothesSearchRepository.findAllByNameContainingIgnoreCase(condition.keyword(), pageable).map(clothes -> {
+//            log.debug(clothes.toString());
+//            FeignFileInfo fileInfo = new FeignFileInfo(1L,"","","");
+//            CategoryLow categoryLow = CategoryLow.builder().build();
+                FeignFileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+                CategoryLow categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
+            return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
+        });
     }
 }
