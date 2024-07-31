@@ -1,27 +1,48 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import styles from '@/styles/FittingPage.module.css'
-import { ClothingData } from '@/types/clothing'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from './ClosetSidebar'
+import { FaPlus, FaMinus } from 'react-icons/fa'
 
 type ClothingItem = {
-  type: 'accessory' | 'onepiece' | 'top' | 'outer' | 'bottom' | 'shoes' | 'bag'
-  image: string | null
+  id: string
+  name: string
+  createdDate: string
+  imageFile: {
+    fileId: number
+    filePath: string
+    fileName: string
+    fileType: string
+  }
+  categoryHigh: {
+    categoryHighId: number
+    name: string
+  }
+  categoryLow: {
+    categoryLowId: number
+    name: string
+  }
 }
 
-const placeholderImages = {
-  accessory: '/images/fitting/accessory.png',
-  onepiece: '/images/fitting/onepiece.png',
-  top: '/images/fitting/top.png',
-  outer: '/images/fitting/outer.png',
-  bottom: '/images/fitting/bottom.png',
-  shoes: '/images/fitting/shoes.png',
-  bag: '/images/fitting/bag.png',
+type FittingItem = {
+  category: string
+  type: string
+  image: string | null
+  isSelected: boolean
+}
+
+const placeholderImages: { [key: string]: string } = {
+  액세서리: '/images/fitting/accessory.png',
+  원피스: '/images/fitting/onepiece.png',
+  상의: '/images/fitting/top.png',
+  아우터: '/images/fitting/outer.png',
+  하의: '/images/fitting/bottom.png',
+  신발: '/images/fitting/shoes.png',
+  가방: '/images/fitting/bag.png',
 }
 
 const formatDate = (dateString: string): string => {
@@ -30,70 +51,73 @@ const formatDate = (dateString: string): string => {
 }
 
 export default function FittingContainer() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [clothingItems, setClothingItems] = useState<ClothingItem[]>([
-    { type: 'accessory', image: null },
-    { type: 'onepiece', image: null },
-    { type: 'top', image: null },
-    { type: 'outer', image: null },
-    { type: 'bottom', image: null },
-    { type: 'shoes', image: null },
-    { type: 'bag', image: null },
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false) //사이드바 열고 닫는 변수
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) //사이드바에 카테고리 설정하기
+  const [fittingItems, setFittingItems] = useState<FittingItem[]>([
+    //가상피팅 배경의 컴포넌트
+    { category: '액세서리', type: 'accessory', image: null, isSelected: false },
+    { category: '원피스', type: 'onepiece', image: null, isSelected: false },
+    { category: '상의', type: 'top', image: null, isSelected: false },
+    { category: '아우터', type: 'outer', image: null, isSelected: false },
+    { category: '하의', type: 'bottom', image: null, isSelected: false },
+    { category: '신발', type: 'shoes', image: null, isSelected: false },
+    { category: '가방', type: 'bag', image: null, isSelected: false },
   ])
-  const [outfit, setOutfit] = useState<{
-    outer: ClothingData | null
-    top: ClothingData | null
-    bottom: ClothingData | null
-    shoes: ClothingData | null
-    bag: ClothingData | null
-    accessory: ClothingData | null
-    onepiece: ClothingData | null
-  }>({
-    outer: null,
-    top: null,
-    bottom: null,
-    shoes: null,
-    bag: null,
-    accessory: null,
-    onepiece: null,
-  })
+  const [selectedClothes, setSelectedClothes] = useState<ClothingItem[]>([]) //선택한 옷 리스트
 
-  const selectedClothingItems = Object.values(outfit).filter(
-    Boolean,
-  ) as ClothingData[]
-
-  const handleAddItem = (type: ClothingItem['type']) => {
-    // 여기서 실제로는 이미지 선택 로직이 들어갑니다.
-    // 예시를 위해 임시 이미지 URL을 사용합니다.
-    const newImage = '/images/sample_clothing.jpg'
-    setClothingItems((prev) =>
-      prev.map((item) =>
-        item.type === type ? { ...item, image: newImage } : item,
-      ),
-    )
-  }
-
-  const handleRemoveItem = (type: ClothingItem['type']) => {
-    setClothingItems((prev) =>
-      prev.map((item) =>
-        item.type === type ? { ...item, image: null } : item,
-      ),
-    )
-  }
-
-  const handlePlaceholderClick = (category: string) => {
+  const handleAddItem = (category: string) => {
+    // + 버튼을 눌렀을 때
     setSelectedCategory(category)
     setIsSidebarOpen(true)
   }
 
-  const handleSelectClothingItem = (item: ClothingItem) => {
-    const newImage = '/images/sample_clothing.jpg'
-    setClothingItems((prev) =>
-      prev.map((item) =>
-        item.type === selectedCategory ? { ...item, image: newImage } : item,
+  const handleRemoveItem = (category: string) => {
+    // - 버튼을 눌렀을 때
+    setFittingItems(
+      fittingItems.map((item) =>
+        item.category === category
+          ? { ...item, image: null, isSelected: false }
+          : item,
       ),
     )
+    setSelectedClothes(
+      selectedClothes.filter((cloth) => cloth.categoryHigh.name !== category),
+    )
+  }
+
+  const handleSelectClothingItem = (item: ClothingItem) => {
+    // 사이드바에서 아이템을 선택하면
+    const existingItem = selectedClothes.find(
+      (clothingItem) => clothingItem.id === item.id,
+    )
+    if (existingItem) {
+      console.error('이미 선택한 아이템입니다.')
+      return
+    }
+
+    const placeholder = fittingItems.find(
+      (placeholder) => placeholder.category === item.categoryHigh.name,
+    )
+    if (!placeholder || placeholder.category !== selectedCategory) {
+      // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
+      console.error('잘못된 위치입니다.')
+      return
+    }
+
+    const updatedFittingItems = fittingItems.map((fittingItem) =>
+      fittingItem.category === item.categoryHigh.name
+        ? { ...fittingItem, image: item.imageFile.filePath, isSelected: true }
+        : fittingItem,
+    )
+    console.log('현재 세팅 : ', updatedFittingItems)
+    setFittingItems(updatedFittingItems)
+    setSelectedClothes([...selectedClothes, item])
+    setIsSidebarOpen(false)
+  }
+
+  const handleCategoryChange = (category: string | null) => {
+    setSelectedCategory(category)
+    console.log('사이드바에서 선택 ', category)
   }
 
   return (
@@ -101,7 +125,7 @@ export default function FittingContainer() {
       <div className="flex flex-col">
         <div className="w-full p-4">
           <div className={styles.clothingGrid}>
-            {clothingItems.map((item) => (
+            {fittingItems.map((item) => (
               <div
                 key={item.type}
                 className={`${styles.clothingItem} ${styles[item.type]}`}
@@ -110,33 +134,33 @@ export default function FittingContainer() {
                   <>
                     <Image
                       src={item.image}
-                      alt={item.type}
+                      alt={item.category}
                       width={100}
                       height={100}
                       layout="responsive"
                     />
                     <button
-                      onClick={() => handleRemoveItem(item.type)}
+                      onClick={() => handleRemoveItem(item.category)}
                       className={styles.removeButton}
                     >
-                      -
+                      <FaMinus />
                     </button>
                   </>
                 ) : (
                   <>
                     <Image
-                      src={placeholderImages[item.type]}
-                      alt={item.type}
+                      src={placeholderImages[item.category]}
+                      alt={item.category}
                       width={100}
                       height={100}
                       layout="responsive"
                       className="opacity-10"
                     />
                     <button
-                      onClick={() => handleAddItem(item.type)}
+                      onClick={() => handleAddItem(item.category)}
                       className={styles.addButton}
                     >
-                      +
+                      <FaPlus />
                     </button>
                   </>
                 )}
@@ -146,20 +170,30 @@ export default function FittingContainer() {
         </div>
       </div>
       <div className="w-full max-w-md mt-4">
-        <h2 className="text-xl font-semibold mb-10 pl-10">선택한 옷</h2>
-        {selectedClothingItems.length > 0 ? (
-          <ul>
-            {selectedClothingItems.map((item) => (
-              <li key={item.id} className="mb-2 p-2 border rounded">
+        <h2 className="text-xl font-semibold pl-10 m-2">선택한 옷</h2>
+        {selectedClothes.length > 0 ? (
+          <ul className="mt-2 px-6">
+            {selectedClothes.map((item) => (
+              <li key={item.id} className="mb-2 p-3 border-b">
                 <div className="flex items-center">
-                  <div className="w-16 h-16 bg-gray-200 mr-4">
-                    {item.pattern?.img && (
-                      <img src={item.pattern.img} alt={item.name} />
-                    )}
+                  <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
+                    <Image
+                      src={item.imageFile.filePath}
+                      alt={item.name}
+                      width={75}
+                      height={75}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        width: 'auto',
+                        height: 'auto',
+                        objectFit: 'contain',
+                      }}
+                    />
                   </div>
-                  <div>
-                    <h3 className="text-md font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-500">{item.purchaseDate}</p>
+                  <div className="flex flex-col">
+                    <p className="mb-2">{item.categoryLow.name}</p>
+                    <p className="text-md font-semibold">{item.name}</p>
                   </div>
                 </div>
               </li>
@@ -197,10 +231,14 @@ passHref
           <ShareCommunityButton />
         </div>
       </div>
-      <ClosetSidebar
-        category={selectedCategory}
-        onSelectItem={handleSelectClothingItem}
-      />
+      {isSidebarOpen && (
+        <ClosetSidebar
+          isSidebarOpen={isSidebarOpen}
+          category={selectedCategory}
+          onSelectItem={handleSelectClothingItem}
+          onCategoryChange={handleCategoryChange}
+        />
+      )}
     </>
   )
 }
