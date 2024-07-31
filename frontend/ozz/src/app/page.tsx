@@ -1,11 +1,14 @@
 import Header from '@/components/Header'
-import MainPageContainer from '@/containers/main-page'
+import HeroSection from '@/containers/main-page/HeroSection'
+import Preview from '@/containers/main-page/Preview'
 
 export default function Home() {
   return (
     <>
       <Header title="OZZ" />
-      <MainPageContainer />
+      <HeroSection />
+      <Preview title={'옷장'} />
+      <Preview title={'코디북'} />
     </>
   )
 }
