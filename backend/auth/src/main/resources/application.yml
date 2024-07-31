@@ -24,12 +24,12 @@ spring:
           naver:
             client-id: K1K33QhN8jMwVVpMIbKw
             client-secret: yTFwpt0_aB
-            redirect-uri: ${NAVER_REDIRECT_URL:http://localhost:8080/login/oauth2/code/naver}
+            redirect-uri: ${NAVER_REDIRECT_URL:http://localhost:8100/login/oauth2/code/naver}
             authorization-grant-type: authorization_code
             scope: email, profile_image, birthday, birthyear, name, mobile
           kakao:
             client-id: c0033eb7caa88a531ad2b79765bed2c9
-            redirect-uri: ${KAKAO_REDIRECT_URL:http://localhost:8080/login/oauth2/code/kakao}
+            redirect-uri: ${KAKAO_REDIRECT_URL:http://localhost:8100/login/oauth2/code/kakao}
             authorization-grant-type: authorization_code
             scope: account_email, profile_image, birthday, birthyear, name, phone_number
         provider:
@@ -44,11 +44,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-
-jwt:
-  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
-  expiration: 3600000
-
 eureka:
   client:
     fetch-registry: true
@@ -56,8 +51,10 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://localhost:8761/eureka}
 
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+jwt:
+  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
+  expiration: 3600000
+
 redis:
   host: localhost
   port: 6379

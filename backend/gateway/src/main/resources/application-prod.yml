@@ -20,3 +20,11 @@ spring:
             uri: lb://OZZ-CLOTHES
             predicates:
               - Path=/api/clothes/**, /api/categories/**, /api/coordinates/**
+          - id: user-router
+            uri : lb://OZZ-USER
+            predicates:
+              - Path=/api/user
+          - id: auth-router
+            uri : lb://OZZ-AUTH
+            predicates:
+              - Path=/api/auth

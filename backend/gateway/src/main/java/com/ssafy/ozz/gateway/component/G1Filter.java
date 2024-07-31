@@ -1,7 +1,7 @@
 package com.ssafy.ozz.gateway.component;
 
-import com.ssafy.ozz.auth.global.util.JWTUtil;
 // implementation 'com.ssafy.ozz:ozz-auth:1.0.0' Gradle에 추가하면 끌어 쓸 수 있음.
+import com.ssafy.ozz.gateway.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;

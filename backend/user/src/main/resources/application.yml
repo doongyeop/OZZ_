@@ -42,10 +42,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-jwt:
-  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
-  expiration: 3600000
-
 eureka:
   client:
     fetch-registry: true
@@ -55,3 +51,7 @@ eureka:
 
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+jwt:
+  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
+  expiration: 3600000

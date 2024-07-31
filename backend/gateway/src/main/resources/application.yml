@@ -1,8 +1,12 @@
 server:
-  port: ${API_GATEWAY_PORT:9000}
+  port: ${API_GATEWAY_PORT:8000}
 
 spring:
   application:
     name: ozz-gateway
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+
+jwt:
+  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
+  expiration: 3600000
