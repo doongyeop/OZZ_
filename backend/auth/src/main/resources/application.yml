@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PW}
+    username: {DB_USER}
+    password: {DB_PW}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -58,3 +58,4 @@ jwt:
 redis:
   host: localhost
   port: 6379
+

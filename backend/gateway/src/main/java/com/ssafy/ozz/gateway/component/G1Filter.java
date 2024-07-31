@@ -1,6 +1,5 @@
 package com.ssafy.ozz.gateway.component;
 
-// implementation 'com.ssafy.ozz:ozz-auth:1.0.0' Gradle에 추가하면 끌어 쓸 수 있음.
 import com.ssafy.ozz.gateway.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 
