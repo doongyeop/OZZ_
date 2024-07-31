@@ -1,3 +1,6 @@
+server:
+  port: ${API_GATEWAY_PORT:9000}
+
 spring:
   application:
     name: ozz-gateway
