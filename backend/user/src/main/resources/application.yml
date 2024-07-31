@@ -2,6 +2,8 @@ server:
   port: ${USER_PORT:8082}
 
 spring:
+  application:
+    name: ozz-user
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/ozz?serverTimezone=UTC}
     username: ${DB_USER:root}

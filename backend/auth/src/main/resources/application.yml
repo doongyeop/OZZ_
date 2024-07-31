@@ -2,6 +2,8 @@ server:
   port: ${AUTH_PORT:8100}
 
 spring:
+  application:
+    name: ozz-auth
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
