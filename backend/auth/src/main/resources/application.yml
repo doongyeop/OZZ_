@@ -1,5 +1,5 @@
 server:
-  port: ${AUTH_PORT:8100}
+  port: ${AUTH_PORT:8080}
 
 spring:
   application:
@@ -26,12 +26,12 @@ spring:
           naver:
             client-id: K1K33QhN8jMwVVpMIbKw
             client-secret: yTFwpt0_aB
-            redirect-uri: ${NAVER_REDIRECT_URL:http://localhost:8100/login/oauth2/code/naver}
+            redirect-uri: ${NAVER_REDIRECT_URL:http://localhost:8080/login/oauth2/code/naver}
             authorization-grant-type: authorization_code
             scope: email, profile_image, birthday, birthyear, name, mobile
           kakao:
             client-id: c0033eb7caa88a531ad2b79765bed2c9
-            redirect-uri: ${KAKAO_REDIRECT_URL:http://localhost:8100/login/oauth2/code/kakao}
+            redirect-uri: ${KAKAO_REDIRECT_URL:http://localhost:8080/login/oauth2/code/kakao}
             authorization-grant-type: authorization_code
             scope: account_email, profile_image, birthday, birthyear, name, phone_number
         provider:
