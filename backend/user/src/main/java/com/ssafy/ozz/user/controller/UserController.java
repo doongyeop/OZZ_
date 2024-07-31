@@ -5,10 +5,11 @@ import com.ssafy.ozz.user.service.UserService;
 import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -17,16 +18,15 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final UserService userService;
+    private final JWTUtil jwtUtil;
 
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
@@ -112,6 +112,16 @@ public class UserController {
             return ResponseEntity.status(404).body("User not found");
         }
     }
+
+    @GetMapping("/check")
+    @Operation(summary = "닉네임 중복 조회")
+    public ResponseEntity<?> checkNickname(@RequestParam(value = "nickname") String nickname) {
+        if (userService.existsByNickname(nickname)) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 사용중인 닉네임입니다.");
+        }
+        return ResponseEntity.ok("사용 가능한 닉네임입니다.");
+    }
+
 }
 
 
