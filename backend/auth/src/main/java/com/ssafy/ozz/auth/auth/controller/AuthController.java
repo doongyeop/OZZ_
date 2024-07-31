@@ -7,23 +7,20 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final JWTUtil jwtUtil;
     private final RefreshService refreshService;
-
-    public AuthController(JWTUtil jwtUtil, RefreshService refreshService) {
-        this.jwtUtil = jwtUtil;
-        this.refreshService = refreshService;
-    }
 
     @PostMapping("/reissue")
     @Operation(summary = "access토큰 재발급, rotate 적용")
@@ -65,7 +62,7 @@ public class AuthController {
 
         // response
         response.setHeader("access", newAccess);
-        response.setHeader("Refresh", newRefresh);
+        response.setHeader("refresh", newRefresh);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -73,7 +70,7 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "로그아웃")
     public ResponseEntity<?> logout(HttpServletRequest request) {
-        String refresh = request.getHeader("Refresh");
+        String refresh = request.getHeader("refresh");
 
         if (refresh == null) {
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
