@@ -45,6 +45,10 @@ services:
     depends_on:
       - mysql-db
       - ozz-eureka
+      - ozz-file
+      - elasticsearch
+      - logstash
+      - kibana
 
   ozz-file:
     build: ./file-server
@@ -122,9 +126,9 @@ services:
     depends_on:
       - ozz-eureka
       - ozz-file
+      - ozz-clothes
       - ozz-auth
       - ozz-user
-      - ozz-clothes
 
 # ELK 설정
   elasticsearch:
