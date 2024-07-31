@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import Modal from '@/components/Modal'
 
+type TextureModalProps = {
+  onClose: () => void
+  setValue: (value: string[]) => void
+}
+
 type MaterialType = {
   [key: string]: boolean
 }
@@ -41,10 +46,7 @@ const otherMaterials = [
   '시폰',
 ]
 
-const TextureModal: React.FC<{
-  onClose: () => void
-  setValue: (value: string[]) => void
-}> = ({ onClose, setValue }) => {
+export default function TextureModal({ onClose, setValue }: TextureModalProps) {
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType>({})
   const [showOtherMaterials, setShowOtherMaterials] = useState(false)
 
@@ -124,5 +126,3 @@ const TextureModal: React.FC<{
     </Modal>
   )
 }
-
-export default TextureModal

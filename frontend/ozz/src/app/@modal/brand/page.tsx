@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 import { HiPencil } from 'react-icons/hi'
 
-const BrandModal: React.FC<{
+type BrandModalProps = {
   onClose: () => void
   setValue: (value: string) => void
-}> = ({ onClose, setValue }) => {
+}
+
+export default function BrandModal({ onClose, setValue }: BrandModalProps) {
   const [brand, setBrand] = useState<string>('')
 
   const handleSave = () => {
@@ -35,5 +37,3 @@ const BrandModal: React.FC<{
     </Modal>
   )
 }
-
-export default BrandModal

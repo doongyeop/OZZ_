@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import Modal from '@/components/Modal'
 
-const seasons = ['봄', '여름', '가을', '겨울']
-
-const SeasonModal: React.FC<{
+type SeasonModalProps = {
   onClose: () => void
   setValue: (value: string[]) => void
-}> = ({ onClose, setValue }) => {
+}
+
+const seasons = ['봄', '여름', '가을', '겨울']
+
+export default function SeasonModal({ onClose, setValue }: SeasonModalProps) {
   const [season, setSeason] = useState<{ [key: string]: boolean }>({
     봄: false,
     여름: false,
@@ -56,5 +58,3 @@ const SeasonModal: React.FC<{
     </Modal>
   )
 }
-
-export default SeasonModal

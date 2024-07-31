@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import Modal from '@/components/Modal'
 
+type PatternModalProps = {
+  onClose: () => void
+  setValue: (value: { name: string; img: string }) => void
+}
+
 const patterns = [
   { name: '무지', img: '/images/patterns/plain.png' },
   { name: '줄무늬', img: '/images/patterns/striped.png' },
@@ -22,10 +27,7 @@ const patterns = [
   { name: '하운즈투스', img: '/images/patterns/houndstooth.png' },
 ]
 
-const PatternModal: React.FC<{
-  onClose: () => void
-  setValue: (value: { name: string; img: string }) => void
-}> = ({ onClose, setValue }) => {
+export default function PatternModal({ onClose, setValue }: PatternModalProps) {
   const [selectedPattern, setSelectedPattern] = useState<{
     name: string
     img: string
@@ -70,5 +72,3 @@ const PatternModal: React.FC<{
     </Modal>
   )
 }
-
-export default PatternModal
