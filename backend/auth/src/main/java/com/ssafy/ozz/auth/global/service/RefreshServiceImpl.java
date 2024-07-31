@@ -11,10 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ssafy.ozz.auth.global.config.JWTConfig.REFRESH;
-
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class RefreshServiceImpl implements RefreshService {
 
     private final JWTUtil jwtUtil;
@@ -22,7 +20,7 @@ public class RefreshServiceImpl implements RefreshService {
 
     @Override
     public String createAndSaveRefreshToken(Long userId) {
-        String refreshToken = jwtUtil.createJwt(REFRESH, userId, 86400000L); // 1일
+        String refreshToken = jwtUtil.createJwt("refresh", userId, 86400000L); // 1일
         saveRefreshToken(refreshToken);
         return refreshToken;
     }
@@ -32,26 +30,26 @@ public class RefreshServiceImpl implements RefreshService {
         // 사용자 ID를 추출
         String userId = jwtUtil.getUserId(refreshToken);
 
+        // 기존 리프레시 토큰이 있으면 삭제
+        String existingTokenKey = findExistingRefreshTokenKey(userId);
+        if (existingTokenKey != null) {
+            redisTemplate.delete(existingTokenKey);
+        }
+
         // 새로운 리프레시 토큰 저장
         String tokenId = UUID.randomUUID().toString();
         Refresh refresh = Refresh.builder()
-                .id(tokenId)
+                .id(userId)
                 .refreshToken(refreshToken)
                 .expiration(new Date(System.currentTimeMillis() + 86400000L))
                 .build();
 
         // RedisTemplate을 사용하여 해시 타입으로 저장
         Map<String, Object> hash = new HashMap<>();
-        hash.put("id", refresh.getId());
-        hash.put(REFRESH, refresh.getRefreshToken());
+        hash.put("userId", userId);
+        hash.put("refreshToken", refresh.getRefreshToken());
         hash.put("expiration", refresh.getExpiration().getTime());
-
-        redisTemplate.opsForHash().putAll(REFRESH + ":" + tokenId, hash);
-        // 기존 리프레시 토큰이 있으면 삭제
-        String existingTokenKey = findExistingRefreshTokenKey(userId);
-        if (existingTokenKey != null) {
-            redisTemplate.delete(existingTokenKey);
-        }
+        redisTemplate.opsForHash().putAll(userId, hash);
     }
 
     @Override
@@ -69,32 +67,30 @@ public class RefreshServiceImpl implements RefreshService {
             Map<Object, Object> hash = redisTemplate.opsForHash().entries(existingTokenKey);
             if (!hash.isEmpty()) {
                 return Refresh.builder()
-                        .id((String) hash.get("id"))
-                        .refreshToken((String) hash.get(REFRESH))
+                        .id((String) hash.get("userId"))
+                        .refreshToken((String) hash.get("refreshToken"))
                         .expiration(new Date((Long) hash.get("expiration")))
                         .build();
             }
         }
         return null;
     }
-
     // key로 리프레쉬 토큰 조회
     private String findExistingRefreshTokenKey(String userId) {
-        for (String key : redisTemplate.keys(REFRESH + ":*")) {
+        for (String key : redisTemplate.keys("refreshToken:*")) {
             Map<Object, Object> hash = redisTemplate.opsForHash().entries(key);
-            String tokenUserId = jwtUtil.getUserId((String) hash.get(REFRESH));
+            String tokenUserId = jwtUtil.getUserId((String) hash.get("refreshToken"));
             if (userId.equals(tokenUserId)) {
                 return key;
             }
         }
         return null;
     }
-
     // 토큰으로 리프레쉬 토큰 조회
     private String findExistingRefreshTokenKeyByToken(String refreshToken) {
-        for (String key : redisTemplate.keys(REFRESH + ":*")) {
+        for (String key : redisTemplate.keys("refreshToken:*")) {
             Map<Object, Object> hash = redisTemplate.opsForHash().entries(key);
-            if (refreshToken.equals(hash.get(REFRESH))) {
+            if (refreshToken.equals(hash.get("refreshToken"))) {
                 return key;
             }
         }
