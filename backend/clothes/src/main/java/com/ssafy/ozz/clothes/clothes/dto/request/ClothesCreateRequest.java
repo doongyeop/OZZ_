@@ -24,7 +24,7 @@ public record ClothesCreateRequest(
         List<Season> seasonList,
         List<Style> styleList,
         List<Pattern> patternList,
-        Long categoryLowId
+        Byte categoryLowId
 ) {
     public Clothes toEntity(CategoryLow categoryLow, Long imageFileId, Long userId) {
         return Clothes.builder()
