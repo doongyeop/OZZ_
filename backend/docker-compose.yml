@@ -87,6 +87,27 @@ services:
       - mysql-db
       - ozz-eureka
 
+  ozz-user:
+    build: ./user
+    ports:
+      - ${USER_PORT}:${USER_PORT}
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      AUTH_PORT: ${USER_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      NAVER_REDIRECT_URL: http://ozz-gateway:${API_GATEWAY_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://ozz-gateway:${API_GATEWAY_PORT}/login/oauth2/code/kakao
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+
   ozz-gateway:
     build: ./gateway
     ports:
@@ -101,6 +122,7 @@ services:
       - ozz-eureka
       - ozz-file
       - ozz-auth
+      - ozz-user
       - ozz-clothes
 
 # ELK 설정
