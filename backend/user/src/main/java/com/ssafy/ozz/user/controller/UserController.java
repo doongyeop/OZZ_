@@ -1,6 +1,8 @@
 package com.ssafy.ozz.user.controller;
 
 import com.ssafy.ozz.user.domain.User;
+import com.ssafy.ozz.user.global.file.FileClient;
+import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.service.UserService;
 import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private final FileClient fileClient;
 
     @Autowired
     private JWTUtil jwtUtil;
@@ -83,10 +89,10 @@ public class UserController {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {
-                Map<String, Object> fileInfo = fileService.saveFile(file);
+                FeignFileInfo fileInfo = fileClient.uploadFile(file).orElseThrow(FileNotFoundException::new);
                 User user = userOptional.get();
                 User updatedUser = user.toBuilder()
-                        .profileFileId((Long) fileInfo.get("fileId"))
+                        .profileFileId(fileInfo.fileId())
                         .build();
                 userService.updateUser(userId, updatedUser);
                 return ResponseEntity.ok(fileInfo);
