@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import { ClothingData } from '@/types/clothing'
 import { fetchMockClothing, updateClothing } from '@/services/clothingApi'
-import { ClothingForm } from '@/containers/closet-page/ClothingForm'
+import ClothingForm from '@/containers/closet-page/ClothingForm'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [initialData, setInitialData] = useState<ClothingData | null>(null)

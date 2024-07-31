@@ -373,7 +373,7 @@ export default function ClothingForm({
                 <div className="flex justify-center items-center">
                   {item.value && (
                     <>
-                      {item.label === '색' && color ? (
+                      {item.label === '색' && Array.isArray(color) ? (
                         <>
                           {color.slice(0, 3).map((c, index) => (
                             <div key={c.code} className="flex">
