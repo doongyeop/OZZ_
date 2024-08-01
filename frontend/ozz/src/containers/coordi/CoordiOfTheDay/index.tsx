@@ -31,7 +31,7 @@ export default function CoordiOfTheDay({
   coordinations,
 }: {
   selectedDate: string
-  coordinations: { image: string }[]
+  coordinations: { id: string; image: string }[]
 }) {
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
 
@@ -97,12 +97,14 @@ export default function CoordiOfTheDay({
       {coordinations.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 mt-4">
           {coordinations.map((coordination, index) => (
-            <img
-              key={index}
-              src={coordination.image}
-              alt={`Coordination ${index + 1}`}
-              className="w-full h-auto"
-            />
+            <Link href={`/coordi/${coordination.id}`}>
+              <img
+                key={index}
+                src={coordination.image}
+                alt={`Coordination ${index + 1}`}
+                className="w-full h-auto"
+              />
+            </Link>
           ))}
         </div>
       ) : (
