@@ -1,5 +1,5 @@
 import Header from '@/components/Header'
-import ProfileEdit from '@/containers/my-page/edit'
+import ProfileEdit from '@/containers/my-page/editprofile'
 
 export default function ProfileEditPage() {
   return (
