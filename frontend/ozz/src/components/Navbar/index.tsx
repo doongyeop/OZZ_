@@ -24,20 +24,18 @@ export default function Navbar() {
   return (
     <nav className="fixed bottom-0 inset-x-0 bg-secondary text-gray-dark py-4">
       <ul className="container mx-auto flex justify-around items-center">
-        {links.map((link) => {
-          return (
-            <li key={link.name}>
-              <Link
-                href={link.href}
-                className={
-                  path === link.href.split('/')[1] ? 'text-primary-400' : ''
-                }
-              >
-                <link.icon size="32" />
-              </Link>
-            </li>
-          )
-        })}
+        {links.map((link) => (
+          <li key={link.name}>
+            <Link
+              href={link.href}
+              className={
+                path === link.href.split('/')[1] ? 'text-primary-400' : ''
+              }
+            >
+              <link.icon size="32" />
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   )

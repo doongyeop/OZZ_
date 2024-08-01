@@ -1,4 +1,5 @@
-// components/TagButton.tsx
+'use client'
+
 import { ReactNode } from 'react'
 
 interface TagButtonProps {
@@ -14,6 +15,7 @@ export default function TagButton({
 }: TagButtonProps) {
   return (
     <button
+      type="button"
       className={`py-0.5 px-2 rounded-full text-sm border ${
         isSelected
           ? 'bg-primary-100 border-primary-400'

@@ -6,6 +6,8 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
+  useMemo,
 } from 'react'
 
 interface Location {
@@ -29,11 +31,14 @@ interface WeatherContextType {
   setWeather: (weather: DailyWeather[]) => void
   selectedWeather: DailyWeather | null
   setSelectedWeather: (weather: DailyWeather) => void
+  error: string | null
+  location: Location
+  fetchLocationAndWeather: () => Promise<void>
 }
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined)
 
-export const WeatherProvider = ({ children }: { children: ReactNode }) => {
+export function WeatherProvider({ children }: { children: ReactNode }) {
   const [location, setLocation] = useState<Location>({
     latitude: 37.5665, // 서울의 위도
     longitude: 126.978, // 서울의 경도
@@ -42,6 +47,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
   const [selectedWeather, setSelectedWeather] = useState<DailyWeather | null>(
     null,
   )
+  const [error, setError] = useState<string | null>(null)
 
   const getLocation = async (): Promise<Location> => {
     if (!navigator.geolocation) {
@@ -56,6 +62,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
             longitude: position.coords.longitude,
           })
         },
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         (error) => {
           reject(error)
         },
@@ -63,47 +70,56 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  useEffect(() => {
-    const fetchLocationAndWeather = async () => {
-      try {
-        const currentPosition = await getLocation()
-        setLocation(currentPosition)
+  const fetchLocationAndWeather = useCallback(async () => {
+    try {
+      const currentPosition = await getLocation()
+      setLocation(currentPosition)
 
-        if (
-          currentPosition.latitude !== null &&
-          currentPosition.longitude !== null
-        ) {
-          const response = await fetch(
-            `/api/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
-            { cache: 'force-cache' },
-          )
+      if (
+        currentPosition.latitude !== null &&
+        currentPosition.longitude !== null
+      ) {
+        const response = await fetch(
+          `/api/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
+          { cache: 'force-cache' },
+        )
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch weather data')
-          }
-
-          const weatherData = await response.json()
-          const formattedWeatherData = weatherData.map((day: any) => ({
-            ...day,
-            date: new Date(day.date),
-          }))
-          setWeather(formattedWeatherData)
-          setSelectedWeather(formattedWeatherData[0])
+        if (!response.ok) {
+          throw new Error('Failed to fetch weather data')
         }
-      } catch (err: any) {
-        console.error(err.message)
-      }
-    }
 
-    fetchLocationAndWeather()
+        const weatherData = await response.json()
+        const formattedWeatherData = weatherData.map((day: any) => ({
+          ...day,
+          date: new Date(day.date),
+        }))
+        setWeather(formattedWeatherData)
+        setSelectedWeather(formattedWeatherData[0])
+      }
+    } catch (err: any) {
+      setError(err.message)
+    }
   }, [])
 
+  useEffect(() => {
+    fetchLocationAndWeather().then(() => {})
+  }, [fetchLocationAndWeather])
+
+  const value = useMemo(
+    () => ({
+      weather,
+      setWeather,
+      selectedWeather,
+      setSelectedWeather,
+      error,
+      location,
+      fetchLocationAndWeather,
+    }),
+    [weather, selectedWeather, error, location, fetchLocationAndWeather],
+  )
+
   return (
-    <WeatherContext.Provider
-      value={{ weather, setWeather, selectedWeather, setSelectedWeather }}
-    >
-      {children}
-    </WeatherContext.Provider>
+    <WeatherContext.Provider value={value}>{children}</WeatherContext.Provider>
   )
 }
 

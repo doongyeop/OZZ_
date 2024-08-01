@@ -48,11 +48,9 @@ export function InputForm() {
         alert(result.error)
         setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
       } else {
-        console.log(result)
         router.push('/closet')
       }
     } catch (error) {
-      console.error('Error fetching order lists:', error)
       alert('아이디 또는 비밀번호를 확인하세요.')
       setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
     }
@@ -63,6 +61,7 @@ export function InputForm() {
   }
 
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-3">
         <FormField
@@ -71,6 +70,7 @@ export function InputForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
+                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                 <Input placeholder="아이디" {...field} />
               </FormControl>
               <FormMessage />

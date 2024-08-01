@@ -1,7 +1,6 @@
-// context/SelectedItemContext.tsx
 'use client'
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 
 interface SelectedItemContextType {
   selectedItem: any
@@ -12,13 +11,20 @@ const SelectedItemContext = createContext<SelectedItemContextType | undefined>(
   undefined,
 )
 
-export const SelectedItemProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+interface SelectedItemProviderProps {
+  children: ReactNode
+}
+
+export function SelectedItemProvider({ children }: SelectedItemProviderProps) {
   const [selectedItem, setSelectedItem] = useState<any>(null)
 
+  const value = useMemo(
+    () => ({ selectedItem, setSelectedItem }),
+    [selectedItem],
+  )
+
   return (
-    <SelectedItemContext.Provider value={{ selectedItem, setSelectedItem }}>
+    <SelectedItemContext.Provider value={value}>
       {children}
     </SelectedItemContext.Provider>
   )

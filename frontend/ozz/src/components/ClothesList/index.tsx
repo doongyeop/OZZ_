@@ -24,7 +24,6 @@ export default function ClothesList({
     } else {
       setSelectedItem(item)
     }
-    console.log(selectedItem)
   }
 
   return (
@@ -32,6 +31,7 @@ export default function ClothesList({
       {clothingList.map((item) =>
         isSelectable ? (
           <div
+            role="presentation"
             key={item.clothesId}
             className={`px-5 w-full hover:bg-primary-100 active:bg-primary-100 cursor-pointer ${
               selectedItem && selectedItem.clothesId === item.clothesId

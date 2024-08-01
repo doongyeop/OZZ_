@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/popover'
 import TagButton from '@/components/Button/TagButton'
 import { useWeather } from '@/contexts/WeatherContext'
+import Image from 'next/image'
 
 const styleTags = [
   '전체',
@@ -42,6 +43,7 @@ export default function CoordiOfTheDay({
       setSelectedTags(['전체'])
     } else {
       setSelectedTags((prevTags) =>
+        // eslint-disable-next-line no-nested-ternary
         prevTags.includes(tag)
           ? prevTags.length === 1
             ? ['전체']
@@ -67,7 +69,10 @@ export default function CoordiOfTheDay({
 
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex gap-1 items-center bg-gray-light hover:bg-gray-medium border border-gray-dark rounded-lg px-3">
+            <button
+              type="button"
+              className="flex gap-1 items-center bg-gray-light hover:bg-gray-medium border border-gray-dark rounded-lg px-3"
+            >
               스타일 태그
               <IoIosArrowDown />
             </button>
@@ -90,11 +95,7 @@ export default function CoordiOfTheDay({
       <div>
         <div className="my-2 flex flex-wrap gap-2">
           {selectedTags.map((tag) => (
-            <TagButton
-              key={tag}
-              isSelected={true}
-              onClick={() => handleTagClick(tag)}
-            >
+            <TagButton key={tag} isSelected onClick={() => handleTagClick(tag)}>
               #{tag}
             </TagButton>
           ))}
@@ -104,10 +105,13 @@ export default function CoordiOfTheDay({
         <div className="grid grid-cols-2 gap-4 mt-4">
           {coordinations.map((coordination, index) => (
             <Link key={coordination.id} href={`/coordi/${coordination.id}`}>
-              <img
-                key={index}
+              <Image
+                key={coordination.id}
                 src={coordination.image}
                 alt={`Coordination ${index + 1}`}
+                width={0}
+                height={0}
+                sizes="100%"
                 className="w-full h-auto"
               />
             </Link>

@@ -5,31 +5,7 @@ import { useEffect, useState } from 'react'
 import { LiaSlashSolid } from 'react-icons/lia'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-
-interface Location {
-  latitude: number
-  longitude: number
-}
-
-const getLocation = async (): Promise<Location> => {
-  if (!navigator.geolocation) {
-    throw new Error('Geolocation is not supported by this browser.')
-  }
-
-  return new Promise<Location>((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        })
-      },
-      (error) => {
-        reject(error)
-      },
-    )
-  })
-}
+import Image from 'next/image'
 
 const getDayOfWeekColor = (dayOfWeek: string): string => {
   switch (dayOfWeek) {
@@ -43,49 +19,9 @@ const getDayOfWeekColor = (dayOfWeek: string): string => {
 }
 
 export default function Weather() {
-  const { weather, setWeather, selectedWeather, setSelectedWeather } =
+  const { weather, selectedWeather, setSelectedWeather, error, location } =
     useWeather()
-  const [location, setLocation] = useState<Location>({
-    latitude: 37.5665, // 서울의 위도
-    longitude: 126.978, // 서울의 경도
-  })
-  const [error, setError] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<number>(0) // 선택된 날짜의 인덱스
-
-  useEffect(() => {
-    const fetchLocationAndWeather = async () => {
-      try {
-        const currentPosition = await getLocation()
-        setLocation(currentPosition)
-
-        if (
-          currentPosition.latitude !== null &&
-          currentPosition.longitude !== null
-        ) {
-          const response = await fetch(
-            `/api/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
-            { cache: 'force-cache' },
-          )
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch weather data')
-          }
-
-          const weatherData = await response.json()
-          const formattedWeatherData = weatherData.map((day: any) => ({
-            ...day,
-            date: new Date(day.date),
-          }))
-          setWeather(formattedWeatherData)
-          setSelectedWeather(formattedWeatherData[0])
-        }
-      } catch (err: any) {
-        setError(err.message)
-      }
-    }
-
-    fetchLocationAndWeather()
-  }, [setWeather])
 
   useEffect(() => {
     if (weather) {
@@ -121,9 +57,12 @@ export default function Weather() {
                   {weather[selectedDay].minTemp}°
                 </span>
               </div>
-              <img
+              <Image
                 src={`/images/weather/${weather[selectedDay].icon}`}
                 alt={weather[selectedDay].description}
+                width={0}
+                height={0}
+                sizes="100%"
                 className="w-16"
               />
               <div className="text-center min-w-20">
@@ -134,7 +73,8 @@ export default function Weather() {
             <div className="flex justify-between min-w-full">
               {weather.map((day, index) => (
                 <div
-                  key={index}
+                  role="presentation"
+                  key={day.dayOfWeek}
                   onClick={() => setSelectedDay(index)}
                   className={`shrink flex flex-col items-center cursor-pointer p-2 ${
                     selectedWeather && selectedWeather.date === day.date
@@ -145,9 +85,12 @@ export default function Weather() {
                   <p className={`text-sm ${getDayOfWeekColor(day.dayOfWeek)}`}>
                     {day.dayOfWeek}
                   </p>
-                  <img
+                  <Image
                     src={`/images/weather/${day.icon}`}
                     alt={day.description}
+                    width={0}
+                    height={0}
+                    sizes="100%"
                     className="w-6"
                   />
                   <p className="text-xs text-secondary font-light">
