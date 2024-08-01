@@ -15,8 +15,8 @@ export function HeaderButton({ icon, onClick, href }: HeaderButtonProps) {
   }
 
   return (
-    <button onClick={onClick} className="">
+    <div onClick={onClick} className="">
       {buttonContent}
-    </button>
+    </div>
   )
 }
