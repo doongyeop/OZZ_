@@ -1,16 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Header from '@/components/Header'
+import { useRouter } from 'next/navigation'
 import { ClothingData } from '@/types/clothing'
-import { fetchMockClothing, updateClothing } from '@/services/clothingApi'
+import {
+  fetchMockClothing,
+  updateClothing,
+  deleteClothing,
+} from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
+import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
-  const [initialData, setInitialData] = useState<ClothingData | null>(null)
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
     undefined,
   )
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (params.id) {
@@ -28,14 +35,31 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
     }
   }
 
+  const handleDelete = async () => {
+    try {
+      // await deleteClothing(params.id)
+      // 성공 처리 (예: 알림 표시, 페이지 이동 등)
+      router.push('/closet') // 목록 페이지로 이동
+    } catch (error) {
+      // 에러 처리
+    }
+  }
+
   return (
     <main>
-      <Header title="나의 옷짱" />
       <ClothingForm
         initialData={clothingData}
         onSubmit={handleSubmit}
         submitButtonText="수정하기"
       />
+      <ClothesDeleteButton onClick={() => setShowConfirmModal(true)} />
+      {showConfirmModal && (
+        <ConfirmModal
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleDelete}
+          message="정말 삭제하시겠습니까?"
+        />
+      )}
     </main>
   )
 }

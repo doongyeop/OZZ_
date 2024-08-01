@@ -1,11 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import CategorySidebar from '@/components/Button/CategorySidebar'
 import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 import ClothesList from '@/components/ClothesList'
 import SearchArea from '@/containers/closet-page/SearchArea'
 import { fetchMockClothingList } from '@/services/clothingApi'
-import { useEffect, useState } from 'react'
+import EmptyCloset from '@/containers/closet-page/EmptyCloset/page'
 
 interface ClosetPageContainerProps {
   isSidebarOpen: boolean
@@ -62,8 +63,14 @@ export default function ClosetPageContainer({
         />
       ) : null}
       <SearchArea />
-      <ClothesList clothingList={clothingList} isSelectable={false} />
-      <ClothesRegistButton />
+      {clothingList.length === 0 ? (
+        <EmptyCloset />
+      ) : (
+        <>
+          <ClothesList clothingList={clothingList} isSelectable={false} />
+          <ClothesRegistButton />
+        </>
+      )}
     </div>
   )
 }

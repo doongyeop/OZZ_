@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modal/Modal'
 import { Style } from 'util'
 
 type StyleModalProps = {
