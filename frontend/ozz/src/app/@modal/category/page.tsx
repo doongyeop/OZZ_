@@ -3,7 +3,7 @@ import Modal from '@/components/Modal'
 
 type CategoryModalProps = {
   onClose: () => void
-  setValue: React.Dispatch<React.SetStateAction<string>>
+  setValue: (value: string) => void
 }
 
 type CategoryType = {

@@ -1,13 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Header from '@/components/Header'
 import { ClothingData } from '@/types/clothing'
 import { fetchMockClothing, updateClothing } from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
-  const [initialData, setInitialData] = useState<ClothingData | null>(null)
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
     undefined,
   )
@@ -30,7 +28,6 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
 
   return (
     <main>
-      <Header title="나의 옷짱" />
       <ClothingForm
         initialData={clothingData}
         onSubmit={handleSubmit}

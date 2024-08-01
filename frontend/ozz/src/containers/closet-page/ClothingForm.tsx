@@ -121,7 +121,7 @@ export default function ClothingForm({
     if (initialData) {
       setName(initialData.name || '')
       setBrandName(initialData.brandName || '')
-      setCategoryName(initialData.categoryName || null)
+      setCategoryName(initialData.categoryName || '')
       setPurchaseDate(initialData.purchaseDate || null)
       setPurchaseSite(initialData.purchaseSite || null)
       setSeason(initialData.season || [])
@@ -422,17 +422,48 @@ export default function ClothingForm({
               {submitButtonText}
             </button>
           </div>
-          z {/* Modals */}
-          {modalItems.map(
-            ({ path, component: ModalComponent, setValue }) =>
-              openModal === path && (
-                <ModalComponent
-                  key={path}
-                  onClose={closeModal}
-                  // setValue의 타입이 여러가지라 발생하는 에러
-                  setValue={setValue}
-                />
-              ),
+          {/* Modals */}
+          {openModal === 'brand' && (
+            <BrandModal onClose={closeModal} setValue={setBrandName} />
+          )}
+          {openModal === 'category' && (
+            <CategoryModal onClose={closeModal} setValue={setCategoryName} />
+          )}
+          {openModal === 'purchase-date' && (
+            <PurchaseDateModal
+              onClose={closeModal}
+              setValue={setPurchaseDate}
+            />
+          )}
+          {openModal === 'purchase-site' && (
+            <PurchaseSiteModal
+              onClose={closeModal}
+              setValue={setPurchaseSite}
+            />
+          )}
+          {openModal === 'season' && (
+            <SeasonModal onClose={closeModal} setValue={setSeason} />
+          )}
+          {openModal === 'size' && (
+            <SizeModal onClose={closeModal} setValue={setSize} />
+          )}
+          {openModal === 'fit' && (
+            <FitModal onClose={closeModal} setValue={setFit} />
+          )}
+          {openModal === 'texture' && (
+            <TextureModal onClose={closeModal} setValue={setTexture} />
+          )}
+          {openModal === 'color' && (
+            <ColorModal onClose={closeModal} setValue={setColor} />
+          )}
+          {openModal === 'style' && (
+            <StyleModal onClose={closeModal} setValue={setStyle} />
+          )}
+          {openModal === 'pattern' && (
+            <PatternModal onClose={closeModal} setValue={setPattern} />
+          )}
+          {openModal === 'memo' && (
+            <MemoModal onClose={closeModal} setValue={setMemo} />
           )}
         </div>
       </form>
