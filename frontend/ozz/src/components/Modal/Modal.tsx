@@ -7,7 +7,7 @@ interface ModalProps {
   width?: string
 }
 
-const Modal: React.FC<ModalProps> = ({ onClose, title, children, width }) => {
+export default function Modal({ onClose, title, children, width }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-secondary bg-opacity-50">
       <div
@@ -37,4 +37,4 @@ const Modal: React.FC<ModalProps> = ({ onClose, title, children, width }) => {
   )
 }
 
-export default Modal
+Modal

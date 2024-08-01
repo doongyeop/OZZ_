@@ -26,6 +26,11 @@ export const updateClothing = async (id: number, data: FormData) => {
   return response.data
 }
 
+export const deleteClothing = async (id: number) => {
+  const response = await axios.delete(`/api/clothes/${id}`)
+  return response.data
+}
+
 export const fetchMockClothingList = () => [
   {
     size: 2,
