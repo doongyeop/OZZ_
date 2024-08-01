@@ -1,23 +1,14 @@
 'use client'
-import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
+
+import { useWeather } from '@/contexts/WeatherContext'
 import { useEffect, useState } from 'react'
 import { LiaSlashSolid } from 'react-icons/lia'
+import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
 
 interface Location {
   latitude: number
   longitude: number
-}
-
-interface DailyWeather {
-  dayOfWeek: string
-  date: string
-  minTemp: number
-  maxTemp: number
-  description: string
-  humidity: number
-  icon: string
-  season: string
 }
 
 const getLocation = async (): Promise<Location> => {
@@ -51,16 +42,13 @@ const getDayOfWeekColor = (dayOfWeek: string): string => {
   }
 }
 
-export default function Weather({
-  setSelectedDate,
-}: {
-  setSelectedDate: (date: string) => void
-}) {
+export default function Weather() {
+  const { weather, setWeather, selectedWeather, setSelectedWeather } =
+    useWeather()
   const [location, setLocation] = useState<Location>({
     latitude: 37.5665, // 서울의 위도
     longitude: 126.978, // 서울의 경도
   })
-  const [weather, setWeather] = useState<DailyWeather[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<number>(0) // 선택된 날짜의 인덱스
 
@@ -84,7 +72,12 @@ export default function Weather({
           }
 
           const weatherData = await response.json()
-          setWeather(weatherData)
+          const formattedWeatherData = weatherData.map((day: any) => ({
+            ...day,
+            date: new Date(day.date),
+          }))
+          setWeather(formattedWeatherData)
+          setSelectedWeather(formattedWeatherData[0])
         }
       } catch (err: any) {
         setError(err.message)
@@ -92,15 +85,13 @@ export default function Weather({
     }
 
     fetchLocationAndWeather()
-  }, [])
+  }, [setWeather])
 
   useEffect(() => {
     if (weather) {
-      setSelectedDate(
-        format(new Date(weather[selectedDay].date), 'M월 d일', { locale: ko }),
-      ) // 선택된 날짜 업데이트
+      setSelectedWeather(weather[selectedDay])
     }
-  }, [selectedDay, weather, setSelectedDate])
+  }, [selectedDay, weather, setSelectedWeather])
 
   return (
     <div className="m-4 p-2 flex justify-center bg-gray-light rounded-lg">
@@ -113,7 +104,8 @@ export default function Weather({
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center space-x-2 my-1">
               <span className="text-lg font-semibold">
-                {weather[selectedDay].date} ({weather[selectedDay].dayOfWeek})
+                {format(weather[selectedDay].date, 'M월 d일', { locale: ko })} (
+                {weather[selectedDay].dayOfWeek})
               </span>
               <span className="bg-secondary rounded-full text-white text-xs px-2 py-0.5">
                 {weather[selectedDay].season}
@@ -145,7 +137,9 @@ export default function Weather({
                   key={index}
                   onClick={() => setSelectedDay(index)}
                   className={`shrink flex flex-col items-center cursor-pointer p-2 ${
-                    selectedDay === index ? 'bg-gray-medium rounded-lg' : ''
+                    selectedWeather && selectedWeather.date === day.date
+                      ? 'bg-gray-medium rounded-lg'
+                      : ''
                   }`}
                 >
                   <p className={`text-sm ${getDayOfWeekColor(day.dayOfWeek)}`}>
@@ -157,7 +151,7 @@ export default function Weather({
                     className="w-6"
                   />
                   <p className="text-xs text-secondary font-light">
-                    {day.date}
+                    {format(day.date, 'MM/dd', { locale: ko })}
                   </p>
                 </div>
               ))}

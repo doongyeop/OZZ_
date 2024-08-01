@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
+import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
 
 import {
   Popover,
@@ -11,6 +13,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import TagButton from '@/components/Button/TagButton'
+import { useWeather } from '@/contexts/WeatherContext'
 
 const styleTags = [
   '전체',
@@ -27,12 +30,11 @@ const styleTags = [
 ]
 
 export default function CoordiOfTheDay({
-  selectedDate,
   coordinations,
 }: {
-  selectedDate: string
   coordinations: { id: string; image: string }[]
 }) {
+  const { selectedWeather } = useWeather()
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
 
   const handleTagClick = (tag: string) => {
@@ -49,11 +51,15 @@ export default function CoordiOfTheDay({
     }
   }
 
+  const today = format(new Date(), 'M월 d일', { locale: ko })
+
   return (
     <div className="m-4">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold">
-          {selectedDate}{' '}
+          {selectedWeather
+            ? format(selectedWeather.date, 'M월 d일', { locale: ko })
+            : today}{' '}
           <span className="bg-secondary text-primary-400 px-0.5">
             #추천_코디
           </span>
@@ -97,7 +103,7 @@ export default function CoordiOfTheDay({
       {coordinations.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 mt-4">
           {coordinations.map((coordination, index) => (
-            <Link href={`/coordi/${coordination.id}`}>
+            <Link key={coordination.id} href={`/coordi/${coordination.id}`}>
               <img
                 key={index}
                 src={coordination.image}
