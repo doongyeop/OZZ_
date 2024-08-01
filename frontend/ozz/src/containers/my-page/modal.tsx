@@ -6,10 +6,7 @@ interface UploadModalProps {
 
 const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   return (
-    <div
-      className="absolute right-0 top-0 z-50 bg-[#F6F6F9] border border-[#ECECEE] rounded-lg p-4 w-36 mx-auto"
-      style={{ marginTop: '30px', marginRight: '-1rem' }}  {/* marginRight 값을 -1rem으로 조정 */}
-    >
+    <div className="absolute right-0 top-0 z-50 bg-gray-50 border border-gray-300 rounded-lg p-4 w-36 mt-8 mr-[-1rem]">
       <div className="w-full h-full text-sm flex flex-col space-y-4 px-3">
         <button className="flex items-center justify-between w-full text-left">
           사진 보관함
@@ -28,7 +25,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
             />
           </svg>
         </button>
-        <div className="border-t border-[#ECECEE]" />
+        <div className="border-t border-gray-300" />
         <button className="flex items-center justify-between w-full text-left">
           파일 선택
           <svg
