@@ -1,4 +1,6 @@
 import Navbar from '@/components/Navbar'
+import { SelectedColorProvider } from '@/contexts/SelectedColorContext'
+import { SelectedItemProvider } from '@/contexts/SelectedItemContext'
 import '@/styles/global.css'
 import localFont from 'next/font/local'
 
@@ -24,10 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className}`}>
-        <div className="py-20">
-          {children}
-          <Navbar />
-        </div>
+        <SelectedItemProvider>
+          <SelectedColorProvider>
+            <div className="py-20">
+              {children}
+              <Navbar />
+            </div>
+          </SelectedColorProvider>
+        </SelectedItemProvider>
       </body>
     </html>
   )
