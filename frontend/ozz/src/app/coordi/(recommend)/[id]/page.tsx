@@ -1,11 +1,9 @@
 import OutlineButton from '@/components/Button/OutlineButton'
-import { RiDownloadLine } from 'react-icons/ri'
-import { MdOutlineShare } from 'react-icons/md'
 import TagButton from '@/components/Button/TagButton'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import Link from 'next/link'
-import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
-import { IoChevronBack } from 'react-icons/io5'
+import { MdOutlineShare } from 'react-icons/md'
+import { RiDownloadLine } from 'react-icons/ri'
 
 export default function CoordiDetailPage({
   params,
@@ -43,12 +41,7 @@ export default function CoordiDetailPage({
 
   return (
     <>
-      <Header
-        title="추천 코디"
-        leftButton={
-          <HeaderButton icon={<IoChevronBack size={28} />} href="/coordi" />
-        }
-      />
+      <HeaderWithBackward />
       <img src={coordination.image} alt={coordination.id} />
       <div className="m-4">
         <h1 className="text-xl font-semibold">추천 코디 #{coordination.id}</h1>
