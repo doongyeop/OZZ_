@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modal/Modal'
 
 type CategoryModalProps = {
   onClose: () => void
-  setValue: React.Dispatch<React.SetStateAction<string>>
+  setValue: (value: string) => void
 }
 
 type CategoryType = {

@@ -1,5 +1,3 @@
-import Header from '@/components/Header'
-import { ClothingData } from '@/types/clothing'
 import { createClothing } from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 

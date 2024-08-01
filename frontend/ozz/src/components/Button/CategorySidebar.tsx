@@ -1,6 +1,6 @@
 // src/components/CategorySidebar.tsx
 import { useState } from 'react'
-import { IoClose, IoChevronDown, IoChevronUp } from 'react-icons/io5'
+import { IoClose } from 'react-icons/io5'
 
 interface CategorySidebarProps {
   onSelectCategory: (category: string, subcategory: string) => void
@@ -40,7 +40,7 @@ export default function CategorySidebar({
   }
 
   return (
-    <div className="absolute left-0 h-full w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
+    <div className="z-50 absolute left-0 h-full w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
       <div className="flex flex-col">
         <div className="mt-2 text-right">
           <button onClick={onClose} className="text-primary-400 w-6 h-6">

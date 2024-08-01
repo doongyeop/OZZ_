@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modal/Modal'
 
 const MyPageIndex = () => {
   const user = {
