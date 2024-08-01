@@ -19,15 +19,19 @@ export default function SearchArea() {
   const [order, setOrder] = useState<OrderValue>('regist')
 
   return (
-    <div className="p-3 px-4 flex justify-between">
-      <div className="ps-4 flex items-center space-x-2">
-        <IoSearch size="24" />
-        <Input
-          className="border-secondary"
-          type="search"
-          placeholder="키워드를 입력하세요"
-        />
-      </div>
+    <div className="p-4 flex justify-between">
+      <form className="ps-4 flex items-center space-x-2">
+        <div className="relative w-full">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+            <IoSearch size="20" className="text-secondary" />
+          </div>
+          <Input
+            className="pl-10 border-secondary"
+            type="search"
+            placeholder="키워드를 입력하세요"
+          />
+        </div>
+      </form>
       <div>
         <Select
           value={order}
