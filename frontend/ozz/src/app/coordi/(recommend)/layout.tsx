@@ -10,9 +10,7 @@ export default function CoordiRecommendLayout({
   return (
     <section>
       <Header title="추천 코디" />
-      <SelectedItemProvider>
-        <SelectedColorProvider>{children}</SelectedColorProvider>
-      </SelectedItemProvider>
+      {children}
     </section>
   )
 }
