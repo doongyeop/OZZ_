@@ -139,12 +139,12 @@ export default function Weather({
                 <p className="text-sm">습도 {weather[selectedDay].humidity}%</p>
               </div>
             </div>
-            <div className="flex flex-wrap justify-between w-full gap-1">
+            <div className="flex justify-between min-w-full">
               {weather.map((day, index) => (
                 <div
                   key={index}
                   onClick={() => setSelectedDay(index)}
-                  className={`flex flex-col items-center cursor-pointer p-2 shrink ${
+                  className={`shrink flex flex-col items-center cursor-pointer p-2 ${
                     selectedDay === index ? 'bg-gray-medium rounded-lg' : ''
                   }`}
                 >
@@ -154,7 +154,7 @@ export default function Weather({
                   <img
                     src={`/images/weather/${day.icon}`}
                     alt={day.description}
-                    className="shrink w-6"
+                    className="w-6"
                   />
                   <p className="text-xs text-secondary font-light">
                     {day.date}

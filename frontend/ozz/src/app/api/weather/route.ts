@@ -16,7 +16,10 @@ export async function GET(request: Request) {
     )
   }
   const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
+  console.log(`Fetching weather data from URL: ${url}`)
+
   const response = await fetch(url)
+  console.log(`Response status: ${response.status}`)
 
   if (!response.ok) {
     return NextResponse.json(
@@ -26,7 +29,6 @@ export async function GET(request: Request) {
   }
 
   const data = await response.json()
-
   const weatherData = data.daily.slice(0, 7).map((day: any) => {
     const date = new Date(day.dt * 1000)
     const weatherId = day.weather[0].id
