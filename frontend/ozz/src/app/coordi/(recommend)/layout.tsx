@@ -1,4 +1,6 @@
 import Header from '@/components/Header'
+import { SelectedItemProvider } from '@/contexts/SelectedItemContext'
+import { SelectedColorProvider } from '@/contexts/SelectedColorContext'
 
 export default function CoordiRecommendLayout({
   children,
@@ -8,7 +10,9 @@ export default function CoordiRecommendLayout({
   return (
     <section>
       <Header title="추천 코디" />
-      {children}
+      <SelectedItemProvider>
+        <SelectedColorProvider>{children}</SelectedColorProvider>
+      </SelectedItemProvider>
     </section>
   )
 }
