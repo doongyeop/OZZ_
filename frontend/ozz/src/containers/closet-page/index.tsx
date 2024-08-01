@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { fetchMockClothingList } from '@/services/clothingApi'
-import SearchArea from '@/containers/closet-page/SearchArea'
 import CategorySidebar from '@/components/Button/CategorySidebar'
 import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
+import ClothesList from '@/components/ClothesList'
+import SearchArea from '@/containers/closet-page/SearchArea'
+import { fetchMockClothingList } from '@/services/clothingApi'
+import { useEffect, useState } from 'react'
 
 interface ClosetPageContainerProps {
   isSidebarOpen: boolean
@@ -23,7 +22,6 @@ export default function ClosetPageContainer({
   setIsSidebarOpen,
 }: ClosetPageContainerProps) {
   const [clothingList, setClothingList] = useState<any[]>([])
-  const [filteredClothes, setFilteredClothes] = useState([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
     null,
@@ -64,33 +62,7 @@ export default function ClosetPageContainer({
         />
       ) : null}
       <SearchArea />
-      <div className="flex flex-col justify-start items-center h-96 ">
-        {clothingList.map((item) => (
-          <Link
-            key={item.clothesId}
-            href={`/closet/modify/${item.clothesId}`}
-            passHref
-            className="px-5 w-full hover:bg-primary-100 active:bg-primary-100"
-          >
-            <div className="flex items-center mb-4 mt-4 cursor-pointer">
-              <Image
-                src={item.imageFile.filePath}
-                alt={item.name}
-                width={75}
-                height={75}
-                className="mr-4"
-              />
-              <div>
-                <div className="text-sm text-gray-500">
-                  {formatDate(item.createdDate)}
-                </div>
-                <div className="text-lg font-semibold">{item.name}</div>
-              </div>
-            </div>
-            <hr />
-          </Link>
-        ))}
-      </div>
+      <ClothesList clothingList={clothingList} isSelectable={false} />
       <ClothesRegistButton />
     </div>
   )
