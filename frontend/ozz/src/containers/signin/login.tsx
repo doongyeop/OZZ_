@@ -3,21 +3,21 @@ import { useEffect } from 'react'
 
 const SignIn = () => {
   useEffect(() => {
-    // 네이버 로그인 SDK 추가
-    const naverScript = document.createElement('script')
-    naverScript.src =
-      'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js'
-    naverScript.async = true
-    naverScript.onload = () => {
-      const { naver } = window as any
-      const naverLogin = new naver.LoginWithNaverId({
-        clientId: 'YOUR_NAVER_CLIENT_ID',
-        callbackUrl: 'YOUR_NAVER_CALLBACK_URL',
-        isPopup: false,
-      })
-      naverLogin.init()
-    }
-    document.head.appendChild(naverScript)
+    // // 네이버 로그인 SDK 추가
+    // const naverScript = document.createElement('script')
+    // naverScript.src =
+    //   'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js'
+    // naverScript.async = true
+    // naverScript.onload = () => {
+    //   const { naver } = window as any
+    //   const naverLogin = new naver.LoginWithNaverId({
+    //     clientId: '네이버클라아이디',
+    //     callbackUrl: 'http://localhost:8080/login/oauth2/code/naver',
+    //     isPopup: false,
+    //   })
+    //   naverLogin.init()
+    // }
+    // document.head.appendChild(naverScript)
 
     // 카카오 로그인 SDK 추가
     const kakaoScript = document.createElement('script')
@@ -26,7 +26,7 @@ const SignIn = () => {
     kakaoScript.onload = () => {
       const { Kakao } = window as any
       if (Kakao) {
-        Kakao.init('YOUR_KAKAO_CLIENT_ID')
+        Kakao.init('0048b2b5a157b80b68810cb76cae6971')
       }
     }
     document.head.appendChild(kakaoScript)
@@ -37,10 +37,29 @@ const SignIn = () => {
     if (Kakao) {
       Kakao.Auth.login({
         success: (authObj: any) => {
-          console.log(authObj)
+          fetch('http://localhost:8080/login/oauth2/code/kakao', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authObj.access_token}`,
+            },
+            body: JSON.stringify({ token: authObj.access_token }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.isNewUser) {
+                window.location.href = '/login/signup'
+              } else {
+                // 로그인 성공 후 처리
+                console.log('로그인 성공:', data)
+              }
+            })
+            .catch((error) => {
+              console.error('로그인 실패:', error)
+            })
         },
         fail: (err: any) => {
-          console.error(err)
+          console.error('카카오 로그인 실패:', err)
         },
       })
     }
