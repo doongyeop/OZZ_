@@ -8,7 +8,15 @@ import java.util.List;
 public record BoardUpdateRequest(
         String content,
         Long imgId,
-        List<Style> styleList,
+        int age,
+        List<Integer> styleList,
         List<Tag> tagList
 ) {
+    @Schema(description = "태그 정보")
+    public static record Tag(
+            int clothesId,
+            int xPosition,
+            int yPosition
+    ) {
+    }
 }

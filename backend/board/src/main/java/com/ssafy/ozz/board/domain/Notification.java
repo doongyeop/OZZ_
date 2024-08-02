@@ -20,12 +20,15 @@ public class Notification {
 
     private String content;
 
-    @Column(name = "isRead")
+    @Column(name = "is_read")
     private boolean read;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", insertable = false, updatable = false)
+    @JoinColumn(name = "users_id")
     private User user;
+
+    @Column(name = "boards_id")
+    private Long boardId; // 외래키
 
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)

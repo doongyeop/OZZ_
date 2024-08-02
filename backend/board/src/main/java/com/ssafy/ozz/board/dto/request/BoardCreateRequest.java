@@ -1,6 +1,7 @@
 package com.ssafy.ozz.board.dto.request;
 
 import com.ssafy.ozz.board.domain.Board;
+import com.ssafy.ozz.board.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +23,11 @@ public record BoardCreateRequest(
     ) {
     }
 
-    public Board toEntity() {
+    public Board toEntity(User user) {
         return Board.builder()
                 .content(content)
                 .imgId(imgId)
-                .userId(userId)
+                .user(user)
                 .age(age)
                 .style(style)
                 .likes(0)

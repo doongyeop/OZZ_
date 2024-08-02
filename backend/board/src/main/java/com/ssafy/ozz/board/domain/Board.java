@@ -22,7 +22,7 @@ public class Board {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", insertable = false, updatable = false)
+    @JoinColumn(name = "users_id")
     private User user;
 
     @Column(name = "image_file_id")

@@ -4,11 +4,13 @@ import com.ssafy.ozz.board.domain.Notification;
 import com.ssafy.ozz.board.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -32,10 +34,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void readNotification(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
-        Notification updatedNotification = notification.toBuilder()
+        notification = notification.toBuilder()
                 .read(true)
                 .build();
-        notificationRepository.save(updatedNotification);
+        notificationRepository.save(notification);
     }
 
     @Override

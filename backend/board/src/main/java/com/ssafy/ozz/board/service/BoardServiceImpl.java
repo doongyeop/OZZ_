@@ -21,16 +21,17 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     private final FileService fileService;
 
     @Override
-    public Board createBoard(Long userId, MultipartFile imageFile, BoardCreateRequest request) {
-        Long imgId = fileService.saveFile(imageFile);
+    public Board createBoard(Long userId, MultipartFile imgFile, BoardCreateRequest request) {
+        Long imgId = fileService.saveFile(imgFile);
 
         Board board = Board.builder()
                 .content(request.content())
                 .imgId(imgId)
-                .userId(userId)
+                .user(userRepository.findById(usrId))
                 .age(request.age())
                 .style(request.styleList())
                 .likes(0)
@@ -81,7 +82,7 @@ public class BoardServiceImpl implements BoardService {
                 .build();
 
         boardRepository.save(board);
-        return new BoardWithFileResponse(board, imgFile.getOriginalFilename());
+        return new BoardWithFileResponse(board, imgFile);
     }
 
     @Override

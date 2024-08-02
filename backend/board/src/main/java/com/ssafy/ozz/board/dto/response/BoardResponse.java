@@ -3,7 +3,6 @@ package com.ssafy.ozz.board.dto.response;
 import com.ssafy.ozz.board.domain.Board;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.swing.text.Style;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public record BoardResponse(
         Long imgId,
         Long userId,
         int age,
-        List<Style> style,
+        List<Style> styleList,
         int likes,
         Date createdDate
 ) {
@@ -23,9 +22,9 @@ public record BoardResponse(
                 board.getId(),
                 board.getContent(),
                 board.getImgId(),
-                board.getUserId(),
+                board.getUser().getId(),
                 board.getAge(),
-                toEnums(Style.class, clothes.getStyle())
+                board., // 비트연산 넣기
                 board.getLikes(),
                 board.getCreatedDate()
         );

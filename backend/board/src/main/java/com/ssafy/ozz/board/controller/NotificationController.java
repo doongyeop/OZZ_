@@ -2,6 +2,7 @@ package com.ssafy.ozz.board.controller;
 
 import com.ssafy.ozz.board.domain.Notification;
 import com.ssafy.ozz.board.service.NotificationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Tag(name = "NotificationController", description = "알림 컨트롤러")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -21,7 +23,7 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Notification>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
         List<Notification> notifications = notificationService.getAllNotificationsByUserId(userId);
         return ResponseEntity.ok(notifications);

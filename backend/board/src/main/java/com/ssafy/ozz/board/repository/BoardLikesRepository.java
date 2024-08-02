@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface BoardLikesRepository extends JpaRepository<BoardLikes, Long> {
 
-    @Query("SELECT new map(bl.boardId as boardId, bl.userId as userId, u.nickname as nickname, bl.createdDate as createdDate) " +
+    @Query("SELECT new map(bl.boardId as boardId, bl.userId as userId) " +
             "FROM BoardLikes bl " +
             "JOIN User u ON bl.userId = u.id " +
             "WHERE bl.boardId = :boardId")
