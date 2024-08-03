@@ -14,13 +14,14 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import Loading from '@/app/closet/loading'
+import Image from 'next/image'
 
 const FormSchema = z.object({
   userId: z.string().min(1, { message: '아이디를 입력해 주세요.' }),
   password: z.string().min(1, { message: '비밀번호를 입력해 주세요.' }),
 })
 
-export function InputForm() {
+export function InputForm({ mall }: { mall: string }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -34,7 +35,7 @@ export function InputForm() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true) // 요청 시작 시 로딩 상태를 true로 설정
     try {
-      const response = await fetch('/api/musinsa-login', {
+      const response = await fetch(`/api/${mall}-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ export function InputForm() {
             <FormItem>
               <FormControl>
                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <Input placeholder="아이디" {...field} />
+                <Input placeholder="아이디 (이메일)" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,19 +101,30 @@ export function InputForm() {
   )
 }
 
-export default function MusinsaLogin() {
+export default function MallLoginForm({ mall }: { mall: string }) {
+  const styles: { [key: string]: string } = {
+    musinsa: 'bg-black text-white',
+    ably: 'border-y-2',
+    zigzag: 'bg-[#FA6EE3]',
+  }
+
   return (
     <div className="flex flex-col justify-center items-center">
-      <div className="my-1 w-full h-10 bg-black text-white px-6 py-2 flex items-center justify-center">
-        <img
-          src="/images/malls/logo_musinsa.png"
-          alt="MUSINSA"
-          className="h-3 pe-0.5"
+      <div
+        className={`my-1 w-full h-10 px-6 py-2 flex items-center justify-center ${styles[mall]}`}
+      >
+        <Image
+          src={`/images/malls/logo_${mall}.png`}
+          alt={mall.toUpperCase()}
+          width={0}
+          height={0}
+          sizes="100%"
+          className="h-3 w-auto pe-0.5"
         />
         에서 옷 가져오기
       </div>
       <h1 className="text-lg my-3">로그인</h1>
-      <InputForm />
+      <InputForm mall={mall} />
     </div>
   )
 }

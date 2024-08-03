@@ -4,6 +4,7 @@ import Weather from '@/containers/coordi/Weather'
 import SelectOptions from '@/containers/coordi/SelectOptions'
 import CoordiOfTheDay from '@/containers/coordi/CoordiOfTheDay'
 import { WeatherProvider } from '@/contexts/WeatherContext'
+import RegistMenu from '@/containers/closet-page/RegistMenu'
 
 export default function CoordiRecommendPage() {
   const coordinations = [
