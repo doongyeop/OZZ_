@@ -49,8 +49,6 @@ services:
       - ozz-eureka
       - ozz-file
       - elasticsearch
-      - logstash
-      - kibana
 
   ozz-file:
     container_name: ozz-file
@@ -152,6 +150,7 @@ services:
       - "9300:9300"
     volumes:
       - es-data:/usr/share/elasticsearch/data
+      - ./es/elasticsearch/config/synonym/:/usr/share/elasticsearch/config/synonym/
     networks:
       - spring-cloud-network
 
