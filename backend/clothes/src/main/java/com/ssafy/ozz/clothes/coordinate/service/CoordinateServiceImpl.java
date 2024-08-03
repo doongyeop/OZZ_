@@ -7,7 +7,7 @@ import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateRepository;
@@ -48,13 +48,13 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition) {
+    public List<Coordinate> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition) {
         return coordinateRepository.findByUserId(userId, condition);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
+    public Slice<Coordinate> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByUserId(userId, condition, pageable);
     }
 
