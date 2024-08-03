@@ -29,13 +29,15 @@ public class BoardLikesServiceImpl implements BoardLikesService {
 
         if (existingLike.isPresent()) {
             boardLikesRepository.delete(existingLike.get());
-            // 읽지 않았다면 알림 삭제
-            List<Notification> notifications = notificationRepository.findByBoardId(boardLikes.getBoardId(), boardLikes.getUserId());
-            for (Notification noti : notifications) {
-                if (!noti.isRead()) {
-                    notificationService.deleteNotificationById(noti.getId());
+
+            // 좋아요 취소 시 해당 알림을 찾아 삭제
+            Optional<Notification> existringNotification = notificationRepository.findByBoardIdAndUserId(boardLikes.getBoardId(), boardLikes.getUserId());
+            existringNotification.ifPresent(notification -> { // 삭제 안했고
+                if (!notification.isRead()) { // 읽지 않았으면
+                    notificationService.deleteNotificationById(notification.getId());
                 }
-            }
+            });
+
             return false;
         } else {
             BoardLikes newBoardLike = BoardLikes.builder()
@@ -56,7 +58,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     }
 
     @Override
-    public List<Map<String, Object>> getLikesCountByBoardId(Long boardId) {
-        return boardLikesRepository.getLikesCountByBoardId(boardId);
+    public int getLikesCountByBoardId(Long boardId) {
+        return boardLikesRepository.countByBoardId(boardId);
     }
 }

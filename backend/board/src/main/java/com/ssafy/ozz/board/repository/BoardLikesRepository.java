@@ -13,11 +13,6 @@ import java.util.Optional;
 @Repository
 public interface BoardLikesRepository extends JpaRepository<BoardLikes, Long> {
 
-    @Query("SELECT new map(bl.boardId as boardId, bl.userId as userId) " +
-            "FROM BoardLikes bl " +
-            "JOIN User u ON bl.userId = u.id " +
-            "WHERE bl.boardId = :boardId")
-    List<Map<String, Object>> getLikesCountByBoardId(@Param("boardId") Long boardId);
-
+    int countByBoardId(Long boardId);
     Optional<BoardLikes> findById(BoardLikes.BoardLikesId boardLikesId);
 }

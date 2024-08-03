@@ -9,7 +9,7 @@ public record BoardUpdateRequest(
         String content,
         Long imgId,
         int age,
-        List<Integer> styleList,
+        List<Style> styleList,
         List<Tag> tagList
 ) {
     @Schema(description = "태그 정보")

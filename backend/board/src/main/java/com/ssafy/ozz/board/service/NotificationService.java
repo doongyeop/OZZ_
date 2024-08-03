@@ -7,7 +7,7 @@ import java.util.List;
 public interface NotificationService {
     void createNotification(Notification notification);
 
-    Notification getNotificationById(Long notificationId); // notiId
+    Notification getNotificationById(Long notificationId);
 
     List<Notification> getAllNotificationsByUserId(Long userId);
 
@@ -15,5 +15,5 @@ public interface NotificationService {
 
     void deleteNotificationById(Long notificationId);
 
-
+    void deleteAllNotifications(Long useId);
 }

@@ -24,7 +24,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/")
-    @Operation(summary = "게시글 작성")
+    @Operation(summary = "게시글 등록")
     public ResponseEntity<Board> createBoard(
             @RequestParam("userId") Long userId,
             @RequestParam("imgFile") MultipartFile imgFile,
@@ -79,5 +79,21 @@ public class BoardController {
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.noContent().build();
+    }
+
+    // 정렬
+    @GetMapping("/sort")
+    @Operation(summary = "게시글 정렬 조회", description = "스타일 또는 연령 기준으로 게시글을 정렬하여 조회합니다.")
+    public ResponseEntity<Page<Board>> getBoardsSortedBy(
+            @RequestParam("sortBy") String sortBy, Pageable pageable) {
+        Page<Board> boards = boardService.getBoardsSortedBy(pageable, sortBy);
+        return ResponseEntity.ok(boards);
+    }
+
+    @GetMapping("/sort/likes")
+    @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
+    public ResponseEntity<Page<Board>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
+        Page<Board> boards = boardService.getBoardsSortedByLikesInOneDay(pageable);
+        return ResponseEntity.ok(boards);
     }
 }

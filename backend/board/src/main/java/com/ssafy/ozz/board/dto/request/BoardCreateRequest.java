@@ -1,19 +1,19 @@
 package com.ssafy.ozz.board.dto.request;
 
 import com.ssafy.ozz.board.domain.Board;
-import com.ssafy.ozz.board.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Date;
 import java.util.List;
 
 @Schema(description = "게시글 생성 요청 DTO")
 public record BoardCreateRequest(
         String content,
-        List<Tag> tags,
+        List<Tag> tagList,
         Long imgId,
         Long userId,
         int age,
-        Integer style
+        List<Style> styleList
 ) {
     @Schema(description = "태그 정보")
     public static record Tag(
