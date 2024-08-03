@@ -1,0 +1,30 @@
+allprojects {
+    group = 'com.ssafy.ozz'
+    version = '0.0.1-SNAPSHOT'
+}
+
+subprojects {
+//    apply plugin: 'java'
+//    apply plugin: 'org.springframework.boot'
+//    apply plugin: 'io.spring.dependency-management'
+//
+//    repositories {
+//        mavenCentral()
+//    }
+//
+//    dependencies {
+//        implementation 'org.springframework.boot:spring-boot-starter'
+//        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    }
+}
+
+task cleanAll {
+    dependsOn ':auth:clean', ':user:clean', ':file-server:clean', ':clothes:clean',
+            ':eureka:clean', ':gateway:clean'
+}
+
+task buildAll {
+    dependsOn cleanAll
+    dependsOn ':auth:bootJar', ':user:bootJar', ':file-server:bootJar', ':clothes:bootJar',
+            ':eureka:bootJar', ':gateway:bootJar'
+}

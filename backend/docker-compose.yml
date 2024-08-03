@@ -18,6 +18,7 @@ services:
 
 # OZZ 설정
   ozz-eureka:
+    container_name: ozz-eureka
     build: ./eureka
     ports:
       - "8761:8761"
@@ -27,6 +28,7 @@ services:
       - spring-cloud-network
 
   ozz-clothes:
+    container_name: ozz-clothes
     build: ./clothes
     ports:
       - ${CLOTHES_PORT}:${CLOTHES_PORT}
@@ -51,6 +53,7 @@ services:
       - kibana
 
   ozz-file:
+    container_name: ozz-file
     build: ./file-server
     ports:
       - ${FILE_PORT}:${FILE_PORT}
@@ -71,6 +74,7 @@ services:
       - ozz-eureka
 
   ozz-auth:
+    container_name: ozz-auth
     build: ./auth
     ports:
       - ${AUTH_PORT}:${AUTH_PORT}
@@ -92,6 +96,7 @@ services:
       - ozz-eureka
 
   ozz-user:
+    container_name: ozz-user
     build: ./user
     ports:
       - ${USER_PORT}:${USER_PORT}
@@ -114,6 +119,7 @@ services:
       - ozz-auth
 
   ozz-gateway:
+    container_name: ozz-gateway
     build: ./gateway
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
