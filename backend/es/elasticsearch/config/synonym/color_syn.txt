@@ -4,7 +4,7 @@
 빨강,레드,red,rot,rouge,rosso,크림슨,스칼렛,빨간
 분홍,핑크,pink,rosa,rose,푸크시아,마젠타
 주황,오렌지,orange,arancione,탠저린,코랄,코럴
-베이지,beige,tan,sand,khaki,연베이지
+베이지,beige,sand,연베이지
 노랑,옐로우,yellow,gelb,jaune,giallo,레몬,노란
 갈색,브라운,brown,braun,marron,marrone,체스트넛,코코아
 초록,그린,green,grün,vert,verde,에메랄드,올리브
