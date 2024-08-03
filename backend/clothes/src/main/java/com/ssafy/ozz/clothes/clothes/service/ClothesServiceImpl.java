@@ -5,7 +5,7 @@ import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
@@ -32,7 +32,6 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 @Slf4j
 public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
-    private final ClothesSearchRepository clothesSearchRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
 
@@ -50,7 +49,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, SearchCondition condition, Pageable pageable) {
+    public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         return clothesRepository.findByUserId(userId, condition, pageable).map(clothes -> {
             FeignFileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return new ClothesBasicWithFileResponse(clothes, fileInfo);
@@ -59,7 +58,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<Clothes> getClothesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
+    public Slice<Clothes> getClothesOfUser(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         return clothesRepository.findByUserId(userId, condition, pageable);
     }
 
@@ -129,17 +128,11 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     /* Elasticsearch */
-//    @PostConstruct
-//    public void syncData() {
-//        List<Clothes> clothesList = clothesRepository.findAll();
-//        clothesSearchRepository.saveAll(clothesList.stream().map(ClothesDocument::new).toList());
-//    }
-
     @Override
     @Transactional(readOnly = true)
-    public Slice<ClothesBasicWithFileResponse> searchClothes(SearchCondition condition, Pageable pageable) {
+    public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
         // TODO : 다이나믹 서치 적용
-        return clothesSearchRepository.findAllByNameContainingIgnoreCase(condition.keyword(), pageable).map(clothes -> {
+        return clothesRepository.findByCondition(condition, pageable).map(clothes -> {
 //            log.debug(clothes.toString());
 //            FeignFileInfo fileInfo = new FeignFileInfo(1L,"","","");
 //            CategoryLow categoryLow = CategoryLow.builder().build();

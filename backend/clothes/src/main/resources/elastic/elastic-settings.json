@@ -1,9 +1,6 @@
 {
   "analysis": {
     "analyzer": {
-      "korean": {
-        "type": "nori"
-      },
       "synonym_analyzer": {
         "type": "custom",
         "tokenizer": "nori_tokenizer",
@@ -22,31 +19,31 @@
     "filter": {
       "category_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/category_syn.txt"
+        "synonyms_path": "synonym/category_syn.txt"
       },
       "color_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/color_syn.txt"
+        "synonyms_path": "synonym/color_syn.txt"
       },
       "fit_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/fit_syn.txt"
+        "synonyms_path": "synonym/fit_syn.txt"
       },
       "pattern_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/pattern_syn.txt"
+        "synonyms_path": "synonym/pattern_syn.txt"
       },
       "season_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/season_syn.txt"
+        "synonyms_path": "synonym/season_syn.txt"
       },
       "style_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/style_syn.txt"
+        "synonyms_path": "synonym/style_syn.txt"
       },
       "texture_synonym_filter": {
         "type": "synonym",
-        "synonyms": "./synonym/texture_syn.txt"
+        "synonyms_path": "synonym/texture_syn.txt"
       }
     }
   }

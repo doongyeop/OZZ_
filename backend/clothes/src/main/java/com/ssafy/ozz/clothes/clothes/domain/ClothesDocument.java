@@ -15,7 +15,7 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBit;
 @AllArgsConstructor
 @Builder
 @Getter
-@Setting(replicas = 0) // replicas는 운영시 변경
+@Setting(settingPath = "elastic/elastic-settings.json", replicas = 0) // replicas는 운영시 변경
 @ToString
 public class ClothesDocument {
     @Id
@@ -24,7 +24,7 @@ public class ClothesDocument {
     @Field(name = "clothes_id", type = FieldType.Long)
     private Long clothesId;
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "synonym_analyzer")
     private String name;
 
     @Field(type = FieldType.Byte)
