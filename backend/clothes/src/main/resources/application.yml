@@ -18,3 +18,9 @@ spring:
 logging:
   level:
     root: info
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            client:
+              WIRE: TRACE
