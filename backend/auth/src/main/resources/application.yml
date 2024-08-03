@@ -1,8 +1,13 @@
+server:
+  port: ${AUTH_PORT:8080}
+
 spring:
+  application:
+    name: ozz-auth
   datasource:
     url: ${DB_URL}
-    username: {DB_USER}
-    password: {DB_PW}
+    username: ${DB_USER}
+    password: ${DB_PW}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -21,12 +26,12 @@ spring:
           naver:
             client-id: K1K33QhN8jMwVVpMIbKw
             client-secret: yTFwpt0_aB
-            redirect-uri: "http://localhost:8080/login/oauth2/code/naver"
+            redirect-uri: ${NAVER_REDIRECT_URL:http://localhost:8080/login/oauth2/code/naver}
             authorization-grant-type: authorization_code
             scope: email, profile_image, birthday, birthyear, name, mobile
           kakao:
             client-id: c0033eb7caa88a531ad2b79765bed2c9
-            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            redirect-uri: ${KAKAO_REDIRECT_URL:http://localhost:8080/login/oauth2/code/kakao}
             authorization-grant-type: authorization_code
             scope: account_email, profile_image, birthday, birthyear, name, phone_number
         provider:
@@ -41,10 +46,18 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://localhost:8761/eureka}
 
 jwt:
-  secret: your-very-very-long-secret-key-that-is-at-least-32-bytes-long
+  secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
   expiration: 3600000
+
 redis:
   host: localhost
   port: 6379
+
