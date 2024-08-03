@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record SearchCondition (
+public record CoordinateSearchCondition(
     List<Style> styleList,
     Long favoriteGroupId
 ){}
