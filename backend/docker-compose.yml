@@ -16,6 +16,7 @@ services:
     networks:
       - spring-cloud-network
 
+# OZZ 설정
   ozz-eureka:
     build: ./eureka
     ports:
@@ -28,8 +29,9 @@ services:
   ozz-clothes:
     build: ./clothes
     ports:
-      - "8081:8081"
+      - ${CLOTHES_PORT}:${CLOTHES_PORT}
     environment:
+      CLOTHES_PORT: ${CLOTHES_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
@@ -43,42 +45,92 @@ services:
     depends_on:
       - mysql-db
       - ozz-eureka
+      - ozz-file
+      - elasticsearch
+      - logstash
+      - kibana
 
   ozz-file:
     build: ./file-server
     ports:
-      - "9000:9000"
+      - ${FILE_PORT}:${FILE_PORT}
     volumes:
       - file-data:/data/uploads
     environment:
+      FILE_PORT: ${FILE_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
       FILE_UPLOAD_DIR: /data/uploads
-      ELASTICSEARCH_HOST: http://elasticsearch:9200
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
 
+  ozz-auth:
+    build: ./auth
+    ports:
+      - ${AUTH_PORT}:${AUTH_PORT}
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      AUTH_PORT: ${AUTH_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+
+  ozz-user:
+    build: ./user
+    ports:
+      - ${USER_PORT}:${USER_PORT}
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      USER_PORT: ${USER_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+      - ozz-auth
+
   ozz-gateway:
     build: ./gateway
     ports:
-      - "8000:8000"
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     environment:
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
-      ELASTICSEARCH_HOST: http://elasticsearch:9200
     networks:
       - spring-cloud-network
     depends_on:
       - ozz-eureka
       - ozz-file
       - ozz-clothes
+      - ozz-auth
+      - ozz-user
 
+# ELK 설정
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
     container_name: elasticsearch
