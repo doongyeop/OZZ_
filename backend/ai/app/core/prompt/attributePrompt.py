@@ -42,8 +42,6 @@ Please return it in JSON format as in the following example.
 {
 <order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "상의>티셔츠"}
 }
-
-
 """
     user_prompt = f"""
 <clothes><order></order><info></info></clothes>
