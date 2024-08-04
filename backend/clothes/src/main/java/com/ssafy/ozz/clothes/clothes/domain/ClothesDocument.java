@@ -27,6 +27,9 @@ public class ClothesDocument {
     @Field(type = FieldType.Text, analyzer = "synonym_analyzer")
     private String name;
 
+    @Field(type = FieldType.Dense_Vector, dims = 768)
+    private float[] vector;
+
     @Field(type = FieldType.Byte)
     private Integer size;
 

@@ -23,4 +23,7 @@ logging:
         data:
           elasticsearch:
             client:
-              WIRE: TRACE
+#              WIRE: TRACE
+
+fastapi:
+  url: ${FASTAPI_URL:http://localhost:5000}
