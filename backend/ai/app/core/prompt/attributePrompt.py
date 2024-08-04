@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any
 
 
 class ExtractAttribute:
@@ -43,9 +43,6 @@ Please return it in JSON format as in the following example.
 <order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "상의>티셔츠"}
 }
 """
-    user_prompt = f"""
-<clothes><order></order><info></info></clothes>
-"""
 
 
 def make_user_prompt(idx: int, image: str, info: str):
@@ -59,6 +56,7 @@ def make_user_prompt(idx: int, image: str, info: str):
         "text": f"<clothes><order>{idx}</order><info>{info}</info></clothes>"
     }
 
+
 # 문자열을 분리하여 배열로 변환하는 함수
 def transform(key, item):
     if "List" in key:
@@ -69,11 +67,10 @@ def transform(key, item):
         return item
 
 
-def parse_response(response: dict) -> dict:
-    transformed_data=[]
+def parse_response(response: dict) -> list[dict[Any, Any]]:
+    transformed_data = []
     for i in range(len(response)):
         value = response[str(i)]
-        transformed_item = {k: transform(k,v) for k, v in value.items()}
+        transformed_item = {k: transform(k, v) for k, v in value.items()}
         transformed_data.append(transformed_item)
     return transformed_data
-
