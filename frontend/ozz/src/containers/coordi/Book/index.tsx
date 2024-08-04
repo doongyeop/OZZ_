@@ -126,19 +126,25 @@ export default function CoordiBook() {
       <div key={group.group_id} className="aspect-square">
         <Card className="flex items-center h-full overflow-hidden">
           <CardContent
-            className={`object-cover p-0 ${
-              groupFavorites.length > 3 ? 'grid grid-cols-2' : ''
+            className={`object-cover p-0 flex flex-wrap ${
+              groupFavorites.length >= 4 ? 'w-full h-full' : ''
             }`}
           >
             {groupFavorites.slice(0, 4).map((fav) => (
-              <img
-                src={fav.image_url}
-                alt={fav.item_name}
+              <div
                 key={fav.favorite_id}
                 className={`${
-                  groupFavorites.length > 3 ? '' : 'h-full w-full'
+                  groupFavorites.length >= 4
+                    ? 'w-1/2 h-1/2 overflow-hidden'
+                    : 'h-full w-full'
                 }`}
-              />
+              >
+                <img
+                  src={fav.image_url}
+                  alt={fav.item_name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             ))}
           </CardContent>
         </Card>

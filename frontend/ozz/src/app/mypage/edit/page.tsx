@@ -1,10 +1,10 @@
-import Header from '@/components/Header'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import ProfileEdit from '@/containers/my-page/editprofile'
 
 export default function ProfileEditPage() {
   return (
     <div className="space-y-12">
-      <Header title="회원 정보 수정" />
+      <HeaderWithBackward title="회원 정보 수정" />
       <ProfileEdit />
     </div>
   )
