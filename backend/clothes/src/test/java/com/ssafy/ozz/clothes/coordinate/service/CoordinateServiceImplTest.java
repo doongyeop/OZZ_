@@ -12,7 +12,7 @@ import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
-import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

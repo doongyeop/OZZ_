@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.coordinate.repository;
+package com.ssafy.ozz.clothes.coordinate.repository.jpa;
 
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
