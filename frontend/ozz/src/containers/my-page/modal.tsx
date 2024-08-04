@@ -6,7 +6,7 @@ interface UploadModalProps {
 
 const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   return (
-    <div className="absolute right-0 top-0 z-50 bg-gray-50 border border-gray-300 rounded-lg p-4 w-36 mt-8 mr-[-1rem]">
+    <div className="absolute left-[100%] top-0 z-50 bg-gray-50 border border-gray-300 rounded-lg p-4 w-36 mt-8 mr-[-1rem] text-black">
       <div className="w-full h-full text-sm flex flex-col space-y-4 px-3">
         <button className="flex items-center justify-between w-full text-left">
           사진 보관함
