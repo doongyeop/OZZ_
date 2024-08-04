@@ -1,4 +1,7 @@
 fastapi~=0.111.1
 uvicorn~=0.30.4
-openai~=1.37.1
+openai~=1.38.0
 pydantic~=2.8.2
+python-dotenv~=1.0.1
+rembg~=2.0.57
+pillow~=10.4.0
