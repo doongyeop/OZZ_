@@ -40,7 +40,7 @@
 악세서리=>악세서리,주얼리
 주얼리,보석,장신구,jewelry,gems,ornaments,accessories
 
-모자=>캡,비니
+모자=>캡,비니,hat,hats
 캡,cap,caps
 비니,beanies,beany
 
