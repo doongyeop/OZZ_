@@ -1,19 +1,11 @@
 package com.ssafy.ozz.clothes.coordinate.domain;
 
-import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.global.es.Indices;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 
 @Document(indexName = Indices.COORDINATE_INDEX)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,7 +28,7 @@ public class CoordinateDocument {
     private String name;
 
     @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     /* FOREIGN KEY */
     @Field(name = "user_id", type = FieldType.Long)
