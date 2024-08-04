@@ -1,14 +1,16 @@
 package com.ssafy.ozz.clothes.coordinate.dto;
 
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicResponse;
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
+import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toEnums;
 
+@Builder
 public record CoordinateResponse (
         Long coordinateId,
         String name,
@@ -16,16 +18,15 @@ public record CoordinateResponse (
         LocalDateTime createdDate,
         List<CoordinateClothesBasicResponse> clothesList,
         // TODO: File DTO로 반환하기
-        Long imageFileId
+        FeignFileInfo imageFile
 ){
-    public CoordinateResponse(Coordinate coordinate){
-        this(
-            coordinate.getCoordinateId(),
-            coordinate.getName(),
-            toEnums(Style.class, coordinate.getStyle()),
-            coordinate.getCreatedDate(),
-            coordinate.getCoordinateClothesList().stream().map(CoordinateClothesBasicResponse::new).toList(),
-            coordinate.getImageFileId()
-        );
+    public static CoordinateResponse of(Coordinate coordinate, FeignFileInfo file) {
+        return CoordinateResponse.builder()
+                .coordinateId(coordinate.getCoordinateId())
+                .name(coordinate.getName())
+                .styleList(toEnums(Style.class, coordinate.getStyle()))
+                .createdDate(coordinate.getCreatedDate())
+                .imageFile(file)
+                .build();
     }
 }
