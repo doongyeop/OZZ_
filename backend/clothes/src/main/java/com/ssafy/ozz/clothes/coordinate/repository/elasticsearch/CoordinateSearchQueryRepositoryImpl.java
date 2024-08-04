@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Repository
 @RequiredArgsConstructor
 public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQueryRepository {
 
