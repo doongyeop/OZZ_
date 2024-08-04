@@ -1,6 +1,10 @@
 {
   "analysis": {
     "analyzer": {
+      "korean": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer"
+      },
       "synonym_analyzer": {
         "type": "custom",
         "tokenizer": "nori_tokenizer",
