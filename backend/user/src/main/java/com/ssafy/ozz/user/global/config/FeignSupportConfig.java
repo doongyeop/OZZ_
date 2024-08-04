@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.global.config;
+package com.ssafy.ozz.user.global.config;
 
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;

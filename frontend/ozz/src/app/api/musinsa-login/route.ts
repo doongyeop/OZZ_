@@ -19,8 +19,9 @@ interface Order {
   orderDate: string
   productName: string
   brandName: string
-  price: string
+  option: string
   thumbnailUrl: string
+  purchaseSite: string
 }
 
 // Function to fetch CSRF token from login page
@@ -116,8 +117,8 @@ const fetchOrderList = async (
             .find('.order-goods-information__brand')
             .text()
             .trim()
-          const price = $(el)
-            .find('.order-goods-information__price__sale')
+          const option = $(el)
+            .find('.order-goods-information__option')
             .text()
             .trim()
           const thumbnailUrl = $(el)
@@ -131,8 +132,9 @@ const fetchOrderList = async (
             orderDate,
             productName,
             brandName,
-            price,
+            option,
             thumbnailUrl: transformedThumbnailUrl,
+            purchaseSite: '무신사',
           })
         })
     })
@@ -153,7 +155,7 @@ async function getMusinsaOrderLists(
   const csrfToken = await fetchCSRFToken()
   const cookies = await login(csrfToken, userId, password)
   const orderList = await fetchOrderList(cookies)
-
+  console.log(orderList)
   return orderList
 }
 
