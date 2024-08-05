@@ -1,6 +1,9 @@
 package com.ssafy.ozz.user.controller;
 
 import com.ssafy.ozz.user.domain.User;
+import com.ssafy.ozz.user.global.file.FileClient;
+import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
+import com.ssafy.ozz.user.global.file.exception.FileUploadException;
 import com.ssafy.ozz.user.service.UserService;
 import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +26,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequestMapping("/api/users")
 public class UserController {
 
+    private final FileClient fileClient;
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
@@ -79,14 +82,14 @@ public class UserController {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {
-                Map<String, Object> fileInfo = fileService.saveFile(file); // fileService가 연동 필요
+                FeignFileInfo fileInfo = fileClient.uploadFile(file).orElseThrow(FileUploadException::new);
                 User user = userOptional.get();
                 User updatedUser = user.toBuilder()
-                        .profileFileId((Long) fileInfo.get("fileId"))
+                        .profileFileId(fileInfo.fileId())
                         .build();
                 userService.updateUser(userId, updatedUser);
                 return ResponseEntity.ok(fileInfo);
-            } catch (IOException e) {
+            } catch (FileUploadException e) {
                 return ResponseEntity.status(500).body("파일 업로드 실패");
             }
         } else {

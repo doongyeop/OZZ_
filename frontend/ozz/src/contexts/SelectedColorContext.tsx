@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 
 interface Color {
   name: string
@@ -16,15 +16,16 @@ const SelectedColorContext = createContext<
   SelectedColorContextProps | undefined
 >(undefined)
 
-export const SelectedColorProvider = ({
-  children,
-}: {
-  children: ReactNode
-}) => {
+export function SelectedColorProvider({ children }: { children: ReactNode }) {
   const [selectedColor, setSelectedColor] = useState<Color[]>([])
 
+  const value = useMemo(
+    () => ({ selectedColor, setSelectedColor }),
+    [selectedColor],
+  )
+
   return (
-    <SelectedColorContext.Provider value={{ selectedColor, setSelectedColor }}>
+    <SelectedColorContext.Provider value={value}>
       {children}
     </SelectedColorContext.Provider>
   )

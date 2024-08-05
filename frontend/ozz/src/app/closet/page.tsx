@@ -1,21 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
-import ClosetPageContainer from '@/containers/closet-page'
-
 import { FaBars } from 'react-icons/fa'
 import Image from 'next/image'
 
+import Header from '@/components/Header'
+import { HeaderButton } from '@/components/Button/HeaderButton'
+import ClosetPageContainer from '@/containers/closet-page'
+import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
+
 export default function Closet() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const toggleSidabar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
+  // const toggleSidebar = () => {
+  //   setIsSidebarOpen(!isSidebarOpen)
+  // }
+  const { toggleSidebar } = useCategorySidebar()
 
-  const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidabar} />
+  const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidebar} />
   const rightButton = (
     <HeaderButton
       icon={
@@ -39,10 +41,7 @@ export default function Closet() {
         leftButton={leftButton}
         rightButton={rightButton}
       />
-      <ClosetPageContainer
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
+      <ClosetPageContainer />
     </>
   )
 }

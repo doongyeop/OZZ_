@@ -2,52 +2,6 @@ import { NextResponse } from 'next/server'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
-const API_KEY = process.env.OPENWEATHERMAP_API_KEY
-
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const lat = searchParams.get('lat')
-  const lon = searchParams.get('lon')
-
-  if (!lat || !lon) {
-    return NextResponse.json(
-      { error: 'Missing latitude or longitude' },
-      { status: 400 },
-    )
-  }
-  const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
-  console.log(`Fetching weather data from URL: ${url}`)
-
-  const response = await fetch(url)
-  console.log(`Response status: ${response.status}`)
-
-  if (!response.ok) {
-    return NextResponse.json(
-      { error: 'Failed to fetch weather data' },
-      { status: 500 },
-    )
-  }
-
-  const data = await response.json()
-  const weatherData = data.daily.slice(0, 7).map((day: any) => {
-    const date = new Date(day.dt * 1000)
-    const weatherId = day.weather[0].id
-
-    return {
-      dayOfWeek: format(date, 'EEE', { locale: ko }),
-      date: format(date, 'MM/dd'),
-      minTemp: Math.round(day.temp.min),
-      maxTemp: Math.round(day.temp.max),
-      description: getWeatherDescription(weatherId),
-      humidity: day.humidity,
-      icon: getWeatherIcon(day.weather[0]),
-      season: getSeason(date.getMonth() + 1),
-    }
-  })
-
-  return NextResponse.json(weatherData)
-}
-
 const getWeatherDescription = (id: number): string => {
   switch (true) {
     case id >= 200 && id < 300:
@@ -76,6 +30,8 @@ const getWeatherDescription = (id: number): string => {
           return '돌풍'
         case 781:
           return '토네이도'
+        default:
+          return '대기 현상'
       }
     case id === 800:
       return '맑음'
@@ -143,4 +99,49 @@ const getSeason = (month: number): string => {
     default:
       return ''
   }
+}
+
+const API_KEY = process.env.OPENWEATHERMAP_API_KEY
+
+// eslint-disable-next-line import/prefer-default-export
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const lat = searchParams.get('lat')
+  const lon = searchParams.get('lon')
+
+  if (!lat || !lon) {
+    return NextResponse.json(
+      { error: 'Missing latitude or longitude' },
+      { status: 400 },
+    )
+  }
+  const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
+
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    return NextResponse.json(
+      { error: 'Failed to fetch weather data' },
+      { status: 500 },
+    )
+  }
+
+  const data = await response.json()
+  const weatherData = data.daily.slice(0, 7).map((day: any) => {
+    const date = new Date(day.dt * 1000)
+    const weatherId = day.weather[0].id
+
+    return {
+      dayOfWeek: format(date, 'EEE', { locale: ko }),
+      date: format(date, 'MM/dd'),
+      minTemp: Math.round(day.temp.min),
+      maxTemp: Math.round(day.temp.max),
+      description: getWeatherDescription(weatherId),
+      humidity: day.humidity,
+      icon: getWeatherIcon(day.weather[0]),
+      season: getSeason(date.getMonth() + 1),
+    }
+  })
+
+  return NextResponse.json(weatherData)
 }

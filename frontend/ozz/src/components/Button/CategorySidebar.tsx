@@ -1,11 +1,12 @@
 // src/components/CategorySidebar.tsx
 import { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
+import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
 
-interface CategorySidebarProps {
-  onSelectCategory: (category: string, subcategory: string) => void
-  onClose: () => void
-}
+// interface CategorySidebarProps {
+//   onSelectCategory: (category: string, subcategory: string) => void
+//   onClose: () => void
+// }
 
 const categories = {
   상의: [
@@ -27,10 +28,8 @@ const categories = {
   액세서리: ['주얼리', '모자', '기타'],
 }
 
-export default function CategorySidebar({
-  onSelectCategory,
-  onClose,
-}: CategorySidebarProps) {
+export default function CategorySidebar() {
+  const { closeSidebar, setCategory } = useCategorySidebar()
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const toggleCategory = (category: string) => {
@@ -43,7 +42,7 @@ export default function CategorySidebar({
     <div className="z-50 absolute left-0 h-full w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
       <div className="flex flex-col">
         <div className="mt-2 text-right">
-          <button onClick={onClose} className="text-primary-400 w-6 h-6">
+          <button onClick={closeSidebar} className="text-primary-400 w-6 h-6">
             <IoClose />
           </button>
         </div>
@@ -66,7 +65,7 @@ export default function CategorySidebar({
                     <button
                       key={subcategory}
                       className="block w-full text-right p-1 text-gray-light hover:text-primary-400"
-                      onClick={() => onSelectCategory(category, subcategory)}
+                      onClick={() => setCategory(category, subcategory)}
                     >
                       {subcategory}
                     </button>

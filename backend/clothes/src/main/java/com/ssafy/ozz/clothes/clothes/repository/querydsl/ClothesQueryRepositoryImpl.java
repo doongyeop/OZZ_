@@ -3,7 +3,7 @@ package com.ssafy.ozz.clothes.clothes.repository.querydsl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.domain.QClothes;
-import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.global.querydsl.Querydsl4RepositorySupport;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -17,7 +17,7 @@ public class ClothesQueryRepositoryImpl extends Querydsl4RepositorySupport<Cloth
     }
 
     @Override
-    public Slice<Clothes> findByUserId(Long userId, SearchCondition condition, Pageable pageable) {
+    public Slice<Clothes> findByUserId(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         return applyPagination(pageable,
                 selectFrom(clothes)
                 .where(

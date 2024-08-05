@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${CLOTHES_PORT:8081}
 
 spring:
   application:
@@ -18,3 +18,12 @@ spring:
 logging:
   level:
     root: info
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            client:
+#              WIRE: TRACE
+
+fastapi:
+  url: ${FASTAPI_URL:http://localhost:5000}

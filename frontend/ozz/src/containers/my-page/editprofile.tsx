@@ -46,7 +46,7 @@ const ProfileEdit = () => {
   return (
     <div className="relative w-full min-h-screen max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
-      <div className="relative w-full flex flex-col items-center space-y-4 mb-12">
+      <div className="w-full flex flex-col items-center space-y-4 mb-12">
         {user.profile_file_id ? (
           <img
             src={user.profile_file_id}
@@ -79,8 +79,12 @@ const ProfileEdit = () => {
           프로필 이미지 변경
         </button>
         {profileModal && (
-          <Modal title="프로필 이미지 변경" onClose={toggleProfileModal}>
-            <div className="text-sm text-white flex flex-col space-y-4 px-3">
+          <Modal
+            title="프로필 이미지 변경"
+            onClose={toggleProfileModal}
+            className="overflow-visible"
+          >
+            <div className="relative text-sm text-white flex flex-col space-y-4 px-3">
               <button onClick={toggleUploadModal} className="text-left">
                 사진 올리기
               </button>
@@ -93,10 +97,10 @@ const ProfileEdit = () => {
               >
                 기본 이미지로 변경
               </button>
+              {uploadModal && <UploadModal onClose={toggleUploadModal} />}
             </div>
           </Modal>
         )}
-        {uploadModal && <UploadModal onClose={toggleUploadModal} />}
       </div>
 
       {/* User Information Section */}
@@ -183,6 +187,7 @@ const ProfileEdit = () => {
     </div>
   )
 }
+
 const Field = ({ label, id, children }) => (
   <div className="w-full text-sm font-medium">
     <label htmlFor={id}>{label}</label>
