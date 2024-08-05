@@ -83,6 +83,7 @@ springdoc:
   api-docs:
     enabled: true
   swagger-ui:
+    use-root-path: true
     enabled: true
     path: /swagger-ui.html
 #    config-url: /v3/api-docs/swagger-config

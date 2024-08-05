@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(info = @Info(
-        title = "OZZ API",
+        title = "OZZ CLOTHES API",
         description = "OZZ API 명세서",
         version = "v1.0.0"))
 @Configuration
