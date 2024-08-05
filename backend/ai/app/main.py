@@ -1,25 +1,23 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from transformers import BertTokenizer, BertModel
-import torch
-
+<<<<<<< backend/ai/app/main.py
+from app.api.v1.endpoints import attributes
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
-# 모델과 토크나이저 로드
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased')
 
-class TextRequest(BaseModel):
-    text: str
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
 
-@app.post("/vectorize")
-def vectorize(query: TextRequest):
-    inputs = tokenizer(query.text, return_tensors='pt')
-    with torch.no_grad():
-        outputs = model(**inputs)
-    # [CLS] 토큰의 마지막 히든 상태를 벡터로 사용
-    vector = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
-    vector = vector.tolist()  # 리스트로 변환하여 JSON 응답에 포함
-    return {"vector": vector}
-
-# 서버 실행 (터미널에서 uvicorn main:app --reload 실행)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# API 라우터 설정
+app.include_router(attributes.router, prefix="/api/v1")
