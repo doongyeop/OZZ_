@@ -8,13 +8,12 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(info = @Info(
         title = "OZZ CLOTHES API",
-        description = "OZZ API 명세서",
+        description = "OZZ CLOTHES API 명세서",
         version = "v1.0.0"))
 @Configuration
 public class SwaggerConfig {
