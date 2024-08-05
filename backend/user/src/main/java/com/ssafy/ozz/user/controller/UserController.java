@@ -8,7 +8,6 @@ import com.ssafy.ozz.user.service.UserService;
 import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +23,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final FileClient fileClient;
@@ -34,8 +33,7 @@ public class UserController {
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
-        String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
-        Long userId = Long.parseLong(userIdStr);
+        Long userId = getUserIdFromToken(token);
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
@@ -49,8 +47,7 @@ public class UserController {
     @PutMapping("/")
     @Operation(summary = "토큰으로 유저정보 수정")
     public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> updates) {
-        String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
-        Long userId = Long.parseLong(userIdStr);
+        Long userId = getUserIdFromToken(token);
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
@@ -80,8 +77,7 @@ public class UserController {
     @PatchMapping("/profile")
     @Operation(summary = "유저 프로필 변경")
     public ResponseEntity<?> uploadProfileImage(@RequestHeader("Authorization") String token, @RequestParam("file") MultipartFile file) {
-        String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
-        Long userId = Long.parseLong(userIdStr);
+        Long userId = getUserIdFromToken(token);
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
@@ -104,13 +100,36 @@ public class UserController {
     @DeleteMapping("/")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
-        String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
-        Long userId = Long.parseLong(userIdStr);
+        Long userId = getUserIdFromToken(token);
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             userService.deleteUser(userId);
+            // 토큰도 삭제
+            String existingTokenKey = findExistingRefreshTokenKey(userId);
+            if (existingTokenKey != null) {
+                redisTemplate.delete(existingTokenKey);
+            }
             return ResponseEntity.status(204).body("no content");
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+    
+    // 걍 updateUser(45줄) 이거쓰면 될 듯
+    @PutMapping("/nickname")
+    @Operation(summary = "최초 로그인 시 닉네임 입력")
+    public ResponseEntity<?> registNickName(@RequestHeader("Authorization") String token, @RequestParam(value = "nickname") String nickname) {
+        Long userId = getUserIdFromToken(token);
+
+        Optional<User> userOptional = userService.getUserById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            User updatedUser = user.toBuilder()
+                    .nickname(nickname)
+                    .build();
+            userService.updateUser(userId, updatedUser);
+            return ResponseEntity.ok("닉네임이 등록되었습니다.");
         } else {
             return ResponseEntity.status(404).body("User not found");
         }
@@ -125,6 +144,10 @@ public class UserController {
         return ResponseEntity.ok("사용 가능한 닉네임입니다.");
     }
 
+    // 토큰에서 userId 추출해서 Long 타입으로 반환
+    private Long getUserIdFromToken(String token) {
+        String userIdStr = jwtUtil.getUserId(token.replace("Bearer ", ""));
+        return Long.parseLong(userIdStr);
+    }
+
 }
-
-

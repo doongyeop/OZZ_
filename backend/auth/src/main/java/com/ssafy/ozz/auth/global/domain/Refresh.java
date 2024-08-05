@@ -10,7 +10,6 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "RefreshToken", timeToLive = 172800) // 2일
 public class Refresh {
 
     @Id

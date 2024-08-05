@@ -12,8 +12,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);

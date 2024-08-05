@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,6 @@ public class RefreshServiceImpl implements RefreshService {
         }
 
         // 새로운 리프레시 토큰 저장
-        String tokenId = UUID.randomUUID().toString();
         Refresh refresh = Refresh.builder()
                 .id(userId)
                 .refreshToken(refreshToken)
@@ -50,6 +50,8 @@ public class RefreshServiceImpl implements RefreshService {
         hash.put("refreshToken", refresh.getRefreshToken());
         hash.put("expiration", refresh.getExpiration().getTime());
         redisTemplate.opsForHash().putAll(userId, hash);
+
+        redisTemplate.expire(userId, 86400, TimeUnit.SECONDS); // TTL 1일 설정
     }
 
     @Override
