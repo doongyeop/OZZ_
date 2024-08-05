@@ -6,6 +6,7 @@ import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
@@ -125,6 +127,16 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public List<Clothes> getClothesInRecCoordinate(Long coordinateId) {
         return List.of();
+    }
+
+    @Override
+    public void batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories) {
+        List<Clothes> clothesList = new ArrayList<>();
+        for (PurchaseHistory purchaseHistory : purchaseHistories) {
+            clothesList.add(purchaseHistory.toEntity(1L));
+        }
+        clothesRepository.saveAll(clothesList);
+        //TODO : 저장된 의상들의 ID와 함께 구매내역을 메시지큐에 저장
     }
 
     /* Elasticsearch */

@@ -3,6 +3,7 @@ package com.ssafy.ozz.clothes.clothes.controller;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
@@ -87,5 +88,13 @@ public class ClothesController {
     public ResponseEntity<List<PropertyResponse>> getPropertyList(@RequestParam("property") PropertySelector property) {
         return ResponseEntity.ok()
                 .body(Arrays.stream(property.getPropertyClass().getEnumConstants()).map(PropertyResponse::new).toList());
+    }
+
+    @PostMapping("/batch")
+    @Operation(summary = "불러오기로 새 옷 추가", description = "온라인 마켓의 구매내역을 통해 옷장을 채웁니다")
+    public ResponseEntity<?> addClothes(@RequestPart List<PurchaseHistory> purchaseHistories) {
+        Long userId = 1L;
+        clothesService.batchRegisterPurchaseHistory(userId, purchaseHistories);
+        return ResponseEntity.ok(0);
     }
 }

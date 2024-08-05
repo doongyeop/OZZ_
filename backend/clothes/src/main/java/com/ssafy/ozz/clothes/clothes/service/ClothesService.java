@@ -1,6 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.service;
 
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
+import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
@@ -32,4 +33,6 @@ public interface ClothesService {
     List<Clothes> getClothesInCoordinate(Long coordinateId);
 
     List<Clothes> getClothesInRecCoordinate(Long coordinateId);
+
+    void batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories);
 }
