@@ -6,6 +6,9 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
+    networks:
+      - spring-cloud-network
+
   mysql-db:
     image: mysql:latest
     container_name: mysql
