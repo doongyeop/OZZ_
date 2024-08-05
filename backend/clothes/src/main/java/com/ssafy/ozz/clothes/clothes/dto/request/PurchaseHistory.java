@@ -1,11 +1,7 @@
 package com.ssafy.ozz.clothes.clothes.dto.request;
 
-import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-
 import java.time.LocalDate;
-
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 
 public record PurchaseHistory (
         String name,

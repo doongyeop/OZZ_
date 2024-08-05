@@ -25,6 +25,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+	implementation 'org.apache.kafka:kafka-streams'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
+	testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
