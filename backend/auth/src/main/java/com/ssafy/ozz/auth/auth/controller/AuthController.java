@@ -10,9 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -80,6 +78,15 @@ public class AuthController {
         refreshService.deleteRefreshToken(refresh);
 
         return new ResponseEntity<>("성공적으로 로그아웃 되었습니다.", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/users/{userId}/refresh")
+    @Operation(summary = "로그아웃")
+    public ResponseEntity<Void> deleteRefreshTokenOfUser(@PathVariable Long userId) {
+        // 리프레시 토큰 삭제
+        refreshService.deleteExistingRefreshToken(userId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

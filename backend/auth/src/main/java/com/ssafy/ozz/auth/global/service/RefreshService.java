@@ -7,6 +7,7 @@ public interface RefreshService {
     String createAndSaveRefreshToken(Long userId);
     void saveRefreshToken(String refreshToken);
     void deleteRefreshToken(String refreshToken);
+    void deleteExistingRefreshToken(Long userId);
     Refresh findByRefreshToken(String refreshToken);
 
 }

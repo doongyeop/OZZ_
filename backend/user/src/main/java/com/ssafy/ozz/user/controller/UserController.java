@@ -1,6 +1,7 @@
 package com.ssafy.ozz.user.controller;
 
 import com.ssafy.ozz.user.domain.User;
+import com.ssafy.ozz.user.global.auth.AuthClient;
 import com.ssafy.ozz.user.global.file.FileClient;
 import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class UserController {
 
     private final FileClient fileClient;
+    private final AuthClient authClient;
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
@@ -106,10 +108,11 @@ public class UserController {
         if (userOptional.isPresent()) {
             userService.deleteUser(userId);
             // 토큰도 삭제
-            String existingTokenKey = findExistingRefreshTokenKey(userId);
-            if (existingTokenKey != null) {
-                redisTemplate.delete(existingTokenKey);
-            }
+            authClient.deleteRefreshTokenOfUser(userId);
+//            String existingTokenKey = findExistingRefreshTokenKey(userId);
+//            if (existingTokenKey != null) {
+//                redisTemplate.delete(existingTokenKey);
+//            }
             return ResponseEntity.status(204).body("no content");
         } else {
             return ResponseEntity.status(404).body("User not found");
