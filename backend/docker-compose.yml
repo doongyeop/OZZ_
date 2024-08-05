@@ -86,8 +86,8 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+      NAVER_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/kakao
     networks:
       - spring-cloud-network
     depends_on:
@@ -108,8 +108,8 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+      NAVER_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/kakao
     networks:
       - spring-cloud-network
     depends_on:
