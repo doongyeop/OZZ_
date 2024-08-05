@@ -144,6 +144,7 @@ services:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      GATEWAY_HOST: http://ozz-gateway:${API_GATEWAY_PORT}
     networks:
       - spring-cloud-network
     depends_on:

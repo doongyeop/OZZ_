@@ -16,10 +16,8 @@ import reactor.core.publisher.Mono;
 public class G1Filter implements GlobalFilter {
 
     private final JWTUtil jwtUtil;
-    private static final String LOGIN_PATH = "/login"; // 예외 처리할 경로
-    private static final String AUTH_PATH = "/oauth2"; // 예외 처리할 경로
 
-    private static final String[] PERMISSION_PATHS = {"/login", "/oauth2", "/swagger-ui"};
+    private static final String[] PERMISSION_PATHS = {"/login", "/oauth2", "/docs", "/v3/api-docs", "/swagger"};
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
