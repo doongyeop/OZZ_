@@ -2,6 +2,7 @@ version: '3.1'
 
 services:
   redis:
+    container_name: redis
     image: redis:latest
     ports:
       - "6379:6379"
@@ -91,11 +92,13 @@ services:
       DB_PW: ${DB_PW}
       NAVER_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/naver
       KAKAO_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/kakao
+      REDIS_HOST: redis
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
+      - redis
 
   ozz-user:
     container_name: ozz-user
@@ -119,6 +122,7 @@ services:
       - mysql-db
       - ozz-eureka
       - ozz-auth
+      - redis
 
   ozz-ai:
     container_name: ozz-ai
