@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-<<<<<<< backend/ai/app/main.py
-from app.api.v1.endpoints import attributes
+from app.api.v1.endpoints import attributes, tokenize
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
@@ -21,3 +20,4 @@ app.add_middleware(
 )
 # API 라우터 설정
 app.include_router(attributes.router, prefix="/api/v1")
+app.include_router(tokenize.router)

@@ -1,9 +1,9 @@
 import json
-from typing import List
+from typing import List, Any
 
 from fastapi import UploadFile, HTTPException
 
-from app.core.prompt import ExtractAttribute, make_user_prompt, parse_response
+from app.core.prompt.attributePrompt import ExtractAttribute, make_user_prompt, parse_response
 from openai import OpenAI
 
 from app.utils.image_utils import remove_background_and_encode
@@ -12,7 +12,7 @@ client = OpenAI()
 
 
 class AttributeService:
-    def extract_attributes(self, images: List[UploadFile], infos: List[str]) -> dict:
+    def extract_attributes(self, images: List[UploadFile], infos: List[str]) -> list[dict[Any, Any]]:
         user_contents = []
         success_count = 0
         for idx, image in enumerate(images):
