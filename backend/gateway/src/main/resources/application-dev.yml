@@ -25,3 +25,4 @@ spring:
           uri : lb://OZZ-AUTH
           predicates:
             - Path=/api/auth/**
+            - Path=/login
