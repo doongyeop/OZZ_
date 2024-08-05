@@ -1,9 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.controller;
 
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateResponse;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.*;
 import com.ssafy.ozz.clothes.coordinate.service.CoordinateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,24 +21,30 @@ public class CoordinateController {
         // TODO: 실제 유저 번호 받아오기
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(coordinateService.createCoordinate(userId,imageFile,request).getCoordinateId());
+                .body(coordinateService.createCoordinate(userId,imageFile,request).coordinateId());
     }
 
     @GetMapping("/{coordinateId}")
     public ResponseEntity<CoordinateResponse> getCoordinate(@PathVariable final Long coordinateId) {
-        return ResponseEntity.ok(new CoordinateResponse(coordinateService.getCoordinate(coordinateId)));
+        return ResponseEntity.ok(coordinateService.getCoordinate(coordinateId));
     }
 
     @GetMapping
-    public ResponseEntity<Slice<CoordinateResponse>> getCoordinateList(@ModelAttribute SearchCondition condition, Pageable pageable) {
+    public ResponseEntity<Slice<CoordinateResponse>> getCoordinateList(@ModelAttribute CoordinateSearchCondition condition, Pageable pageable) {
         // TODO: 실제 유저 번호 받아오기
         Long userId = 1L;
-        return ResponseEntity.ok(coordinateService.getCoordinatesOfUser(userId,condition,pageable).map(CoordinateResponse::new));
+        return ResponseEntity.ok(coordinateService.getCoordinatesOfUser(userId,condition,pageable));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Slice<CoordinateBasicResponse>> searchCoordinateList(@ModelAttribute CoordinateSearchCondition condition, Pageable pageable) {
+        return ResponseEntity.ok(coordinateService.searchCoordinates(condition,pageable));
+    }
+
 
     @PutMapping(path = "/{coordinateId}", consumes = {"multipart/form-data","application/json"})
     public ResponseEntity<CoordinateResponse> updateCoordinate(@PathVariable final Long coordinateId, @RequestPart final MultipartFile imageFile, @RequestPart final CoordinateUpdateRequest request) {
-        return ResponseEntity.ok(new CoordinateResponse(coordinateService.updateCoordinate(coordinateId,imageFile,request)));
+        return ResponseEntity.ok(coordinateService.updateCoordinate(coordinateId,imageFile,request));
     }
 
     @DeleteMapping("/{coordinateId}")

@@ -4,13 +4,13 @@ import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.*;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
-import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
-import com.ssafy.ozz.clothes.coordinate.repository.CoordinateRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateRepository;
+import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
+import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
+import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,53 +27,75 @@ public class CoordinateServiceImpl implements CoordinateService {
     private final CoordinateRepository coordinateRepository;
     private final CoordinateClothesRepository coordinateClothesRepository;
     private final ClothesService clothesService;
+    private final FileClient fileClient;
 
     @Override
-    public Coordinate createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
-        // TODO: image file 저장 및 id 받아오기
-        Long imageFileId = 1L;
+    public CoordinateResponse createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
+        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
 
-        Coordinate coordinate = request.toEntity(userId,imageFileId);
+        Coordinate coordinate = request.toEntity(userId,fileInfo.fileId());
         coordinateRepository.save(coordinate);
         saveCoordinateClothesList(coordinate, request.clothesList());
 
-        return coordinate;
+        return CoordinateResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Coordinate getCoordinate(Long coordinateId) {
+    public CoordinateResponse getCoordinate(Long coordinateId) {
+        Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
+        return CoordinateResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Coordinate getCoordinateEntity(Long coordinateId) {
         return coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition) {
-        return coordinateRepository.findByUserId(userId, condition);
+    public List<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition) {
+        List<Coordinate> coordinateList = coordinateRepository.findByUserId(userId, condition);
+        return coordinateList.stream().map(coordinate -> {
+            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            return CoordinateResponse.of(coordinate, fileInfo);
+        }).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<Coordinate> getCoordinatesOfUser(Long userId, SearchCondition condition, Pageable pageable) {
-        return coordinateRepository.findByUserId(userId, condition, pageable);
+    public Slice<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
+        return coordinateRepository.findByUserId(userId, condition, pageable).map(coordinate -> {
+            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            return CoordinateResponse.of(coordinate, fileInfo);
+        });
     }
 
     @Override
-    public Coordinate updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request) {
-        Coordinate coordinate = getCoordinate(coordinateId);
+    public CoordinateResponse updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request) {
+        Coordinate coordinate = getCoordinateEntity(coordinateId);
         coordinate.updateName(request.name());
         coordinate.updateStyle(request.styleList());
 
         coordinateClothesRepository.deleteAll(coordinateClothesRepository.findByCoordinate(coordinate));
         coordinate.setCoordinateClothesList(saveCoordinateClothesList(coordinate, request.clothesList()));
 
-        return coordinate;
+        return CoordinateResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
     }
 
     @Override
     public void deleteCoordinate(Long coordinateId) {
         coordinateClothesRepository.deleteAll(coordinateClothesRepository.findByCoordinateId(coordinateId));
         coordinateRepository.deleteById(coordinateId);
+    }
+
+    @Override
+    public Slice<CoordinateBasicResponse> searchCoordinates(CoordinateSearchCondition condition, Pageable pageable) {
+        return coordinateRepository.findByCondition(condition, pageable).map(coordinate -> {
+            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            return new CoordinateBasicResponse(coordinate, fileInfo);
+        });
     }
 
     private List<CoordinateClothes> saveCoordinateClothesList(Coordinate coordinate, List<CoordinateClothesCreateRequest> clothesList) {

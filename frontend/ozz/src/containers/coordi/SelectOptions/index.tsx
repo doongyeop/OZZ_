@@ -56,11 +56,11 @@ export default function SelectOptions() {
                     } p-3 rounded-lg`}
                   >
                     <div
-                      className={`w-6 h-6 rounded-full`}
+                      className="w-6 h-6 rounded-full"
                       style={{
                         backgroundColor: color.code,
                       }}
-                    ></div>
+                    />
                     <span
                       className="text-xs mt-1"
                       style={{ color: color.code }}

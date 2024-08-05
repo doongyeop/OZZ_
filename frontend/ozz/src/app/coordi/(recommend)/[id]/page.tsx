@@ -1,11 +1,10 @@
 import OutlineButton from '@/components/Button/OutlineButton'
-import { RiDownloadLine } from 'react-icons/ri'
-import { MdOutlineShare } from 'react-icons/md'
 import TagButton from '@/components/Button/TagButton'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import Link from 'next/link'
-import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
-import { IoChevronBack } from 'react-icons/io5'
+import { MdOutlineShare } from 'react-icons/md'
+import { RiDownloadLine } from 'react-icons/ri'
+import Image from 'next/image'
 
 export default function CoordiDetailPage({
   params,
@@ -43,13 +42,15 @@ export default function CoordiDetailPage({
 
   return (
     <>
-      <Header
-        title="추천 코디"
-        leftButton={
-          <HeaderButton icon={<IoChevronBack size={28} />} href="/coordi" />
-        }
+      <HeaderWithBackward />
+      <Image
+        src={coordination.image}
+        alt={params.id}
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="w-full h-auto"
       />
-      <img src={coordination.image} alt={coordination.id} />
       <div className="m-4">
         <h1 className="text-xl font-semibold">추천 코디 #{coordination.id}</h1>
         <div className="my-4 flex gap-4">
@@ -66,7 +67,7 @@ export default function CoordiDetailPage({
           <h4 className="font-semibold">스타일 태그</h4>
           <div className="my-2 flex flex-wrap gap-2">
             {coordination.styles.map((style) => (
-              <TagButton key={style} isSelected={true}>
+              <TagButton key={style} isSelected>
                 # {style}
               </TagButton>
             ))}
@@ -77,10 +78,13 @@ export default function CoordiDetailPage({
           <div className="h-32 flex gap-4 my-2">
             {coordination.items.map((item, index) => (
               <Link href={`/closet/modify/${item.id}`} key={item.id}>
-                <img
+                <Image
                   src={item.image}
                   alt={`Item-${index}`}
-                  className="h-full object-cover"
+                  width={0}
+                  height={0}
+                  sizes="100%"
+                  className="w-auto h-full object-cover"
                 />
               </Link>
             ))}

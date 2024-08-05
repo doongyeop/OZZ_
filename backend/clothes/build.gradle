@@ -33,6 +33,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Web Client
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	// Elastic Search
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 

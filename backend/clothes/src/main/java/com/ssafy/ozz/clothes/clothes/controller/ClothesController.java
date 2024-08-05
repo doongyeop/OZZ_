@@ -2,7 +2,7 @@ package com.ssafy.ozz.clothes.clothes.controller;
 
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.request.SearchCondition;
+import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
@@ -47,7 +47,7 @@ public class ClothesController {
     @Operation(summary = "사용자의 옷 조회", description = "특정 사용자의 옷 목록을 슬라이스 형태로 조회합니다.")
     public ResponseEntity<Slice<ClothesBasicWithFileResponse>> getClothesOfUser(
             @PathVariable Long userId,
-            @ModelAttribute SearchCondition condition,
+            @ModelAttribute ClothesSearchCondition condition,
             Pageable pageable) {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
     }
@@ -55,7 +55,7 @@ public class ClothesController {
     @GetMapping("/search")
     @Operation(summary = "키워드로 옷 검색", description = "검색된 옷 목록을 슬라이스 형태로 조회합니다.")
     public ResponseEntity<Slice<ClothesBasicWithFileResponse>> searchClothes(
-            @ModelAttribute SearchCondition condition,
+            @ModelAttribute ClothesSearchCondition condition,
             Pageable pageable) {
         return ResponseEntity.ok(clothesService.searchClothes(condition, pageable));
     }

@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar'
 import { SelectedColorProvider } from '@/contexts/SelectedColorContext'
 import { SelectedItemProvider } from '@/contexts/SelectedItemContext'
+import { CategorySidebarProvider } from '@/contexts/CategorySidebarContext'
 import '@/styles/global.css'
 import localFont from 'next/font/local'
 
@@ -18,22 +19,22 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode
-  modal: React.ReactNode
 }) {
   return (
     <html lang="en" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className}`}>
-        <SelectedItemProvider>
-          <SelectedColorProvider>
-            <div className="py-20">
-              {children}
-              <Navbar />
-            </div>
-          </SelectedColorProvider>
-        </SelectedItemProvider>
+        <CategorySidebarProvider>
+          <SelectedItemProvider>
+            <SelectedColorProvider>
+              <div className="py-20">
+                {children}
+                <Navbar />
+              </div>
+            </SelectedColorProvider>
+          </SelectedItemProvider>
+        </CategorySidebarProvider>
       </body>
     </html>
   )

@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
+import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
 
 import {
   Popover,
@@ -11,6 +13,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import TagButton from '@/components/Button/TagButton'
+import { useWeather } from '@/contexts/WeatherContext'
+import Image from 'next/image'
 
 const styleTags = [
   '전체',
@@ -27,12 +31,11 @@ const styleTags = [
 ]
 
 export default function CoordiOfTheDay({
-  selectedDate,
   coordinations,
 }: {
-  selectedDate: string
   coordinations: { id: string; image: string }[]
 }) {
+  const { selectedWeather } = useWeather()
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
 
   const handleTagClick = (tag: string) => {
@@ -40,6 +43,7 @@ export default function CoordiOfTheDay({
       setSelectedTags(['전체'])
     } else {
       setSelectedTags((prevTags) =>
+        // eslint-disable-next-line no-nested-ternary
         prevTags.includes(tag)
           ? prevTags.length === 1
             ? ['전체']
@@ -49,11 +53,15 @@ export default function CoordiOfTheDay({
     }
   }
 
+  const today = format(new Date(), 'M월 d일', { locale: ko })
+
   return (
     <div className="m-4">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold">
-          {selectedDate}{' '}
+          {selectedWeather
+            ? format(selectedWeather.date, 'M월 d일', { locale: ko })
+            : today}{' '}
           <span className="bg-secondary text-primary-400 px-0.5">
             #추천_코디
           </span>
@@ -61,7 +69,10 @@ export default function CoordiOfTheDay({
 
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex gap-1 items-center bg-gray-light hover:bg-gray-medium border border-gray-dark rounded-lg px-3">
+            <button
+              type="button"
+              className="flex gap-1 items-center bg-gray-light hover:bg-gray-medium border border-gray-dark rounded-lg px-3"
+            >
               스타일 태그
               <IoIosArrowDown />
             </button>
@@ -84,11 +95,7 @@ export default function CoordiOfTheDay({
       <div>
         <div className="my-2 flex flex-wrap gap-2">
           {selectedTags.map((tag) => (
-            <TagButton
-              key={tag}
-              isSelected={true}
-              onClick={() => handleTagClick(tag)}
-            >
+            <TagButton key={tag} isSelected onClick={() => handleTagClick(tag)}>
               #{tag}
             </TagButton>
           ))}
@@ -97,11 +104,14 @@ export default function CoordiOfTheDay({
       {coordinations.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 mt-4">
           {coordinations.map((coordination, index) => (
-            <Link href={`/coordi/${coordination.id}`}>
-              <img
-                key={index}
+            <Link key={coordination.id} href={`/coordi/${coordination.id}`}>
+              <Image
+                key={coordination.id}
                 src={coordination.image}
                 alt={`Coordination ${index + 1}`}
+                width={0}
+                height={0}
+                sizes="100%"
                 className="w-full h-auto"
               />
             </Link>

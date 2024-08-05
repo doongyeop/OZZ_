@@ -1,16 +1,15 @@
 'use client'
 
 import Autoplay from 'embla-carousel-autoplay'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/ui/carousel'
-import { type CarouselApi } from '@/components/ui/carousel'
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 export default function HeroSection() {
   const [api, setApi] = useState<CarouselApi>()
@@ -56,7 +55,7 @@ export default function HeroSection() {
   const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`
 
   return (
-    <>
+    <div>
       {recommends ? (
         <Carousel
           setApi={setApi}
@@ -70,11 +69,14 @@ export default function HeroSection() {
         >
           <CarouselContent>
             {recommends.map((recommend, index) => (
-              <CarouselItem key={index}>
+              <CarouselItem key={recommend.image}>
                 <Card className="aspect-square overflow-hidden rounded-lg shadow-md">
-                  <img
+                  <Image
                     src={recommend.image}
                     alt={`recommendation-${index}`}
+                    width={0}
+                    height={0}
+                    sizes="100%"
                     className="w-full h-full object-cover"
                   />
                 </Card>
@@ -91,7 +93,14 @@ export default function HeroSection() {
         </Carousel>
       ) : (
         <div className="flex flex-col justify-center items-center h-96 bg-secondary text-gray-light">
-          <img className="w-28" src="/images/logo_blank_green.png" alt="ozz" />
+          <Image
+            className="w-28"
+            src="/images/logo_blank_green.png"
+            alt="ozz"
+            width={0}
+            height={0}
+            sizes="100%"
+          />
           <h1 className="text-xl font-bold mt-2">OZZ : 옷짱</h1>
           <p className="text-center mt-8">
             옷장에 옷을 등록하면 <br />
@@ -99,6 +108,6 @@ export default function HeroSection() {
           </p>
         </div>
       )}
-    </>
+    </div>
   )
 }

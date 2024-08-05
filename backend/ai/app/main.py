@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+<<<<<<< backend/ai/app/main.py
 from app.api.v1.endpoints import attributes
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()

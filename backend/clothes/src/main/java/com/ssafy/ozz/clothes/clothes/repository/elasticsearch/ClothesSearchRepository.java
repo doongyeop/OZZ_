@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 public interface ClothesSearchRepository extends ElasticsearchRepository<ClothesDocument, Long> {
-    Page<ClothesDocument> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<ClothesDocument> findAllByName(String name, Pageable pageable);
 }

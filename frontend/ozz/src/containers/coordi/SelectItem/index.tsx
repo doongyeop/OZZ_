@@ -36,6 +36,7 @@ export default function SelectItemContainer() {
           </p>
         </div>
         <button
+          type="button"
           className={`rounded-lg px-3 py-1 ${
             selectedItem
               ? 'bg-secondary text-primary-400'
@@ -46,7 +47,7 @@ export default function SelectItemContainer() {
           완료
         </button>
       </div>
-      <ClothesList clothingList={clothingList} isSelectable={true} />
+      <ClothesList clothingList={clothingList} isSelectable />
     </>
   )
 }

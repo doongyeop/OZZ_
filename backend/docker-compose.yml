@@ -16,7 +16,9 @@ services:
     networks:
       - spring-cloud-network
 
+# OZZ 설정
   ozz-eureka:
+    container_name: ozz-eureka
     build: ./eureka
     ports:
       - "8761:8761"
@@ -26,10 +28,12 @@ services:
       - spring-cloud-network
 
   ozz-clothes:
+    container_name: ozz-clothes
     build: ./clothes
     ports:
-      - "8081:8081"
+      - ${CLOTHES_PORT}:${CLOTHES_PORT}
     environment:
+      CLOTHES_PORT: ${CLOTHES_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
@@ -38,47 +42,108 @@ services:
       SPRING_ELASTICSEARCH_URLS: http://elasticsearch:9200
       SPRING_ELASTICSEARCH_USERNAME: ${SPRING_ELASTICSEARCH_USERNAME}
       SPRING_ELASTICSEARCH_PASSWORD: ${SPRING_ELASTICSEARCH_PASSWORD}
+      FASTAPI_URL: http://ozz-ai:${AI_PORT}
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
+      - ozz-file
+      - elasticsearch
 
   ozz-file:
+    container_name: ozz-file
     build: ./file-server
     ports:
-      - "9000:9000"
+      - ${FILE_PORT}:${FILE_PORT}
     volumes:
       - file-data:/data/uploads
     environment:
+      FILE_PORT: ${FILE_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
       FILE_UPLOAD_DIR: /data/uploads
-      ELASTICSEARCH_HOST: http://elasticsearch:9200
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
 
-  ozz-gateway:
-    build: ./gateway
+  ozz-auth:
+    container_name: ozz-auth
+    build: ./auth
     ports:
-      - "8000:8000"
+      - ${AUTH_PORT}:${AUTH_PORT}
+    volumes:
+      - file-data:/data/uploads
     environment:
+      AUTH_PORT: ${AUTH_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
-      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+
+  ozz-user:
+    container_name: ozz-user
+    build: ./user
+    ports:
+      - ${USER_PORT}:${USER_PORT}
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      USER_PORT: ${USER_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - mysql-db
+      - ozz-eureka
+      - ozz-auth
+
+  ozz-ai:
+    container_name: ozz-ai
+    build: ./ai
+    ports:
+      - ${AI_PORT}:${AI_PORT}
+    networks:
+      - spring-cloud-network
+
+  ozz-gateway:
+    container_name: ozz-gateway
+    build: ./gateway
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+    environment:
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
     networks:
       - spring-cloud-network
     depends_on:
       - ozz-eureka
       - ozz-file
       - ozz-clothes
+      - ozz-auth
+      - ozz-user
 
+# ELK 설정
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
     container_name: elasticsearch
@@ -94,6 +159,7 @@ services:
       - "9300:9300"
     volumes:
       - es-data:/usr/share/elasticsearch/data
+      - ./es/elasticsearch/config/synonym/:/usr/share/elasticsearch/config/synonym/
     networks:
       - spring-cloud-network
 
@@ -108,6 +174,7 @@ services:
       - path.data=/usr/share/logstash/data
       - DB_USER=${DB_USER}
       - DB_PW=${DB_PW}
+      - AI_PORT=${AI_PORT}
     volumes:
       - ./es/logstash/config/:/usr/share/logstash/config/
       - ./es/logstash/pipeline/:/usr/share/logstash/pipeline/
@@ -117,6 +184,7 @@ services:
       - "9600:9600" # Logstash monitoring API
     depends_on:
       - elasticsearch
+      - ozz-ai
     networks:
       - spring-cloud-network
 

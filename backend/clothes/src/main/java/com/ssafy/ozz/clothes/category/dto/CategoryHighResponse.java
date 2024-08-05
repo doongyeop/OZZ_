@@ -7,7 +7,7 @@ import java.util.List;
 
 @Schema(description = "상위 카테고리 정보 DTO")
 public record CategoryHighResponse(
-        Byte categoryHighId,
+    Byte categoryHighId,
     String name,
     List<CategoryLowResponse> categoryLowList
 ){

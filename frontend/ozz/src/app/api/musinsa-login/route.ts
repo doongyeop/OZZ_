@@ -19,8 +19,9 @@ interface Order {
   orderDate: string
   productName: string
   brandName: string
-  price: string
+  option: string
   thumbnailUrl: string
+  purchaseSite: string
 }
 
 // Function to fetch CSRF token from login page
@@ -30,7 +31,6 @@ const fetchCSRFToken = async (): Promise<string> => {
   const $ = cheerio.load(html)
   const csrfToken = $('input[name=csrfToken]').val() as string
   if (!csrfToken) throw new Error('CSRF Token not found')
-  console.log('Found CSRF Token:', csrfToken)
   return csrfToken
 }
 
@@ -43,7 +43,7 @@ const login = async (
   const credentials = {
     id: userId,
     pw: password,
-    csrfToken: csrfToken,
+    csrfToken,
   }
 
   const formData = new URLSearchParams(credentials)
@@ -60,9 +60,7 @@ const login = async (
     throw new Error('아이디 또는 패스워드를 확인하세요.')
   }
 
-  console.log('Login successful')
-  const cookies = response.headers.get('set-cookie')?.split(',') ?? []
-  return cookies
+  return response.headers.get('set-cookie')?.split(',') ?? []
 }
 
 // Function to transform thumbnail URL
@@ -119,8 +117,8 @@ const fetchOrderList = async (
             .find('.order-goods-information__brand')
             .text()
             .trim()
-          const price = $(el)
-            .find('.order-goods-information__price__sale')
+          const option = $(el)
+            .find('.order-goods-information__option')
             .text()
             .trim()
           const thumbnailUrl = $(el)
@@ -134,8 +132,9 @@ const fetchOrderList = async (
             orderDate,
             productName,
             brandName,
-            price,
+            option,
             thumbnailUrl: transformedThumbnailUrl,
+            purchaseSite: '무신사',
           })
         })
     })
@@ -156,12 +155,12 @@ async function getMusinsaOrderLists(
   const csrfToken = await fetchCSRFToken()
   const cookies = await login(csrfToken, userId, password)
   const orderList = await fetchOrderList(cookies)
-  console.log('Order list fetched successfully:')
   console.log(orderList)
   return orderList
 }
 
 // API route handler
+// eslint-disable-next-line import/prefer-default-export
 export async function POST(req: NextRequest) {
   try {
     const { userId, password } = await req.json()

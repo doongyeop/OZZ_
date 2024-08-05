@@ -1,16 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
 import Weather from '@/containers/coordi/Weather'
 import SelectOptions from '@/containers/coordi/SelectOptions'
 import CoordiOfTheDay from '@/containers/coordi/CoordiOfTheDay'
+import { WeatherProvider } from '@/contexts/WeatherContext'
+import RegistMenu from '@/containers/closet-page/RegistMenu'
 
 export default function CoordiRecommendPage() {
-  const today = format(new Date(), 'M월 d일', { locale: ko })
-  const [selectedDate, setSelectedDate] = useState<string>(today)
-
   const coordinations = [
     {
       id: '0',
@@ -34,18 +30,11 @@ export default function CoordiRecommendPage() {
     },
   ] // 임시 데이터
 
-  useEffect(() => {
-    setSelectedDate(today)
-  }, [today])
-
   return (
-    <>
-      <Weather setSelectedDate={setSelectedDate} />
+    <WeatherProvider>
+      <Weather />
       <SelectOptions />
-      <CoordiOfTheDay
-        selectedDate={selectedDate}
-        coordinations={coordinations}
-      />
-    </>
+      <CoordiOfTheDay coordinations={coordinations} />
+    </WeatherProvider>
   )
 }
