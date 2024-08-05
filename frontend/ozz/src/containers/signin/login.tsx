@@ -37,7 +37,7 @@ const SignIn = () => {
     if (Kakao) {
       Kakao.Auth.login({
         success: (authObj: any) => {
-          fetch('http://localhost:8080/login/oauth2/code/kakao', {
+          fetch('http://i11a804.p.ssafy.io:8080/login/oauth2/code/kakao', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
