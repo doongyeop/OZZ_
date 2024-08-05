@@ -4,10 +4,27 @@ server:
 spring:
   application:
     name: ozz-gateway
-#  main:
-#    web-application-type: reactive
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    gateway:
+      routes:
+        - id: file-router
+          uri : lb://OZZ-FILE
+          predicates:
+            - Path=/api/file/**, /uploads/**
+        - id: clothe-router
+          uri: lb://OZZ-CLOTHES
+          predicates:
+            - Path=/api/clothes/**, /api/categories/**, /api/coordinates/**
+        - id: user-router
+          uri : lb://OZZ-USER
+          predicates:
+            - Path=/api/user/*
+        - id: auth-router
+          uri : lb://OZZ-AUTH
+          predicates:
+            - Path=/api/auth/**, /login/**, /login, /oauth2/**
 
 jwt:
   secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}

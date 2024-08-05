@@ -17,13 +17,14 @@ public class G1Filter implements GlobalFilter {
 
     private final JWTUtil jwtUtil;
     private static final String LOGIN_PATH = "/login"; // 예외 처리할 경로
+    private static final String AUTH_PATH = "/oauth2"; // 예외 처리할 경로
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
 
         // 특정 경로(/login)는 예외로 처리
-        if (path.startsWith(LOGIN_PATH)) {
+        if (path.startsWith(LOGIN_PATH) || path.startsWith(AUTH_PATH)) {
             return chain.filter(exchange);
         }
 

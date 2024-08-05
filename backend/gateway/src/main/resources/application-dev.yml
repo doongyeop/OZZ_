@@ -4,25 +4,3 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://localhost:8761/eureka}
-
-spring:
-  cloud:
-    gateway:
-      routes:
-        - id: file-router
-          uri : lb://OZZ-FILE
-          predicates:
-            - Path=/api/file/**, /uploads/**
-        - id: clothes-router
-          uri: lb://OZZ-CLOTHES
-          predicates:
-            - Path=/api/clothes/**, /api/categories/**, /api/coordinates/**
-        - id: user-router
-          uri : lb://OZZ-USER
-          predicates:
-            - Path=/api/user/**
-        - id: auth-router
-          uri : lb://OZZ-AUTH
-          predicates:
-            - Path=/api/auth/**
-            - Path=/login
