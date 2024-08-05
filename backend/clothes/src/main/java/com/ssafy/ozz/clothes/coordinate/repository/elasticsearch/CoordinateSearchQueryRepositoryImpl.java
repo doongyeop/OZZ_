@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.clothes.repository.elasticsearch;
+package com.ssafy.ozz.clothes.coordinate.repository.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
@@ -6,6 +6,8 @@ import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.request.VectorRequest;
 import com.ssafy.ozz.clothes.clothes.dto.response.VectorResponse;
+import com.ssafy.ozz.clothes.coordinate.domain.CoordinateDocument;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,7 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepository {
+public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQueryRepository {
 
     private final ElasticsearchOperations operations;
     private final WebClient webClient;
@@ -37,13 +39,13 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
                 .bodyToMono(VectorResponse.class).block()).vector();
     }
 
-    public Page<ClothesDocument> findByCondition(ClothesSearchCondition condition, Pageable pageable) {
+    public Page<CoordinateDocument> findByCondition(CoordinateSearchCondition condition, Pageable pageable) {
 //        Query query = createConditionNativeQuery(condition,pageable);
         Query query = createSearchQuery(condition,pageable);
 
-        SearchHits<ClothesDocument> searchHits = operations.search(query, ClothesDocument.class);
+        SearchHits<CoordinateDocument> searchHits = operations.search(query, CoordinateDocument.class);
 
-        List<ClothesDocument> documents = searchHits
+        List<CoordinateDocument> documents = searchHits
                 .stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
@@ -51,7 +53,7 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
         return new PageImpl<>(documents, pageable, searchHits.getTotalHits());
     }
 
-    private Query createConditionNativeQuery(ClothesSearchCondition condition, Pageable pageable) {
+    private Query createConditionNativeQuery(CoordinateSearchCondition condition, Pageable pageable) {
         // Split search term into tokens
         String[] tokens = condition.keyword().split("\\s+");
 
@@ -90,7 +92,7 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
     }
 
 
-    private Query createSearchQuery(ClothesSearchCondition condition, Pageable pageable) {
+    private Query createSearchQuery(CoordinateSearchCondition condition, Pageable pageable) {
         float[] vector = getVector(condition.keyword());
 
         return NativeQuery.builder()

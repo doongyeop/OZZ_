@@ -36,10 +36,10 @@ public class ClothesDocument {
     @Field(type = FieldType.Byte)
     private Integer fit;
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "korean")
     private String memo;
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "korean")
     private String brand;
 
     @Field(name = "purchase_date", type = FieldType.Date, pattern = "yyyy-MM-dd")

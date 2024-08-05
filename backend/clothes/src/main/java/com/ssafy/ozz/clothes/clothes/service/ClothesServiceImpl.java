@@ -131,7 +131,6 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
-        // TODO : 다이나믹 서치 적용
         return clothesRepository.findByCondition(condition, pageable).map(clothes -> {
 //            log.debug(clothes.toString());
 //            FeignFileInfo fileInfo = new FeignFileInfo(1L,"","","");

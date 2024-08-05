@@ -7,12 +7,9 @@ import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.*;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
-import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,13 +59,13 @@ class CoordinateServiceImplTest {
         List<Clothes> clothesList = saveAndGetClothesList();
         CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList, clothesList);
         // when
-        Coordinate coordinate = coordinateService.createCoordinate(userId, null, request);
+        CoordinateResponse coordinate = coordinateService.createCoordinate(userId, null, request);
 
         // then
-        List<CoordinateClothes> coordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate);
+        List<CoordinateClothes> coordinateClothes = coordinateClothesRepository.findByCoordinateId(coordinate.coordinateId());
         assertThat(coordinateClothes.size()).isEqualTo(clothesList.size());
-        assertThat(coordinate.getName()).isEqualTo(name);
-        assertThat(coordinate.getStyle()).isEqualTo(toBits(styleList));
+        assertThat(coordinate.name()).isEqualTo(name);
+        assertThat(coordinate.styleList()).isEqualTo(styleList);
     }
 
     @Test
@@ -78,13 +75,13 @@ class CoordinateServiceImplTest {
         List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
         List<Clothes> clothesList = saveAndGetClothesList();
         CoordinateCreateRequest request = getCoordinateCreateRequest(name, styleList, clothesList);
-        Long coordinateId = coordinateService.createCoordinate(userId, null, request).getCoordinateId();
+        Long coordinateId = coordinateService.createCoordinate(userId, null, request).coordinateId();
 
         // when
-        Coordinate coordinate = coordinateService.getCoordinate(coordinateId);
+        CoordinateResponse coordinate = coordinateService.getCoordinate(coordinateId);
 
         // then
-        assertThat(coordinate.getCoordinateId()).isEqualTo(coordinateId);
+        assertThat(coordinate.coordinateId()).isEqualTo(coordinateId);
     }
 
     @Test
@@ -108,7 +105,7 @@ class CoordinateServiceImplTest {
                 .build();
 
         // when
-        List<Coordinate> coordinateList = coordinateService.getCoordinatesOfUser(userId, condition);
+        List<CoordinateResponse> coordinateList = coordinateService.getCoordinatesOfUser(userId, condition);
 
         // then
         assertThat(coordinateList.size()).isEqualTo(2);
@@ -125,7 +122,7 @@ class CoordinateServiceImplTest {
         List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
         List<Clothes> originClothesList = saveAndGetClothesList();
         CoordinateCreateRequest createRequest = getCoordinateCreateRequest(name, styleList, originClothesList);
-        Coordinate coordinate = coordinateService.createCoordinate(userId, null, createRequest);
+        CoordinateResponse coordinate = coordinateService.createCoordinate(userId, null, createRequest);
 
         List<Clothes> updateClothesList = saveAndGetClothesList();
         CoordinateUpdateRequest updateRequest = CoordinateUpdateRequest.builder()
@@ -134,14 +131,13 @@ class CoordinateServiceImplTest {
                 .clothesList(getCoordinateClothesCreateRequests(updateClothesList))
                 .build();
         // when
-        Coordinate updatedCoordinate = coordinateService.updateCoordinate(coordinate.getCoordinateId(), null, updateRequest);
-        Integer totalCoordinateClothes = coordinateClothesRepository.findByCoordinate(coordinate).size();
+        CoordinateResponse updatedCoordinate = coordinateService.updateCoordinate(coordinate.coordinateId(), null, updateRequest);
+        Integer totalCoordinateClothes = coordinateClothesRepository.findByCoordinateId(coordinate.coordinateId()).size();
 
         // then
-        assertThat(updatedCoordinate.getName()).isEqualTo(updateRequest.name());
-        assertThat(updatedCoordinate.getStyle()).isEqualTo(toBits(updateRequest.styleList()));
-        assertThat(updatedCoordinate.getCoordinateClothesList().size()).isEqualTo(totalCoordinateClothes);
-//        System.out.println(totalCoordinateClothes);
+        assertThat(updatedCoordinate.name()).isEqualTo(updateRequest.name());
+        assertThat(updatedCoordinate.styleList()).isEqualTo(updateRequest.styleList());
+        assertThat(updatedCoordinate.clothesList().size()).isEqualTo(totalCoordinateClothes);
     }
 
     @Test
@@ -151,13 +147,13 @@ class CoordinateServiceImplTest {
         List<Style> styleList = Arrays.asList(Style.CASUAL, Style.CLASSIC);
         List<Clothes> originClothesList = saveAndGetClothesList();
         CoordinateCreateRequest createRequest = getCoordinateCreateRequest(name, styleList, originClothesList);
-        Coordinate coordinate = coordinateService.createCoordinate(userId, null, createRequest);
+        CoordinateResponse coordinate = coordinateService.createCoordinate(userId, null, createRequest);
 
         // when
-        coordinateService.deleteCoordinate(coordinate.getCoordinateId());
+        coordinateService.deleteCoordinate(coordinate.coordinateId());
 
         // then
-        assertThatThrownBy(()->coordinateService.getCoordinate(coordinate.getCoordinateId())).isInstanceOf(CoordinateNotFoundException.class);
+        assertThatThrownBy(()->coordinateService.getCoordinate(coordinate.coordinateId())).isInstanceOf(CoordinateNotFoundException.class);
     }
 
     private CoordinateCreateRequest getCoordinateCreateRequest(String name, List<Style> styleList, List<Clothes> clothesList) {

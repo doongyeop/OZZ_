@@ -3,6 +3,8 @@ package com.ssafy.ozz.clothes.coordinate.domain;
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +16,6 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 @Getter
 @ToString
 public class Coordinate {
@@ -29,16 +30,29 @@ public class Coordinate {
     private String name;
 
     @Column
-    @Builder.Default
-    private LocalDateTime createdDate = LocalDateTime.now();
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @Column
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
 
     @OneToMany(mappedBy = "coordinate")
-    @Builder.Default
     private List<CoordinateClothes> coordinateClothesList = new ArrayList<>();
 
     /* FOREIGN KEY */
     private Long userId;
     private Long imageFileId;
+
+    @Builder
+    public Coordinate(Integer style, String name, Long userId, Long imageFileId) {
+        this.style = style;
+        this.name = name;
+        this.userId = userId;
+        this.imageFileId = imageFileId;
+        this.createdDate = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
+    }
 
     //== 비즈니스 로직 ==//
     public void updateName(String name) {

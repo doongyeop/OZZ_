@@ -8,5 +8,6 @@ import java.util.List;
 @Builder
 public record CoordinateSearchCondition(
     List<Style> styleList,
-    Long favoriteGroupId
+    Long favoriteGroupId,
+    String keyword
 ){}
