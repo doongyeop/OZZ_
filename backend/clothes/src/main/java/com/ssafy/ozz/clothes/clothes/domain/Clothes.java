@@ -45,7 +45,7 @@ public class Clothes {
 
     @Column(length = 100)
     @CreatedDate
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     @LastModifiedDate
     @Column
@@ -94,6 +94,7 @@ public class Clothes {
         this.imageFileId = imageFileId;
         this.categoryLow = categoryLow;
         this.userId = userId;
+        this.updatedDate = LocalDateTime.now();
     }
 
     //== 비즈니스 로직 ==//

@@ -10,7 +10,7 @@ import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateClothesCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateCreateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.CoordinateUpdateRequest;
-import com.ssafy.ozz.clothes.coordinate.dto.SearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.CoordinateClothesRepository;
 import jakarta.transaction.Transactional;
@@ -103,7 +103,7 @@ class CoordinateServiceImplTest {
         CoordinateCreateRequest request2 = getCoordinateCreateRequest(name2, styleList2, clothesList2);
         coordinateService.createCoordinate(userId, null, request2);
 
-        SearchCondition condition = SearchCondition.builder()
+        CoordinateSearchCondition condition = CoordinateSearchCondition.builder()
                 .styleList(List.of(Style.CASUAL))
                 .build();
 

@@ -1,0 +1,55 @@
+{
+  "analysis": {
+    "analyzer": {
+      "korean": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer"
+      },
+      "synonym_analyzer": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "category_synonym_filter",
+          "color_synonym_filter",
+          "fit_synonym_filter",
+          "pattern_synonym_filter",
+          "season_synonym_filter",
+          "style_synonym_filter",
+          "texture_synonym_filter"
+        ]
+      }
+    },
+    "filter": {
+      "category_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/category_syn.txt"
+      },
+      "color_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/color_syn.txt"
+      },
+      "fit_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/fit_syn.txt"
+      },
+      "pattern_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/pattern_syn.txt"
+      },
+      "season_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/season_syn.txt"
+      },
+      "style_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/style_syn.txt"
+      },
+      "texture_synonym_filter": {
+        "type": "synonym",
+        "synonyms_path": "synonym/texture_syn.txt"
+      }
+    }
+  }
+}
+
