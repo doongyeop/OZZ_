@@ -2,8 +2,11 @@ package com.ssafy.ozz.favorite.controller;
 
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +51,13 @@ public class FavoriteController {
 
     @GetMapping("/{favoriteGroupId}")
     @Operation(summary = "즐겨찾기 상세 코디 목록 조회", description = "특정 즐겨찾기 그룹의 코디 목록을 조회합니다.")
-    public ResponseEntity<List<Favorite>> getFavoritesByGroup(@PathVariable Long favoriteGroupId) {
-        List<Favorite> favorites = favoriteService.getFavoritesByGroup(favoriteGroupId);
-        return new ResponseEntity<>(favorites, HttpStatus.OK);
+    public ResponseEntity<List<FavoriteResponse>> getFavoritesByGroup(@PathVariable Long favoriteGroupId) {
+        return new ResponseEntity<>(favoriteService.getFavoriteResponseListByGroup(favoriteGroupId), HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    @Operation(summary = "즐겨찾기 목록 조회", description = "특정 즐겨찾기 그룹의 코디 목록을 조회합니다.")
+    public ResponseEntity<List<FavoriteGroupBasicResponse>> getFavoritesGroupListOfUsers(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId) {
+        return new ResponseEntity<>(favoriteService.getFavoriteGroupResponseListOfUser(userId), HttpStatus.OK);
     }
 }

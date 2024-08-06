@@ -21,9 +21,8 @@ public class FavoriteGroup {
     @Column(name = "favorite_group_name")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private User user;
+    @Column
+    private Long userId;
 
     @OneToMany(mappedBy = "favoriteGroup")
     private List<Favorite> favorites;

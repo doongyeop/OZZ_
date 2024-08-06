@@ -53,6 +53,12 @@ public class CoordinateServiceImpl implements CoordinateService {
     }
 
     @Override
+    public CoordinateBasicResponse getCoordinateBasicResponse(Long coordinateId) {
+        Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
+        return CoordinateBasicResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Coordinate getCoordinateEntity(Long coordinateId) {
         return coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);

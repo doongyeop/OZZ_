@@ -39,6 +39,12 @@ public class CoordinateController {
         return ResponseEntity.ok(coordinateService.getCoordinate(coordinateId));
     }
 
+    @GetMapping("/{coordinateId}/basic")
+    @Operation(summary = "코디 상세 조회", description = "ID를 통해 특정 코디 세부 정보를 조회합니다.")
+    public ResponseEntity<CoordinateBasicResponse> getCoordinateBasicResponse(@PathVariable final Long coordinateId) {
+        return ResponseEntity.ok(coordinateService.getCoordinateBasicResponse(coordinateId));
+    }
+
     @GetMapping("/users")
     @Operation(summary = "사용자의 코디 조회", description = "특정 사용자의 코디 목록을 슬라이스 형태로 조회합니다.")
     public ResponseEntity<Slice<CoordinateBasicResponse>> getCoordinateList(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @ModelAttribute CoordinateSearchCondition condition, Pageable pageable) {
