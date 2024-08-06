@@ -5,6 +5,7 @@ export interface CoordishotDetail {
   imageFile: FileDetail
   user: UserDetail
   like: LikeDetail
+  isBookmark: boolean
   tags: TagDetail[]
   style: string[]
   age: number

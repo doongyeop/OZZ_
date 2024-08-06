@@ -30,6 +30,7 @@ const mockData: CoordishotDetail = {
     total: 120,
     isLike: false,
   },
+  isBookmark: false,
   tags: [
     {
       clothesTagId: 1,

@@ -5,6 +5,7 @@ import { FaBookmark, FaHeart, FaRegHeart } from 'react-icons/fa6'
 import { CoordishotDetail } from '@/types/coordishot'
 import ClothingTag from '@/components/Tag/ClothingTag'
 import LikeButton from '../Button/LikeButton'
+import BookmarkButton from '../Button/BookmarkButton'
 
 type CoordishotCardProps = {
   coordishot: CoordishotDetail
@@ -15,6 +16,10 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
     coordishot.like.isLike = isLiked
     coordishot.like.total = totalLikes
   }
+  const handleBookmarkToggle = () => {
+    coordishot.isBookmark = !coordishot.isBookmark
+  }
+
   return (
     <div className="flex justify-center">
       <Card className="w-[300px] shadow-lg">
@@ -30,7 +35,12 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
               />
               <span className="text-lg">{coordishot.user.nickname}</span>
             </div>
-            <FaBookmark size={18} className="mr-2 text-secondary" />
+            <BookmarkButton
+              isBookmarked={coordishot.isBookmark}
+              boardId={coordishot.boardId}
+              userId={coordishot.user.usersId}
+              onBookmarkToggle={handleBookmarkToggle}
+            />
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
