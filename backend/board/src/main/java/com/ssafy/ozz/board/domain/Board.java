@@ -40,7 +40,7 @@ public class Board {
     private Date createdDate;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardLikes> likesList;
+    private List<BoardLikes> boardLikes;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags;

@@ -23,7 +23,6 @@ public class BoardLikes {
     @Column(name = "users_id", nullable = false)
     private Long userId;
 
-
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;

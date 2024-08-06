@@ -1,6 +1,6 @@
 package com.ssafy.ozz.board.global.feign.file;
 
-import com.ssafy.ozz.clothes.global.config.FeignSupportConfig;
+import com.ssafy.ozz.board.global.config.FeignSupportConfig;
 import com.ssafy.ozz.library.file.FileInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

@@ -15,7 +15,9 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long boardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boards_id")
+    private Board board;
 
     @Column(name = "x_position")
     private double xPosition;
