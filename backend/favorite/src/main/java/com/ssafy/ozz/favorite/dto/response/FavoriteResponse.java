@@ -6,12 +6,12 @@ import lombok.Builder;
 
 @Builder
 public record FavoriteResponse(
-        Long id,
+        Long favoriteId,
         CoordinateBasicResponse coordinate
 ) {
     public static FavoriteResponse of(Favorite favorite, CoordinateBasicResponse coordinate) {
         return FavoriteResponse.builder()
-                .id(favorite.getId())
+                .favoriteId(favorite.getId())
                 .coordinate(coordinate)
                 .build();
     }

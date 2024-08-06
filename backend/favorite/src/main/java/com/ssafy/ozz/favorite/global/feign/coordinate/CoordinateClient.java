@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
-@FeignClient(name = "ozz-coordinate", path = "/api/coordinates", configuration = FeignSupportConfig.class)
+@FeignClient(name = "ozz-clothes", path = "/api/coordinates", configuration = FeignSupportConfig.class)
 public interface CoordinateClient {
     @GetMapping("/users")
     Optional<Slice<CoordinateBasicResponse>> getCoordinateList(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId, @RequestParam Long favoriteGroupId, Pageable pageable);

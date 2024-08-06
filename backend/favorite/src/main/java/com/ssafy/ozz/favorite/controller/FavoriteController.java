@@ -2,6 +2,7 @@ package com.ssafy.ozz.favorite.controller;
 
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
+import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.service.FavoriteService;
@@ -24,21 +25,19 @@ public class FavoriteController {
 
     @PostMapping
     @Operation(summary = "즐겨찾기 그룹 생성", description = "새로운 즐겨찾기 그룹을 생성합니다.")
-    public ResponseEntity<FavoriteGroup> createFavoriteGroup(@RequestBody FavoriteGroup favoriteGroup) {
-        FavoriteGroup createdFavoriteGroup = favoriteService.createFavoriteGroup(favoriteGroup);
-        return new ResponseEntity<>(createdFavoriteGroup, HttpStatus.CREATED);
+    public ResponseEntity<FavoriteGroupBasicResponse> createFavoriteGroup(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestBody FavoriteGroupCreateRequest request) {
+        return new ResponseEntity<>(favoriteService.createFavoriteGroup(userId,request), HttpStatus.CREATED);
     }
 
-    @PostMapping("/{favoriteGroupId}/coordinate")
+    @PostMapping("/{favoriteGroupId}/coordinate/{coordinateId}")
     @Operation(summary = "즐겨찾기 그룹에 코디 추가", description = "즐겨찾기 그룹에 새로운 코디를 추가합니다.")
-    public ResponseEntity<Favorite> addFavorite(@PathVariable Long favoriteGroupId, @RequestParam Long coordinateId) {
-        Favorite createdFavorite = favoriteService.addFavorite(favoriteGroupId, coordinateId);
-        return new ResponseEntity<>(createdFavorite, HttpStatus.CREATED);
+    public ResponseEntity<FavoriteResponse> addFavorite(@PathVariable Long favoriteGroupId, @PathVariable Long coordinateId) {
+        return new ResponseEntity<>(favoriteService.addFavorite(favoriteGroupId, coordinateId), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{favoriteGroupId}/coordinate")
+    @DeleteMapping("/{favoriteGroupId}/coordinate/{coordinateId}")
     @Operation(summary = "즐겨찾기 코디 삭제", description = "즐겨찾기 그룹에서 특정 코디를 삭제합니다.")
-    public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteGroupId, @RequestParam Long coordinateId) {
+    public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteGroupId, @PathVariable Long coordinateId) {
         favoriteService.deleteFavorite(favoriteGroupId, coordinateId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
