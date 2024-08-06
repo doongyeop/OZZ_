@@ -86,10 +86,7 @@ springdoc:
     use-root-path: true
     enabled: true
     path: /swagger-ui.html
-#    config-url: /v3/api-docs/swagger-config
     urls:
-#      - url: /v3/api-docs
-#        name: API Gateway Service
       - url: /docs/ozz-file/v3/api-docs
         name: ozz-file
       - url: /docs/ozz-clothes/v3/api-docs

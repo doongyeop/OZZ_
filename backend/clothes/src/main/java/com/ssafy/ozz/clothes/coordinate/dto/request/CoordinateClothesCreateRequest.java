@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.coordinate.dto;
+package com.ssafy.ozz.clothes.coordinate.dto.request;
 
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;

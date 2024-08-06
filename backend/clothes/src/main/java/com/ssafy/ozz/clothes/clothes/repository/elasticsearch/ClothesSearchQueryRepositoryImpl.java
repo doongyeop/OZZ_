@@ -57,14 +57,13 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
 
         return NativeQuery.builder()
                 .withQuery(q->q
-                    .bool(b->{
-                        b
-//                        .must(m->m
-//                            .match(mm->mm
-//                                .field("name")
-//                                .query(condition.keyword())
-//                            )
-//                        )
+                    .bool(b->{b
+                        .must(m->m
+                            .match(mm->mm
+                                .field("name")
+                                .query(condition.keyword())
+                            )
+                        )
                         // 무신사 검은 셔츠 검색시 '무신사' '검은' '셔츠'가 모두 들어있는 document는 점수를 높힘
                         .should(s->s
                             .matchPhrase(mm->mm

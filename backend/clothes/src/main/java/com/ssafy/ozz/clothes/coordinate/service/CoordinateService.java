@@ -1,7 +1,11 @@
 package com.ssafy.ozz.clothes.coordinate.service;
 
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
-import com.ssafy.ozz.clothes.coordinate.dto.*;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +20,7 @@ public interface CoordinateService {
 
     List<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition);
 
-    Slice<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable);
+    Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable);
 
     CoordinateResponse updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request);
 
