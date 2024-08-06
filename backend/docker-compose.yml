@@ -1,6 +1,14 @@
 version: '3.1'
 
 services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-cloud-network
+
   mysql-db:
     image: mysql:latest
     container_name: mysql
@@ -15,7 +23,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - spring-cloud-network
-
 # OZZ 설정
   ozz-eureka:
     container_name: ozz-eureka
@@ -86,13 +93,15 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+      NAVER_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/kakao
+      REDIS_HOST: redis
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
+      - redis
 
   ozz-user:
     container_name: ozz-user
@@ -108,14 +117,15 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+      NAVER_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://i11a804.p.ssafy.io:${AUTH_PORT}/login/oauth2/code/kakao
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
       - ozz-auth
+      - redis
 
   ozz-ai:
     container_name: ozz-ai
@@ -134,6 +144,7 @@ services:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      GATEWAY_HOST: http://ozz-gateway:${API_GATEWAY_PORT}
     networks:
       - spring-cloud-network
     depends_on:
