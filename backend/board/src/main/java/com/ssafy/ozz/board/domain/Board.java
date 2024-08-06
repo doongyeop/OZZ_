@@ -21,9 +21,8 @@ public class Board {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id")
-    private User user;
+    @Column(name = "users_id")
+    private Long userId; // 외래키
 
     @Column(name = "image_file_id")
     private Long imgId; // 외래키
