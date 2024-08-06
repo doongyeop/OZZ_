@@ -79,13 +79,28 @@ services:
     depends_on:
       - ozz-auth
 
-  ozz-ai:
-    container_name: ozz-ai
-    build: ./ai
+  ozz-favorite:
+    container_name: ozz-favorite
+    build: ./favorite
     ports:
-      - ${AI_PORT}:${AI_PORT}
+      - ${FAVORITE_PORT}:${FAVORITE_PORT}
+    environment:
+      FAVORITE_PORT: ${FAVORITE_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
     networks:
       - spring-cloud-network
+
+#  ozz-ai:
+#    container_name: ozz-ai
+#    build: ./ai
+#    ports:
+#      - ${AI_PORT}:${AI_PORT}
+#    networks:
+#      - spring-cloud-network
 
   ozz-gateway:
     container_name: ozz-gateway
@@ -104,6 +119,7 @@ services:
       - ozz-clothes
       - ozz-auth
       - ozz-user
+      - ozz-favorite
 
 volumes:
   file-data:
