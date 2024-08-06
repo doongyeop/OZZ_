@@ -1,6 +1,6 @@
-package com.ssafy.ozz.clothes.global.fegin.file.dto;
+package com.ssafy.ozz.library.file;
 
-public record FeignFileInfo(
+public record FileInfo(
         Long fileId,
         String filePath,
         String fileName,

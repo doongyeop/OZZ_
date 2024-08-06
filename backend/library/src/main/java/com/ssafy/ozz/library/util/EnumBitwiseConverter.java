@@ -1,7 +1,8 @@
-package com.ssafy.ozz.clothes.global.util;
+package com.ssafy.ozz.library.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnumBitwiseConverter {
 
@@ -39,5 +40,15 @@ public class EnumBitwiseConverter {
             }
         }
         throw new IllegalArgumentException("No enum constant with index: " + index);
+    }
+
+    public static <E extends Enum<E>> E fromString(Class<E> enumClass, String value) {
+        return Enum.valueOf(enumClass, value.toUpperCase());
+    }
+
+    public static <E extends Enum<E>> List<E> fromStrings(Class<E> enumClass, List<String> values) {
+        return values.stream()
+                .map(value -> fromString(enumClass, value))
+                .collect(Collectors.toList());
     }
 }

@@ -8,12 +8,10 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
-import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
-import com.ssafy.ozz.clothes.clothes.repository.elasticsearch.ClothesSearchRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
-import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
 import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Clothes getClothes(Long clothesId) {
-        return clothesRepository.findById(clothesId).orElseThrow(ClothesNotFoundException::new);
+        return clothesRepository.findById(clothesId).orElseThrow();
     }
 
     @Override
@@ -51,7 +49,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         return clothesRepository.findByUserId(userId, condition, pageable).map(clothes -> {
-            FeignFileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return new ClothesBasicWithFileResponse(clothes, fileInfo);
         });
     }
@@ -67,7 +65,7 @@ public class ClothesServiceImpl implements ClothesService {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
         // TODO : 이미지 파일 저장 후 id 값 가져오기
         log.debug(imageFile.toString());
-        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
         log.debug(fileInfo.toString());
 
         Long imageFileId = fileInfo.fileId();
@@ -97,7 +95,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile) {
         Clothes clothes = updateClothes(clothesId, request);
-        FeignFileInfo fileInfo;
+        FileInfo fileInfo;
         if(imageFile != null){
             // 이미지 파일 수정
             fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
@@ -135,7 +133,7 @@ public class ClothesServiceImpl implements ClothesService {
 //            log.debug(clothes.toString());
 //            FeignFileInfo fileInfo = new FeignFileInfo(1L,"","","");
 //            CategoryLow categoryLow = CategoryLow.builder().build();
-                FeignFileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
                 CategoryLow categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
             return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
         });

@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.global.fegin.file.exception;
+package com.ssafy.ozz.library.global.error.exception;
 
 import com.ssafy.ozz.library.global.error.ErrorCode;
 import com.ssafy.ozz.library.global.error.ServiceException;

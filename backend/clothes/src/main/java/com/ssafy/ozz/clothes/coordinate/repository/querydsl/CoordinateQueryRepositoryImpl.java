@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static com.ssafy.ozz.clothes.coordinate.domain.QCoordinate.coordinate;
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 public class CoordinateQueryRepositoryImpl extends Querydsl4RepositorySupport<Coordinate, QCoordinate> implements CoordinateQueryRepository {
     public CoordinateQueryRepositoryImpl() {

@@ -1,7 +1,6 @@
 package com.ssafy.ozz.board.service;
 
 import com.ssafy.ozz.board.domain.Board;
-import com.ssafy.ozz.board.domain.Style;
 import com.ssafy.ozz.board.domain.Tag;
 import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
@@ -9,7 +8,6 @@ import com.ssafy.ozz.board.dto.response.BoardResponse;
 import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.TagRepository;
-import com.ssafy.ozz.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
+
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Service
 @Transactional
@@ -31,13 +31,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
-
         Board board = Board.builder()
                 .content(request.content())
                 .imgId(imgFileId)
                 .user(userRepository.findById(userId))
                 .age(request.age())
-                .style(Style) // 스타일 비트 연산
+                .style(toBits(request.styleList())) // 스타일 비트 연산
                 .likes(0)
                 .createdDate(new Date())
                 .build();
@@ -80,7 +79,7 @@ public class BoardServiceImpl implements BoardService {
         board = board.toBuilder()
                 .content(request.content())
                 .age(request.age())
-                .style(Style.) // 스타일 비트 연산
+                .style(toBits(request.styleList())) // 스타일 비트 연산
                 .build();
 
         boardRepository.save(board);
@@ -108,7 +107,7 @@ public class BoardServiceImpl implements BoardService {
                 .content(request.content())
                 .imgId(imgFileId)
                 .age(request.age())
-                .style() // 스타일 비트 연산
+                .style(toBits(request.styleList())) // 스타일 비트 연산
                 .build();
 
         boardRepository.save(board);

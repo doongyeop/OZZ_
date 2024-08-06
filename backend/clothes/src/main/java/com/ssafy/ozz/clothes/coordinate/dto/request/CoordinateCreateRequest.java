@@ -1,12 +1,12 @@
 package com.ssafy.ozz.clothes.coordinate.dto.request;
 
-import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import lombok.Builder;
 
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Builder
 public record CoordinateCreateRequest (

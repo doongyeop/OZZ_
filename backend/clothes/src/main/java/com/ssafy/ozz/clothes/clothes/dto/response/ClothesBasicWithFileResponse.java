@@ -4,7 +4,7 @@ import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
-import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
+import com.ssafy.ozz.library.file.FileInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -15,9 +15,9 @@ public record ClothesBasicWithFileResponse(
         String name,
         LocalDateTime createdDate,
         CategoryLowResponse categoryLow,
-        FeignFileInfo imageFile
+        FileInfo imageFile
         ) {
-    public ClothesBasicWithFileResponse(Clothes clothes, FeignFileInfo fileInfo) {
+    public ClothesBasicWithFileResponse(Clothes clothes, FileInfo fileInfo) {
         this(
                 clothes.getClothesId(),
                 clothes.getName(),
@@ -26,7 +26,7 @@ public record ClothesBasicWithFileResponse(
                 fileInfo
         );
     }
-    public ClothesBasicWithFileResponse(ClothesDocument clothes, CategoryLow categoryLow, FeignFileInfo fileInfo) {
+    public ClothesBasicWithFileResponse(ClothesDocument clothes, CategoryLow categoryLow, FileInfo fileInfo) {
         this(
                 clothes.getClothesId(),
                 clothes.getName(),

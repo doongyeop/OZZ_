@@ -1,17 +1,19 @@
-package com.ssafy.ozz.clothes.clothes.properties;
+package com.ssafy.ozz.library.clothes.properties;
 
 import lombok.Getter;
 
 @Getter
-public enum Season implements Property {
-    SPRING("봄"),
-    SUMMER("여름"),
-    AUTUMN("가을"),
-    WINTER("겨울");
+public enum Size implements Property {
+    FREE("free"),
+    S("small"),
+    M("medium"),
+    L("large"),
+    XL("xlarge"),
+    XXL("xxlarge");
 
     private final String displayName;
 
-    Season(String displayName) {
+    Size(String displayName) {
         this.displayName = displayName;
     }
 

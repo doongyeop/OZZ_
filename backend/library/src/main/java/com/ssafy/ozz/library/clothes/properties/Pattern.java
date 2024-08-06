@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.clothes.properties;
+package com.ssafy.ozz.library.clothes.properties;
 
 public enum Pattern implements Property {
     SOLID("무지"),

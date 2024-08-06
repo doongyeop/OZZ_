@@ -19,6 +19,9 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		url = uri("file://${rootProject.projectDir}/../library/build/repos")
+	}
 }
 
 dependencies {
@@ -27,9 +30,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -57,6 +60,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	//- micro service 간 통신 feign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	implementation 'com.ssafy.ozz:library:1.0.0'
 }
 
 

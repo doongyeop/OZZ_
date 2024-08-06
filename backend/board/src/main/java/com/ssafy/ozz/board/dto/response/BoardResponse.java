@@ -1,11 +1,14 @@
 package com.ssafy.ozz.board.dto.response;
 
 import com.ssafy.ozz.board.domain.Board;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import com.ssafy.ozz.board.domain.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toEnums;
 
 @Schema(description = "게시글 상세 정보 DTO")
 public record BoardResponse(
@@ -26,7 +29,7 @@ public record BoardResponse(
                 board.getImgId(),
                 board.getUser().getId(),
                 board.getAge(),
-                board., // 비트연산 넣기
+                toEnums(Style.class,board.getStyle()), // 비트연산 넣기
                 board.getTags(),
                 board.getLikes(),
                 board.getCreatedDate()
