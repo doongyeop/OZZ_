@@ -25,6 +25,7 @@ public record CoordinateResponse (
                 .name(coordinate.getName())
                 .styleList(toEnums(Style.class, coordinate.getStyle()))
                 .createdDate(coordinate.getCreatedDate())
+                .clothesList(coordinate.getCoordinateClothesList().stream().map(CoordinateClothesBasicResponse::new).toList())
                 .imageFile(file)
                 .build();
     }
