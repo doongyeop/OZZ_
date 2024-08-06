@@ -4,5 +4,5 @@ import com.ssafy.ozz.board.domain.BoardLikes;
 
 public interface BoardLikesService {
     boolean toggleLike(BoardLikes boardLikes);
-    int getLikesCountByBoardId(Long boardId);  // 수정
+    int getLikesCountByBoardId(Long boardId);
 }

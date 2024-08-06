@@ -33,4 +33,5 @@ public class BoardLikesController {
         int likesCount = boardLikesService.getLikesCountByBoardId(boardId);
         return new ResponseEntity<>(likesCount, HttpStatus.OK);
     }
+
 }
