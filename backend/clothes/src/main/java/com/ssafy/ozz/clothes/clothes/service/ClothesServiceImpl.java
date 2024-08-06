@@ -10,7 +10,8 @@ import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
-import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
+import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Clothes getClothes(Long clothesId) {
-        return clothesRepository.findById(clothesId).orElseThrow();
+        return clothesRepository.findById(clothesId).orElseThrow(ClothesNotFoundException::new);
     }
 
     @Override
@@ -130,9 +131,6 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
         return clothesRepository.findByCondition(condition, pageable).map(clothes -> {
-//            log.debug(clothes.toString());
-//            FeignFileInfo fileInfo = new FeignFileInfo(1L,"","","");
-//            CategoryLow categoryLow = CategoryLow.builder().build();
             FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
                 CategoryLow categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
             return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
