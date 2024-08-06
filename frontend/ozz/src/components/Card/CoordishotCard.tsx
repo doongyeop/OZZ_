@@ -12,7 +12,7 @@ type CoordishotCardProps = {
 export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
   return (
     <div className="flex justify-center">
-      <Card className="w-[300px]">
+      <Card className="w-[300px] shadow-lg">
         <CardHeader className="p-2">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
@@ -25,7 +25,7 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
               />
               <span className="text-lg">{coordishot.user.nickname}</span>
             </div>
-            <FaBookmark size={20} />
+            <FaBookmark size={18} className="mr-2 text-secondary" />
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">

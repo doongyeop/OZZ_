@@ -32,7 +32,7 @@ export default function ClothingTag({
         }}
         onClick={handleOpenModal}
       >
-        <span className="ml-1">{name}</span>
+        <span className="ml-1 text-xs">{name}</span>
         <style jsx>{`
           .absolute {
             position: absolute;
@@ -40,7 +40,7 @@ export default function ClothingTag({
           .absolute::after {
             content: '';
             position: absolute;
-            bottom: -6px; /* Adjust this value based on the size of the triangle */
+            bottom: -5px; /* Adjust this value based on the size of the triangle */
             left: 50%;
             transform: translateX(-50%);
             width: 0;
