@@ -27,6 +27,7 @@ public record BoardResponse(
                 board.getUser().getId(),
                 board.getAge(),
                 board., // 비트연산 넣기
+                board.getTags(),
                 board.getLikes(),
                 board.getCreatedDate()
         );

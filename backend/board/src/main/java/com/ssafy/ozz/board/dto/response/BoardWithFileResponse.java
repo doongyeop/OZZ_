@@ -28,6 +28,7 @@ public record BoardWithFileResponse(
                 board.getUser().getId(),
                 board.getAge(),
                 board., // 비트연산
+                board.getTags(),
                 board.getLikes(),
                 board.getCreatedDate(),
                 imgFIleId
