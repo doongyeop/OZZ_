@@ -2,7 +2,7 @@ import React from 'react'
 
 interface ModalProps {
   onClose: () => void
-  title: string
+  title?: string
   children: React.ReactNode
   width?: string
   className?: string // 추가
