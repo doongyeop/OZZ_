@@ -17,8 +17,23 @@ public class G1Filter implements GlobalFilter {
 
     private final JWTUtil jwtUtil;
 
+    private static final String[] PERMISSION_PATHS = {"/login", "/oauth2", "/docs", "/v3/api-docs", "/swagger"};
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        String path = exchange.getRequest().getPath().toString();
+
+        for (String permission : PERMISSION_PATHS) {
+            if (path.startsWith(permission)) {
+                return chain.filter(exchange);
+            }
+        }
+
+        // 특정 경로(/login)는 예외로 처리
+//        if (path.startsWith(LOGIN_PATH) || path.startsWith(AUTH_PATH)) {
+//            return chain.filter(exchange);
+//        }
+
         // MS 이전 (pre)
         HttpHeaders headers = exchange.getRequest().getHeaders();
         // Authorization 헤더에 토큰 필요

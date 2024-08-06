@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(info = @Info(
-        title = "OZZ API",
-        description = "OZZ API 명세서",
+        title = "OZZ CLOTHES API",
+        description = "OZZ CLOTHES API 명세서",
         version = "v1.0.0"))
 @Configuration
 public class SwaggerConfig {
@@ -47,5 +47,9 @@ public class SwaggerConfig {
     @Bean
     GroupedOpenApi categoryApi() {
         return GroupedOpenApi.builder().group("ozz-categories").pathsToMatch("/api/categories/**").build();
+    }
+    @Bean
+    GroupedOpenApi coordinatesApi() {
+        return GroupedOpenApi.builder().group("ozz-coordinates").pathsToMatch("/api/coordinates/**").build();
     }
 }

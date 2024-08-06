@@ -27,6 +27,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class UserController {
 
     private final FileClient fileClient;
+    private final AuthClient authClient;
     private final UserService userService;
     private final JWTUtil jwtUtil;
 

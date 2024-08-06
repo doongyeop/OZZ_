@@ -39,7 +39,7 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
 
     public Page<ClothesDocument> findByCondition(ClothesSearchCondition condition, Pageable pageable) {
 //        Query query = createConditionNativeQuery(condition,pageable);
-        Query query = createSearchQuery(condition,pageable);
+        Query query = createConditionNativeQuery(condition,pageable);
 
         SearchHits<ClothesDocument> searchHits = operations.search(query, ClothesDocument.class);
 
@@ -57,8 +57,8 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
 
         return NativeQuery.builder()
                 .withQuery(q->q
-                    .bool(b->{
-                        b.must(m->m
+                    .bool(b->{b
+                        .must(m->m
                             .match(mm->mm
                                 .field("name")
                                 .query(condition.keyword())

@@ -14,7 +14,7 @@ export default function RegistMenu() {
         <button
           type="button"
           onClick={() => handleClick('musinsa')}
-          className="w-60 h-10 bg-black text-white rounded-full px-6 py-2 flex items-center justify-center"
+          className="w-60 h-10 bg-black text-white rounded-full px-6 py-2 flex items-center justify-center shadow-md"
         >
           <Image
             src="/images/malls/logo_musinsa.png"
@@ -29,7 +29,7 @@ export default function RegistMenu() {
         <button
           type="button"
           onClick={() => handleClick('zigzag')}
-          className="w-60 h-10 text-black font-semibold rounded-full px-6 py-2 flex items-center justify-center bg-[#FA6EE3]"
+          className="w-60 h-10 text-black font-semibold rounded-full px-6 py-2 flex items-center justify-center bg-[#FA6EE3] shadow-md"
         >
           <Image
             src="/images/malls/logo_zigzag.png"
@@ -44,7 +44,7 @@ export default function RegistMenu() {
         <button
           type="button"
           onClick={() => handleClick('ably')}
-          className="w-60 h-10 border-2 rounded-full px-6 py-2 flex items-center justify-center"
+          className="w-60 h-10 border-2 rounded-full px-6 py-2 flex items-center justify-center shadow-md"
         >
           <Image
             src="/images/malls/logo_ably.png"
@@ -58,7 +58,8 @@ export default function RegistMenu() {
         </button>
         <button
           type="button"
-          className="w-60 h-10 bg-secondary text-primary-400 rounded-full px-6 py-2"
+          onClick={() => handleClick('')}
+          className="w-60 h-10 bg-secondary text-primary-400 rounded-full px-6 py-2 shadow-md"
         >
           직접 옷 등록하기
         </button>
