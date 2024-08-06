@@ -2,6 +2,7 @@ package com.ssafy.ozz.favorite.service;
 
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateBasicResponse;
 import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
@@ -62,6 +63,11 @@ public class FavoriteServiceImpl implements FavoriteService {
         return favoriteRepository.findAllByFavoriteGroup(favoriteGroup).stream().map(favorite ->
             FavoriteResponse.of(favorite, coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow())
         ).toList();
+    }
+
+    @Override
+    public List<FavoriteGroupBasicResponse> getFavoriteGroupResponseListOfUser(Long userId) {
+        return favoriteGroupRepository.findByUserId(userId).stream().map(FavoriteGroupBasicResponse::of).toList();
     }
 
     @Override

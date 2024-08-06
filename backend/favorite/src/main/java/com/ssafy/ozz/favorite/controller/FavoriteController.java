@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/favorites")
 public class FavoriteController {
-
     private final FavoriteService favoriteService;
 
     @PostMapping
@@ -56,8 +57,8 @@ public class FavoriteController {
     }
 
     @GetMapping("/users")
-    @Operation(summary = "즐겨찾기 목록 조회", description = "특정 즐겨찾기 그룹의 코디 목록을 조회합니다.")
-    public ResponseEntity<List<FavoriteGroupBasicResponse>> getFavoritesGroupListOfUsers(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId) {
+    @Operation(summary = "내 즐겨찾기 목록 조회", description = "내 즐겨찾기 그룹 목록을 조회합니다.")
+    public ResponseEntity<List<FavoriteGroupBasicResponse>> getFavoritesGroupListOfUsers(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         return new ResponseEntity<>(favoriteService.getFavoriteGroupResponseListOfUser(userId), HttpStatus.OK);
     }
 }
