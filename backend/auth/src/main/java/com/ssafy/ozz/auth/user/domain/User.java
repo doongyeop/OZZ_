@@ -42,11 +42,11 @@ public class User {
     @Column(name = "profile_file_id", nullable = true)
     private Long profileFileId;
 
-    @Column(nullable = false, length = 7)
-    private String provider; // 최초 로그인 프로바이더
-
-    @Column(name = "pu_id")
-    private String userIdFromProvider; // provider 제공 아이디 providerUserId
+//    @Column(nullable = false, length = 7)
+//    private String provider; // 최초 로그인 프로바이더
+//    안쓰는 항목 제거
+//    @Column(name = "pu_id")
+//    private String userIdFromProvider; // provider 제공 아이디 providerUserId
 
     @PrePersist // user entity가 저장될 때 현재 날짜로 설정
     protected void onCreate() {

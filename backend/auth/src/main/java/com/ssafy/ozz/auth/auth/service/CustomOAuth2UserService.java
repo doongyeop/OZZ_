@@ -51,9 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(user.getEmail())
                     .birth(user.getBirth())
                     .name(user.getName())
-                    .provider(user.getProvider())
                     .phoneNumber(user.getPhoneNumber())
-                    .userIdFromProvider(user.getUserIdFromProvider())
                     .build();
 
             return new CustomOAuth2User(userDTO);
@@ -69,8 +67,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .birth(birth)
                     .name(name)
                     .phoneNumber(phoneNumber)
-                    .provider(oAuth2Response.getProvider())
-                    .userIdFromProvider(oAuth2Response.getProviderId())
                     .build();
 
             userRepository.save(user);
@@ -80,8 +76,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(user.getEmail())
                     .birth(user.getBirth())
                     .name(user.getName())
-                    .provider(user.getProvider())
-                    .userIdFromProvider(user.getUserIdFromProvider())
                     .phoneNumber(user.getPhoneNumber())
                     .build();
 
