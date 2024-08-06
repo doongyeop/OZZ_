@@ -5,13 +5,13 @@ import com.ssafy.ozz.user.domain.User;
 import java.util.Optional;
 
 public interface UserService {
-    public Optional<User> getUserById(Long id);
+    Optional<User> getUserById(Long id);
 
-    public User updateUser(Long id, User updatedUser);
+    User updateUser(Long id, User updatedUser);
 
-    public User updateProfileImg(Long id, User updatedUser);
+    User updateProfileImg(Long id, User updatedUser);
 
-    public void deleteUser(Long id);
+    void deleteUser(Long id);
 
-    public Boolean existsByNickname(String nickname);
+    Boolean existsByNickname(String nickname);
 }

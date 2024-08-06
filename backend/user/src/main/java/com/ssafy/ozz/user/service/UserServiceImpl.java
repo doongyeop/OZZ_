@@ -3,7 +3,6 @@ package com.ssafy.ozz.user.service;
 import com.ssafy.ozz.user.domain.User;
 import com.ssafy.ozz.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

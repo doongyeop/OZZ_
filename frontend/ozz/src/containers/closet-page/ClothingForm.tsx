@@ -257,7 +257,7 @@ export default function ClothingForm({
           />
           <label
             htmlFor="image"
-            className={`relative flex min-h-[300px] min-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
+            className={`relative flex min-h-[300px] min-w-[300px] max-h-[300px] max-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
           >
             {imagePreview ? (
               <Image
@@ -265,7 +265,8 @@ export default function ClothingForm({
                 alt="Preview"
                 width={300}
                 height={300}
-                className="p-6"
+                className="p-6 object-cover"
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
               />
             ) : (
               <div>

@@ -36,10 +36,10 @@ public class User {
     @Column(name = "profile_file_id", nullable = true)
     private Long profileFileId;
 
-    @Column(nullable = false, length = 7)
-    private String provider;
-
-    private String username;
+//    @Column(nullable = false, length = 7)
+//    private String provider;
+//    안쓰는 항목 제거
+//    private String username;
 
     @PrePersist // user entity가 저장될 때 현재 날짜로 설정
     protected void onCreate() {

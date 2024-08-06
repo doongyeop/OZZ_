@@ -4,7 +4,6 @@ import com.ssafy.ozz.board.domain.Board;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
-import java.util.List;
 
 @Schema(description = "게시글 상세 정보 DTO")
 public record BoardResponse(

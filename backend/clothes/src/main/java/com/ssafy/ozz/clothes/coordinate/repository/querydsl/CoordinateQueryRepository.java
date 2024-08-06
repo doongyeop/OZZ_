@@ -1,7 +1,7 @@
 package com.ssafy.ozz.clothes.coordinate.repository.querydsl;
 
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

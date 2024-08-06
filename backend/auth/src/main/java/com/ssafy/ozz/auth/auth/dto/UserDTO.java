@@ -21,7 +21,7 @@ public class UserDTO {
 
     private String email;
     private Date birth;
-    private String provider;
-    private String userIdFromProvider; // 소셜에서 제공하는 유저 id
+//    private String provider; 안쓰는 항목 제거
+//    private String userIdFromProvider; // 소셜에서 제공하는 유저 id
 
 }
