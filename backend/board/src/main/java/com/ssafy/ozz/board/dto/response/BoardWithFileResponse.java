@@ -1,9 +1,13 @@
 package com.ssafy.ozz.board.dto.response;
 
 import com.ssafy.ozz.board.domain.Board;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
+import java.util.List;
+
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toEnums;
 
 @Schema(description = "게시글 상세 정보 DTO with 파일 DTO")
 public record BoardWithFileResponse(
@@ -24,7 +28,7 @@ public record BoardWithFileResponse(
                 board.getImgId(),
                 board.getUser().getId(),
                 board.getAge(),
-                board., // 비트연산
+                toEnums(Style.class,board.getStyle()), // 비트연산 넣기
                 board.getLikes(),
                 board.getCreatedDate(),
                 imgFIleId
