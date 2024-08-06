@@ -47,7 +47,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public void deleteFavoriteGroup(Long favoriteGroupId) {
-        favoriteGroupRepository.deleteById(favoriteGroupId);
+        FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteNotFoundException::new);
+
+        favoriteRepository.deleteAllInBatch(favoriteGroup.getFavorites());
+        favoriteGroupRepository.delete(favoriteGroup);
     }
 
     @Override
