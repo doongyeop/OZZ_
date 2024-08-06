@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.ssafy.ozz.clothes.global.config.HeaderConfig.X_USER_ID;
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
 @RequiredArgsConstructor
