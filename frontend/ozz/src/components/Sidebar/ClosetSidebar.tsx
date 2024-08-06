@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import styles from '@/styles/ClosetSidebar.module.css'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
+import styles from '@/styles/ClosetSidebar.module.css'
 import CategoryModal from '@/app/@modal/category/page'
 
 type ClothingItem = {
