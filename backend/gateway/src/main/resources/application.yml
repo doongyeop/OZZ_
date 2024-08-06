@@ -61,7 +61,7 @@ spring:
         - id: user-router
           uri : lb://OZZ-USER
           predicates:
-            - Path=/api/user/**
+            - Path=/api/users/**
         - id: user-swagger
           uri : lb://OZZ-USER
           predicates:
