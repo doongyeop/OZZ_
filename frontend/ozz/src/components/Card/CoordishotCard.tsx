@@ -1,15 +1,20 @@
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FaBookmark, FaHeart } from 'react-icons/fa6'
+import { FaBookmark, FaHeart, FaRegHeart } from 'react-icons/fa6'
 
 import { CoordishotDetail } from '@/types/coordishot'
 import ClothingTag from '@/components/Tag/ClothingTag'
+import LikeButton from '../Button/LikeButton'
 
 type CoordishotCardProps = {
   coordishot: CoordishotDetail
 }
 
 export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
+  const handleLikeChange = (isLiked: boolean, totalLikes: number) => {
+    coordishot.like.isLike = isLiked
+    coordishot.like.total = totalLikes
+  }
   return (
     <div className="flex justify-center">
       <Card className="w-[300px] shadow-lg">
@@ -46,10 +51,13 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
             />
           ))}
           <div className="mt-0 p-4">
-            <div className="flex items-center mb-2">
-              <FaHeart className="text-[#FF505B] mr-1" size={20} />{' '}
-              {coordishot.like.total}
-            </div>
+            <LikeButton
+              boardId={coordishot.boardId}
+              userId={coordishot.user.usersId}
+              isLiked={coordishot.like.isLike}
+              totalLikes={coordishot.like.total}
+              onLikeChange={handleLikeChange}
+            />
             <div className="px-4">{coordishot.content}</div>
           </div>
         </CardContent>
