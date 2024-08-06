@@ -87,7 +87,10 @@ public class BoardController {
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<Board>> getBoardsByAgeRange(
             @RequestParam("age") String age, Pageable pageable) {
-        int startAge = Integer.parseInt(age.substring(0, 1)) * 10;
+        int startAge = 0;
+        if (age.length() != 1) {
+            startAge = Integer.parseInt(age.substring(0, 1)) * 10;
+        }
         int endAge = startAge + 9;
         Page<Board> boards = boardService.getBoardsByAgeRange(pageable, startAge, endAge);
         return ResponseEntity.ok(boards);
