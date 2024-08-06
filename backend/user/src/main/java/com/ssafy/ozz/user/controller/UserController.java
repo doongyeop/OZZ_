@@ -3,6 +3,7 @@ package com.ssafy.ozz.user.controller;
 import com.ssafy.ozz.user.domain.User;
 import com.ssafy.ozz.user.dto.UserUpdateRequest;
 import com.ssafy.ozz.user.dto.UserUpdateResponse;
+import com.ssafy.ozz.user.global.auth.AuthClient;
 import com.ssafy.ozz.user.global.file.FileClient;
 import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
@@ -81,7 +82,7 @@ public class UserController {
                 FeignFileInfo fileInfo = fileClient.uploadFile(file).orElseThrow(FileUploadException::new);
                 User user = userOptional.get();
                 User updatedUser = user.toBuilder()
-                        .profileFileId(fileInfo.getFileId())
+                        .profileFileId(fileInfo.fileId())
                         .build();
                 userService.updateUser(userId, updatedUser);
                 return ResponseEntity.ok(fileInfo);
