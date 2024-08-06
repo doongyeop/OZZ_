@@ -141,7 +141,7 @@ const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
           {filteredItems.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 mt-4">
               {filteredItems.map((item, index) => (
-                <Link key={item.id} href={`/coordi/${item.id}`}>
+                <Link key={item.id} href={`/coordi/detail/${item.id}`}>
                   <Image
                     src={item.image}
                     alt={`item ${index + 1}`}

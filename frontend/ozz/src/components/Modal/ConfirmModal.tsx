@@ -4,13 +4,15 @@ import { Button } from '../ui/button'
 type ConfirmModalProps = {
   onClose: () => void
   onConfirm: () => void
-  message: string
+  message: string | JSX.Element
+  messageClassName?: string
 }
 
 export default function ConfirmModal({
   onClose,
   onConfirm,
   message,
+  messageClassName = '',
 }: ConfirmModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-secondary bg-opacity-50">
@@ -32,7 +34,9 @@ export default function ConfirmModal({
             </svg>
           </button>
         </div>
-        <h3 className="text-lg font-semibold text-primary-400 text-center my-3">
+        <h3
+          className={`text-lg font-semibold text-primary-400 text-center my-3 ${messageClassName}`}
+        >
           {message}
         </h3>
         <div className="flex justify-center space-x-2 mt-5">
