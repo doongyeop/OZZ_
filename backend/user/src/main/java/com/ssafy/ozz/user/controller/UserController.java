@@ -60,7 +60,7 @@ public class UserController {
             if (nickname != null) {
                 userBuilder.nickname(nickname);
             }
-            String birthstr = updates.birth();
+            String birthstr = String.valueOf(updates.birth());
             if (birthstr != null) {
                 try {
                     Date birth = new SimpleDateFormat("yyyy-MM-dd").parse(birthstr);
