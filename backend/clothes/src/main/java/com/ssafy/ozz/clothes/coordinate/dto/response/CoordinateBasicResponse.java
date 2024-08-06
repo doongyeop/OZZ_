@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.coordinate.dto;
+package com.ssafy.ozz.clothes.coordinate.dto.response;
 
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
@@ -15,7 +15,7 @@ public record CoordinateBasicResponse(
         String name,
         List<Style> styleList,
         LocalDateTime createdDate,
-        FeignFileInfo file
+        FeignFileInfo imageFile
 ){
     public CoordinateBasicResponse(Coordinate coordinate, FeignFileInfo file){
         this(

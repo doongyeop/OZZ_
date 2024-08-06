@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.coordinate.dto;
+package com.ssafy.ozz.clothes.coordinate.dto.response;
 
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
@@ -17,7 +17,6 @@ public record CoordinateResponse (
         List<Style> styleList,
         LocalDateTime createdDate,
         List<CoordinateClothesBasicResponse> clothesList,
-        // TODO: File DTO로 반환하기
         FeignFileInfo imageFile
 ){
     public static CoordinateResponse of(Coordinate coordinate, FeignFileInfo file) {

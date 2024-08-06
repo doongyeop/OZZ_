@@ -5,9 +5,12 @@ import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.properties.Style;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
-import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
-import com.ssafy.ozz.clothes.coordinate.dto.*;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateClothesCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import jakarta.transaction.Transactional;
@@ -21,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

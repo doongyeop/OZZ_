@@ -1,6 +1,10 @@
 package com.ssafy.ozz.clothes.coordinate.controller;
 
-import com.ssafy.ozz.clothes.coordinate.dto.*;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
 import com.ssafy.ozz.clothes.coordinate.service.CoordinateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
