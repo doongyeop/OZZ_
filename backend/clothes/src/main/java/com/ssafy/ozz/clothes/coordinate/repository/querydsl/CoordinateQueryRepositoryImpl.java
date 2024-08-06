@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.QCoordinate;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.global.querydsl.Querydsl4RepositorySupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

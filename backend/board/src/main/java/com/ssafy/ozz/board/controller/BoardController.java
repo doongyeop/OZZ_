@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -27,9 +26,9 @@ public class BoardController {
     @Operation(summary = "게시글 등록")
     public ResponseEntity<Board> createBoard(
             @RequestParam("userId") Long userId,
-            @RequestParam("imgFile") MultipartFile imgFile,
+            @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardCreateRequest request) {
-        Board createdBoard = boardService.createBoard(userId, imgFile, request);
+        Board createdBoard = boardService.createBoard(userId, imgFileId, request);
         return ResponseEntity.ok(createdBoard);
     }
 
@@ -68,9 +67,9 @@ public class BoardController {
     @Operation(summary = "게시글 수정 + 이미지", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardWithFileResponse> updateBoardWithImage(
             @PathVariable Long boardId,
-            @RequestParam("imgFile") MultipartFile imgFile,
+            @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardUpdateRequest request) {
-        BoardWithFileResponse response = boardService.updateBoard(boardId, request, imgFile);
+        BoardWithFileResponse response = boardService.updateBoardFile(boardId, request, imgFileId);
         return ResponseEntity.ok(response);
     }
 
@@ -81,12 +80,26 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    // 정렬
-    @GetMapping("/sort")
-    @Operation(summary = "게시글 정렬 조회", description = "스타일 또는 연령 기준으로 게시글을 정렬하여 조회합니다.")
-    public ResponseEntity<Page<Board>> getBoardsSortedBy(
-            @RequestParam("sortBy") String sortBy, Pageable pageable) {
-        Page<Board> boards = boardService.getBoardsSortedBy(pageable, sortBy);
+
+    ////// 조건별 보회//////
+    @GetMapping("/sort/age")
+    @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
+    public ResponseEntity<Page<Board>> getBoardsByAgeRange(
+            @RequestParam("age") String age, Pageable pageable) {
+        int startAge = 0;
+        if (age.length() != 1) {
+            startAge = Integer.parseInt(age.substring(0, 1)) * 10;
+        }
+        int endAge = startAge + 9;
+        Page<Board> boards = boardService.getBoardsByAgeRange(pageable, startAge, endAge);
+        return ResponseEntity.ok(boards);
+    }
+
+    @GetMapping("/sort/style")
+    @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
+    public ResponseEntity<Page<Board>> getBoardsByStyle(
+            @RequestParam("style") String style, Pageable pageable) {
+        Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
         return ResponseEntity.ok(boards);
     }
 

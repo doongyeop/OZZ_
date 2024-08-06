@@ -63,6 +63,14 @@ public class RefreshServiceImpl implements RefreshService {
     }
 
     @Override
+    public void deleteExistingRefreshToken(Long userId) {
+        String existingTokenKey = findExistingRefreshTokenKey(String.valueOf(userId));
+        if (existingTokenKey != null) {
+            redisTemplate.delete(existingTokenKey);
+        }
+    }
+
+    @Override
     public Refresh findByRefreshToken(String refreshToken) {
         String existingTokenKey = findExistingRefreshTokenKeyByToken(refreshToken);
         if (existingTokenKey != null) {

@@ -10,23 +10,23 @@ import java.util.List;
 public record BoardCreateRequest(
         String content,
         List<Tag> tagList,
-        Long imgId,
+        Long imgFileId,
         Long userId,
         int age,
         List<Style> styleList
 ) {
     @Schema(description = "태그 정보")
     public static record Tag(
-            int clothesId,
-            int xPosition,
-            int yPosition
+            Long clothesId,
+            double xPosition,
+            double yPosition
     ) {
     }
 
     public Board toEntity(User user) {
         return Board.builder()
                 .content(content)
-                .imgId(imgId)
+                .imgId(imgFileId)
                 .user(user)
                 .age(age)
                 .style(style)

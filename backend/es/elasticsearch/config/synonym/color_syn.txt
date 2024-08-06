@@ -1,9 +1,9 @@
-흰색,화이트,white,weiß,blanc,bianco,눈색,아이보리
-검정,블랙,black,schwarz,noir,nero,제트,오닉스
+흰,흰색,화이트,white,weiß,blanc,bianco,눈색,아이보리
+검정,검은,블랙,black,schwarz,noir,nero,제트,오닉스
 회색,그레이,gray,grau,gris,grigio,실버,슬레이트
 빨강,레드,red,rot,rouge,rosso,크림슨,스칼렛,빨간
 분홍,핑크,pink,rosa,rose,푸크시아,마젠타
-주황,오렌지,orange,arancione,탠저린,코랄,코럴
+주황,주홍,오렌지,orange,arancione,탠저린,코랄,코럴
 베이지,beige,sand,연베이지
 노랑,옐로우,yellow,gelb,jaune,giallo,레몬,노란
 갈색,브라운,brown,braun,marron,marrone,체스트넛,코코아

@@ -20,10 +20,10 @@ public class Tag {
     private Board board;
 
     @Column(name = "x_position")
-    private Float xPosition;
+    private double xPosition;
 
     @Column(name = "y_position")
-    private Float yPosition;
+    private double yPosition;
 
     @Column(name = "clothes_id")
     private Long clothesId;

@@ -4,7 +4,12 @@ import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateClothes;
-import com.ssafy.ozz.clothes.coordinate.dto.*;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateClothesCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateCreateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse;
+import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
 import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateRepository;
@@ -65,10 +70,10 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
+    public Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByUserId(userId, condition, pageable).map(coordinate -> {
             FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
-            return CoordinateResponse.of(coordinate, fileInfo);
+            return CoordinateBasicResponse.of(coordinate, fileInfo);
         });
     }
 
