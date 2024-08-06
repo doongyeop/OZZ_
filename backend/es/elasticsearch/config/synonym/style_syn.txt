@@ -18,7 +18,7 @@
 리조트,resort,휴양,휴가
 키치,kitsch,미술,장식
 키덜트,kidult,어른아이,성인
-스트릿,street,거리
+스트릿,street,거리,서터릿,스트리트
 섹시,sexy,매력,유혹,매혹
 오리엔탈,oriental,동양
 아방가르드,avant-garde,avantgarde,전위,실험
