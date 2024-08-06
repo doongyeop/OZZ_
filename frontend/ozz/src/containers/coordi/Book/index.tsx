@@ -1,7 +1,8 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal/Modal'
+import { useRouter } from 'next/navigation'
 
 // 데이터 타입 정의
 interface FavoriteGroup {
@@ -107,6 +108,11 @@ const coordiSets: CoordiSet[] = [
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
+  const router = useRouter()
+
+  const goToCoordiBook = (id: number) => {
+    router.push(`/coordi/book/${id}`)
+  }
 
   const createCoordiBook = () => {
     setCreateModal(true)
@@ -124,7 +130,10 @@ export default function CoordiBook() {
 
     return (
       <div key={group.group_id} className="aspect-square">
-        <Card className="flex items-center h-full overflow-hidden">
+        <Card
+          className="flex items-center h-full overflow-hidden"
+          onClick={() => goToCoordiBook(group.group_id)}
+        >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
               groupFavorites.length >= 4 ? 'w-full h-full' : ''
