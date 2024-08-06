@@ -15,7 +15,6 @@ import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
 @Table
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 @ToString
 public class Coordinate {
@@ -38,7 +37,7 @@ public class Coordinate {
     private LocalDateTime updatedDate;
 
     @OneToMany(mappedBy = "coordinate")
-    private List<CoordinateClothes> coordinateClothesList = new ArrayList<>();
+    private List<CoordinateClothes> coordinateClothesList;
 
     /* FOREIGN KEY */
     private Long userId;
@@ -50,6 +49,7 @@ public class Coordinate {
         this.name = name;
         this.userId = userId;
         this.imageFileId = imageFileId;
+        this.coordinateClothesList = new ArrayList<>();
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
     }
