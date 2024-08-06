@@ -70,10 +70,10 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
+    public Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByUserId(userId, condition, pageable).map(coordinate -> {
             FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
-            return CoordinateResponse.of(coordinate, fileInfo);
+            return CoordinateBasicResponse.of(coordinate, fileInfo);
         });
     }
 

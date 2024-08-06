@@ -41,7 +41,7 @@ public class CoordinateController {
 
     @GetMapping("/users")
     @Operation(summary = "사용자의 코디 조회", description = "특정 사용자의 코디 목록을 슬라이스 형태로 조회합니다.")
-    public ResponseEntity<Slice<CoordinateResponse>> getCoordinateList(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @ModelAttribute CoordinateSearchCondition condition, Pageable pageable) {
+    public ResponseEntity<Slice<CoordinateBasicResponse>> getCoordinateList(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @ModelAttribute CoordinateSearchCondition condition, Pageable pageable) {
         return ResponseEntity.ok(coordinateService.getCoordinatesOfUser(userId,condition,pageable));
     }
 

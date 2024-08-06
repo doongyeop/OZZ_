@@ -20,7 +20,7 @@ public interface CoordinateService {
 
     List<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition);
 
-    Slice<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable);
+    Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable);
 
     CoordinateResponse updateCoordinate(Long coordinateId, MultipartFile imageFile, CoordinateUpdateRequest request);
 
