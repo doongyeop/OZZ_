@@ -41,7 +41,6 @@ services:
       - "9600:9600" # Logstash monitoring API
     depends_on:
       - elasticsearch
-      - ozz-ai
     networks:
       - spring-cloud-network
 
