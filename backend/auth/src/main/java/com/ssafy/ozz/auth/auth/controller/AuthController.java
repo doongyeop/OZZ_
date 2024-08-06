@@ -65,20 +65,20 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
-    @Operation(summary = "로그아웃")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        String refresh = request.getHeader("refresh");
+    // @PostMapping("/logout")
+    // @Operation(summary = "로그아웃")
+    // public ResponseEntity<?> logout(HttpServletRequest request) {
+    //     String refresh = request.getHeader("refresh");
 
-        if (refresh == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
-        }
+    //     if (refresh == null) {
+    //         return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+    //     }
 
-        // 리프레시 토큰 삭제
-        refreshService.deleteRefreshToken(refresh);
+    //     // 리프레시 토큰 삭제
+    //     refreshService.deleteRefreshToken(refresh);
 
-        return new ResponseEntity<>("성공적으로 로그아웃 되었습니다.", HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>("성공적으로 로그아웃 되었습니다.", HttpStatus.OK);
+    // }
 
     @DeleteMapping("/users/{userId}/refresh")
     @Operation(summary = "로그아웃")
