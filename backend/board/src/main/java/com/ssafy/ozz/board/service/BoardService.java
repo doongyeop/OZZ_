@@ -12,12 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 public interface BoardService {
-    Board createBoard(Long userId, MultipartFile imageFile, BoardCreateRequest request);
+    Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request);
     Optional<Board> getBoardsByUserId(Long userId);
     Page<Board> getBoards(Pageable pageable);
     Board getBoard(Long boardId);
     BoardResponse updateBoard(Long boardId, BoardUpdateRequest request);
-    BoardWithFileResponse updateBoard(Long boardId, BoardUpdateRequest request, MultipartFile imgFile);
+    BoardWithFileResponse updateBoardFile(Long boardId, BoardUpdateRequest request, Long imgFileId);
+
     void deleteBoard(Long boardId);
     // 정렬
     Page<Board> getBoardsByStyle(Pageable pageable, String style);

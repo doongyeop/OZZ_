@@ -16,9 +16,9 @@ public record BoardWithFileResponse(
         List<Style> styleList,
         int likes,
         Date createdDate,
-        FeignFileInfo imgFIle
+        Long imgFIleId
 ) {
-    public BoardWithFileResponse(Board board, FeignFileInfo imgFile) {
+    public BoardWithFileResponse(Board board, Long imgFIleId) {
         this(
                 board.getId(),
                 board.getContent(),
@@ -28,7 +28,7 @@ public record BoardWithFileResponse(
                 board., // 비트연산
                 board.getLikes(),
                 board.getCreatedDate(),
-                imgFile
+                imgFIleId
         );
     }
 }

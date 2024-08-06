@@ -13,13 +13,10 @@ import com.ssafy.ozz.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,12 +30,11 @@ public class BoardServiceImpl implements BoardService {
     private final FileService fileService;
 
     @Override
-    public Board createBoard(Long userId, MultipartFile imgFile, BoardCreateRequest request) {
-        Long imgId = fileService.saveFile(imgFile);
+    public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
 
         Board board = Board.builder()
                 .content(request.content())
-                .imgId(imgId)
+                .imgId(imgFileId)
                 .user(userRepository.findById(userId))
                 .age(request.age())
                 .style(Style) // 스타일 비트 연산
@@ -105,13 +101,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardWithFileResponse updateBoard(Long boardId, BoardUpdateRequest request, MultipartFile imgFile) {
+    public BoardWithFileResponse updateBoardFile(Long boardId, BoardUpdateRequest request, Long imgFileId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        Long imgId = fileService.saveFile(imgFile);
 
         board = board.toBuilder()
                 .content(request.content())
-                .imgId(imgId)
+                .imgId(imgFileId)
                 .age(request.age())
                 .style() // 스타일 비트 연산
                 .build();
@@ -130,7 +125,7 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        return new BoardWithFileResponse(board, imgFile);
+        return new BoardWithFileResponse(board, imgFileId);
     }
 
     @Override

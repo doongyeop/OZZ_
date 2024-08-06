@@ -27,9 +27,9 @@ public class BoardController {
     @Operation(summary = "게시글 등록")
     public ResponseEntity<Board> createBoard(
             @RequestParam("userId") Long userId,
-            @RequestParam("imgFile") MultipartFile imgFile,
+            @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardCreateRequest request) {
-        Board createdBoard = boardService.createBoard(userId, imgFile, request);
+        Board createdBoard = boardService.createBoard(userId, imgFileId, request);
         return ResponseEntity.ok(createdBoard);
     }
 
@@ -68,9 +68,9 @@ public class BoardController {
     @Operation(summary = "게시글 수정 + 이미지", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardWithFileResponse> updateBoardWithImage(
             @PathVariable Long boardId,
-            @RequestParam("imgFile") MultipartFile imgFile,
+            @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardUpdateRequest request) {
-        BoardWithFileResponse response = boardService.updateBoard(boardId, request, imgFile);
+        BoardWithFileResponse response = boardService.updateBoardFile(boardId, request, imgFileId);
         return ResponseEntity.ok(response);
     }
 

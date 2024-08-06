@@ -7,16 +7,16 @@ import java.util.List;
 @Schema(description = "게시글 수정 요청 DTO")
 public record BoardUpdateRequest(
         String content,
-        Long imgId,
+        Long imgFileId,
         int age,
         List<Style> styleList,
         List<Tag> tagList
 ) {
     @Schema(description = "태그 정보")
     public static record Tag(
-            int clothesId,
-            int xPosition,
-            int yPosition
+            Long clothesId,
+            double xPosition,
+            double yPosition
     ) {
     }
 }
