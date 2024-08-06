@@ -1,11 +1,14 @@
 package com.ssafy.ozz.user.controller;
 
 import com.ssafy.ozz.user.domain.User;
+import com.ssafy.ozz.user.dto.UserUpdateRequest;
+import com.ssafy.ozz.user.dto.UserUpdateResponse;
 import com.ssafy.ozz.user.global.file.FileClient;
 import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
 import com.ssafy.ozz.user.service.UserService;
 import com.ssafy.ozz.user.util.JWTUtil;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -46,7 +48,7 @@ public class UserController {
 
     @PutMapping("/")
     @Operation(summary = "토큰으로 유저정보 수정")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> updates) {
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequest updates) {
         Long userId = getUserIdFromToken(token);
 
         Optional<User> userOptional = userService.getUserById(userId);
@@ -54,11 +56,11 @@ public class UserController {
             User user = userOptional.get();
             User.UserBuilder userBuilder = user.toBuilder();
 
-            String nickname = updates.get("nickname");
+            String nickname = updates.nickname();
             if (nickname != null) {
                 userBuilder.nickname(nickname);
             }
-            String birthstr = updates.get("birth");
+            String birthstr = updates.birth();
             if (birthstr != null) {
                 try {
                     Date birth = new SimpleDateFormat("yyyy-MM-dd").parse(birthstr);
@@ -67,12 +69,25 @@ public class UserController {
                     return ResponseEntity.badRequest().body("yyyy-MM-dd로 입력해주세요.");
                 }
             }
-            userService.updateUser(userId, userBuilder.build());
-            return ResponseEntity.ok("성공적으로 수정되었습니다.");
+
+            User updatedUser = userService.updateUser(userId, userBuilder.build());
+            UserUpdateResponse responseDto = new UserUpdateResponse(
+                    updatedUser.getId(),
+                    updatedUser.getNickname(),
+                    updatedUser.getBirth()
+            );
+            return ResponseEntity.ok(responseDto);
         } else {
             return ResponseEntity.status(404).body("User not found");
         }
     }
+
+    private Long getUserIdFromToken(String token) {
+        // 토큰에서 userId를 추출하는 로직
+        // 예시: JWT 토큰에서 클레임으로 userId 추출
+        return Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
+    }
+}
 
     @PatchMapping("/profile")
     @Operation(summary = "유저 프로필 변경")
@@ -116,24 +131,24 @@ public class UserController {
         }
     }
     
-    // 걍 updateUser(45줄) 이거쓰면 될 듯
-    @PutMapping("/nickname")
-    @Operation(summary = "최초 로그인 시 닉네임 입력")
-    public ResponseEntity<?> registNickName(@RequestHeader("Authorization") String token, @RequestParam(value = "nickname") String nickname) {
-        Long userId = getUserIdFromToken(token);
-
-        Optional<User> userOptional = userService.getUserById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            User updatedUser = user.toBuilder()
-                    .nickname(nickname)
-                    .build();
-            userService.updateUser(userId, updatedUser);
-            return ResponseEntity.ok("닉네임이 등록되었습니다.");
-        } else {
-            return ResponseEntity.status(404).body("User not found");
-        }
-    }
+//    // 걍 updateUser(45줄) 이거쓰면 될 듯
+//    @PutMapping("/nickname")
+//    @Operation(summary = "최초 로그인 시 닉네임 입력")
+//    public ResponseEntity<?> registNickName(@RequestHeader("Authorization") String token, @RequestParam(value = "nickname") String nickname) {
+//        Long userId = getUserIdFromToken(token);
+//
+//        Optional<User> userOptional = userService.getUserById(userId);
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            User updatedUser = user.toBuilder()
+//                    .nickname(nickname)
+//                    .build();
+//            userService.updateUser(userId, updatedUser);
+//            return ResponseEntity.ok("닉네임이 등록되었습니다.");
+//        } else {
+//            return ResponseEntity.status(404).body("User not found");
+//        }
+//    }
 
     @GetMapping("/check")
     @Operation(summary = "닉네임 중복 조회")
