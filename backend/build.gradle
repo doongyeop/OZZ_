@@ -4,18 +4,12 @@ allprojects {
 }
 
 subprojects {
-//    apply plugin: 'java'
-//    apply plugin: 'org.springframework.boot'
-//    apply plugin: 'io.spring.dependency-management'
-//
-//    repositories {
-//        mavenCentral()
-//    }
-//
-//    dependencies {
-//        implementation 'org.springframework.boot:spring-boot-starter'
-//        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    }
+    repositories {
+        mavenCentral()
+        maven {
+            url = uri("file://${rootProject.projectDir}/library/build/repos")
+        }
+    }
 }
 
 task cleanAll {
@@ -23,8 +17,13 @@ task cleanAll {
             ':eureka:clean', ':gateway:clean'
 }
 
+task publishLibrary {
+    dependsOn 'library:publish'
+}
+
 task buildAll {
     dependsOn cleanAll
+    dependsOn publishLibrary
     dependsOn ':auth:bootJar', ':user:bootJar', ':file-server:bootJar', ':clothes:bootJar',
             ':eureka:bootJar', ':gateway:bootJar'
 }
