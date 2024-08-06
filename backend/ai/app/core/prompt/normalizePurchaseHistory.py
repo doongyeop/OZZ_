@@ -6,9 +6,9 @@ Distinguish the category, color of this product with the product name and produc
 
 Example of purchase history:
 [
-{name: "8부 데님 버뮤다팬츠 - 3COLOR", option: "1번(S) : 라이트블루"},
-{name: "shawl mood knit (5colors)", option: "바이올렛, 선택없음"},
-{name: "오데일리 접이식 속옷 정리함 12칸 손잡이형 2개", option: "화이트, free"}
+{"name": "8부 데님 버뮤다팬츠 - 3COLOR", "option": "1번(S) : 라이트블루"},
+{"name": "shawl mood knit (5colors)", "option": "바이올렛, 선택없음"},
+{"name": "오데일리 접이식 속옷 정리함 12칸 손잡이형 2개", "option": "화이트, free"}
 ]
 
 Result:
