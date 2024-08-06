@@ -14,8 +14,8 @@ import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
-import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
 import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -36,7 +36,7 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     public CoordinateResponse createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
-        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
 
         Coordinate coordinate = request.toEntity(userId,fileInfo.fileId());
         coordinateRepository.save(coordinate);
@@ -63,7 +63,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     public List<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition) {
         List<Coordinate> coordinateList = coordinateRepository.findByUserId(userId, condition);
         return coordinateList.stream().map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return CoordinateResponse.of(coordinate, fileInfo);
         }).toList();
     }
@@ -72,7 +72,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     @Transactional(readOnly = true)
     public Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByUserId(userId, condition, pageable).map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return CoordinateBasicResponse.of(coordinate, fileInfo);
         });
     }
@@ -98,7 +98,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     @Override
     public Slice<CoordinateBasicResponse> searchCoordinates(CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByCondition(condition, pageable).map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return new CoordinateBasicResponse(coordinate, fileInfo);
         });
     }

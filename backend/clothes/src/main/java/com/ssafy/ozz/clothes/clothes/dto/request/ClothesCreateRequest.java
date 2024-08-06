@@ -2,13 +2,13 @@ package com.ssafy.ozz.clothes.clothes.dto.request;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-import com.ssafy.ozz.clothes.clothes.properties.*;
+import com.ssafy.ozz.library.clothes.properties.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "옷 생성 요청 DTO")
 public record ClothesCreateRequest(

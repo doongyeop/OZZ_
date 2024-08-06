@@ -1,7 +1,7 @@
 package com.ssafy.ozz.clothes.category.exception;
 
-import com.ssafy.ozz.clothes.global.error.ErrorCode;
-import com.ssafy.ozz.clothes.global.error.ServiceException;
+import com.ssafy.ozz.library.global.error.ErrorCode;
+import com.ssafy.ozz.library.global.error.ServiceException;
 
 public class CategoryNotFoundException extends ServiceException {
     public CategoryNotFoundException() {
