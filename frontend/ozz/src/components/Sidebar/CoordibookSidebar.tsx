@@ -49,7 +49,7 @@ export default function CoordibookSidebar({
           createdDate: '2024-08-06T01:40:12.825788',
           imageFile: {
             fileId: 4,
-            filePath: 'a386bdca-2d2e-416d-932f-b988630d63ce.상의.png',
+            filePath: '/images/tops01.png',
             fileName: '상의.png',
             fileType: 'image/png',
           },
@@ -61,7 +61,7 @@ export default function CoordibookSidebar({
           createdDate: '2024-08-06T01:40:12.825788',
           imageFile: {
             fileId: 4,
-            filePath: 'a386bdca-2d2e-416d-932f-b988630d63ce.상의.png',
+            filePath: '/images/tops01.png',
             fileName: '상의.png',
             fileType: 'image/png',
           },
@@ -130,11 +130,11 @@ export default function CoordibookSidebar({
             <h3>코디북</h3>
           </div>
           <div className={styles.clothesList}>
-            {dummyClothes.map((item) => (
+            {coordibooks.map((item) => (
               <div
-                key={item.id}
+                key={item.coordinateId}
                 className={styles.clothItem}
-                onClick={() => onSelectItem(item)}
+                onClick={() => handleCoordibookSelect(item.coordinateId)}
               >
                 <Image
                   src={item.imageFile.filePath}
@@ -142,15 +142,16 @@ export default function CoordibookSidebar({
                   width={80}
                   height={80}
                 />
+                {item.name}
               </div>
             ))}
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <CategoryModal
-          onClose={() => setIsModalOpen(false)}
-          setValue={handleCategoryChange}
+      {isCreateModalOpen && (
+        <CreateCoordibookModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreate={handleCreateCoordibook}
         />
       )}
     </>
