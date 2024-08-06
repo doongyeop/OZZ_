@@ -141,16 +141,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<Board> getBoardsSortedBy(Pageable pageable, String sortBy) {
-        switch (sortBy.toLowerCase()) {
-            case "style":
-                return boardRepository.findAll(pageable.sort(Sort.by("style")));
-            case "age":
-                return boardRepository.findAll(pageable.sort(Sort.by("age")));
-            default:
-                return boardRepository.findAll(pageable);
-        }
+    public Page<Board> getBoardsByStyle(Pageable pageable, String style) {
+        return boardRepository.findByStyle(style, pageable);
     }
+
+    @Override
+    public Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge) {
+        return boardRepository.findByAgeBetween(startAge, endAge, pageable);
+    }
+
 
     @Override
     public Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable) {

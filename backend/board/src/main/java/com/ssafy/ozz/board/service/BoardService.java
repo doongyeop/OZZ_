@@ -20,6 +20,8 @@ public interface BoardService {
     BoardWithFileResponse updateBoard(Long boardId, BoardUpdateRequest request, MultipartFile imgFile);
     void deleteBoard(Long boardId);
     // 정렬
-    Page<Board> getBoardsSortedBy(Pageable pageable, String sortBy);
+    Page<Board> getBoardsByStyle(Pageable pageable, String style);
+    Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge);
+
     Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable);
 }
