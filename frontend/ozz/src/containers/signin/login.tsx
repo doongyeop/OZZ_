@@ -10,6 +10,11 @@ const SignIn = () => {
       'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
   }
 
+  const onNaverLogin = () => {
+    window.location.href =
+      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/naver'
+  }
+
   return (
     <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">
       <img src="images/logo_3e3e3e.png" alt="OZZ LOGO" className="mb-8 w-40" />
@@ -29,6 +34,7 @@ const SignIn = () => {
           </span>
         </div>
         <div
+          onClick={onNaverLogin}
           id="naverIdLogin"
           className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
         >
