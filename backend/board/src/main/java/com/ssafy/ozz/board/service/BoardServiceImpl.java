@@ -6,6 +6,7 @@ import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
 import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
+import com.ssafy.ozz.board.dto.response.UserResponse;
 import com.ssafy.ozz.board.global.feign.file.FileClient;
 import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.repository.BoardRepository;
@@ -136,7 +137,15 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        return new BoardWithFileResponse(board, file, user);
+        UserResponse userResponse = new UserResponse(
+                user.userId(),
+                user.nickname(),
+                user.Birth(),
+                user.profileFileId(),
+                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
+        );
+
+        return new BoardWithFileResponse(board, file, userResponse);
     }
 
     @Override

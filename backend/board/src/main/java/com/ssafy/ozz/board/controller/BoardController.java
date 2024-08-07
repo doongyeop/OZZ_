@@ -5,6 +5,7 @@ import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
 import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
+import com.ssafy.ozz.board.dto.response.UserResponse;
 import com.ssafy.ozz.board.global.feign.file.FileClient;
 import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.service.BoardService;
@@ -41,9 +42,16 @@ public class BoardController {
             @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardCreateRequest request) {
         Board board = boardService.createBoard(userId, imgFileId, request);
-        FileInfo fileInfo = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+        FileInfo fileInfo = fileClient.getFile(request.imgFileId()).orElseThrow(FileNotFoundException::new);
         UserInfo userInfo = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
-        BoardWithFileResponse response = new BoardWithFileResponse(board, fileInfo, userInfo);
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId(),
+                userInfo.nickname(),
+                userInfo.Birth(),
+                userInfo.profileFileId(),
+                fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new)
+        );
+        BoardWithFileResponse response = new BoardWithFileResponse(board, fileInfo, userResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -55,7 +63,16 @@ public class BoardController {
                 .map(board -> {
                     FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
                     UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-                    return new BoardWithFileResponse(board, fileInfo, userInfo);
+
+                    UserResponse userResponse = new UserResponse(
+                            userInfo.userId(),
+                            userInfo.nickname(),
+                            userInfo.Birth(),
+                            userInfo.profileFileId(),
+                            fileClient.getFile(userInfo.profileFileId()).orElseThrow(com.ssafy.ozz.library.global.error.exception.FileNotFoundException::new)
+                    );
+
+                    return new BoardWithFileResponse(board, fileInfo, userResponse);
                 })
                 .collect(Collectors.toList());
         Page<BoardWithFileResponse> page = new PageImpl<>(boards, pageable, boards.size());
@@ -76,7 +93,16 @@ public class BoardController {
         if (board.getImgFileId() != null) {
             FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
             UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-            return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userInfo));
+
+            UserResponse userResponse = new UserResponse(
+                    userInfo.userId(),
+                    userInfo.nickname(),
+                    userInfo.Birth(),
+                    userInfo.profileFileId(),
+                    fileClient.getFile(userInfo.profileFileId()).orElseThrow(com.ssafy.ozz.library.global.error.exception.FileNotFoundException::new)
+            );
+
+            return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userResponse));
         } else {
             return ResponseEntity.ok(new BoardResponse(board));
         }

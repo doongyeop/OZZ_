@@ -23,9 +23,9 @@ public record BoardWithFileResponse(
         Date createdDate,
         List<Tag> tagList,
         FileInfo fileInfo,
-        UserInfo userInfo
+        UserResponse userInfo
 ) {
-    public BoardWithFileResponse(Board board, FileInfo fileInfo, UserInfo userInfo) {
+    public BoardWithFileResponse(Board board, FileInfo fileInfo, UserResponse userInfo) {
         this(
                 board.getId(),
                 board.getContent(),

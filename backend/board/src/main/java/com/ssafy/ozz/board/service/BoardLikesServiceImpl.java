@@ -84,6 +84,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
                     return new UserResponse(
                             userInfo.userId(),
                             userInfo.nickname(),
+                            userInfo.Birth(),
                             userInfo.profileFileId(),
                             profileImage
                     );
