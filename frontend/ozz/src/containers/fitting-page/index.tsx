@@ -5,7 +5,7 @@ import Image from 'next/image'
 import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
-import ClosetSidebar from './ClosetSidebar'
+import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 
 type ClothingItem = {

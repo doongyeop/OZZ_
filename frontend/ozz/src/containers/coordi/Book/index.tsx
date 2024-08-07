@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import Modal from '@/components/Modal/Modal'
 import { useRouter } from 'next/navigation'
+import Modal from '@/components/Modal'
 
 // 데이터 타입 정의
 interface FavoriteGroup {

@@ -102,7 +102,7 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   size: 'M',
   fit: '레귤러핏',
   texture: ['면', '폴리에스터'],
-  color: { name: '검정', code: '#000000' },
+  color: [{ name: '검정', code: '#000000' }],
   style: ['캐주얼', '데일리'],
   pattern: { name: '무지', img: 'graphic.png' },
   memo: '자주 입는 옷입니다.',

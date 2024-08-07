@@ -1,28 +1,27 @@
-import React from 'react'
-
-interface ModalProps {
+interface ScrollableModalProps {
   onClose: () => void
-  title: string
-  children: React.ReactNode
+  title?: string
   width?: string
-  className?: string // 추가
+  children: React.ReactNode
 }
 
-export default function Modal({
+export default function ScrollableModal({
   onClose,
   title,
-  children,
   width,
-  className,
-}: ModalProps) {
+  children,
+}: ScrollableModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-secondary bg-opacity-50">
       <div
-        className={`bg-secondary rounded-xl shadow-lg ${width || 'w-[250px]'} max-w-lg ${className || 'overflow-hidden'}`}
+        className={`bg-secondary/80 rounded-xl shadow-lg overflow-hidden max-w-lg ${width || 'w-[250px]'} h-[500px] flex flex-col`}
       >
-        <div className="flex justify-between items-center pt-3 pl-4 pr-3">
-          <h3 className="text-lg font-semibold text-primary-400">{title}</h3>
-          <button onClick={onClose} className="text-primary-400">
+        <div className="flex justify-between items-center p-4">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <button
+            onClick={onClose}
+            className="text-primary-400 hover:text-primary-600"
+          >
             <svg
               className="w-6 h-6"
               fill="none"
@@ -38,7 +37,7 @@ export default function Modal({
             </svg>
           </button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-4 overflow-y-auto flex-grow">{children}</div>
       </div>
     </div>
   )
