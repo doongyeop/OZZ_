@@ -21,13 +21,7 @@ spring:
               - http://i11a804.p.ssafy.io:8000
               - http://localhost:8000
             allow-credentials: true
-            allowedHeaders:
-              - x-requested-with
-              - Authorization
-              - content-type
-              - credential
-              - X-AUTH-TOKEN
-              - X-CSRF-TOKEN  # 허용할 요청 헤더를 설정합니다.
+            allowedHeaders: '*'
             exposedHeaders:
               - x-requested-with
               - Authorization
