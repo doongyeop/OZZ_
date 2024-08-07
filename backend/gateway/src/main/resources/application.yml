@@ -87,11 +87,11 @@ spring:
           filters:
             - RewritePath=/docs/ozz-favorite/(?<path>.*), /$\{path}
         - id: board-router
-          uri : lb://OZZ-FAVORITE
+          uri : lb://OZZ-BOARD
           predicates:
             - Path=/api/boards/**, /api/boardlikes/**, /api/notifications/**
         - id: board-swagger
-          uri : lb://OZZ-FAVORITE
+          uri : lb://OZZ-BOARD
           predicates:
             - Path=/docs/ozz-board/**
           filters:
