@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class UserController {
 
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
-    public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId) {
+    public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -46,7 +47,7 @@ public class UserController {
 
     @PutMapping("/")
     @Operation(summary = "토큰으로 유저정보 수정")
-    public ResponseEntity<?> updateUser(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestBody UserUpdateRequest updates) {
+    public ResponseEntity<?> updateUser(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestBody UserUpdateRequest updates) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -75,7 +76,7 @@ public class UserController {
 
     @PatchMapping("/profile")
     @Operation(summary = "유저 프로필 변경")
-    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestParam("file") MultipartFile file) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {
@@ -96,7 +97,7 @@ public class UserController {
 
     @DeleteMapping("/")
     @Operation(summary = "회원 탈퇴")
-    public ResponseEntity<?> deleteUser(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId) {
+    public ResponseEntity<?> deleteUser(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
