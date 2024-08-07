@@ -1,7 +1,5 @@
 package com.ssafy.ozz.favorite.controller;
 
-import com.ssafy.ozz.favorite.domain.Favorite;
-import com.ssafy.ozz.favorite.domain.FavoriteGroup;
 import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
 import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
