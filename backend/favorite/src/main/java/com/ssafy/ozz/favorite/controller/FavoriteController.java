@@ -3,6 +3,7 @@ package com.ssafy.ozz.favorite.controller;
 import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
 import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupImageResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +64,7 @@ public class FavoriteController {
 
     @GetMapping("/users")
     @Operation(summary = "내 즐겨찾기 목록 조회", description = "내 즐겨찾기 그룹 목록을 조회합니다.")
-    public ResponseEntity<List<FavoriteGroupBasicResponse>> getFavoritesGroupListOfUsers(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
+    public ResponseEntity<List<FavoriteGroupImageResponse>> getFavoritesGroupListOfUsers(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         return new ResponseEntity<>(favoriteService.getFavoriteGroupResponseListOfUser(userId), HttpStatus.OK);
     }
 }

@@ -3,22 +3,17 @@ package com.ssafy.ozz.favorite.service;
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
 import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
-import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
-import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
-import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
-import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
-import com.ssafy.ozz.favorite.repository.FavoriteRepository;
-import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
 import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupImageResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
 import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
 import com.ssafy.ozz.favorite.repository.FavoriteRepository;
 import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.library.error.exception.FavoriteGroupNotFoundException;
-import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.library.error.exception.FavoriteNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -88,8 +83,12 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<FavoriteGroupBasicResponse> getFavoriteGroupResponseListOfUser(Long userId) {
-        return favoriteGroupRepository.findByUserId(userId).stream().map(FavoriteGroupBasicResponse::of).toList();
+    public List<FavoriteGroupImageResponse> getFavoriteGroupResponseListOfUser(Long userId) {
+        return favoriteGroupRepository.findByUserId(userId).stream().map(favoriteGroup -> {
+            List<FileInfo> imageFileList = favoriteGroup.getFavorites().stream().map(favorite ->
+                    coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow().imageFile()).toList();
+            return FavoriteGroupImageResponse.of(favoriteGroup, imageFileList);
+        }).toList();
     }
 
     @Override
