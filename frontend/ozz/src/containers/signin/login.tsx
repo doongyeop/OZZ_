@@ -2,33 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import axios from 'axios'
 
 const SignIn = () => {
   const onKaKaoLogin = () => {
     window.location.href =
       'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
   }
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch('/api/', {
-  //       credentials: 'include',
-  //     })
-
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok')
-  //     }
-
-  //     const data = await response.json()
-  //     alert(JSON.stringify(data))
-  //   } catch (error) {
-  //     alert(error)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchData()
-  // }, [])
 
   return (
     <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">
@@ -47,11 +27,6 @@ const SignIn = () => {
           <span className="flex-grow text-center text-black">
             카카오 로그인
           </span>
-        </div>
-        <div>
-          <a href="http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao">
-            ㅋㅅㅋ
-          </a>
         </div>
         <div
           id="naverIdLogin"
