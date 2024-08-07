@@ -16,6 +16,10 @@ spring:
             allowedOrigins:
               - ${FRONT_HTTP_HOST:http://localhost:3000}
               - ${FRONT_HTTPS_HOST:https://localhost:3000}
+              - http://i11a804.p.ssafy.io:8080
+              - http://localhost:8080
+              - http://i11a804.p.ssafy.io:8000
+              - http://localhost:8000
             allow-credentials: true
             allowedHeaders:
               - x-requested-with
