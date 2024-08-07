@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,23 +33,24 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // cors설정
         http
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://i11a804.p.ssafy.io:3000"));
-                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
-
-                        return configuration;
-                    }
-                }));
+                .cors(AbstractHttpConfigurer::disable);
+//                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+//                    @Override
+//                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+//
+//                        CorsConfiguration configuration = new CorsConfiguration();
+//
+//                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://i11a804.p.ssafy.io:3000"));
+//                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//                        configuration.setAllowedHeaders(Collections.singletonList("*"));
+//                        configuration.setAllowCredentials(true);
+//                        configuration.setMaxAge(3600L);
+//
+//                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
+//
+//                        return configuration;
+//                    }
+//                }));
         //csrf -> jwt로 대체할 것이므로 disable
         http
                 .csrf((auth) -> auth.disable());
