@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.ssafy.ozz.clothes.global.config.HeaderConfig.X_USER_ID;
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +37,12 @@ public class CoordinateController {
     @Operation(summary = "코디 상세 조회", description = "ID를 통해 특정 코디 세부 정보를 조회합니다.")
     public ResponseEntity<CoordinateResponse> getCoordinate(@PathVariable final Long coordinateId) {
         return ResponseEntity.ok(coordinateService.getCoordinate(coordinateId));
+    }
+
+    @GetMapping("/{coordinateId}/basic")
+    @Operation(summary = "코디 기본 정보 조회", description = "ID를 통해 특정 코디 기본 정보를 조회합니다.")
+    public ResponseEntity<CoordinateBasicResponse> getCoordinateBasicResponse(@PathVariable final Long coordinateId) {
+        return ResponseEntity.ok(coordinateService.getCoordinateBasicResponse(coordinateId));
     }
 
     @GetMapping("/users")

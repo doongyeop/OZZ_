@@ -63,3 +63,18 @@ export const fitMap: { [key: string]: string } = {
   레귤러핏: 'REGULAR',
   슬림핏: 'SLIM',
 }
+
+export const keyLabelMap: { [key: string]: string } = {
+  brandName: '브랜드',
+  categoryName: '카테고리',
+  purchaseDate: '구매일자',
+  purchaseSite: '구매처',
+  season: '계절',
+  size: '사이즈',
+  fit: '핏',
+  texture: '소재',
+  color: '색상',
+  style: '스타일',
+  pattern: '패턴',
+  memo: '메모',
+}

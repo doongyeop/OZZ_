@@ -9,7 +9,7 @@ interface HelpModalProps {
   onClose: () => void
 }
 
-const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
+export default function HelpModal({ onClose }: HelpModalProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = 4
 
@@ -101,5 +101,3 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
     </div>
   )
 }
-
-export default HelpModal

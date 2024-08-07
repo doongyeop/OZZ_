@@ -1,6 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
-import com.ssafy.ozz.clothes.clothes.properties.ColorProperty;
+import com.ssafy.ozz.library.clothes.properties.ColorProperty;
 
 public record ColorResponse (
     String code,

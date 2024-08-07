@@ -10,12 +10,12 @@ import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse;
 import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
-import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
-import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
-import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
+import com.ssafy.ozz.library.error.exception.FileNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -36,7 +36,7 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     public CoordinateResponse createCoordinate(Long userId, MultipartFile imageFile, CoordinateCreateRequest request) {
-        FeignFileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
 
         Coordinate coordinate = request.toEntity(userId,fileInfo.fileId());
         coordinateRepository.save(coordinate);
@@ -53,6 +53,12 @@ public class CoordinateServiceImpl implements CoordinateService {
     }
 
     @Override
+    public CoordinateBasicResponse getCoordinateBasicResponse(Long coordinateId) {
+        Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
+        return CoordinateBasicResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Coordinate getCoordinateEntity(Long coordinateId) {
         return coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
@@ -63,7 +69,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     public List<CoordinateResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition) {
         List<Coordinate> coordinateList = coordinateRepository.findByUserId(userId, condition);
         return coordinateList.stream().map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return CoordinateResponse.of(coordinate, fileInfo);
         }).toList();
     }
@@ -72,7 +78,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     @Transactional(readOnly = true)
     public Slice<CoordinateBasicResponse> getCoordinatesOfUser(Long userId, CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByUserId(userId, condition, pageable).map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return CoordinateBasicResponse.of(coordinate, fileInfo);
         });
     }
@@ -98,7 +104,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     @Override
     public Slice<CoordinateBasicResponse> searchCoordinates(CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByCondition(condition, pageable).map(coordinate -> {
-            FeignFileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return new CoordinateBasicResponse(coordinate, fileInfo);
         });
     }

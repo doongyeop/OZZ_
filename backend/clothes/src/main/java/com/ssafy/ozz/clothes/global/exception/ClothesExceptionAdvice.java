@@ -1,7 +1,7 @@
 package com.ssafy.ozz.clothes.global.exception;
 
-import com.ssafy.ozz.clothes.global.error.ErrorCode;
-import com.ssafy.ozz.clothes.global.error.ServiceException;
+import com.ssafy.ozz.library.error.ErrorCode;
+import com.ssafy.ozz.library.error.ServiceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

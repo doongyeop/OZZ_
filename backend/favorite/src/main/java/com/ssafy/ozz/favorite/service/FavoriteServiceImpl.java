@@ -2,8 +2,18 @@ package com.ssafy.ozz.favorite.service;
 
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
+import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
+import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupImageResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
+import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
 import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
 import com.ssafy.ozz.favorite.repository.FavoriteRepository;
+import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
+import com.ssafy.ozz.library.error.exception.FavoriteGroupNotFoundException;
+import com.ssafy.ozz.library.error.exception.FavoriteNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,36 +25,45 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
-    private final CoordinateRepository coordinateRepository;
+    private final CoordinateClient coordinateClient;
 
     @Override
-    public Favorite addFavorite(Long favoriteGroupId, Long coordinateId) {
+    public FavoriteResponse addFavorite(Long favoriteGroupId, Long coordinateId) {
         FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid favorite group ID"));
-        Coordinate coordinate = coordinateRepository.findById(coordinateId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid coordinate ID"));
 
         Favorite favorite = Favorite.builder()
                 .favoriteGroup(favoriteGroup)
-                .coordinate(coordinate)
+                .coordinateId(coordinateId)
                 .build();
 
-        return favoriteRepository.save(favorite);
+        return FavoriteResponse.of(favoriteRepository.save(favorite),coordinateClient.getCoordinate(coordinateId).orElseThrow(CoordinateNotFoundException::new));
     }
 
     @Override
     public void deleteFavorite(Long favoriteGroupId, Long coordinateId) {
-        Favorite favorite = favoriteRepository.findAllByFavoriteGroup(favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(() -> new IllegalArgumentException("Invalid favorite group ID")))
-                .stream()
-                .filter(f -> f.getCoordinate().getCoordinateId().equals(coordinateId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
+        Favorite favorite = favoriteRepository.findByFavoriteGroupAndCoordinateId(
+                favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(),
+                coordinateId)
+                .orElseThrow(FavoriteNotFoundException::new);
         favoriteRepository.delete(favorite);
     }
 
     @Override
+    public void deleteFavoriteList(Long favoriteGroupId, FavoriteListDeleteRequest request) {
+        FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteGroupNotFoundException::new);
+        request.coordinateIdList().forEach(coordinateId -> {
+            Favorite favorite = favoriteRepository.findByFavoriteGroupAndCoordinateId(favoriteGroup,coordinateId).orElseThrow(FavoriteNotFoundException::new);
+            favoriteRepository.delete(favorite);
+        });
+    }
+
+    @Override
     public void deleteFavoriteGroup(Long favoriteGroupId) {
-        favoriteGroupRepository.deleteById(favoriteGroupId);
+        FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteNotFoundException::new);
+
+        favoriteRepository.deleteAllInBatch(favoriteGroup.getFavorites());
+        favoriteGroupRepository.delete(favoriteGroup);
     }
 
     @Override
@@ -55,7 +74,30 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    public List<FavoriteResponse> getFavoriteResponseListByGroup(Long favoriteGroupId) {
+        FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid favorite group ID"));
+        return favoriteRepository.findAllByFavoriteGroup(favoriteGroup).stream().map(favorite ->
+            FavoriteResponse.of(favorite, coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new))
+        ).toList();
+    }
+
+    @Override
+    public List<FavoriteGroupImageResponse> getFavoriteGroupResponseListOfUser(Long userId) {
+        return favoriteGroupRepository.findByUserId(userId).stream().map(favoriteGroup -> {
+            List<FileInfo> imageFileList = favoriteGroup.getFavorites().stream().map(favorite ->
+                    coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow().imageFile()).toList();
+            return FavoriteGroupImageResponse.of(favoriteGroup, imageFileList);
+        }).toList();
+    }
+
+    @Override
     public FavoriteGroup createFavoriteGroup(FavoriteGroup favoriteGroup) {
         return favoriteGroupRepository.save(favoriteGroup);
+    }
+
+    @Override
+    public FavoriteGroupBasicResponse createFavoriteGroup(Long userId, FavoriteGroupCreateRequest request) {
+        return FavoriteGroupBasicResponse.of(favoriteGroupRepository.save(request.toEntity(userId)));
     }
 }

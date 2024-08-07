@@ -10,17 +10,15 @@ import lombok.*;
 @Builder(toBuilder = true)
 @Table(name = "favorite")
 public class Favorite {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorite")
+    @Column(name = "favorite_id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "favorite_group_id")
     private FavoriteGroup favoriteGroup;
 
-    @ManyToOne
-    @JoinColumn(name = "coordinate_id")
-    private Coordinate coordinate;
+    @Column
+    private Long coordinateId;
 }

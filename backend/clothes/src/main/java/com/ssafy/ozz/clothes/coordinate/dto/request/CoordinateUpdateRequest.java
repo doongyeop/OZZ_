@@ -1,6 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.dto.request;
 
-import com.ssafy.ozz.clothes.clothes.properties.Style;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import lombok.Builder;
 
 import java.util.List;
