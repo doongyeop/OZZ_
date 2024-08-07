@@ -5,9 +5,15 @@ import com.ssafy.ozz.board.domain.BoardLikes;
 import com.ssafy.ozz.board.domain.Notification;
 import com.ssafy.ozz.board.dto.response.NotificationResponse;
 import com.ssafy.ozz.board.dto.response.UserResponse;
+import com.ssafy.ozz.board.global.feign.file.FileClient;
+import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.repository.BoardLikesRepository;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.NotificationRepository;
+import com.ssafy.ozz.library.global.error.exception.FileNotFoundException;
+import com.ssafy.ozz.library.global.error.exception.UserNotFoundException;
+import com.ssafy.ozz.library.file.FileInfo;
+import com.ssafy.ozz.library.user.UserInfo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +31,8 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     private final BoardLikesRepository boardLikesRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
+    private final FileClient fileClient;
+    private final UserClient userClient;
 
     @Override
     @Transactional
@@ -38,8 +46,8 @@ public class BoardLikesServiceImpl implements BoardLikesService {
 
             // 좋아요 취소 시 해당 알림을 찾아 삭제
             Optional<Notification> existingNotification = notificationRepository.findByBoardIdAndUserId(boardLikes.getBoardId(), boardLikes.getUserId());
-            existingNotification.ifPresent(notification -> { // 삭제 안했고
-                if (!notification.isRead()) { // 읽지 않았으면
+            existingNotification.ifPresent(notification -> {
+                if (!notification.isRead()) {
                     notificationService.deleteNotificationById(notification.getId());
                 }
             });
@@ -47,16 +55,18 @@ public class BoardLikesServiceImpl implements BoardLikesService {
             return false;
         } else {
             BoardLikes newBoardLike = BoardLikes.builder()
-                    .boardId(boardLikes.getBoardId())
+                    .board(boardLikes.getBoard())
                     .userId(boardLikes.getUserId())
                     .build();
             boardLikesRepository.save(newBoardLike);
 
+            // 알림 생성
+            UserInfo userInfo = userClient.getUserInfo(boardLikes.getUserId()).orElseThrow(UserNotFoundException::new);
             Notification notification = Notification.builder()
-                    .boardId(boardLikes.getBoardId())
-                    .user(boardLikes.getUser())
+                    .board(boardLikes.getBoard())
+                    .userId(boardLikes.getUserId())
                     .read(false)
-                    .content(boardLikes.getUser().getNickname() + "(이)가 내 코디를 마음에 들어합니다.")
+                    .content(userInfo.nickname() + "(이)가 내 코디를 마음에 들어합니다.")
                     .build();
             notificationRepository.save(notification);
 
@@ -68,34 +78,45 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     public NotificationResponse getLikeNotifications(Long boardId) {
         List<Notification> notifications = notificationRepository.findByBoardId(boardId);
         List<UserResponse> users = notifications.stream()
-                .map(notification -> new UserResponse(notification.getUser().getNickname(), notification.getUser().getProfileFileId()))
+                .map(notification -> {
+                    UserInfo userInfo = userClient.getUserInfo(notification.getUserId()).orElseThrow(UserNotFoundException::new);
+                    FileInfo profileImage = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+                    return new UserResponse(
+                            userInfo.userId(),
+                            userInfo.nickname(),
+                            userInfo.Birth(),
+                            userInfo.profileFileId(),
+                            profileImage
+                    );
+                })
                 .collect(Collectors.toList());
 
         int size = users.size();
         String message;
         if (size == 1) {
-            message = users.get(0).nickname() + "님이 내 코디를 마음에 들어합니다.";
+            message = users.get(size - 1).nickname() + "님이 내 코디를 마음에 들어합니다.";
         } else if (size == 2) {
-            message = users.get(0).nickname() + "님과 " + users.get(1).nickname() + "님이 내 코디를 마음에 들어합니다.";
+            message = users.get(size - 1).nickname() + "님과 " + users.get(size - 2).nickname() + "님이 내 코디를 마음에 들어합니다.";
         } else if (size == 3) {
-            message = users.get(0).nickname() + "님, " + users.get(1).nickname() + "님, " + users.get(2).nickname() + "님이 내 코디를 마음에 들어합니다.";
+            message = users.get(size - 1).nickname() + "님, " + users.get(size - 2).nickname() + "님, " + users.get(size - 3).nickname() + "님이 내 코디를 마음에 들어합니다.";
         } else {
-            message = users.get(0).nickname() + "님 외 " + (size - 1) + "명이 내 코디를 마음에 들어합니다.";
+            message = users.get(size - 1).nickname() + "님 외 " + (size - 1) + "명이 내 코디를 마음에 들어합니다.";
         }
 
         Board board = boardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
+        FileInfo boardImageFile = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
 
         return new NotificationResponse(
                 boardId,
                 message,
-                board.getImgId(),
-                users
+                users,
+                boardImageFile
         );
     }
 
     @Override
     public int getLikesCountByBoardId(Long boardId) {
-        int cnt = boardLikesRepository.countByBoardId(boardId);
+        int cnt = boardLikesRepository.countByBoard_Id(boardId);
         Optional<Board> boardOptional = boardRepository.findById(boardId);
 
         if (boardOptional.isPresent()) {
@@ -107,6 +128,4 @@ public class BoardLikesServiceImpl implements BoardLikesService {
         }
         return cnt;
     }
-
-
 }

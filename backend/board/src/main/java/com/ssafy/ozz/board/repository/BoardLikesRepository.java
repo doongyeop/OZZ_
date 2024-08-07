@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BoardLikesRepository extends JpaRepository<BoardLikes, Long> {
+public interface BoardLikesRepository extends JpaRepository<BoardLikes, BoardLikes.BoardLikesId> {
 
-    int countByBoardId(Long boardId);
-    Optional<BoardLikes> findById(BoardLikes.BoardLikesId boardLikesId);
+    int countByBoard_Id(Long boardId);
 }
