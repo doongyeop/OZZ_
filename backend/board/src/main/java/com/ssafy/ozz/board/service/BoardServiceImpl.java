@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
@@ -69,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Optional<Board> getBoardsByUserId(Long userId) {
+    public List<Board> getBoardsByUserId(Long userId) {
         return boardRepository.findByUserId(userId);
     }
 
