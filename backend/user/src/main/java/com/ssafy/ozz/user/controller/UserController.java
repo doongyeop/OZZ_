@@ -75,7 +75,7 @@ public class UserController {
 
     @PatchMapping("/profile")
     @Operation(summary = "유저 프로필 변경")
-    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestPart("file") MultipartFile file) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {

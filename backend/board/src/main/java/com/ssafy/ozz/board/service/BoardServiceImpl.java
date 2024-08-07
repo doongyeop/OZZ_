@@ -38,8 +38,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
-        UserInfo user = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
-        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+//        UserInfo user = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
+//        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
 
         Board board = Board.builder()
                 .content(request.content())

@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
 
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
+
 @Schema(description = "게시글 생성 요청 DTO")
 public record BoardCreateRequest(
         String content,
@@ -30,6 +32,7 @@ public record BoardCreateRequest(
                 .content(content)
                 .imgFileId(imgFileId)
                 .userId(userId)
+                .style(toBits(styleList))
                 .age(age)
                 .likes(0)
                 .createdDate(new Date())

@@ -1,7 +1,5 @@
 package com.ssafy.ozz.library.user;
 
-import lombok.Getter;
-
 import java.util.Date;
 
 public record UserInfo(

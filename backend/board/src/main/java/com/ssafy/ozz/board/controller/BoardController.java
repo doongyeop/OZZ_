@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,8 +53,8 @@ public class BoardController {
         List<BoardWithFileResponse> boards = boardService.getBoardsByUserId(userId)
                 .stream()
                 .map(board -> {
-                    FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElse(null);
-                    UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElse(null);
+                    FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+                    UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
                     return new BoardWithFileResponse(board, fileInfo, userInfo);
                 })
                 .collect(Collectors.toList());
@@ -75,8 +74,8 @@ public class BoardController {
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
         Board board = boardService.getBoard(boardId);
         if (board.getImgFileId() != null) {
-            FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElse(null);
-            UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElse(null);
+            FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+            UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
             return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userInfo));
         } else {
             return ResponseEntity.ok(new BoardResponse(board));
