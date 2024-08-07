@@ -10,10 +10,13 @@ import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import java.util.List;
 
 public interface FavoriteService {
-    Favorite addFavorite(Long favoriteGroupId, Long coordinateId);
+    FavoriteResponse addFavorite(Long favoriteGroupId, Long coordinateId);
     void deleteFavorite(Long favoriteGroupId, Long coordinateId);
     void deleteFavoriteList(Long favoriteGroupId, FavoriteListDeleteRequest request);
     void deleteFavoriteGroup(Long favoriteGroupId);
     List<Favorite> getFavoritesByGroup(Long favoriteGroupId);
+    List<FavoriteResponse> getFavoriteResponseListByGroup(Long favoriteGroupId);
+    List<FavoriteGroupBasicResponse> getFavoriteGroupResponseListOfUser(Long userId);
     FavoriteGroup createFavoriteGroup(FavoriteGroup favoriteGroup);
+    FavoriteGroupBasicResponse createFavoriteGroup(Long userId, FavoriteGroupCreateRequest request);
 }

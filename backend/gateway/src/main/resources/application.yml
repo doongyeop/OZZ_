@@ -8,35 +8,33 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     gateway:
-#      default-filters:
-#        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-#      globalcors:
-#        cors-configurations:
-#          '[/**]':
-#            allowedOrigins:
-#              - ${FRONT_HTTP_HOST:http://localhost:3000}
-#              - ${FRONT_HTTPS_HOST:https://localhost:3000}
-#            allow-credentials: true
-#            allowedHeaders:
-#              - x-requested-with
-#              - Authorization
-#              - content-type
-#              - credential
-#              - X-AUTH-TOKEN
-#              - X-CSRF-TOKEN  # 허용할 요청 헤더를 설정합니다.
-#            exposedHeaders:
-#              - x-requested-with
-#              - Authorization
-#              - content-type
-#              - credential
-#              - X-AUTH-TOKEN
-#              - X-CSRF-TOKEN
-#            allowedMethods:
-#              - PUT
-#              - GET
-#              - POST
-#              - DELETE
-#              - OPTIONS
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - ${FRONT_HTTP_HOST:http://localhost:3000}
+              - ${FRONT_HTTPS_HOST:https://localhost:3000}
+              - http://i11a804.p.ssafy.io:8080
+              - http://localhost:8080
+              - http://i11a804.p.ssafy.io:8000
+              - http://localhost:8000
+            allow-credentials: true
+            allowedHeaders: '*'
+            exposedHeaders:
+              - x-requested-with
+              - Authorization
+              - content-type
+              - credential
+              - X-AUTH-TOKEN
+              - X-CSRF-TOKEN
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
       routes:
         - id: file-router
           uri : lb://OZZ-FILE
@@ -78,6 +76,16 @@ spring:
             - Path=/docs/ozz-auth/**
           filters:
             - RewritePath=/docs/ozz-auth/(?<path>.*), /$\{path}
+        - id: favorite-router
+          uri : lb://OZZ-FAVORITE
+          predicates:
+            - Path=/api/favorites/**
+        - id: favorite-swagger
+          uri : lb://OZZ-FAVORITE
+          predicates:
+            - Path=/docs/ozz-favorite/**
+          filters:
+            - RewritePath=/docs/ozz-favorite/(?<path>.*), /$\{path}
 
 springdoc:
   api-docs:
@@ -95,6 +103,8 @@ springdoc:
         name: ozz-user
       - url: /docs/ozz-auth/v3/api-docs
         name: ozz-auth
+      - url: /docs/ozz-favorite/v3/api-docs
+        name: ozz-favorite
 
 jwt:
   secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}

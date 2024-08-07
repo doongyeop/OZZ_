@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.config.HeaderConfig.X_USER_ID;
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
 @RequiredArgsConstructor

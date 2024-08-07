@@ -1,4 +1,4 @@
-package com.ssafy.ozz.library.global.error;
+package com.ssafy.ozz.library.error;
 
 import lombok.Getter;
 

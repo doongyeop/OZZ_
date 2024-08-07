@@ -10,11 +10,11 @@ import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateUpdateRequest;
 import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse;
 import com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateResponse;
-import com.ssafy.ozz.clothes.coordinate.exception.CoordinateNotFoundException;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
-import com.ssafy.ozz.clothes.global.fegin.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
+import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +50,12 @@ public class CoordinateServiceImpl implements CoordinateService {
     public CoordinateResponse getCoordinate(Long coordinateId) {
         Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
         return CoordinateResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
+    }
+
+    @Override
+    public CoordinateBasicResponse getCoordinateBasicResponse(Long coordinateId) {
+        Coordinate coordinate = coordinateRepository.findById(coordinateId).orElseThrow(CoordinateNotFoundException::new);
+        return CoordinateBasicResponse.of(coordinate,fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new));
     }
 
     @Override
