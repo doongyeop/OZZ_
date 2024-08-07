@@ -108,6 +108,22 @@ services:
     depends_on:
       - ozz-eureka
 
+  ozz-board:
+    container_name: ozz-board
+    build: ./board
+    ports:
+      - ${BOARD_PORT}:${BOARD_PORT}
+    environment:
+      BOARD_PORT: ${BOARD_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - ozz-eureka
 #  ozz-ai:
 #    container_name: ozz-ai
 #    build: ./ai
@@ -134,6 +150,7 @@ services:
       - ozz-auth
       - ozz-user
       - ozz-favorite
+      - ozz-board
 
 volumes:
   file-data:
