@@ -34,7 +34,7 @@ public class BoardController {
     private final BoardService boardService;
     private final UserClient userClient;
     private final FileClient fileClient;
-
+    // TODO 등록은 되는데 500에러
     @PostMapping("/")
     @Operation(summary = "게시글 등록")
     public ResponseEntity<BoardWithFileResponse> createBoard(
@@ -54,7 +54,7 @@ public class BoardController {
         BoardWithFileResponse response = new BoardWithFileResponse(board, fileInfo, userResponse);
         return ResponseEntity.ok(response);
     }
-
+    // TODO 500 ERROR
     @GetMapping("/user/{userId}")
     @Operation(summary = "작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoardsByUserId(@PathVariable Long userId, Pageable pageable) {
@@ -78,14 +78,14 @@ public class BoardController {
         Page<BoardWithFileResponse> page = new PageImpl<>(boards, pageable, boards.size());
         return ResponseEntity.ok(page);
     }
-
+    // TODO Response가 이상함
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoards(Pageable pageable) {
         Page<BoardResponse> boards = boardService.getBoards(pageable).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
-
+    // TODO 500에러
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
@@ -107,7 +107,7 @@ public class BoardController {
             return ResponseEntity.ok(new BoardResponse(board));
         }
     }
-
+    // TODO 되는데 Response무한, RequestBody 수정
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
     public ResponseEntity<BoardResponse> updateBoard(
@@ -116,7 +116,7 @@ public class BoardController {
         BoardResponse response = boardService.updateBoard(boardId, request);
         return ResponseEntity.ok(response);
     }
-
+    // TODO 500에러
     @PutMapping("/{boardId}/img")
     @Operation(summary = "게시글 수정 + 이미지", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardWithFileResponse> updateBoardWithImage(
@@ -134,7 +134,8 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    ////// 조건별 조회 //////
+    ////// 조건별 조회 ////// 
+    // TODO Response 무한
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByAgeRange(
@@ -147,7 +148,7 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsByAgeRange(pageable, startAge, endAge).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
-
+    // TODO 500
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByStyle(
@@ -155,7 +156,7 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsByStyle(pageable, style).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
-
+    // TODO Response 무한
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
