@@ -26,13 +26,13 @@ public record BoardCreateRequest(
     ) {
     }
 
-    public Board toEntity(User user) {
+    public Board toEntity() {
         return Board.builder()
                 .content(content)
-                .imgId(imgFileId)
-                .user(user)
-                .age(age)
+                .imgFileId(imgFileId)
+                .userId(userId)
                 .style(toBits(styleList))
+                .age(age)
                 .likes(0)
                 .createdDate(new Date())
                 .build();

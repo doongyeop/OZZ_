@@ -21,15 +21,7 @@ public class BoardLikes {
 
     @Id
     @Column(name = "users_id", nullable = false)
-    private Long userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boards_id", insertable = false, updatable = false)
-    private Board board;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", insertable = false, updatable = false)
-    private User user;
+    private Long userId; // 외래키 + 복합키
 
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
