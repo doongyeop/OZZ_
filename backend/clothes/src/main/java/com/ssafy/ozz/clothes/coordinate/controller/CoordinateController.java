@@ -40,7 +40,7 @@ public class CoordinateController {
     }
 
     @GetMapping("/{coordinateId}/basic")
-    @Operation(summary = "코디 상세 조회", description = "ID를 통해 특정 코디 세부 정보를 조회합니다.")
+    @Operation(summary = "코디 기본 정보 조회", description = "ID를 통해 특정 코디 기본 정보를 조회합니다.")
     public ResponseEntity<CoordinateBasicResponse> getCoordinateBasicResponse(@PathVariable final Long coordinateId) {
         return ResponseEntity.ok(coordinateService.getCoordinateBasicResponse(coordinateId));
     }
