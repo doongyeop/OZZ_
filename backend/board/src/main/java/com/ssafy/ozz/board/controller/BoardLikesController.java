@@ -38,5 +38,4 @@ public class BoardLikesController {
         return new ResponseEntity<>(likesCount, HttpStatus.OK);
     }
 
-
 }

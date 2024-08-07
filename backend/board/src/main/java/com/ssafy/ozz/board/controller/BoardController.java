@@ -34,6 +34,7 @@ public class BoardController {
     private final BoardService boardService;
     private final UserClient userClient;
     private final FileClient fileClient;
+
     // TODO 등록은 되는데 500에러
     @PostMapping("/")
     @Operation(summary = "게시글 등록")
@@ -78,7 +79,7 @@ public class BoardController {
         Page<BoardWithFileResponse> page = new PageImpl<>(boards, pageable, boards.size());
         return ResponseEntity.ok(page);
     }
-    // TODO Response가 이상함
+    // TODO Response가 이상함 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoards(Pageable pageable) {
@@ -107,7 +108,7 @@ public class BoardController {
             return ResponseEntity.ok(new BoardResponse(board));
         }
     }
-    // TODO 되는데 Response무한, RequestBody 수정
+    // TODO 되는데 Response무한, RequestBody 수정 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
     public ResponseEntity<BoardResponse> updateBoard(
@@ -135,7 +136,7 @@ public class BoardController {
     }
 
     ////// 조건별 조회 ////// 
-    // TODO Response 무한
+    // TODO Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByAgeRange(
@@ -156,7 +157,7 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsByStyle(pageable, style).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
-    // TODO Response 무한
+    // TODO Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
