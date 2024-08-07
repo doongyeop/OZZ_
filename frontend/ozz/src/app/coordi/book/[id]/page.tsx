@@ -1,63 +1,34 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import Header from '@/components/Header'
 import { useState } from 'react'
-import { HeaderButton } from '@/components/Button/HeaderButton'
-import { FaBars } from 'react-icons/fa'
-import TagButton from '@/components/Button/TagButton'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import CoordiOfTheDay from '@/containers/coordi/CoordiOfTheDay'
+
+import Header from '@/components/Header'
+import { HeaderButton } from '@/components/Button/HeaderButton'
+import TagButton from '@/components/Button/TagButton'
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from '@radix-ui/react-popover'
+import { FaBars } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
+import { mockFavoriteDetails } from '@/types/coordibook'
+import { styleMap, styleInvMap } from '@/types/maps'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
 }
 
-const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
+export default function CoordiBookDetailPage({
   params,
-}) => {
+}: CoordiBookDetailPageProps) {
+  const searchParams = useSearchParams()
+  const name = searchParams.get('name') || '코디북 이름'
   const { id } = params
-
-  const favorite_group = {
-    favorite_group_name: '끝내주는 싸피 출근룩',
-    id: `${id}`,
-    image:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36996/detail_36996_66a197b67daad_500.jpg?w=1000',
-    items: [
-      {
-        id: 0,
-        style: ['스트릿', '캐주얼', '스포티'],
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/36996/detail_36996_66a197b67daad_500.jpg?w=1000',
-      },
-      {
-        id: 1,
-        style: ['스트릿', '매니시'],
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-      },
-      {
-        id: 2,
-        style: ['포멀'],
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/37027/detail_37027_66a2ee8fb080e_500.jpg?w=1000',
-      },
-      {
-        id: 3,
-        style: ['캐주얼'],
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/37026/detail_37026_66a2ee8c7c5fa_500.jpg?w=1000',
-      },
-    ],
-  }
 
   const styleTags = [
     '전체',
@@ -90,9 +61,13 @@ const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
   const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidebar} />
 
   const filteredItems = selectedTags.includes('전체')
-    ? favorite_group.items
-    : favorite_group.items.filter((item) =>
-        item.style.some((style) => selectedTags.includes(style)),
+    ? mockFavoriteDetails
+    : mockFavoriteDetails.filter((item) =>
+        item.coordinate.styleList.some((style) =>
+          selectedTags.some(
+            (tag) => styleInvMap[style] === tag || style === styleMap[tag],
+          ),
+        ),
       )
 
   return (
@@ -100,9 +75,7 @@ const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
       <Header title={'코디북'} leftButton={leftButton} />
       <div className="m-4">
         <div className="flex justify-between">
-          <h1 className="font-bold text-2xl">
-            {favorite_group.favorite_group_name}
-          </h1>
+          <h1 className="font-bold text-2xl">{name}</h1>
           <div className="flex justify-between">
             <Popover>
               <PopoverTrigger asChild>
@@ -141,9 +114,12 @@ const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
           {filteredItems.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 mt-4">
               {filteredItems.map((item, index) => (
-                <Link key={item.id} href={`/coordi/detail/${item.id}`}>
+                <Link
+                  key={item.favoriteId}
+                  href={`/coordi/detail/${item.coordinate.coordinateId}`}
+                >
                   <Image
-                    src={item.image}
+                    src={item.coordinate.imageFile.filePath}
                     alt={`item ${index + 1}`}
                     width={0}
                     height={0}
@@ -166,5 +142,3 @@ const CoordiBookDetailPage: React.FC<CoordiBookDetailPageProps> = ({
     </div>
   )
 }
-
-export default CoordiBookDetailPage
