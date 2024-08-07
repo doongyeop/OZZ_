@@ -30,7 +30,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Long userId = customUserDetails.getId();
 
         // 유저 ID로 토큰 생성
-        String access = jwtUtil.createJwt("access", userId, 600000L); // User ID로 JWT 생성
+        String access = jwtUtil.createJwt("access", userId, 60000000L); // User ID로 JWT 생성
         String refresh = refreshService.createAndSaveRefreshToken(userId);
 
         response.setHeader("access", access);

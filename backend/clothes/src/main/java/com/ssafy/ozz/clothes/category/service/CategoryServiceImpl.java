@@ -2,9 +2,9 @@ package com.ssafy.ozz.clothes.category.service;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryHigh;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
-import com.ssafy.ozz.clothes.category.exception.CategoryNotFoundException;
 import com.ssafy.ozz.clothes.category.repository.CategoryHighRepository;
 import com.ssafy.ozz.clothes.category.repository.CategoryLowRepository;
+import com.ssafy.ozz.library.error.exception.CategoryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
