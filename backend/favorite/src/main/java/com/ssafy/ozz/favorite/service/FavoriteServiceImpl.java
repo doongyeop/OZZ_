@@ -4,6 +4,16 @@ import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
 import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
 import com.ssafy.ozz.favorite.repository.FavoriteRepository;
+import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
+import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
+import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
+import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
+import com.ssafy.ozz.favorite.repository.FavoriteRepository;
+import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
+import com.ssafy.ozz.library.error.exception.FavoriteGroupNotFoundException;
+import com.ssafy.ozz.library.error.exception.FavoriteNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +50,15 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
         favoriteRepository.delete(favorite);
+    }
+
+    @Override
+    public void deleteFavoriteList(Long favoriteGroupId, FavoriteListDeleteRequest request) {
+        FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteGroupNotFoundException::new);
+        request.coordinateIdList().forEach(coordinateId -> {
+            Favorite favorite = favoriteRepository.findByFavoriteGroupAndCoordinateId(favoriteGroup,coordinateId).orElseThrow(FavoriteNotFoundException::new);
+            favoriteRepository.delete(favorite);
+        });
     }
 
     @Override

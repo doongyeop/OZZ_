@@ -27,6 +27,12 @@ public class FavoriteGroup {
 
     @OneToMany(mappedBy = "favoriteGroup")
     private List<Favorite> favorites;
-
 }
 
+    @Builder
+    public FavoriteGroup(String name, Long userId) {
+        this.name = name;
+        this.userId = userId;
+        this.favorites = new ArrayList<>();
+    }
+}

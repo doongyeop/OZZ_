@@ -2,6 +2,10 @@ package com.ssafy.ozz.favorite.controller;
 
 import com.ssafy.ozz.favorite.domain.Favorite;
 import com.ssafy.ozz.favorite.domain.FavoriteGroup;
+import com.ssafy.ozz.favorite.dto.request.FavoriteGroupCreateRequest;
+import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
+import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
+import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
 import com.ssafy.ozz.favorite.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +40,13 @@ public class FavoriteController {
     @Operation(summary = "즐겨찾기 코디 삭제", description = "즐겨찾기 그룹에서 특정 코디를 삭제합니다.")
     public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteGroupId, @RequestParam Long coordinateId) {
         favoriteService.deleteFavorite(favoriteGroupId, coordinateId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{favoriteGroupId}/coordinate")
+    @Operation(summary = "즐겨찾기 코디 삭제", description = "즐겨찾기 그룹에서 여러 코디를 삭제합니다.")
+    public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteGroupId, @RequestBody FavoriteListDeleteRequest request) {
+//        favoriteService.deleteFavorite(favoriteGroupId, coordinateId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
