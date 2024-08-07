@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
-    public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId) {
+    public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -46,7 +46,7 @@ public class UserController {
 
     @PutMapping("/")
     @Operation(summary = "토큰으로 유저정보 수정")
-    public ResponseEntity<?> updateUser(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestBody UserUpdateRequest updates) {
+    public ResponseEntity<?> updateUser(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId, @RequestBody UserUpdateRequest updates) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -75,7 +75,7 @@ public class UserController {
 
     @PatchMapping("/profile")
     @Operation(summary = "유저 프로필 변경")
-    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId, @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId, @RequestPart("file") MultipartFile file) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {
@@ -96,7 +96,7 @@ public class UserController {
 
     @DeleteMapping("/")
     @Operation(summary = "회원 탈퇴")
-    public ResponseEntity<?> deleteUser(@Parameter(hidden = true) @RequestHeader("X_User_Id") Long userId) {
+    public ResponseEntity<?> deleteUser(@Parameter(hidden = true) @RequestHeader("X-User-Id") Long userId) {
 
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
