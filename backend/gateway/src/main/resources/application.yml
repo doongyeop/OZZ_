@@ -8,35 +8,35 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     gateway:
-#      default-filters:
-#        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-#      globalcors:
-#        cors-configurations:
-#          '[/**]':
-#            allowedOrigins:
-#              - ${FRONT_HTTP_HOST:http://localhost:3000}
-#              - ${FRONT_HTTPS_HOST:https://localhost:3000}
-#            allow-credentials: true
-#            allowedHeaders:
-#              - x-requested-with
-#              - Authorization
-#              - content-type
-#              - credential
-#              - X-AUTH-TOKEN
-#              - X-CSRF-TOKEN  # 허용할 요청 헤더를 설정합니다.
-#            exposedHeaders:
-#              - x-requested-with
-#              - Authorization
-#              - content-type
-#              - credential
-#              - X-AUTH-TOKEN
-#              - X-CSRF-TOKEN
-#            allowedMethods:
-#              - PUT
-#              - GET
-#              - POST
-#              - DELETE
-#              - OPTIONS
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - ${FRONT_HTTP_HOST:http://localhost:3000}
+              - ${FRONT_HTTPS_HOST:https://localhost:3000}
+            allow-credentials: true
+            allowedHeaders:
+              - x-requested-with
+              - Authorization
+              - content-type
+              - credential
+              - X-AUTH-TOKEN
+              - X-CSRF-TOKEN  # 허용할 요청 헤더를 설정합니다.
+            exposedHeaders:
+              - x-requested-with
+              - Authorization
+              - content-type
+              - credential
+              - X-AUTH-TOKEN
+              - X-CSRF-TOKEN
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
       routes:
         - id: file-router
           uri : lb://OZZ-FILE
