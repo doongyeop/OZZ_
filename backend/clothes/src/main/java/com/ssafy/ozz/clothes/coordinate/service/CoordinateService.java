@@ -27,4 +27,6 @@ public interface CoordinateService {
     void deleteCoordinate(Long coordinateId);
 
     Slice<CoordinateBasicResponse> searchCoordinates(CoordinateSearchCondition condition, Pageable pageable);
+
+    CoordinateBasicResponse getCoordinateBasicResponse(Long coordinateId);
 }

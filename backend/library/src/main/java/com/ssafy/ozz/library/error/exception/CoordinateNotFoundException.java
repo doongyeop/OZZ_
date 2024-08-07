@@ -1,7 +1,7 @@
-package com.ssafy.ozz.clothes.coordinate.exception;
+package com.ssafy.ozz.library.error.exception;
 
-import com.ssafy.ozz.library.global.error.ErrorCode;
-import com.ssafy.ozz.library.global.error.ServiceException;
+import com.ssafy.ozz.library.error.ErrorCode;
+import com.ssafy.ozz.library.error.ServiceException;
 
 public class CoordinateNotFoundException extends ServiceException {
     public CoordinateNotFoundException() {

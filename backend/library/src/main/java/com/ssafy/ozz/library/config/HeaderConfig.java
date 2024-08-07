@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.global.config;
+package com.ssafy.ozz.library.config;
 
 public class HeaderConfig {
     public static final String X_USER_ID = "X-User-Id";
