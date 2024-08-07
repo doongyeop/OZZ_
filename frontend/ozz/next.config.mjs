@@ -16,6 +16,14 @@ const nextConfig = {
       'puppeteer-extra-plugin-stealth',
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://i11a804.p.ssafy.io:8080/:path*', // 백엔드 서버 URL
+      },
+    ]
+  },
 }
 
 export default nextConfig
