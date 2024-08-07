@@ -3,7 +3,6 @@ package com.ssafy.ozz.board.dto.response;
 import com.ssafy.ozz.board.domain.Board;
 import com.ssafy.ozz.library.clothes.properties.Style;
 import com.ssafy.ozz.board.domain.Tag;
-import com.ssafy.ozz.library.clothes.properties.Style;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;

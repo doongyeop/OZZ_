@@ -9,7 +9,7 @@ import com.ssafy.ozz.board.dto.response.UserResponse;
 import com.ssafy.ozz.board.global.feign.file.FileClient;
 import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.service.BoardService;
-import com.ssafy.ozz.fileserver.file.exception.FileNotFoundException;
+import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import com.ssafy.ozz.library.global.error.exception.UserNotFoundException;
 import com.ssafy.ozz.library.user.UserInfo;

@@ -2,7 +2,6 @@ package com.ssafy.ozz.board.dto.response;
 
 import com.ssafy.ozz.board.domain.Board;
 import com.ssafy.ozz.library.file.FileInfo;
-import com.ssafy.ozz.library.user.UserInfo;
 import com.ssafy.ozz.library.clothes.properties.Style;
 import com.ssafy.ozz.board.domain.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
