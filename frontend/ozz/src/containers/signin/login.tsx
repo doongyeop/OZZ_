@@ -3,21 +3,21 @@ import { useEffect } from 'react'
 
 const SignIn = () => {
   useEffect(() => {
-    // // 네이버 로그인 SDK 추가
-    // const naverScript = document.createElement('script')
-    // naverScript.src =
-    //   'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js'
-    // naverScript.async = true
-    // naverScript.onload = () => {
-    //   const { naver } = window as any
-    //   const naverLogin = new naver.LoginWithNaverId({
-    //     clientId: '네이버클라아이디',
-    //     callbackUrl: 'http://localhost:8080/login/oauth2/code/naver',
-    //     isPopup: false,
-    //   })
-    //   naverLogin.init()
-    // }
-    // document.head.appendChild(naverScript)
+    // 네이버 로그인 SDK 추가
+    const naverScript = document.createElement('script')
+    naverScript.src =
+      'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js'
+    naverScript.async = true
+    naverScript.onload = () => {
+      const { naver } = window as any
+      const naverLogin = new naver.LoginWithNaverId({
+        clientId: 'clientid',
+        callbackUrl: 'http://localhost:8080/login/oauth2/code/naver',
+        isPopup: true,
+      })
+      naverLogin.init()
+    }
+    document.head.appendChild(naverScript)
 
     // 카카오 로그인 SDK 추가
     const kakaoScript = document.createElement('script')
@@ -44,19 +44,18 @@ const SignIn = () => {
               Authorization: `Bearer ${authObj.access_token}`,
             },
             body: JSON.stringify({ token: authObj.access_token }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.isNewUser) {
-                window.location.href = '/login/signup'
-              } else {
-                // 로그인 성공 후 처리
-                console.log('로그인 성공:', data)
-              }
-            })
-            .catch((error) => {
-              console.error('로그인 실패:', error)
-            })
+          }).then((response) => response.json())
+          // .then((data) => {
+          //   if (data.isNewUser) {
+          //     window.location.href = '/login/signup'
+          //   } else {
+          //     // 로그인 성공 후 처리
+          //     console.log('로그인 성공:', data)
+          //   }
+          // })
+          // .catch((error) => {
+          //   console.error('로그인 실패:', error)
+          // })
         },
         fail: (err: any) => {
           console.error('카카오 로그인 실패:', err)

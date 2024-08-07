@@ -1,6 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.dto.request;
 
-import com.ssafy.ozz.clothes.clothes.properties.*;
+import com.ssafy.ozz.library.clothes.properties.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

@@ -2,6 +2,7 @@ package com.ssafy.ozz.board.controller;
 
 
 import com.ssafy.ozz.board.domain.BoardLikes;
+import com.ssafy.ozz.board.dto.response.NotificationResponse;
 import com.ssafy.ozz.board.service.BoardLikesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/boardlikes")
@@ -33,4 +36,6 @@ public class BoardLikesController {
         int likesCount = boardLikesService.getLikesCountByBoardId(boardId);
         return new ResponseEntity<>(likesCount, HttpStatus.OK);
     }
+
+
 }

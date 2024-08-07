@@ -1,17 +1,16 @@
 package com.ssafy.ozz.clothes.clothes.dto.response;
 
 import com.ssafy.ozz.clothes.category.dto.CategoryHighBasicResponse;
-import com.ssafy.ozz.clothes.category.dto.CategoryHighResponse;
 import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-import com.ssafy.ozz.clothes.clothes.properties.*;
-import com.ssafy.ozz.clothes.global.fegin.file.dto.FeignFileInfo;
+import com.ssafy.ozz.library.clothes.properties.*;
+import com.ssafy.ozz.library.file.FileInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toEnums;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toEnums;
 
 @Schema(description = "옷 상세 정보 DTO with 파일 DTO")
 public record ClothesWithFileResponse(
@@ -29,9 +28,9 @@ public record ClothesWithFileResponse(
         List<Pattern> patternList,
         CategoryHighBasicResponse categoryHigh,
         CategoryLowResponse categoryLow,
-        FeignFileInfo imageFile
+        FileInfo imageFile
 ) {
-    public ClothesWithFileResponse(Clothes clothes, FeignFileInfo fileInfo) {
+    public ClothesWithFileResponse(Clothes clothes, FileInfo fileInfo) {
         this(
                 clothes.getName(),
                 clothes.getSize(),

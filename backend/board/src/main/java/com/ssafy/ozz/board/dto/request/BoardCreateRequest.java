@@ -1,10 +1,13 @@
 package com.ssafy.ozz.board.dto.request;
 
 import com.ssafy.ozz.board.domain.Board;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "게시글 생성 요청 DTO")
 public record BoardCreateRequest(
@@ -29,7 +32,7 @@ public record BoardCreateRequest(
                 .imgId(imgFileId)
                 .user(user)
                 .age(age)
-                .style(style)
+                .style(toBits(styleList))
                 .likes(0)
                 .createdDate(new Date())
                 .build();

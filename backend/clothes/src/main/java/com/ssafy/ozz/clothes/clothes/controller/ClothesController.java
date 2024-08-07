@@ -4,8 +4,10 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
-import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
+import com.ssafy.ozz.library.clothes.properties.Color;
+import com.ssafy.ozz.library.clothes.properties.Property;
+import com.ssafy.ozz.library.clothes.properties.PropertySelector;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -87,6 +89,6 @@ public class ClothesController {
     @Operation(summary = "옷 속성 목록 정보 조회", description = "옷 속성 목록 정보를 조회합니다. [FIT, SEASON, SIZE, STYLE, TEXTURE] 중 택1")
     public ResponseEntity<List<PropertyResponse>> getPropertyList(@RequestParam("property") PropertySelector property) {
         return ResponseEntity.ok()
-                .body(Arrays.stream(property.getPropertyClass().getEnumConstants()).map(PropertyResponse::new).toList());
+                .body(Arrays.stream(property.getPropertyClass().asSubclass(Property.class).getEnumConstants()).map(PropertyResponse::new).toList());
     }
 }

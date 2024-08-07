@@ -1,10 +1,10 @@
-import Header from '@/components/Header'
+import CommunityPreview from '@/containers/community/CommunityPreview'
 import CoordiShotContainer from '@/containers/coordishot-page'
 
 export default function Community() {
   return (
     <>
-      <Header title="커뮤니티" />
+      <CommunityPreview />
       <CoordiShotContainer />
     </>
   )
