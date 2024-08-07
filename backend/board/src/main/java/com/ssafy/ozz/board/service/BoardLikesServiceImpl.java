@@ -55,7 +55,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
             return false;
         } else {
             BoardLikes newBoardLike = BoardLikes.builder()
-                    .boardId(boardLikes.getBoardId())
+                    .board(boardLikes.getBoard())
                     .userId(boardLikes.getUserId())
                     .build();
             boardLikesRepository.save(newBoardLike);
@@ -63,7 +63,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
             // 알림 생성
             UserInfo userInfo = userClient.getUserInfo(boardLikes.getUserId()).orElseThrow(UserNotFoundException::new);
             Notification notification = Notification.builder()
-                    .boardId(boardLikes.getBoardId())
+                    .board(boardLikes.getBoard())
                     .userId(boardLikes.getUserId())
                     .read(false)
                     .content(userInfo.nickname() + "(이)가 내 코디를 마음에 들어합니다.")
@@ -116,7 +116,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
 
     @Override
     public int getLikesCountByBoardId(Long boardId) {
-        int cnt = boardLikesRepository.countByBoardId(boardId);
+        int cnt = boardLikesRepository.countByBoard_Id(boardId);
         Optional<Board> boardOptional = boardRepository.findById(boardId);
 
         if (boardOptional.isPresent()) {
