@@ -15,12 +15,32 @@ import ColorModal from '@/app/@modal/color/page'
 import StyleModal from '@/app/@modal/style/page'
 import PatternModal from '@/app/@modal/pattern/page'
 import MemoModal from '@/app/@modal/memo/page'
-import { ClothingData } from '@/types/clothing'
-import { colorMap, textureMap, seasonMap, styleMap, fitMap } from '@/types/maps'
+import {
+  ClothingData,
+  Size,
+  Fit,
+  Season,
+  Style,
+  Texture,
+  Color,
+  Pattern,
+  sizeMap,
+  fitMap,
+  fitInvMap,
+  seasonMap,
+  seasonInvMap,
+  styleMap,
+  styleInvMap,
+  textureMap,
+  textureInvMap,
+  colorMap,
+  patternMap,
+} from '@/types/clothing'
+import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 
 type ClothingFormProps = {
   initialData?: ClothingData
-  onSubmit: (data: FormData) => void
+  onSubmit: (imageFile: File, request: ClothesCreateRequest) => void
   submitButtonText: string
 }
 
@@ -36,14 +56,14 @@ export default function ClothingForm({
   const [categoryName, setCategoryName] = useState<string | null>(null)
   const [purchaseDate, setPurchaseDate] = useState<string | null>(null)
   const [purchaseSite, setPurchaseSite] = useState<string | null>(null)
-  const [season, setSeason] = useState<string[]>([])
-  const [size, setSize] = useState<string | null>(null)
-  const [fit, setFit] = useState<string | null>(null)
-  const [texture, setTexture] = useState<string[]>([])
+  const [season, setSeason] = useState<Season[]>([])
+  const [size, setSize] = useState<Size>('FREE')
+  const [fit, setFit] = useState<Fit | undefined>(undefined)
+  const [texture, setTexture] = useState<Texture[]>([])
   const [color, setColor] = useState<{ name: string; code: string }[] | null>(
     [],
   )
-  const [style, setStyle] = useState<string[]>([])
+  const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
     null,
   )
@@ -60,8 +80,8 @@ export default function ClothingForm({
       setPurchaseDate(initialData.purchaseDate || null)
       setPurchaseSite(initialData.purchaseSite || null)
       setSeason(initialData.season || [])
-      setSize(initialData.size || null)
-      setFit(initialData.fit || null)
+      setSize(initialData.size || 'FREE')
+      setFit(initialData.fit || undefined)
       setTexture(initialData.texture || [])
       setColor(initialData.color || [])
       setStyle(initialData.style || [])
@@ -98,15 +118,14 @@ export default function ClothingForm({
 
     const categoryLowId = categoryName.split(' > ').pop() || ''
 
-    const jsonData = {
+    const jsonData: ClothesCreateRequest = {
       name,
       size: size || 'FREE',
-      fit: fit ? fitMap[fit] : '',
+      fit: fit ? fitMap[fit] : undefined,
       memo: memo || '',
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
-
       colorList: color ? color.map((c) => colorMap[c.name]) : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
@@ -114,33 +133,11 @@ export default function ClothingForm({
       categoryLowId,
     }
 
-    const formData = new FormData()
-    formData.append('imageFile', imageFile as File)
-    formData.append(
-      'data',
-      new Blob([JSON.stringify(jsonData)], { type: 'application/json' }),
-    )
-
-    onSubmit(formData)
-
     console.log('옷 등록할게요 ><')
-    for (const x of formData.entries()) {
-      console.log(x)
-    }
-
-    // try {
-    //   const response = await fetch('/api/clothes', {
-    //     method: 'POST',
-    //     body: formData,
-    //   })
-    //   if (response.ok) {
-    //     console.log('옷 등록 성공!')
-    //   } else {
-    //     console.log('옷 등록 실패!')
-    //   }
-    // } catch (error) {
-    //   console.error('옷 등록 에러:', error)
-    // }
+    Object.entries(jsonData).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`)
+    })
+    onSubmit(imageFile, jsonData)
   }
 
   const closeModal = () => setOpenModal(null)
@@ -179,22 +176,22 @@ export default function ClothingForm({
       label: '계절감',
       path: 'season',
       component: SeasonModal,
-      value: season ? season.join(', ') : '',
-      setValue: (season: string[]) => setSeason(season),
+      value: season ? season.map((s) => seasonInvMap[s]).join(', ') : '',
+      setValue: (season: Season[]) => setSeason(season),
     },
     {
       label: '사이즈',
       path: 'size',
       component: SizeModal,
       value: size,
-      setValue: (size: string) => setSize(size),
+      setValue: (size: Size) => setSize(size),
     },
     {
       label: '핏',
       path: 'fit',
       component: FitModal,
-      value: fit,
-      setValue: (fit: string) => setFit(fit),
+      value: fit ? fitInvMap[fit] : '',
+      setValue: (fit: Fit) => setFit(fit),
     },
     {
       label: '소재',
@@ -202,9 +199,9 @@ export default function ClothingForm({
       component: TextureModal,
       value:
         texture.join(', ').length > 10
-          ? `${texture.join(', ')}...`
-          : texture.join(', '),
-      setValue: (texture: string[]) => setTexture(texture),
+          ? texture.map((t) => textureInvMap[t]).join(', ')
+          : '',
+      setValue: (texture: Texture[]) => setTexture(texture),
     },
     {
       label: '색',
@@ -218,11 +215,11 @@ export default function ClothingForm({
       path: 'style',
       component: StyleModal,
       value: style
-        ? style.join(', ').length > 10
-          ? `${style.join(', ')}...`
-          : style.join(', ')
+        ? style.map((s) => styleInvMap[s]).join(', ').length > 10
+          ? `${style.map((s) => styleInvMap[s]).join(', ')}...`
+          : style.map((s) => styleInvMap[s]).join(', ')
         : '',
-      setValue: (style: string[]) => setStyle(style),
+      setValue: (style: Style[]) => setStyle(style),
     },
     {
       label: '패턴',

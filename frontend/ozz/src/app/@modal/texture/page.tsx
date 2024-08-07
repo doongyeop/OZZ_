@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import Modal from '@/components/Modal'
+import { Texture, textureMap, textureInvMap } from '@/types/clothing'
 
 type TextureModalProps = {
   onClose: () => void
-  setValue: (value: string[]) => void
+  setValue: (value: Texture[]) => void
 }
 
 type MaterialType = {
@@ -11,38 +12,37 @@ type MaterialType = {
 }
 
 const mainMaterials = [
-  '면',
-  '폴리',
-  '린넨',
-  '스판',
-  '울',
-  '앙고라',
-  '레이온',
-  '기모',
-  '데님',
   '스웨이드',
-  '나일론',
-  '가죽',
+  '린넨',
+  '앙고라',
+  '데님',
   '실크',
+  '스판덱스',
+  '가죽',
+  '면',
+  '울',
+  '레이온',
+  '폴리',
   '기타',
 ]
 
 const otherMaterials = [
   '퍼',
-  '무스탕',
-  '코듀로이',
-  '시퀸/글리터',
-  '저지',
-  '트위드',
-  '벨벳',
-  '비닐',
-  '합성섬유',
   '니트',
+  '무톤',
   '레이스',
   '메시',
+  '코듀로이',
   '플리스',
+  '무스탕',
+  '시퀸글리터',
   '네오프렌',
+  '저지',
+  '트위드',
   '자카드',
+  '벨벳',
+  '비닐',
+  '쉬폰',
   '시폰',
 ]
 
@@ -62,9 +62,9 @@ export default function TextureModal({ onClose, setValue }: TextureModalProps) {
   }
 
   const handleSave = () => {
-    const selectedList = Object.entries(selectedMaterials)
+    const selectedList: Texture[] = Object.entries(selectedMaterials)
       .filter(([_, isSelected]) => isSelected)
-      .map(([material]) => material)
+      .map(([material]) => textureMap[material as keyof typeof textureMap])
     setValue(selectedList)
     onClose()
   }

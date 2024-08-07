@@ -17,7 +17,7 @@ import { FaBars } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
 import { mockFavoriteDetails } from '@/types/coordibook'
-import { styleMap, styleInvMap } from '@/types/maps'
+import { styleMap, styleInvMap } from '@/types/clothing'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
@@ -28,7 +28,6 @@ export default function CoordiBookDetailPage({
 }: CoordiBookDetailPageProps) {
   const searchParams = useSearchParams()
   const name = searchParams.get('name') || '코디북 이름'
-  const { id } = params
 
   const styleTags = [
     '전체',
