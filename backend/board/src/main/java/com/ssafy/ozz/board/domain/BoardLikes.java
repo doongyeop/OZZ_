@@ -21,7 +21,7 @@ public class BoardLikes {
 
     @Id
     @Column(name = "users_id", nullable = false)
-    private Long userId;
+    private Long userId; // 외래키 + 복합키
 
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)

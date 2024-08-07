@@ -25,7 +25,7 @@ public class Board {
     private Long userId; // 외래키
 
     @Column(name = "image_file_id")
-    private Long imgId; // 외래키
+    private Long imgFileId; // 외래키
 
     private int age;
 

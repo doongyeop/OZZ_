@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import java.util.Date;
 
-@Getter
 public record UserInfo(
         Long userId,
         String nickname,
