@@ -90,7 +90,6 @@ public class BoardServiceImpl implements BoardService {
 
         board = board.toBuilder()
                 .content(request.content())
-                .age(request.age())
                 .style(toBits(request.styleList()))
                 .build();
 
@@ -120,7 +119,6 @@ public class BoardServiceImpl implements BoardService {
         board = board.toBuilder()
                 .content(request.content())
                 .imgFileId(imgFileId)
-                .age(request.age())
                 .style(toBits(request.styleList()))
                 .build();
 

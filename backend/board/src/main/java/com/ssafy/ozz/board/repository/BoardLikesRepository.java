@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface BoardLikesRepository extends JpaRepository<BoardLikes, BoardLikes.BoardLikesId> {
 
-    int countByBoard_Id(Long boardId);
+    int countByBoardId(Long boardId);
 }

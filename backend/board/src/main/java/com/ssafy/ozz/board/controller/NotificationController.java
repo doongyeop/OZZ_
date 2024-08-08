@@ -28,7 +28,8 @@ public class NotificationController {
         notificationService.deleteNotificationById(notificationId);
         return ResponseEntity.noContent().build();
     }
-    //TODO response가 이상함
+
+    // response가 이상함
     @GetMapping("/")
     @Operation(summary = "모든 알림 조회", description = "특정 사용자의 모든 알림을 조회합니다.")
     public ResponseEntity<List<Notification>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
