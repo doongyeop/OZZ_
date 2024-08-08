@@ -3,12 +3,11 @@ package com.ssafy.ozz.clothes.clothes.service;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
-import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
-import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
+import com.ssafy.ozz.clothes.clothes.dto.request.*;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedItem;
+import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedResponse;
 import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.clothes.repository.elasticsearch.ClothesSearchRepository;
@@ -19,9 +18,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +41,8 @@ public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
+    private final WebClient webClient;
+    private final MqService mqService;
 
     @Override
     @Transactional(readOnly = true)
@@ -130,13 +137,44 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
-    public void batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories) {
-        List<Clothes> clothesList = new ArrayList<>();
-        for (PurchaseHistory purchaseHistory : purchaseHistories) {
-            clothesList.add(purchaseHistory.toEntity(1L));
-        }
-        clothesRepository.saveAll(clothesList);
-        //TODO : 저장된 의상들의 ID와 함께 구매내역을 메시지큐에 저장
+    public Flux<ServerSentEvent<String>> batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories) {
+        int totalItems = purchaseHistories.size();
+        int batchSize = 10;
+
+        Sinks.Many<ServerSentEvent<String>> sink = Sinks.many().unicast().onBackpressureBuffer();
+        System.out.println("요청 저리");
+
+        webClient.mutate().baseUrl("http://localhost:8000").build()
+                .post()
+                .uri("/purchase-history/normalize")
+                .bodyValue(purchaseHistories)
+                .retrieve()
+                .bodyToFlux(NormalizedResponse.class)
+                .publishOn(Schedulers.boundedElastic())
+                .publishOn(Schedulers.boundedElastic())
+                .flatMap(response->{
+                    int index= response.index()*batchSize;
+                    List<ExtractAttribute> extractAttributes = new ArrayList<>();
+                    for (NormalizedItem item : response.data()) {
+                        if(!item.category().equals("None")){
+                            PurchaseHistory purchaseHistory=purchaseHistories.get(index);
+                            Long clothId = clothesRepository.save(purchaseHistory.toEntity(userId,item.name())).getClothesId();
+                            ExtractAttribute temp=item.toExtractAttribute(clothId, purchaseHistory.imgUrl());
+                            extractAttributes.add(temp);
+                        }
+                        index++;
+                    }
+                    mqService.send(extractAttributes);
+                    System.out.println(extractAttributes);
+                    return Mono.just(100*((index+1)/((totalItems/batchSize)+1)));
+                })
+                .doOnNext(progress -> {
+                    sink.tryEmitNext(ServerSentEvent.builder(progress+"%").build());
+                })
+                .doOnComplete(sink::tryEmitComplete)
+                .subscribe();
+
+        return sink.asFlux();
     }
 
     /* Elasticsearch */

@@ -9,7 +9,9 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -34,5 +36,5 @@ public interface ClothesService {
 
     List<Clothes> getClothesInRecCoordinate(Long coordinateId);
 
-    void batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories);
+    Flux<ServerSentEvent<String>> batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories);
 }

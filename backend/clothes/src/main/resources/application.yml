@@ -16,15 +16,21 @@ spring:
         enabled: true
   cloud:
     stream:
+      defaultBinder: rabbit
       bindings:
-        output:
-          destination: ai-images
-        input:
-          destination: ai-images
-      kafka:
-        streams:
-          binder:
-            brokers: localhost:9092
+        imageProcess-out-0:
+          destination: image-process
+        extractAttribute-out-0:
+          destination: extract-attribute
+      rabbit:
+        bindings:
+          imageProcess-out-0:
+            producer:
+              bind-queue: true
+
+          extractAttribute-out-0:
+            producer:
+              bind-queue: true
 
 logging:
   level:

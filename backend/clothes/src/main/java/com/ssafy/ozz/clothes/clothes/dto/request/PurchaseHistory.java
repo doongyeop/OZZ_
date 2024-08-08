@@ -8,11 +8,12 @@ public record PurchaseHistory (
         String brand,
         LocalDate purchaseDate,
         String purchaseSite,
-        String imgUrl
+        String imgUrl,
+        String option
 ) {
-    public Clothes toEntity(Long userId) {
+    public Clothes toEntity(Long userId, String normalizedName) {
         return Clothes.builder()
-                .name(name)
+                .name(normalizedName)
                 .brand(brand)
                 .purchaseDate(purchaseDate)
                 .purchaseSite(purchaseSite)
