@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Modal from '@/components/Modal/Modal'
+import Modal from '@/components/Modal'
 import { HiPencil } from 'react-icons/hi'
 
 type PurchaseDateModalProps = {

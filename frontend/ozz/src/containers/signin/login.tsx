@@ -1,68 +1,19 @@
 'use client'
+
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const SignIn = () => {
-  useEffect(() => {
-    // // 네이버 로그인 SDK 추가
-    // const naverScript = document.createElement('script')
-    // naverScript.src =
-    //   'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js'
-    // naverScript.async = true
-    // naverScript.onload = () => {
-    //   const { naver } = window as any
-    //   const naverLogin = new naver.LoginWithNaverId({
-    //     clientId: '네이버클라아이디',
-    //     callbackUrl: 'http://localhost:8080/login/oauth2/code/naver',
-    //     isPopup: false,
-    //   })
-    //   naverLogin.init()
-    // }
-    // document.head.appendChild(naverScript)
+  const router = useRouter()
 
-    // 카카오 로그인 SDK 추가
-    const kakaoScript = document.createElement('script')
-    kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js'
-    kakaoScript.async = true
-    kakaoScript.onload = () => {
-      const { Kakao } = window as any
-      if (Kakao) {
-        Kakao.init('0048b2b5a157b80b68810cb76cae6971')
-      }
-    }
-    document.head.appendChild(kakaoScript)
-  }, [])
+  const onKaKaoLogin = () => {
+    window.location.href =
+      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
+  }
 
-  const handleKakaoLogin = () => {
-    const { Kakao } = window as any
-    if (Kakao) {
-      Kakao.Auth.login({
-        success: (authObj: any) => {
-          fetch('http://localhost:8080/login/oauth2/code/kakao', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${authObj.access_token}`,
-            },
-            body: JSON.stringify({ token: authObj.access_token }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.isNewUser) {
-                window.location.href = '/login/signup'
-              } else {
-                // 로그인 성공 후 처리
-                console.log('로그인 성공:', data)
-              }
-            })
-            .catch((error) => {
-              console.error('로그인 실패:', error)
-            })
-        },
-        fail: (err: any) => {
-          console.error('카카오 로그인 실패:', err)
-        },
-      })
-    }
+  const onNaverLogin = () => {
+    window.location.href =
+      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/naver'
   }
 
   return (
@@ -71,7 +22,7 @@ const SignIn = () => {
       <h2 className="text-xl w-full text-left my-10">간편 로그인</h2>
       <div className="flex flex-col items-center space-y-2 w-full">
         <div
-          onClick={handleKakaoLogin}
+          onClick={onKaKaoLogin}
           className="w-full h-10 flex items-center bg-[#FEE500] mx-3 rounded-md"
         >
           <img
@@ -84,6 +35,7 @@ const SignIn = () => {
           </span>
         </div>
         <div
+          onClick={onNaverLogin}
           id="naverIdLogin"
           className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
         >

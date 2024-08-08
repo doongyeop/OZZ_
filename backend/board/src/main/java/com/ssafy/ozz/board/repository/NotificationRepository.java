@@ -11,7 +11,11 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findAllByUserId(Long userId);
 
+    List<Notification> findByBoardId(Long boardId);
+
     Optional<Notification> findByBoardIdAndUserId(Long boardId, Long userId);
 
     void deleteByUserId(Long userId);
+
+
 }

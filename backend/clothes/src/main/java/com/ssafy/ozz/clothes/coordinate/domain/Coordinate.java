@@ -1,6 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.domain;
 
-import com.ssafy.ozz.clothes.clothes.properties.Style;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,12 +10,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ssafy.ozz.clothes.global.util.EnumBitwiseConverter.toBits;
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Table
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 @ToString
 public class Coordinate {
@@ -38,7 +37,7 @@ public class Coordinate {
     private LocalDateTime updatedDate;
 
     @OneToMany(mappedBy = "coordinate")
-    private List<CoordinateClothes> coordinateClothesList = new ArrayList<>();
+    private List<CoordinateClothes> coordinateClothesList;
 
     /* FOREIGN KEY */
     private Long userId;
@@ -50,6 +49,7 @@ public class Coordinate {
         this.name = name;
         this.userId = userId;
         this.imageFileId = imageFileId;
+        this.coordinateClothesList = new ArrayList<>();
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
     }

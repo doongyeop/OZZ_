@@ -2,12 +2,10 @@ package com.ssafy.ozz.clothes.coordinate.repository.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
-import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
-import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.request.VectorRequest;
 import com.ssafy.ozz.clothes.clothes.dto.response.VectorResponse;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateDocument;
-import com.ssafy.ozz.clothes.coordinate.dto.CoordinateSearchCondition;
+import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,7 +15,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
@@ -41,7 +38,7 @@ public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQuer
 
     public Page<CoordinateDocument> findByCondition(CoordinateSearchCondition condition, Pageable pageable) {
 //        Query query = createConditionNativeQuery(condition,pageable);
-        Query query = createSearchQuery(condition,pageable);
+        Query query = createConditionNativeQuery(condition,pageable);
 
         SearchHits<CoordinateDocument> searchHits = operations.search(query, CoordinateDocument.class);
 
@@ -60,12 +57,13 @@ public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQuer
         return NativeQuery.builder()
                 .withQuery(q->q
                     .bool(b->{
-                        b.must(m->m
-                            .match(mm->mm
-                                .field("name")
-                                .query(condition.keyword())
-                            )
-                        )
+                        b
+//                        .must(m->m
+//                            .match(mm->mm
+//                                .field("name")
+//                                .query(condition.keyword())
+//                            )
+//                        )
                         // 무신사 검은 셔츠 검색시 '무신사' '검은' '셔츠'가 모두 들어있는 document는 점수를 높힘
                         .should(s->s
                             .matchPhrase(mm->mm

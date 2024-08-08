@@ -2,10 +2,13 @@ package com.ssafy.ozz.clothes.clothes.domain;
 
 import com.ssafy.ozz.clothes.category.domain.CategoryHigh;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
-import com.ssafy.ozz.clothes.clothes.properties.Fit;
-import com.ssafy.ozz.clothes.clothes.properties.Size;
+import com.ssafy.ozz.library.clothes.properties.Fit;
+import com.ssafy.ozz.library.clothes.properties.Size;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -94,6 +97,7 @@ public class Clothes {
         this.imageFileId = imageFileId;
         this.categoryLow = categoryLow;
         this.userId = userId;
+        this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
     }
 

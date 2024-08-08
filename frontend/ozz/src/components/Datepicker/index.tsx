@@ -1,5 +1,4 @@
-'use client'
-
+// DatePicker.tsx
 import * as React from 'react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -9,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 const months = [
   'Jan',
@@ -25,9 +25,17 @@ const months = [
   'Dec',
 ]
 
-const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+const daysOfWeek = [
+  { day: 'S', id: 1 },
+  { day: 'M', id: 2 },
+  { day: 'T', id: 3 },
+  { day: 'W', id: 4 },
+  { day: 'T', id: 5 },
+  { day: 'F', id: 6 },
+  { day: 'S', id: 7 },
+]
 
-export function DatePicker({ defaultValue, buttonClassName }) {
+export function DatePicker({ defaultValue, buttonClassName, onDateChange }) {
   const [selectedDate, setSelectedDate] = React.useState(
     defaultValue ? new Date(defaultValue) : new Date(),
   )
@@ -39,6 +47,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
   const handleSelectDate = (date) => {
     setSelectedDate(date)
     setIsPopoverOpen(false)
+    onDateChange(date) // 날짜 선택 시 부모 컴포넌트에 날짜를 전달
   }
 
   const handleMonthChange = (event) => {
@@ -91,10 +100,10 @@ export function DatePicker({ defaultValue, buttonClassName }) {
       <div className="grid grid-cols-7 gap-1">
         {daysOfWeek.map((day) => (
           <div
-            key={day}
+            key={day.id}
             className="w-8 h-8 flex items-center justify-center font-normal"
           >
-            {day}
+            {day.day}
           </div>
         ))}
         {calendarDays}
@@ -133,23 +142,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
               <span>날짜를 선택하세요</span>
             )}
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-[#CCCED0]"
-              >
-                <path
-                  d="M13.5858 3.58579C14.3668 2.80474 15.6332 2.80474 16.4142 3.58579C17.1953 4.36683 17.1953 5.63316 16.4142 6.41421L15.6213 7.20711L12.7929 4.37868L13.5858 3.58579Z"
-                  className="fill-[#CCCED0]"
-                />
-                <path
-                  d="M11.3787 5.79289L3 14.1716V17H5.82842L14.2071 8.62132L11.3787 5.79289Z"
-                  className="fill-[#CCCED0]"
-                />
-              </svg>
+              <FiChevronRight className="text-[#CCCED0]" />
             </div>
           </Button>
         </PopoverTrigger>
@@ -162,21 +155,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
                 } as React.ChangeEvent<HTMLSelectElement>)
               }
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-[#49454F]"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12.7071 5.29289C13.0976 5.68342 13.0976 6.31658 12.7071 6.70711L9.41421 10L12.7071 13.2929C13.0976 13.6834 13.0976 14.3166 12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L7.29289 10.7071C6.90237 10.3166 6.90237 9.68342 7.29289 9.29289L11.2929 5.29289C11.6834 4.90237 12.3166 4.90237 12.7071 5.29289Z"
-                  className="fill-[#49454F]"
-                />
-              </svg>
+              <FiChevronLeft className="text-[#49454F]" />
             </button>
             <select
               value={viewDate.getMonth()}
@@ -184,7 +163,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
               className="bg-primary-50 focus:outline-none"
             >
               {months.map((month, index) => (
-                <option key={month} value={index}>
+                <option key={index} value={index}>
                   {month}
                 </option>
               ))}
@@ -196,21 +175,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
                 } as React.ChangeEvent<HTMLSelectElement>)
               }
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-[#49454F]"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M7.29289 14.7071C6.90237 14.3166 6.90237 13.6834 7.29289 13.2929L10.5858 10L7.29289 6.70711C6.90237 6.31658 6.90237 5.68342 7.29289 5.29289C7.68342 4.90237 8.31658 4.90237 8.70711 5.29289L12.7071 9.29289C13.0976 9.68342 13.0976 10.3166 12.7071 10.7071L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071Z"
-                  className="fill-[#49454F]"
-                />
-              </svg>
+              <FiChevronRight className="text-[#49454F]" />
             </button>
             <button
               onClick={() =>
@@ -219,20 +184,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
                 } as React.ChangeEvent<HTMLSelectElement>)
               }
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-[#49454F]"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12.7071 5.29289C13.0976 5.68342 13.0976 6.31658 12.7071 6.70711L9.41421 10L12.7071 13.2929C13.0976 13.6834 13.0976 14.3166 12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L7.29289 10.7071C6.90237 10.3166 6.90237 9.68342 7.29289 9.29289L11.2929 5.29289C11.6834 4.90237 12.3166 4.90237 12.7071 5.29289Z"
-                  className="fill-[#49454F]"
-                />
-              </svg>
+              <FiChevronLeft className="text-[#49454F]" />
             </button>
             <select
               value={viewDate.getFullYear()}
@@ -248,21 +200,7 @@ export function DatePicker({ defaultValue, buttonClassName }) {
                 } as React.ChangeEvent<HTMLSelectElement>)
               }
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-[#49454F]"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M7.29289 14.7071C6.90237 14.3166 6.90237 13.6834 7.29289 13.2929L10.5858 10L7.29289 6.70711C6.90237 6.31658 6.90237 5.68342 7.29289 5.29289C7.68342 4.90237 8.31658 4.90237 8.70711 5.29289L12.7071 9.29289C13.0976 9.68342 13.0976 10.3166 12.7071 10.7071L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071Z"
-                  className="fill-[#49454F]"
-                />
-              </svg>
+              <FiChevronRight className="text-[#49454F]" />
             </button>
           </div>
           {renderCalendar()}

@@ -5,9 +5,12 @@ import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
-import com.ssafy.ozz.clothes.clothes.properties.*;
 import com.ssafy.ozz.clothes.clothes.service.ClothesService;
+import com.ssafy.ozz.library.clothes.properties.Color;
+import com.ssafy.ozz.library.clothes.properties.Property;
+import com.ssafy.ozz.library.clothes.properties.PropertySelector;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/clothes")
@@ -28,12 +33,10 @@ import java.util.List;
 public class ClothesController {
     private final ClothesService clothesService;
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "새 옷 추가", description = "데이터베이스에 새 옷을 추가합니다.")
-    public ResponseEntity<Long> addClothes(@RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
-//        Long userId = (Long) authentication.getPrincipal();
-        // TODO : 실제 유저 번호 받아오기
-        Long userId = 1L;
+    public ResponseEntity<Long> addClothes(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
+//        Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clothesService.saveClothes(userId, imageFile, request).getClothesId());
     }
@@ -44,10 +47,10 @@ public class ClothesController {
         return ResponseEntity.ok(clothesService.getClothesWithFile(clothesId));
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users")
     @Operation(summary = "사용자의 옷 조회", description = "특정 사용자의 옷 목록을 슬라이스 형태로 조회합니다.")
     public ResponseEntity<Slice<ClothesBasicWithFileResponse>> getClothesOfUser(
-            @PathVariable Long userId,
+            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId,
             @ModelAttribute ClothesSearchCondition condition,
             Pageable pageable) {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
@@ -87,7 +90,7 @@ public class ClothesController {
     @Operation(summary = "옷 속성 목록 정보 조회", description = "옷 속성 목록 정보를 조회합니다. [FIT, SEASON, SIZE, STYLE, TEXTURE] 중 택1")
     public ResponseEntity<List<PropertyResponse>> getPropertyList(@RequestParam("property") PropertySelector property) {
         return ResponseEntity.ok()
-                .body(Arrays.stream(property.getPropertyClass().getEnumConstants()).map(PropertyResponse::new).toList());
+                .body(Arrays.stream(property.getPropertyClass().asSubclass(Property.class).getEnumConstants()).map(PropertyResponse::new).toList());
     }
 
     @PostMapping("/batch")

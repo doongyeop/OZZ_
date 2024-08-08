@@ -1,112 +1,22 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import Modal from '@/components/Modal/Modal'
-
-// 데이터 타입 정의
-interface FavoriteGroup {
-  group_id: number
-  group_name: string
-  user_id: number
-}
-
-interface Favorite {
-  favorite_id: number
-  item_name: string
-  image_url: string
-  group_id: number
-}
-
-interface CoordiSet {
-  coordi_id: number
-  coordi_name: string
-  description: string
-  image_url: string
-  user_id: number
-}
-
-// 예제 데이터
-const favoriteGroups: FavoriteGroup[] = [
-  { group_id: 1, group_name: 'Casual Wear', user_id: 1 },
-  { group_id: 2, group_name: 'Formal Wear', user_id: 1 },
-  { group_id: 3, group_name: 'Sportswear', user_id: 1 },
-  { group_id: 4, group_name: 'Outdoor', user_id: 1 },
-]
-
-const favorites: Favorite[] = [
-  {
-    favorite_id: 1,
-    item_name: 'Favorite Item 1',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/37027/detail_37027_66a2ee8fb080e_500.jpg?w=1000',
-    group_id: 1,
-  },
-  {
-    favorite_id: 2,
-    item_name: 'Favorite Item 2',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-    group_id: 1,
-  },
-  {
-    favorite_id: 3,
-    item_name: 'Favorite Item 3',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-    group_id: 1,
-  },
-  {
-    favorite_id: 4,
-    item_name: 'Favorite Item 4',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/37027/detail_37027_66a2ee8fb080e_500.jpg?w=1000',
-    group_id: 2,
-  },
-  {
-    favorite_id: 5,
-    item_name: 'Favorite Item 5',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/37026/detail_37026_66a2ee8c7c5fa_500.jpg?w=1000',
-    group_id: 2,
-  },
-  {
-    favorite_id: 6,
-    item_name: 'Favorite Item 6',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-    group_id: 2,
-  },
-  {
-    favorite_id: 7,
-    item_name: 'Favorite Item 7',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/37027/detail_37027_66a2ee8fb080e_500.jpg?w=1000',
-    group_id: 2,
-  },
-  {
-    favorite_id: 8,
-    item_name: 'Favorite Item 8',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-    group_id: 2,
-  },
-  // 추가 데이터 생략
-]
-
-const coordiSets: CoordiSet[] = [
-  {
-    coordi_id: 1,
-    coordi_name: 'Coordi Set 1',
-    description: 'This is a description for Coordi Set 1',
-    image_url:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36996/detail_36996_66a197b67daad_500.jpg?w=1000',
-    user_id: 2,
-  },
-]
+import { useRouter } from 'next/navigation'
+import Modal from '@/components/Modal'
+import {
+  Coordibook,
+  mockCoordibooks,
+  mockFavoriteDetails,
+} from '@/types/coordibook'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
+  const router = useRouter()
+
+  const goToCoordiBook = (id: number, name: string) => {
+    router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
+  }
 
   const createCoordiBook = () => {
     setCreateModal(true)
@@ -117,31 +27,34 @@ export default function CoordiBook() {
     setCreateModal(false)
   }
 
-  const getFavGrp = (group: FavoriteGroup) => {
-    const groupFavorites = favorites.filter(
-      (fav) => fav.group_id === group.group_id,
-    )
+  const getFavGrp = (group: Coordibook) => {
+    // const groupFavorites = mockFavoriteDetails.filter(
+    //   (fav) => fav.favoriteGroupId === group.favoriteGroupId,
+    // )
 
     return (
-      <div key={group.group_id} className="aspect-square">
-        <Card className="flex items-center h-full overflow-hidden">
+      <div key={group.favoriteGroupId} className="aspect-square">
+        <Card
+          className="flex items-center h-full overflow-hidden"
+          onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
+        >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
-              groupFavorites.length >= 4 ? 'w-full h-full' : ''
+              mockFavoriteDetails.length >= 4 ? 'w-full h-full' : ''
             }`}
           >
-            {groupFavorites.slice(0, 4).map((fav) => (
+            {mockFavoriteDetails.slice(0, 4).map((fav) => (
               <div
-                key={fav.favorite_id}
+                key={fav.favoriteId}
                 className={`${
-                  groupFavorites.length >= 4
+                  mockFavoriteDetails.length >= 4
                     ? 'w-1/2 h-1/2 overflow-hidden'
                     : 'h-full w-full'
                 }`}
               >
                 <img
-                  src={fav.image_url}
-                  alt={fav.item_name}
+                  src={fav.coordinate.imageFile.filePath}
+                  alt={fav.coordinate.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -149,7 +62,7 @@ export default function CoordiBook() {
           </CardContent>
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
-          {group.group_name}
+          {group.name}
         </CardTitle>
       </div>
     )
@@ -182,8 +95,8 @@ export default function CoordiBook() {
           <span onClick={createCoordiBook}>새 코디북 생성</span>
         </CardTitle>
       </div>
-      {favoriteGroups.map((group) => (
-        <div key={group.group_id}>{getFavGrp(group)}</div>
+      {mockCoordibooks.map((group) => (
+        <div key={group.favoriteGroupId}>{getFavGrp(group)}</div>
       ))}
       {createModal && (
         <Modal title="코디북 이름" onClose={closeModal}>

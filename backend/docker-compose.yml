@@ -1,6 +1,14 @@
 version: '3.1'
 
 services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-cloud-network
+
   mysql-db:
     image: mysql:latest
     container_name: mysql
@@ -15,7 +23,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - spring-cloud-network
-
 # OZZ 설정
   ozz-eureka:
     container_name: ozz-eureka
@@ -78,8 +85,6 @@ services:
     build: ./auth
     ports:
       - ${AUTH_PORT}:${AUTH_PORT}
-    volumes:
-      - file-data:/data/uploads
     environment:
       AUTH_PORT: ${AUTH_PORT}
       SPRING_PROFILES_ACTIVE: dev
@@ -87,21 +92,21 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
+      NAVER_REDIRECT_URL: http://${SERVER_HOST}:${AUTH_PORT}/login/oauth2/code/naver
+      KAKAO_REDIRECT_URL: http://${SERVER_HOST}:${AUTH_PORT}/login/oauth2/code/kakao
+      REDIS_HOST: redis
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
+      - redis
 
   ozz-user:
     container_name: ozz-user
     build: ./user
     ports:
       - ${USER_PORT}:${USER_PORT}
-    volumes:
-      - file-data:/data/uploads
     environment:
       USER_PORT: ${USER_PORT}
       SPRING_PROFILES_ACTIVE: dev
@@ -109,14 +114,13 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
-      NAVER_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/naver
-      KAKAO_REDIRECT_URL: http://ozz-auth:${AUTH_PORT}/login/oauth2/code/kakao
     networks:
       - spring-cloud-network
     depends_on:
       - mysql-db
       - ozz-eureka
       - ozz-auth
+      - redis
 
   ozz-ai:
     container_name: ozz-ai
@@ -125,6 +129,40 @@ services:
       - ${AI_PORT}:${AI_PORT}
     networks:
       - spring-cloud-network
+
+  ozz-favorite:
+    container_name: ozz-favorite
+    build: ./favorite
+    ports:
+      - ${FAVORITE_PORT}:${FAVORITE_PORT}
+    environment:
+      FAVORITE_PORT: ${FAVORITE_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - ozz-eureka
+
+  ozz-board:
+    container_name: ozz-board
+    build: ./board
+    ports:
+      - ${BOARD_PORT}:${BOARD_PORT}
+    environment:
+      BOARD_PORT: ${BOARD_PORT}
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER}
+      DB_PW: ${DB_PW}
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - ozz-eureka
 
   ozz-gateway:
     container_name: ozz-gateway
@@ -135,14 +173,17 @@ services:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
+      GATEWAY_HOST: http://ozz-gateway:${API_GATEWAY_PORT}
     networks:
       - spring-cloud-network
     depends_on:
-      - ozz-eureka
+      - ozz-ai
       - ozz-file
       - ozz-clothes
       - ozz-auth
-      # - ozz-user
+      - ozz-user
+      - ozz-favorite
+      - ozz-board
 
 # ELK 설정
   elasticsearch:

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { DatePicker } from '@/components/Datepicker'
-import Modal from '@/components/Modal/Modal'
+import Modal from '@/components/Modal'
 import UploadModal from './modal'
 
 const ProfileEdit = () => {

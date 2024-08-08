@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import { HeaderButton } from '../Button/HeaderButton'
 import Header from '../Header'
 
-export default function HeaderWithBackward() {
+export default function HeaderWithBackward({ title = '추천 코디' }) {
   const router = useRouter()
 
   return (
     <Header
-      title="추천 코디"
+      title={title}
       leftButton={
         <HeaderButton
           icon={<IoChevronBack size={28} />}
