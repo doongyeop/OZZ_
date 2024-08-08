@@ -94,7 +94,7 @@ Please return it in JSON format as in the following example.
             return item
 
 
-    def parse_response(self, response: dict) -> dict[int, dict[Any, Any]]:
+    def parse_response(self, response: dict) -> dict[int, Attributes]:
         transformed_data = {}
         for id in response.keys():
             value = response[id]

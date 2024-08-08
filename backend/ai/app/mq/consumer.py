@@ -1,6 +1,8 @@
 import json
+from io import BytesIO
 
 import pika
+import requests
 
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes
@@ -16,18 +18,46 @@ def EAcallback(ch, method, properties, body):
     data = parseToBaseModel(body)
 
     client = ExtractAttributesURL(data)
-    client.get_result()
-    # ToDO : 데이터 저장
+    data = client.get_result()
+    for key in data.keys():
+        # 엔드포인트 URL 및 clothesId 설정
+        url = 'http://your-server.com/{clothesId}'.format(clothesId=key)
+        # 요청 헤더 및 파일 설정
+        body = {
+            'request': (None, data[key].model_dump_json(), 'application/json')
+        }
+
+        # PUT 요청 보내기
+        response = requests.put(url, files=body)
+
+        # 응답 출력
+        print(response.status_code)
+        print(response.json())
 
 
 def IPcallback(ch, method, properties, body):
     print(f"이미지 처리 :  {body}")
     data = parseToBaseModel(body)
     for datum in data:
-        process(datum.imgUrl, datum.category)
-        # TODO : 처리된 이미지 업로드
+        processed_image = process(datum.imgUrl, datum.category)
+        # BytesIO 객체에 이미지 저장
+        image_byte_array = BytesIO()
+        processed_image.save(image_byte_array, format='PNG')
+        image_byte_array.seek(0)
 
+        # 엔드포인트 URL 및 clothesId 설정
+        url = 'http://locahost/{clothesId}'.format(clothesId=datum.clothId)
 
+        # 요청 헤더 및 파일 설정
+        headers = {'Content-Type': 'multipart/form-data'}
+        files = {'imageFile': ('image.jpg', image_byte_array, 'image/jpeg')}
+
+        # PUT 요청 보내기
+        response = requests.put(url, headers=headers, files=files)
+
+        # 응답 출력
+        print(response.status_code)
+        print(response.json())
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
