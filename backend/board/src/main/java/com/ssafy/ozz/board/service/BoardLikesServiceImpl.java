@@ -70,7 +70,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
                 .board(board)
                 .userId(userId)
                 .read(false)
-                .content(userInfo.nickname() + "님이 내 게시글을 마음에 들어합니다.")
+                .content(userInfo.nickname() + "님이 내 게시글을 마음에 들어합니다.") // 푸시알림 하게된다면 쓸
                 .build();
         notificationRepository.save(notification);
 
@@ -78,16 +78,6 @@ public class BoardLikesServiceImpl implements BoardLikesService {
         updateLikesCount(boardId);
 
         return true;
-    }
-
-    @Override
-    public void updateLikesCount(Long boardId) {
-        int likesCount = boardLikesRepository.countByBoard_Id(boardId);
-        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        board = board.toBuilder()
-                .likes(likesCount)
-                .build();
-        boardRepository.save(board);
     }
 
 
@@ -146,4 +136,14 @@ public class BoardLikesServiceImpl implements BoardLikesService {
 //        }
 //        return cnt;
 //    }
+
+    @Override
+    public void updateLikesCount(Long boardId) {
+        int likesCount = boardLikesRepository.countByBoard_Id(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        board = board.toBuilder()
+                .likes(likesCount)
+                .build();
+        boardRepository.save(board);
+    }
 }
