@@ -50,6 +50,7 @@ public class NotificationController {
         notificationService.deleteAllNotifications(userId);
         return ResponseEntity.noContent().build();
     }
+
     // TODO 500에러
     @GetMapping("/{boardId}")
     @Operation(summary = "좋아요 알림 조회", description = "특정 게시글의 좋아요 알림 내용을 조회합니다.")
