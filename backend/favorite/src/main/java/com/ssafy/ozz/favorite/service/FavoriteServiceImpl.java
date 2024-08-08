@@ -16,11 +16,13 @@ import com.ssafy.ozz.library.error.exception.FavoriteNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
@@ -74,6 +76,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FavoriteResponse> getFavoriteResponseListByGroup(Long favoriteGroupId) {
         FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid favorite group ID"));
@@ -83,6 +86,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FavoriteGroupImageResponse> getFavoriteGroupResponseListOfUser(Long userId) {
         return favoriteGroupRepository.findByUserId(userId).stream().map(favoriteGroup -> {
             List<FileInfo> imageFileList = favoriteGroup.getFavorites().stream().map(favorite ->
