@@ -14,7 +14,7 @@ public enum Texture implements Property {
     MESH("메시"),
     CORDUROY("코듀로이"),
     FLEECE("플리스"),
-    SEQUIN_GLITTER("시퀸/글리터"),
+    SEQUIN_GLITTER("시퀸글리터"),
     NEOPRENE("네오프렌"),
     DENIM("데님"),
     SILK("실크"),
@@ -24,11 +24,11 @@ public enum Texture implements Property {
     JACQUARD("자카드"),
     VELVET("벨벳"),
     LEATHER("가죽"),
-    VINYL_PVC("비닐/PVC"),
+    VINYL_PVC("비닐"),
     COTTON("면"),
-    WOOL_CASHMERE("울/캐시미어"),
+    WOOL_CASHMERE("울"),
     CHIFFON("시폰"),
-    SYNTHETIC_POLYESTER("합성섬유");
+    SYNTHETIC_POLYESTER("폴리");
     private final String displayName;
 
     Texture(String displayName) {

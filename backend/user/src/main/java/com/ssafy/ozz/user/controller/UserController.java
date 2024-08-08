@@ -12,6 +12,7 @@ import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,9 +75,9 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/profile")
+    @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 프로필 변경")
-    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart("file") MultipartFile file) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {

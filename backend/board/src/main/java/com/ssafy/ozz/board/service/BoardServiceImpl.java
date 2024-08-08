@@ -6,8 +6,16 @@ import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
 import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
+import com.ssafy.ozz.board.dto.response.UserResponse;
+import com.ssafy.ozz.board.global.feign.file.FileClient;
+import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.TagRepository;
+import com.ssafy.ozz.library.file.FileInfo;
+import com.ssafy.ozz.library.global.error.exception.BoardNotFoundException;
+import com.ssafy.ozz.library.global.error.exception.FileNotFoundException;
+import com.ssafy.ozz.library.global.error.exception.UserNotFoundException;
+import com.ssafy.ozz.library.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
@@ -25,18 +34,21 @@ import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
     private final TagRepository tagRepository;
-    private final FileService fileService;
+    private final UserClient userClient;
+    private final FileClient fileClient;
 
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
+//        UserInfo user = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
+//        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+
         Board board = Board.builder()
                 .content(request.content())
-                .imgId(imgFileId)
-                .user(userRepository.findById(userId))
+                .imgFileId(imgFileId)
+                .userId(userId)
                 .age(request.age())
-                .style(toBits(request.styleList())) // 스타일 비트 연산
+                .style(toBits(request.styleList()))
                 .likes(0)
                 .createdDate(new Date())
                 .build();
@@ -58,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Optional<Board> getBoardsByUserId(Long userId) {
+    public List<Board> getBoardsByUserId(Long userId) {
         return boardRepository.findByUserId(userId);
     }
 
@@ -69,17 +81,16 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
+        return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
     }
 
     @Override
     public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
 
         board = board.toBuilder()
                 .content(request.content())
-                .age(request.age())
-                .style(toBits(request.styleList())) // 스타일 비트 연산
+                .style(toBits(request.styleList()))
                 .build();
 
         boardRepository.save(board);
@@ -101,13 +112,14 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardWithFileResponse updateBoardFile(Long boardId, BoardUpdateRequest request, Long imgFileId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+        UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
 
         board = board.toBuilder()
                 .content(request.content())
-                .imgId(imgFileId)
-                .age(request.age())
-                .style(toBits(request.styleList())) // 스타일 비트 연산
+                .imgFileId(imgFileId)
+                .style(toBits(request.styleList()))
                 .build();
 
         boardRepository.save(board);
@@ -124,12 +136,20 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        return new BoardWithFileResponse(board, imgFileId);
+        UserResponse userResponse = new UserResponse(
+                user.userId(),
+                user.nickname(),
+                user.Birth(),
+                user.profileFileId(),
+                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
+        );
+
+        return new BoardWithFileResponse(board, file, userResponse);
     }
 
     @Override
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         tagRepository.deleteAllByBoard(board);
         boardRepository.deleteById(boardId);
     }
@@ -143,7 +163,6 @@ public class BoardServiceImpl implements BoardService {
     public Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge) {
         return boardRepository.findByAgeBetween(startAge, endAge, pageable);
     }
-
 
     @Override
     public Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable) {

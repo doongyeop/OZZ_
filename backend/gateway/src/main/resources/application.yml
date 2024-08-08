@@ -86,6 +86,16 @@ spring:
             - Path=/docs/ozz-favorite/**
           filters:
             - RewritePath=/docs/ozz-favorite/(?<path>.*), /$\{path}
+        - id: board-router
+          uri : lb://OZZ-BOARD
+          predicates:
+            - Path=/api/boards/**, /api/boardlikes/**, /api/notifications/**
+        - id: board-swagger
+          uri : lb://OZZ-BOARD
+          predicates:
+            - Path=/docs/ozz-board/**
+          filters:
+            - RewritePath=/docs/ozz-board/(?<path>.*), /$\{path}
 
 springdoc:
   api-docs:
@@ -105,6 +115,8 @@ springdoc:
         name: ozz-auth
       - url: /docs/ozz-favorite/v3/api-docs
         name: ozz-favorite
+      - url: /docs/ozz-board/v3/api-docs
+        name: ozz-board
 
 jwt:
   secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}

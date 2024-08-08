@@ -23,12 +23,12 @@ public class Notification {
     @Column(name = "is_read")
     private boolean read;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id")
-    private User user;
+    @Column(name = "users_id")
+    private Long userId;
 
-    @Column(name = "boards_id")
-    private Long boardId; // 외래키
+    @JoinColumn(name = "boards_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Board board; // 외래키
 
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
