@@ -35,6 +35,7 @@ import {
   textureInvMap,
   colorMap,
   patternMap,
+  categoryNameToLowIdMap,
 } from '@/types/clothing'
 import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 
@@ -58,7 +59,7 @@ export default function ClothingForm({
   const [purchaseSite, setPurchaseSite] = useState<string | null>(null)
   const [season, setSeason] = useState<Season[]>([])
   const [size, setSize] = useState<Size>('FREE')
-  const [fit, setFit] = useState<Fit | undefined>(undefined)
+  const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
   const [color, setColor] = useState<{ name: string; code: string }[] | null>(
     [],
@@ -81,7 +82,7 @@ export default function ClothingForm({
       setPurchaseSite(initialData.purchaseSite || null)
       setSeason(initialData.season || [])
       setSize(initialData.size || 'FREE')
-      setFit(initialData.fit || undefined)
+      setFit(initialData.fit || null)
       setTexture(initialData.texture || [])
       setColor(initialData.color || [])
       setStyle(initialData.style || [])
@@ -116,9 +117,10 @@ export default function ClothingForm({
       return
     }
 
-    const categoryLowId = categoryName.split(' > ').pop() || ''
+    const categoryLowName = categoryName.split(' > ').pop() || ''
+    const categoryLowId = categoryNameToLowIdMap[categoryLowName] || undefined
 
-    const jsonData: ClothesCreateRequest = {
+    const request: ClothesCreateRequest = {
       name,
       size: size || 'FREE',
       fit: fit ? fitMap[fit] : undefined,
@@ -133,11 +135,13 @@ export default function ClothingForm({
       categoryLowId,
     }
 
-    console.log('옷 등록할게요 ><')
-    Object.entries(jsonData).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`)
-    })
-    onSubmit(imageFile, jsonData)
+    // console.log('옷 등록할게요 ><')
+    // console.log(imageFile.type)
+    // console.log(request)
+    // Object.entries(request).forEach(([key, value]) => {
+    //   console.log(`${key}: ${value}`)
+    // })
+    onSubmit(imageFile, request)
   }
 
   const closeModal = () => setOpenModal(null)

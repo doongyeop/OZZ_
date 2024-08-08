@@ -186,7 +186,7 @@ export class Api<
    * @secure
    * @response `200` `AddClothesData` OK
    */
-  addClothes = (data: AddClothesPayload, params: RequestParams = {}) =>
+  addClothes = (data: FormData, params: RequestParams = {}) =>
     this.request<AddClothesData, any>({
       path: `/api/clothes`,
       method: 'POST',
@@ -195,6 +195,7 @@ export class Api<
       type: ContentType.FormData,
       ...params,
     })
+
   /**
    * @description ID를 통해 특정 코디 세부 정보를 조회합니다.
    *

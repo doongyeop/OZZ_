@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { ClothingData } from '@/types/clothing'
 import { fetchMockClothing } from '@/services/clothingApi'
 import ScrollableModal from './ScrollableModal'
-import { keyLabelMap } from '@/types/maps'
+import { keyLabelMap } from '@/types/clothing'
 
 type ClothingDetailsModalProps = {
   isOpen: boolean
