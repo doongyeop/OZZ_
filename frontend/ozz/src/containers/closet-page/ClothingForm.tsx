@@ -126,7 +126,32 @@ export default function ClothingForm({
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
-      colorList: color ? color.map((c) => colorInvMap[c.name]) : [],
+      colorList: color
+        ? color.map(
+            (c) =>
+              colorInvMap[c.name] as
+                | 'WHITE'
+                | 'BLACK'
+                | 'GRAY'
+                | 'RED'
+                | 'PINK'
+                | 'ORANGE'
+                | 'BEIGE'
+                | 'YELLOW'
+                | 'BROWN'
+                | 'GREEN'
+                | 'KHAKI'
+                | 'MINT'
+                | 'BLUE'
+                | 'NAVY'
+                | 'SKY'
+                | 'PURPLE'
+                | 'LAVENDER'
+                | 'WINE'
+                | 'NEON'
+                | 'GOLD',
+          )
+        : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
