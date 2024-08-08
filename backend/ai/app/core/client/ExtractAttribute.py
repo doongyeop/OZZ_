@@ -1,5 +1,6 @@
 import json
-from typing import Any, Dict
+import logging
+from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import UploadFile
@@ -57,35 +58,35 @@ Please return it in JSON format as in the following example.
 
     # 문자열을 분리하여 배열로 변환하는 함수
     def transform(self, key, item):
-        category2code={ "탑": 1,
-                        "블라우스": 2,
-                        "티셔츠": 3,
-                        "니트웨어": 4,
-                        "셔츠": 5,
-                        "브라탑": 6,
-                        "후드티": 7,
-                        "청바지": 8,
-                        "팬츠": 9,
-                        "스커트": 10,
-                        "레깅스": 11,
-                        "조거팬츠": 12,
-                        "코트": 13,
-                        "재킷": 14,
-                        "점퍼": 15,
-                        "패딩": 16,
-                        "베스트": 17,
-                        "가디건": 18,
-                        "짚업": 19,
-                        "드레스": 20,
-                        "점프수트": 21,
-                        "운동화": 22,
-                        "구두": 23,
-                        "샌들/슬리퍼": 24,
-                        "주얼리": 25,
-                        "기타": 26,
-                        "모자": 27,
-                        "백팩": 28,
-                        "힙색": 29}
+        category2code = {"탑": 1,
+                         "블라우스": 2,
+                         "티셔츠": 3,
+                         "니트웨어": 4,
+                         "셔츠": 5,
+                         "브라탑": 6,
+                         "후드티": 7,
+                         "청바지": 8,
+                         "팬츠": 9,
+                         "스커트": 10,
+                         "레깅스": 11,
+                         "조거팬츠": 12,
+                         "코트": 13,
+                         "재킷": 14,
+                         "점퍼": 15,
+                         "패딩": 16,
+                         "베스트": 17,
+                         "가디건": 18,
+                         "짚업": 19,
+                         "드레스": 20,
+                         "점프수트": 21,
+                         "운동화": 22,
+                         "구두": 23,
+                         "샌들/슬리퍼": 24,
+                         "주얼리": 25,
+                         "기타": 26,
+                         "모자": 27,
+                         "백팩": 28,
+                         "힙색": 29}
         if "List" in key:
             return item.split(', ')
         elif "category" == key:
@@ -93,21 +94,22 @@ Please return it in JSON format as in the following example.
         else:
             return item
 
-
     def parse_response(self, response: dict) -> dict[int, Attributes]:
         transformed_data = {}
+        last_id=0
         for id in response.keys():
             value = response[id]
             transformed_item = {k: self.transform(k, v) for k, v in value.items()}
-            transformed_item["categoryLowId"]=transformed_item["category"]
+            transformed_item["categoryLowId"] = transformed_item["category"]
             del transformed_item["category"]
-            print(transformed_item)
-            transformed_data[int(id)] = Attributes(**transformed_item)
 
+            transformed_data[int(id)] = Attributes(**transformed_item)
+            last_id=int(id)
+        logging.info("id: "+str(last_id)+" attribute extracted -> "+str(transformed_data[last_id]))
         return transformed_data
 
     def get_response(self) -> dict[Any, Any]:
-        user_content:list = self.make_user_content()
+        user_content: list = self.make_user_content()
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
@@ -141,14 +143,15 @@ Please return it in JSON format as in the following example.
     def make_user_content(self):
         pass
 
-class ExtractAttributesURL(ExtractAttribute):
-    dataList:list
 
-    def __init__(self, data:list[NormalizedClothes]):
+class ExtractAttributesURL(ExtractAttribute):
+    dataList: list
+
+    def __init__(self, data: list[NormalizedClothes]):
         self.dataList = data
 
     def make_user_content(self) -> list:
-        content_list=[]
+        content_list = []
         for data in self.dataList:
             content_list.extend([{
                 "type": "image_url",
@@ -157,17 +160,18 @@ class ExtractAttributesURL(ExtractAttribute):
                 }
             }, {
                 "type": "text",
-                "text": f"<clothes><order>{data.clothId}</order><info>{data.category+("," + data.color if data.color else "")}</info></clothes>"
+                "text": f"<clothes><order>{data.clothId}</order><info>{data.category + (',' + data.color if data.color else '')}</info></clothes>"
             }])
         return content_list
 
     def get_result(self):
         return self.parse_response(self.get_response())
 
-class ExtractAttributesImage(ExtractAttribute):
-    image:UploadFile
 
-    def __init__(self, image:UploadFile):
+class ExtractAttributesImage(ExtractAttribute):
+    image: UploadFile
+
+    def __init__(self, image: UploadFile):
         self.image = image
 
     def make_user_content(self) -> list:
