@@ -86,7 +86,7 @@ public class UserController {
                 User updatedUser = user.toBuilder()
                         .profileFileId(fileInfo.fileId())
                         .build();
-                userService.updateUser(userId, updatedUser);
+                userService.updateProfileImg(userId, updatedUser);
                 return ResponseEntity.ok(fileInfo);
             } catch (FileUploadException e) {
                 return ResponseEntity.status(500).body("파일 업로드 실패");
