@@ -1,5 +1,7 @@
+'use client'
+
 import Modal from '@/components/Modal'
-import { Size, sizeMap } from '@/types/clothing'
+import { Size } from '@/types/clothing'
 
 type SizeModalProps = {
   onClose: () => void

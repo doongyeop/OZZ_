@@ -34,7 +34,9 @@ import {
   textureMap,
   textureInvMap,
   colorMap,
+  colorInvMap,
   patternMap,
+  patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
 import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
@@ -61,13 +63,9 @@ export default function ClothingForm({
   const [size, setSize] = useState<Size>('FREE')
   const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
-  const [color, setColor] = useState<{ name: string; code: string }[] | null>(
-    [],
-  )
+  const [color, setColor] = useState<Color[] | null>([])
   const [style, setStyle] = useState<Style[]>([])
-  const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
-    null,
-  )
+  const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -86,7 +84,7 @@ export default function ClothingForm({
       setTexture(initialData.texture || [])
       setColor(initialData.color || [])
       setStyle(initialData.style || [])
-      setPattern(initialData.pattern || null)
+      setPattern(initialData.pattern || [])
       setMemo(initialData.memo || null)
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
@@ -128,10 +126,36 @@ export default function ClothingForm({
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
-      colorList: color ? color.map((c) => colorMap[c.name]) : [],
+      colorList: color
+        ? color.map(
+            (c) =>
+              colorInvMap[c.name] as
+                | 'WHITE'
+                | 'BLACK'
+                | 'GRAY'
+                | 'RED'
+                | 'PINK'
+                | 'ORANGE'
+                | 'BEIGE'
+                | 'YELLOW'
+                | 'BROWN'
+                | 'GREEN'
+                | 'KHAKI'
+                | 'MINT'
+                | 'BLUE'
+                | 'NAVY'
+                | 'SKY'
+                | 'PURPLE'
+                | 'LAVENDER'
+                | 'WINE'
+                | 'NEON'
+                | 'GOLD',
+          )
+        : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
+      patternList: pattern ? pattern.map((p) => patternMap[p]) : [],
       categoryLowId,
     }
 
@@ -211,8 +235,12 @@ export default function ClothingForm({
       label: '색',
       path: 'color',
       component: ColorModal,
-      value: color ? color : '',
-      setValue: (colors: { name: string; code: string }[]) => setColor(colors),
+      value: color
+        ? color.map((c) => c.name).join(', ').length > 10
+          ? `${color.map((c) => c.name).join(', ')}...`
+          : color.map((c) => c.name).join(', ')
+        : '',
+      setValue: (colors: Color[]) => setColor(colors),
     },
     {
       label: '스타일',
@@ -229,8 +257,12 @@ export default function ClothingForm({
       label: '패턴',
       path: 'pattern',
       component: PatternModal,
-      value: pattern ? pattern.name : '',
-      setValue: (pattern: { name: string; img: string }) => setPattern(pattern),
+      value: pattern
+        ? pattern.map((p) => patternInvMap[p]).join(', ').length > 10
+          ? `${pattern.map((p) => patternInvMap[p]).join(', ')}...`
+          : pattern.map((p) => patternInvMap[p]).join(', ')
+        : '',
+      setValue: (pattern: Pattern[]) => setPattern(pattern),
     },
     {
       label: '메모',
@@ -320,7 +352,7 @@ export default function ClothingForm({
                             <div key={c.code} className="flex">
                               <span
                                 className="inline-block w-5 h-5 rounded-full mr-1.5"
-                                style={{ backgroundColor: c.code }}
+                                style={{ backgroundColor: c.colorCode }}
                               ></span>
                               <span
                                 className="text-primary-400 mr-2"

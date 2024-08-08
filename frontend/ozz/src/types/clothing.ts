@@ -1,3 +1,27 @@
+export interface ClothingData {
+  id: number
+  name: string
+  brandName: string
+  categoryName: string | null
+  purchaseDate: string | null
+  purchaseSite: string | null
+  season: Season[] | null
+  size: Size | null
+  fit: Fit | null
+  texture: Texture[]
+  color: Color[] | null
+  style: Style[] | null
+  pattern: Pattern[] | null
+  memo: string | null
+  image: File | null
+}
+
+export interface Color {
+  code: ColorCode
+  name: string
+  colorCode: string
+}
+
 export type Size = 'FREE' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
 export type Fit = 'OVER_FIT' | 'SEMI_OVER_FIT' | 'REGULAR_FIT' | 'SLIM_FIT'
 export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER'
@@ -38,7 +62,7 @@ export type Texture =
   | 'WOOL_CASHMERE'
   | 'CHIFFON'
   | 'SYNTHETIC_POLYESTER'
-export type Color =
+export type ColorCode =
   | 'WHITE'
   | 'BLACK'
   | 'GRAY'
@@ -59,6 +83,30 @@ export type Color =
   | 'WINE'
   | 'NEON'
   | 'GOLD'
+
+export const colors: Color[] = [
+  { code: 'WHITE', name: '흰색', colorCode: '#FFFFFF' },
+  { code: 'BLACK', name: '검정', colorCode: '#000000' },
+  { code: 'GRAY', name: '회색', colorCode: '#E7E7E7' },
+  { code: 'RED', name: '빨강', colorCode: '#FF0000' },
+  { code: 'PINK', name: '분홍', colorCode: '#FEE0DE' },
+  { code: 'ORANGE', name: '주황', colorCode: '#FF820E' },
+  { code: 'BEIGE', name: '베이지', colorCode: '#E2C79C' },
+  { code: 'YELLOW', name: '노랑', colorCode: '#FEE600' },
+  { code: 'BROWN', name: '갈색', colorCode: '#844F1D' },
+  { code: 'GREEN', name: '초록', colorCode: '#1A9268' },
+  { code: 'KHAKI', name: '카키', colorCode: '#666B17' },
+  { code: 'MINT', name: '민트', colorCode: '#6BF1D8' },
+  { code: 'BLUE', name: '파랑', colorCode: '#1F4CE3' },
+  { code: 'NAVY', name: '남색', colorCode: '#060350' },
+  { code: 'SKY', name: '하늘', colorCode: '#C5E3FF' },
+  { code: 'PURPLE', name: '보라', colorCode: '#9C53BE' },
+  { code: 'LAVENDER', name: '연보라', colorCode: '#D7BEF5' },
+  { code: 'WINE', name: '와인', colorCode: '#9E213F' },
+  { code: 'NEON', name: '네온', colorCode: '#2FF40A' },
+  { code: 'GOLD', name: '골드', colorCode: '#E6C345' },
+]
+
 export type Pattern =
   | 'SOLID'
   | 'STRIPED'
@@ -118,24 +166,6 @@ export type CategoryLow =
   | '백팩'
   | '힙색'
 
-export interface ClothingData {
-  id: number
-  name: string
-  brandName: string
-  categoryName: string | null
-  purchaseDate: string | null
-  purchaseSite: string | null
-  season: Season[] | null
-  size: Size | null
-  fit: Fit | null
-  texture: Texture[]
-  color: { name: string; code: string }[] | null
-  style: Style[] | null
-  pattern: { name: string; img: string } | null
-  memo: string | null
-  image: File | null
-}
-
 export const sizeMap: { [key: string]: Size } = {
   FREE: 'FREE',
   S: 'S',
@@ -143,28 +173,6 @@ export const sizeMap: { [key: string]: Size } = {
   L: 'L',
   XL: 'XL',
   XXL: 'XXL',
-}
-export const colorMap: { [key: string]: Color } = {
-  흰색: 'WHITE',
-  검정: 'BLACK',
-  회색: 'GRAY',
-  빨강: 'RED',
-  분홍: 'PINK',
-  주황: 'ORANGE',
-  베이지: 'BEIGE',
-  노랑: 'YELLOW',
-  갈색: 'BROWN',
-  초록: 'GREEN',
-  카키: 'KHAKI',
-  민트: 'MINT',
-  파랑: 'BLUE',
-  남색: 'NAVY',
-  하늘: 'SKY',
-  보라: 'PURPLE',
-  연보라: 'LAVENDER',
-  와인: 'WINE',
-  네온: 'NEON',
-  골드: 'GOLD',
 }
 
 export const textureMap: { [key: string]: Texture } = {
@@ -277,7 +285,7 @@ export const fitInvMap: Record<Fit, string> = {
 }
 
 export const patternMap: { [key: string]: Pattern } = {
-  단색: 'SOLID',
+  무지: 'SOLID',
   줄무늬: 'STRIPED',
   지그재그: 'ZIGZAG',
   호피: 'LEOPARD',
@@ -285,7 +293,7 @@ export const patternMap: { [key: string]: Pattern } = {
   아가일: 'ARGYLE',
   도트: 'DOT',
   페이즐리: 'PAISLEY',
-  카모플라주: 'CAMOUFLAGE',
+  카모플라쥬: 'CAMOUFLAGE',
   플로럴: 'FLORAL',
   레터링: 'LETTERING',
   그래픽: 'GRAPHIC',
@@ -294,9 +302,28 @@ export const patternMap: { [key: string]: Pattern } = {
   깅엄: 'GINGHAM',
   그라데이션: 'GRADATION',
   체크: 'CHECK',
-  하운드투스: 'HOUNDSTOOTH',
+  하운즈투스: 'HOUNDSTOOTH',
 }
-
+export const patternInvMap: { [key: string]: string } = {
+  SOLID: '무지',
+  STRIPED: '줄무늬',
+  ZIGZAG: '지그재그',
+  LEOPARD: '호피',
+  ZEBRA: '지브라',
+  ARGYLE: '아가일',
+  DOT: '도트',
+  PAISLEY: '페이즐리',
+  CAMOUFLAGE: '카모플라쥬',
+  FLORAL: '플로럴',
+  LETTERING: '레터링',
+  GRAPHIC: '그래픽',
+  SKULL: '해골',
+  TIE_DYE: '타이다이',
+  GINGHAM: '깅엄',
+  GRADATION: '그라데이션',
+  CHECK: '체크',
+  HOUNDSTOOTH: '하운즈투스',
+}
 export const keyLabelMap: { [key: string]: string } = {
   brandName: '브랜드',
   categoryName: '카테고리',
@@ -445,4 +472,50 @@ export const categoryNameToLowIdMap: { [key: string]: number } = {
   모자: 27,
   백팩: 28,
   힙색: 29,
+}
+
+export const colorMap: { [key: string]: string } = {
+  WHITE: '흰색',
+  BLACK: '검정',
+  GRAY: '회색',
+  RED: '빨강',
+  PINK: '분홍',
+  ORANGE: '주황',
+  BEIGE: '베이지',
+  YELLOW: '노랑',
+  BROWN: '갈색',
+  GREEN: '초록',
+  KHAKI: '카키',
+  MINT: '민트',
+  BLUE: '파랑',
+  NAVY: '남색',
+  SKY: '하늘',
+  PURPLE: '보라',
+  LAVENDER: '연보라',
+  WINE: '와인',
+  NEON: '네온',
+  GOLD: '골드',
+}
+
+export const colorInvMap: { [key: string]: string } = {
+  흰색: 'WHITE',
+  검정: 'BLACK',
+  회색: 'GRAY',
+  빨강: 'RED',
+  분홍: 'PINK',
+  주황: 'ORANGE',
+  베이지: 'BEIGE',
+  노랑: 'YELLOW',
+  갈색: 'BROWN',
+  초록: 'GREEN',
+  카키: 'KHAKI',
+  민트: 'MINT',
+  파랑: 'BLUE',
+  남색: 'NAVY',
+  하늘: 'SKY',
+  보라: 'PURPLE',
+  연보라: 'LAVENDER',
+  와인: 'WINE',
+  네온: 'NEON',
+  골드: 'GOLD',
 }

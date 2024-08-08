@@ -1,10 +1,11 @@
+'use client'
+
 import { useState } from 'react'
 import Modal from '@/components/Modal'
 import {
   categoryMap,
   categoryLowIdToNameMap,
   CategoryHigh,
-  CategoryLow,
 } from '@/types/clothing'
 
 type CategoryModalProps = {
