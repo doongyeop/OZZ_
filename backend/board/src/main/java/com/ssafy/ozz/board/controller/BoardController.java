@@ -178,4 +178,7 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsSortedByLikesInOneDay(pageable).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
+
+    // 코디 가져오기 기능 추가하기 -> board에 코디ID 추가,
+
 }

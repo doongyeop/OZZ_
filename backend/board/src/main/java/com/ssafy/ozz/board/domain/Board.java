@@ -45,6 +45,9 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags;
 
+//    @Column(name = "coordinate_id")
+//    private Long coordinateId;
+
     @PrePersist
     protected void onCreate() {
         createdDate = new Date();
