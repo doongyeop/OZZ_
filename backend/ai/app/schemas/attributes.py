@@ -1,10 +1,8 @@
-from fastapi import UploadFile, File
-from fastapi.openapi.models import Info
 from pydantic import BaseModel
 from typing import List
 
 
-class AttributesResponse(BaseModel):
+class Attributes(BaseModel):
     fit: str
     colorList: List[str]
     patternList: List[str]
@@ -12,4 +10,11 @@ class AttributesResponse(BaseModel):
     styleList: List[str]
     textureList: List[str]
     extra: str
-    category: str
+    categoryLowId: int
+
+class NormalizedClothes(BaseModel):
+    clothId:int
+    name:str
+    category:str
+    color:str
+    imgUrl:str
