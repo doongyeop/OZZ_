@@ -12,6 +12,7 @@ public enum ErrorCode {
     COORDINATE_NOT_FOUND(400, "코디를 찾을 수 없습니다."),
     FILE_NOT_FOUND(400, "파일을 찾을 수 없습니다."),
     BOARD_NOT_FOUND(400, "게시글을 찾을 수 없습니다."),
+    FAVORITE_DUPLICATED(400, "즐겨찾기 그룹에 해당 코디가 존재합니다."),
     FAVORITE_NOT_FOUND(400, "즐겨찾기를 찾을 수 없습니다."),
     FAVORITE_GROUP_NOT_FOUND(400, "즐겨찾기 그룹을 찾을 수 없습니다.");
 
