@@ -35,7 +35,7 @@ public class BoardController {
     private final UserClient userClient;
     private final FileClient fileClient;
 
-    // 등록은 되는데 500에러
+    // OK
     @PostMapping("/")
     @Operation(summary = "게시글 등록")
     public ResponseEntity<Long> createBoard(
@@ -48,7 +48,7 @@ public class BoardController {
         return ResponseEntity.status(201).body(board.getId());
     }
 
-    // 500 ERROR
+    // 503 ERROR
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoardsByUserId(@PathVariable Long userId, Pageable pageable) {
@@ -77,7 +77,7 @@ public class BoardController {
         return ResponseEntity.ok(page);
     }
 
-    //  Response가 이상함 -> @JsonIgnoreProperties({"boardLikes", "tags"})
+    // 500
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoards(Pageable pageable) {
@@ -148,7 +148,7 @@ public class BoardController {
         BoardWithFileResponse response = boardService.updateBoardFile(boardId, request, imgFileId);
         return ResponseEntity.ok(response);
     }
-
+    // 왜 너도 안되니.. 500
     @DeleteMapping("/{boardId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
@@ -180,7 +180,7 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    // Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
+    // RESPONSE 무한 ㅠ
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
