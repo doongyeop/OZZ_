@@ -11,7 +11,7 @@ export interface ClothingData {
   texture: Texture[]
   color: Color[] | null
   style: Style[] | null
-  pattern: { name: string; img: string } | null
+  pattern: Pattern[] | null
   memo: string | null
   image: File | null
 }
@@ -285,7 +285,7 @@ export const fitInvMap: Record<Fit, string> = {
 }
 
 export const patternMap: { [key: string]: Pattern } = {
-  단색: 'SOLID',
+  무지: 'SOLID',
   줄무늬: 'STRIPED',
   지그재그: 'ZIGZAG',
   호피: 'LEOPARD',
@@ -293,7 +293,7 @@ export const patternMap: { [key: string]: Pattern } = {
   아가일: 'ARGYLE',
   도트: 'DOT',
   페이즐리: 'PAISLEY',
-  카모플라주: 'CAMOUFLAGE',
+  카모플라쥬: 'CAMOUFLAGE',
   플로럴: 'FLORAL',
   레터링: 'LETTERING',
   그래픽: 'GRAPHIC',
@@ -302,10 +302,10 @@ export const patternMap: { [key: string]: Pattern } = {
   깅엄: 'GINGHAM',
   그라데이션: 'GRADATION',
   체크: 'CHECK',
-  하운드투스: 'HOUNDSTOOTH',
+  하운즈투스: 'HOUNDSTOOTH',
 }
 export const patternInvMap: { [key: string]: string } = {
-  SOLID: '단색',
+  SOLID: '무지',
   STRIPED: '줄무늬',
   ZIGZAG: '지그재그',
   LEOPARD: '호피',
@@ -313,7 +313,7 @@ export const patternInvMap: { [key: string]: string } = {
   ARGYLE: '아가일',
   DOT: '도트',
   PAISLEY: '페이즐리',
-  CAMOUFLAGE: '카모플라주',
+  CAMOUFLAGE: '카모플라쥬',
   FLORAL: '플로럴',
   LETTERING: '레터링',
   GRAPHIC: '그래픽',
@@ -322,7 +322,7 @@ export const patternInvMap: { [key: string]: string } = {
   GINGHAM: '깅엄',
   GRADATION: '그라데이션',
   CHECK: '체크',
-  HOUNDSTOOTH: '하운드투스',
+  HOUNDSTOOTH: '하운즈투스',
 }
 export const keyLabelMap: { [key: string]: string } = {
   brandName: '브랜드',

@@ -36,6 +36,7 @@ import {
   colorMap,
   colorInvMap,
   patternMap,
+  patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
 import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
@@ -64,9 +65,7 @@ export default function ClothingForm({
   const [texture, setTexture] = useState<Texture[]>([])
   const [color, setColor] = useState<Color[] | null>([])
   const [style, setStyle] = useState<Style[]>([])
-  const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
-    null,
-  )
+  const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -85,7 +84,7 @@ export default function ClothingForm({
       setTexture(initialData.texture || [])
       setColor(initialData.color || [])
       setStyle(initialData.style || [])
-      setPattern(initialData.pattern || null)
+      setPattern(initialData.pattern || [])
       setMemo(initialData.memo || null)
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
@@ -131,7 +130,7 @@ export default function ClothingForm({
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
-      patternList: pattern ? pattern.name : [],
+      patternList: pattern ? pattern.map((p) => patternMap[p]) : [],
       categoryLowId,
     }
 
@@ -233,8 +232,12 @@ export default function ClothingForm({
       label: '패턴',
       path: 'pattern',
       component: PatternModal,
-      value: pattern ? pattern.name : '',
-      setValue: (pattern: { name: string; img: string }) => setPattern(pattern),
+      value: pattern
+        ? pattern.map((p) => patternInvMap[p]).join(', ').length > 10
+          ? `${pattern.map((p) => patternInvMap[p]).join(', ')}...`
+          : pattern.map((p) => patternInvMap[p]).join(', ')
+        : '',
+      setValue: (pattern: Pattern[]) => setPattern(pattern),
     },
     {
       label: '메모',
