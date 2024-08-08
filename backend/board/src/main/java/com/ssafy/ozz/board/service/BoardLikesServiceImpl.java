@@ -82,7 +82,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
 
     @Override
     public void updateLikesCount(Long boardId) {
-        int likesCount = boardLikesRepository.countByBoardId(boardId);
+        int likesCount = boardLikesRepository.countByBoard_Id(boardId);
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         board = board.toBuilder()
                 .likes(likesCount)
