@@ -129,22 +129,22 @@ public class BoardController {
         return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userResponse));
     }
 
-    // TODO  RequestBody 수정 // @JsonIgnoreProperties({"boardLikes", "tags"})
-    @PutMapping("/{boardId}")
-    @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
-    public ResponseEntity<BoardResponse> updateBoard(
-            @PathVariable Long boardId,
-            @RequestBody BoardUpdateRequest request) {
-        BoardResponse response = boardService.updateBoard(boardId, request);
-        return ResponseEntity.ok(response);
-    }
+    //    //   RequestBody 수정 // @JsonIgnoreProperties({"boardLikes", "tags"})
+//    @PutMapping("/{boardId}")
+//    @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
+//    public ResponseEntity<BoardResponse> updateBoard(
+//            @PathVariable Long boardId,
+//            @RequestBody BoardUpdateRequest request) {
+//        BoardResponse response = boardService.updateBoard(boardId, request);
+//        return ResponseEntity.ok(response);
+//    }
     // TODO 500에러
-    @PutMapping("/{boardId}/img")
-    @Operation(summary = "게시글 수정 + 이미지", description = "게시글을 수정합니다.")
+    @PutMapping("/{boardId}")
+    @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardWithFileResponse> updateBoardWithImage(
             @PathVariable Long boardId,
-            @RequestParam("imgFileId") Long imgFileId,
             @RequestBody BoardUpdateRequest request) {
+        Long imgFileId = request.imgFileId();
         BoardWithFileResponse response = boardService.updateBoardFile(boardId, request, imgFileId);
         return ResponseEntity.ok(response);
     }
@@ -156,7 +156,7 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    ////// 조건별 조회 ////// 
+    ////// 조건별 조회 //////
     //  Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
@@ -170,7 +170,8 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsByAgeRange(pageable, startAge, endAge).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
-    // TODO 500
+
+    //  500
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByStyle(
@@ -178,6 +179,7 @@ public class BoardController {
         Page<BoardResponse> boards = boardService.getBoardsByStyle(pageable, style).map(BoardResponse::new);
         return ResponseEntity.ok(boards);
     }
+
     // Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
