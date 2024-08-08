@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
 
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import { Api as ClothesApi } from '@/types/clothes/Api'
@@ -10,6 +9,7 @@ import {
   ClothesCreateRequest,
 } from '@/types/clothes/data-contracts'
 
+const token = ''
 const api = new ClothesApi({
   securityWorker: async () => ({
     headers: {
@@ -18,7 +18,6 @@ const api = new ClothesApi({
   }),
 })
 
-const token = ''
 export default function Page() {
   const router = useRouter()
 
@@ -31,42 +30,9 @@ export default function Page() {
       request,
     }
 
-    const formData = new FormData()
-    formData.append('imageFile', imageFile)
-    formData.append(
-      'request',
-      new Blob([JSON.stringify(request)], { type: 'application/json' }),
-    )
-
-    console.log('FormData content:')
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1])
-    }
-
-    console.log(request)
-
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }
-
     try {
-      // const response = await api.addClothes(formData)
-      const response = await fetch(
-        'http://i11a804.p.ssafy.io:8000/api/clothes',
-        requestOptions,
-      )
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      console.log('Clothes added successfully', data)
-      // console.log('Clothes added successfully', response)
+      const response = await api.addClothes(payload)
+      console.log('Clothes added successfully', response)
       router.push('/closet')
     } catch (error) {
       console.error('Failed to add clothes', error)

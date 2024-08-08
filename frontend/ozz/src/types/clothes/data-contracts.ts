@@ -36,7 +36,7 @@ export interface CoordinateUpdateRequest {
 /** 하위 카테고리 정보 DTO */
 export interface CategoryLowResponse {
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   name?: string
 }
 
@@ -93,7 +93,7 @@ export interface FileInfo {
 /** 옷 수정 요청 DTO */
 export interface ClothesUpdateRequest {
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   name?: string
   size?: 'FREE' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
   fit?: 'OVER_FIT' | 'SEMI_OVER_FIT' | 'REGULAR_FIT' | 'SLIM_FIT'
@@ -402,7 +402,7 @@ export interface ClothesCreateRequest {
     | 'HOUNDSTOOTH'
   )[]
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
 }
 
 export interface CoordinateBasicResponse {
@@ -494,9 +494,9 @@ export interface SortObject {
 /** 옷 검색 DTO */
 export interface ClothesSearchCondition {
   /** @format byte */
-  categoryHighId?: string
+  categoryHighId?: number
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   keyword?: string
 }
 

@@ -267,7 +267,11 @@ export default function ClothingForm({
                 width={300}
                 height={300}
                 className="p-6 object-cover"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                }}
               />
             ) : (
               <div>

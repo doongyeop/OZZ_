@@ -186,7 +186,7 @@ export class Api<
    * @secure
    * @response `200` `AddClothesData` OK
    */
-  addClothes = (data: FormData, params: RequestParams = {}) =>
+  addClothes = (data: AddClothesPayload, params: RequestParams = {}) =>
     this.request<AddClothesData, any>({
       path: `/api/clothes`,
       method: 'POST',
