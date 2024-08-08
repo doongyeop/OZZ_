@@ -5,8 +5,7 @@ import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzA3NTUyNSwiZXhwIjoxNzIzMTM1NTI1fQ.wBaVemoWwM3ksUxjA_5sMSU5VK1s9ANWEF8Zjz9M5fs'
+const token = '토큰냅다박기'
 
 const api = new UserApi({
   securityWorker: async () => ({
@@ -27,10 +26,12 @@ const SignUp = () => {
     try {
       const res = await api.getUserInfo()
       const userData = await res.json()
+      // console.log('userData', userData)
       const bday = new Date(userData.birth)
       setBirthday(bday)
+      // console.log('생년월일 정보를 가져왔습니다:', bday)
     } catch (error) {
-      console.error('생년월일 정보를 가져오는 중 오류 발생:', error)
+      // console.error('생년월일 정보를 가져오는 중 오류 발생:', error)
     }
   }
 
@@ -38,22 +39,29 @@ const SignUp = () => {
     getBirthday()
   }, [])
 
-  const confirmSignUp = () => {
+  const setCookie = (name, value, days) => {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString()
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
+  }
+
+  const confirmSignUp = async () => {
     if (responseText) {
       try {
         const userData = {
           nickname,
-          birthday,
+          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        // const userConfirm = await api.updateUser() {
+        const userUpdateResponse = await api.updateUser(userData)
+        const data = await userUpdateResponse.json()
+        // console.log(data)
+        // console.log('회원가입이 성공적으로 완료되었습니다.')
 
-        // }
-        console.log('회원가입 제대로')
+        setCookie('nickname', userData.nickname, 7)
       } catch (error) {
-        console.log('회원가입 중 오류 발생: ' + error)
+        console.log('회원가입 중 오류 발생:', error)
       }
     } else {
-      return
+      console.log('응답 텍스트가 없습니다.')
     }
   }
 
@@ -124,6 +132,9 @@ const SignUp = () => {
               <DatePicker
                 defaultValue={birthday}
                 buttonClassName={'w-[360px]'}
+                onDateChange={(date) => {
+                  setBirthday(date)
+                }}
               />
             )}
           </div>

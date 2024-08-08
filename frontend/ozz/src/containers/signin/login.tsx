@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import axios from 'axios'
 
 const SignIn = () => {
+  const router = useRouter()
+
   const onKaKaoLogin = () => {
     window.location.href =
       'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
