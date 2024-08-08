@@ -1,4 +1,4 @@
-package com.ssafy.ozz.gateway.component;
+package com.ssafy.ozz.gateway.filter;
 
 import com.ssafy.ozz.gateway.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
