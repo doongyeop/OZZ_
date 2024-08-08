@@ -5,7 +5,8 @@ import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 
-const token = '토큰냅다박기'
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzA5NTU5NCwiZXhwIjoxNzIzMTU1NTk0fQ.gPXyouBMWSdHP5pYFKReF2ebLYOXRaZUDhr-gZjhkaU'
 
 const api = new UserApi({
   securityWorker: async () => ({
@@ -55,13 +56,15 @@ const SignUp = () => {
         const data = await userUpdateResponse.json()
         // console.log(data)
         // console.log('회원가입이 성공적으로 완료되었습니다.')
-
         setCookie('nickname', userData.nickname, 7)
+        return true
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
+        return false
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
+      return false
     }
   }
 
@@ -69,14 +72,18 @@ const SignUp = () => {
     router.back()
   }
 
-  const handleNext = () => {
-    confirmSignUp()
-    router.push('/login/signup/success')
+  const handleNext = async () => {
+    const isSignupSuccess = await confirmSignUp()
+    if (isSignupSuccess) {
+      router.push('/login/signup/success')
+    } else {
+      window.alert('닉네임을 설정하세요')
+    }
   }
 
   async function checkNicknameDuplication(nickname: string) {
-    if (nickname.length > 15) {
-      setErrorText('닉네임은 15자 이내여야 합니다')
+    if (nickname.length > 15 || nickname.length < 1) {
+      setErrorText('닉네임은 1~15자 이내여야 합니다')
       setResponseText('')
       return
     }
