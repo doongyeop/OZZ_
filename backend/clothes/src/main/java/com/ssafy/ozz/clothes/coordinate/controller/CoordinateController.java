@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 public class CoordinateController {
     private final CoordinateService coordinateService;
 
-    @PostMapping(consumes = {"multipart/form-data","application/json"})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "새 코디 추가", description = "데이터베이스에 새 코디를 추가합니다.")
     public ResponseEntity<Long> createCoordinate(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart final MultipartFile imageFile, @RequestPart final CoordinateCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -58,7 +59,7 @@ public class CoordinateController {
     }
 
 
-    @PutMapping(path = "/{coordinateId}", consumes = {"multipart/form-data","application/json"})
+    @PutMapping(path = "/{coordinateId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "코디 정보 수정", description = "ID를 통해 특정 코디의 세부 정보를 수정합니다.")
     public ResponseEntity<CoordinateResponse> updateCoordinate(@PathVariable final Long coordinateId, @RequestPart final MultipartFile imageFile, @RequestPart final CoordinateUpdateRequest request) {
         return ResponseEntity.ok(coordinateService.updateCoordinate(coordinateId,imageFile,request));

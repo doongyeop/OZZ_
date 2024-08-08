@@ -1,4 +1,4 @@
-package com.ssafy.ozz.clothes.global.exception;
+package com.ssafy.ozz.favorite.exception;
 
 import com.ssafy.ozz.library.error.ErrorCode;
 import com.ssafy.ozz.library.error.ServiceException;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ClothesExceptionAdvice {
+public class FavoriteExceptionAdvice {
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<String> handleSerialException(final ServiceException e) {
         ErrorCode errorCode = e.getErrorCode();

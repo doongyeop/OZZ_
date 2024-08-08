@@ -35,7 +35,7 @@ public class BoardController {
     private final UserClient userClient;
     private final FileClient fileClient;
 
-    // 등록은 되는데 500에러
+    // OK
     @PostMapping("/")
     @Operation(summary = "게시글 등록")
     public ResponseEntity<Long> createBoard(
@@ -48,14 +48,15 @@ public class BoardController {
         return ResponseEntity.status(201).body(board.getId());
     }
 
-    // 500 ERROR
+    // 500 -> 2차수정
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoardsByUserId(@PathVariable Long userId, Pageable pageable) {
         List<Board> boards = boardService.getBoardsByUserId(userId);
         List<BoardWithFileResponse> boardResponses = boards.stream().map(board -> {
-            FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElse(null);
-            UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElse(null);
+            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+            UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
+            FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
 
             UserResponse userResponse = null;
             if (userInfo != null) {
@@ -64,11 +65,11 @@ public class BoardController {
                         userInfo.nickname(),
                         userInfo.Birth(),
                         userInfo.profileFileId(),
-                        fileClient.getFile(userInfo.profileFileId()).orElse(null)
+                        profileImg
                 );
             }
 
-            return new BoardWithFileResponse(board, fileInfo, userResponse);
+            return new BoardWithFileResponse(board, boardImg, userResponse);
         }).collect(Collectors.toList());
 
         int start = (int) pageable.getOffset();
@@ -77,7 +78,7 @@ public class BoardController {
         return ResponseEntity.ok(page);
     }
 
-    //  Response가 이상함 -> @JsonIgnoreProperties({"boardLikes", "tags"})
+    // 500
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoards(Pageable pageable) {
@@ -86,10 +87,10 @@ public class BoardController {
                 .map(board -> {
                     FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(UserNotFoundException::new);
                     UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(FileNotFoundException::new);
+                    FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
 
                     UserResponse userResponse = null;
                     if (userInfo != null) {
-                        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
                         userResponse = new UserResponse(
                                 userInfo.userId(),
                                 userInfo.nickname(),
@@ -110,7 +111,7 @@ public class BoardController {
         return ResponseEntity.ok(page);
     }
 
-    //  500에러
+    //  500에러 -> 2차 수정
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
@@ -118,27 +119,19 @@ public class BoardController {
 
         FileInfo fileInfo = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
         UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
 
         UserResponse userResponse = new UserResponse(
                 userInfo.userId(),
                 userInfo.nickname(),
                 userInfo.Birth(),
                 userInfo.profileFileId(),
-                fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new)
+                profileImg
         );
         return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userResponse));
     }
 
-    //    //   RequestBody 수정 // @JsonIgnoreProperties({"boardLikes", "tags"})
-//    @PutMapping("/{boardId}")
-//    @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
-//    public ResponseEntity<BoardResponse> updateBoard(
-//            @PathVariable Long boardId,
-//            @RequestBody BoardUpdateRequest request) {
-//        BoardResponse response = boardService.updateBoard(boardId, request);
-//        return ResponseEntity.ok(response);
-//    }
-    // TODO 500에러
+    //  500에러
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardWithFileResponse> updateBoardWithImage(
@@ -149,6 +142,7 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    // 왜 너도 안되니.. 500
     @DeleteMapping("/{boardId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
@@ -157,7 +151,6 @@ public class BoardController {
     }
 
     ////// 조건별 조회 //////
-    //  Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByAgeRange(
@@ -180,7 +173,7 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    // Response 무한 -> @JsonIgnoreProperties({"boardLikes", "tags"})
+    // RESPONSE 무한 ㅠ
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {

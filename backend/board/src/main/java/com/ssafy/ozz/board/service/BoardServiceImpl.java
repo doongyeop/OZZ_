@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
@@ -40,8 +39,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
-//        UserInfo user = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
-//        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
 
         Board board = Board.builder()
                 .content(request.content())
@@ -84,31 +81,31 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
     }
 
-    @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request) {
-        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-
-        board = board.toBuilder()
-                .content(request.content())
-                .style(toBits(request.styleList()))
-                .build();
-
-        boardRepository.save(board);
-
-        // 기존 태그 삭제 후 새로운 태그 저장
-        tagRepository.deleteAllByBoard(board);
-        for (BoardUpdateRequest.Tag tag : request.tagList()) {
-            Tag newTag = Tag.builder()
-                    .board(board)
-                    .clothesId(tag.clothesId())
-                    .xPosition(tag.xPosition())
-                    .yPosition(tag.yPosition())
-                    .build();
-            tagRepository.save(newTag);
-        }
-
-        return new BoardResponse(board);
-    }
+//    @Override
+//    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request) {
+//        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+//
+//        board = board.toBuilder()
+//                .content(request.content())
+//                .style(toBits(request.styleList()))
+//                .build();
+//
+//        boardRepository.save(board);
+//
+//        // 기존 태그 삭제 후 새로운 태그 저장
+//        tagRepository.deleteAllByBoard(board);
+//        for (BoardUpdateRequest.Tag tag : request.tagList()) {
+//            Tag newTag = Tag.builder()
+//                    .board(board)
+//                    .clothesId(tag.clothesId())
+//                    .xPosition(tag.xPosition())
+//                    .yPosition(tag.yPosition())
+//                    .build();
+//            tagRepository.save(newTag);
+//        }
+//
+//        return new BoardResponse(board);
+//    }
 
     @Override
     public BoardWithFileResponse updateBoardFile(Long boardId, BoardUpdateRequest request, Long imgFileId) {

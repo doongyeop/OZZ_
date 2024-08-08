@@ -1,8 +1,6 @@
 package com.ssafy.ozz.board.service;
 
-import com.ssafy.ozz.board.domain.BoardLikes;
 import com.ssafy.ozz.board.dto.response.NotificationResponse;
-
 
 public interface BoardLikesService {
     boolean toggleLike(Long boardId, Long userId);
@@ -10,7 +8,5 @@ public interface BoardLikesService {
     void updateLikesCount(Long boardId);
 
     NotificationResponse getLikeNotifications(Long boardId);
-
-//    int getLikesCountByBoardId(Long boardId);
 
 }

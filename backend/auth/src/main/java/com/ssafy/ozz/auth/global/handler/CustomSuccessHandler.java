@@ -6,6 +6,7 @@ import com.ssafy.ozz.auth.global.util.JWTUtil;
 import com.ssafy.ozz.auth.user.domain.User;
 import com.ssafy.ozz.auth.user.repository.UserRepository;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,15 +37,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", access);
         response.setHeader("refresh", refresh);
 
+        Cookie accessCookie = new Cookie("access", access);
+//        accessCookie.setHttpOnly(true); 클라이언트에서 접근 못하게
+        response.addCookie(accessCookie);
+
+        Cookie refreshCookie = new Cookie("refresh", refresh);
+//        refreshCookie.setHttpOnly(true);
+        response.addCookie(refreshCookie);
+
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             if (existingUser.get().getNickname() == null) { // 최초 로그인 한 사람이면 닉네임 변경 페이지로 이동
-                response.sendRedirect("http://localhost:3000/login/callback");
+                response.sendRedirect("http://localhost:3000/login/signup");
                 return;
             }
         }
 
-        response.sendRedirect("http://localhost:3000/login/callback");
+        response.sendRedirect("http://localhost:3000/");
 
     }
 }
