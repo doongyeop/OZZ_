@@ -36,6 +36,7 @@ public class ClothesController {
     @Operation(summary = "새 옷 추가", description = "데이터베이스에 새 옷을 추가합니다.")
     public ResponseEntity<Long> addClothes(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
 //        Long userId = 1L;
+        System.out.println(imageFile);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clothesService.saveClothes(userId, imageFile, request).getClothesId());
     }
