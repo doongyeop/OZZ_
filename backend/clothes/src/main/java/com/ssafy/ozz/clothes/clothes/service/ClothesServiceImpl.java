@@ -64,11 +64,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
-        // TODO : 이미지 파일 저장 후 id 값 가져오기
-        log.debug(imageFile.toString());
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
-        log.debug(fileInfo.toString());
-
         Long imageFileId = fileInfo.fileId();
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
     }
