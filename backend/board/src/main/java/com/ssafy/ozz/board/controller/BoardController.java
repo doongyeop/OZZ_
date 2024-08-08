@@ -35,20 +35,7 @@ public class BoardController {
     private final UserClient userClient;
     private final FileClient fileClient;
 
-    // OK
-    @PostMapping("/")
-    @Operation(summary = "게시글 등록")
-    public ResponseEntity<Long> createBoard(
-            @RequestBody BoardCreateRequest request) {
-        Long userId = request.userId();
-        Long imgFileId = request.imgFileId();
-
-        Board board = boardService.createBoard(userId, imgFileId, request);
-
-        return ResponseEntity.status(201).body(board.getId());
-    }
-
-    // 500 -> 2차수정
+    // 500 아 왜안될까
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardWithFileResponse>> getBoardsByUserId(@PathVariable Long userId, Pageable pageable) {
@@ -111,7 +98,7 @@ public class BoardController {
         return ResponseEntity.ok(page);
     }
 
-    //  500에러 -> 2차 수정
+    //  500에러
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
@@ -142,7 +129,18 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
-    // 왜 너도 안되니.. 500
+    @PostMapping("/")
+    @Operation(summary = "게시글 등록")
+    public ResponseEntity<Long> createBoard(
+            @RequestBody BoardCreateRequest request) {
+        Long userId = request.userId();
+        Long imgFileId = request.imgFileId();
+
+        Board board = boardService.createBoard(userId, imgFileId, request);
+
+        return ResponseEntity.status(201).body(board.getId());
+    }
+
     @DeleteMapping("/{boardId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
@@ -173,7 +171,7 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    // RESPONSE 무한 ㅠ
+    // RESPONSE 무한
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {

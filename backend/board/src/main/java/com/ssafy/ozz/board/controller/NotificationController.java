@@ -29,14 +29,6 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    // response가 이상함
-    @GetMapping("/")
-    @Operation(summary = "모든 알림 조회", description = "특정 사용자의 모든 알림을 조회합니다.")
-    public ResponseEntity<List<Notification>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
-        List<Notification> notifications = notificationService.getAllNotificationsByUserId(userId);
-        return ResponseEntity.ok(notifications);
-    }
-
     @PatchMapping("/{notificationId}")
     @Operation(summary = "알림 읽음 처리", description = "알림을 읽음처리 합니다.")
     public ResponseEntity<Void> readNotification(@PathVariable Long notificationId) {
@@ -51,7 +43,15 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO 500에러
+    // 무한 로딩
+    @GetMapping("/")
+    @Operation(summary = "모든 알림 조회", description = "특정 사용자의 모든 알림을 조회합니다.")
+    public ResponseEntity<List<Notification>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
+        List<Notification> notifications = notificationService.getAllNotificationsByUserId(userId);
+        return ResponseEntity.ok(notifications);
+    }
+
+    // TODO 좋아요가 돼야 해결
     @GetMapping("/{boardId}")
     @Operation(summary = "좋아요 알림 조회", description = "특정 게시글의 좋아요 알림 내용을 조회합니다.")
     public ResponseEntity<NotificationResponse> getLikeNotifications(@PathVariable("boardId") Long boardId) {
