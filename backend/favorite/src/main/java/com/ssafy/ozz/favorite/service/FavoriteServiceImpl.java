@@ -45,7 +45,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     public void deleteFavorite(Long favoriteGroupId, Long coordinateId) {
         Favorite favorite = favoriteRepository.findByFavoriteGroupAndCoordinateId(
-                favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(),
+                favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteGroupNotFoundException::new),
                 coordinateId)
                 .orElseThrow(FavoriteNotFoundException::new);
         favoriteRepository.delete(favorite);
@@ -64,7 +64,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     public void deleteFavoriteGroup(Long favoriteGroupId) {
         FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId).orElseThrow(FavoriteNotFoundException::new);
 
-        favoriteRepository.deleteAllInBatch(favoriteGroup.getFavorites());
+        favoriteRepository.deleteAll(favoriteGroup.getFavorites());
         favoriteGroupRepository.delete(favoriteGroup);
     }
 
@@ -90,7 +90,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     public List<FavoriteGroupImageResponse> getFavoriteGroupResponseListOfUser(Long userId) {
         return favoriteGroupRepository.findByUserId(userId).stream().map(favoriteGroup -> {
             List<FileInfo> imageFileList = favoriteGroup.getFavorites().stream().map(favorite ->
-                    coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow().imageFile()).toList();
+                    coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new).imageFile()).toList();
             return FavoriteGroupImageResponse.of(favoriteGroup, imageFileList);
         }).toList();
     }
