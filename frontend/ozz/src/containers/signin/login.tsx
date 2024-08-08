@@ -2,12 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import axios from 'axios'
 
 const SignIn = () => {
+  const router = useRouter()
+
   const onKaKaoLogin = () => {
     window.location.href =
       'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
+  }
+
+  const onNaverLogin = () => {
+    window.location.href =
+      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/naver'
   }
 
   return (
@@ -29,6 +35,7 @@ const SignIn = () => {
           </span>
         </div>
         <div
+          onClick={onNaverLogin}
           id="naverIdLogin"
           className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
         >
