@@ -34,6 +34,7 @@ import {
   textureMap,
   textureInvMap,
   colorMap,
+  colorInvMap,
   patternMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
@@ -61,9 +62,7 @@ export default function ClothingForm({
   const [size, setSize] = useState<Size>('FREE')
   const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
-  const [color, setColor] = useState<{ name: string; code: string }[] | null>(
-    [],
-  )
+  const [color, setColor] = useState<Color[] | null>([])
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<{ name: string; img: string } | null>(
     null,
@@ -128,7 +127,7 @@ export default function ClothingForm({
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
       purchaseSite: purchaseSite || '',
-      colorList: color ? color.map((c) => colorMap[c.name]) : [],
+      colorList: color ? color.map((c) => colorInvMap[c.name]) : [],
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
@@ -211,8 +210,12 @@ export default function ClothingForm({
       label: '색',
       path: 'color',
       component: ColorModal,
-      value: color ? color : '',
-      setValue: (colors: { name: string; code: string }[]) => setColor(colors),
+      value: color
+        ? color.map((c) => c.name).join(', ').length > 10
+          ? `${color.map((c) => c.name).join(', ')}...`
+          : color.map((c) => c.name).join(', ')
+        : '',
+      setValue: (colors: Color[]) => setColor(colors),
     },
     {
       label: '스타일',
@@ -320,7 +323,7 @@ export default function ClothingForm({
                             <div key={c.code} className="flex">
                               <span
                                 className="inline-block w-5 h-5 rounded-full mr-1.5"
-                                style={{ backgroundColor: c.code }}
+                                style={{ backgroundColor: c.colorCode }}
                               ></span>
                               <span
                                 className="text-primary-400 mr-2"
