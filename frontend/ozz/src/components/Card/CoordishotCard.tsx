@@ -57,7 +57,7 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
               name={tag.clothes.name}
               x_position={tag.x_position}
               y_position={tag.y_position}
-              clothesId={tag.clothesTagId} //TODO: 수정이 필요함
+              clothesId={tag.clothesTagId} //TODO: 수정이 필요함. 태그 아이디가 아니라 ClothedsId로
             />
           ))}
           <div className="mt-0 p-4">
