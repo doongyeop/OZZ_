@@ -8,7 +8,6 @@ import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedItem;
 import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedResponse;
-import com.ssafy.ozz.clothes.clothes.exception.ClothesNotFoundException;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
 import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
