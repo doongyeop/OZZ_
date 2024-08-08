@@ -45,7 +45,7 @@ public class FavoriteController {
     @DeleteMapping("/{favoriteGroupId}/coordinate")
     @Operation(summary = "즐겨찾기 코디 삭제", description = "즐겨찾기 그룹에서 여러 코디를 삭제합니다.")
     public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteGroupId, @RequestBody FavoriteListDeleteRequest request) {
-//        favoriteService.deleteFavorite(favoriteGroupId, coordinateId);
+        favoriteService.deleteFavoriteList(favoriteGroupId, request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
