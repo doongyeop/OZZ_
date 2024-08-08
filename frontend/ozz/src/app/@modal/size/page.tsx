@@ -1,14 +1,15 @@
 import Modal from '@/components/Modal'
+import { Size, sizeMap } from '@/types/clothing'
 
 type SizeModalProps = {
   onClose: () => void
-  setValue: (value: string) => void
+  setValue: (value: Size) => void
 }
 
-const sizes = ['FREE', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+const sizes: Size[] = ['FREE', 'S', 'M', 'L', 'XL', 'XXL']
 
 export default function SizeModal({ onClose, setValue }: SizeModalProps) {
-  const handleSave = (size: string) => {
+  const handleSave = (size: Size) => {
     setValue(size)
     onClose()
   }

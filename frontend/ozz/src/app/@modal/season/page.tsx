@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Modal from '@/components/Modal'
+import { Season, seasonMap } from '@/types/clothing'
 
 type SeasonModalProps = {
   onClose: () => void
-  setValue: (value: string[]) => void
+  setValue: (value: Season[]) => void
 }
-
-const seasons = ['봄', '여름', '가을', '겨울']
 
 export default function SeasonModal({ onClose, setValue }: SeasonModalProps) {
   const [season, setSeason] = useState<{ [key: string]: boolean }>({
@@ -24,15 +23,19 @@ export default function SeasonModal({ onClose, setValue }: SeasonModalProps) {
   }
 
   const handleSave = () => {
-    const selected = Object.keys(season).filter((ss) => season[ss])
-    setValue(selected)
+    const selectedSeasons: Season[] = (
+      Object.keys(season) as (keyof typeof seasonMap)[]
+    )
+      .filter((ss) => season[ss])
+      .map((ss) => seasonMap[ss])
+    setValue(selectedSeasons)
     onClose()
   }
 
   return (
     <Modal title="계절감" onClose={onClose}>
       <div className="flex justify-between l-1 pr-2">
-        {seasons.map((ss) => (
+        {Object.keys(seasonMap).map((ss) => (
           <button
             key={ss}
             type="button"

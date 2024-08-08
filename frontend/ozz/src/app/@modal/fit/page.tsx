@@ -1,15 +1,16 @@
 import Modal from '@/components/Modal'
+import { Fit, fitMap } from '@/types/clothing'
 
 type FitModalProps = {
   onClose: () => void
-  setValue: (value: string) => void
+  setValue: (value: Fit) => void
 }
 
 const fits = ['오버핏', '세미오버핏', '레귤러핏', '슬림핏']
 
 export default function FitModal({ onClose, setValue }: FitModalProps) {
   const handleSave = (fit: string) => {
-    setValue(fit)
+    setValue(fitMap[fit])
     onClose()
   }
 
