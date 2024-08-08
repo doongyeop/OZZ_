@@ -39,12 +39,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             if (existingUser.get().getNickname() == null) { // 최초 로그인 한 사람이면 닉네임 변경 페이지로 이동
-                response.sendRedirect("http://localhost:3000/login/callback");
+                response.sendRedirect("http://localhost:3000/login/signup");
                 return;
             }
         }
 
-        response.sendRedirect("http://localhost:3000/login/callback");
+        response.sendRedirect("http://localhost:3000/");
 
     }
 }
