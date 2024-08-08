@@ -131,6 +131,7 @@ export default function ClothingForm({
       textureList: texture.map((t) => textureMap[t]),
       seasonList: season ? season.map((s) => seasonMap[s]) : [],
       styleList: style ? style.map((s) => styleMap[s]) : [],
+      patternList: pattern ? pattern.name : [],
       categoryLowId,
     }
 

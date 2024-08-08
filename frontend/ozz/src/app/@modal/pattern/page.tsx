@@ -36,12 +36,8 @@ export default function PatternModal({ onClose, setValue }: PatternModalProps) {
   } | null>(null)
 
   const handlePatternClick = (pattern: { name: string; img: string }) => {
-    if (selectedPattern?.name === pattern.name) {
-      setValue(pattern)
-      onClose()
-    } else {
-      setSelectedPattern(pattern)
-    }
+    setValue(pattern)
+    onClose()
   }
 
   return (
