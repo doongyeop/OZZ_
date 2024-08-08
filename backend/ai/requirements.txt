@@ -9,3 +9,7 @@ pydantic_core==2.20.1
 colorlog==6.8.2
 torch==2.4.0
 transformers==4.43.3
+pika
+sse_starlette
+matplotlib
+torchvision
