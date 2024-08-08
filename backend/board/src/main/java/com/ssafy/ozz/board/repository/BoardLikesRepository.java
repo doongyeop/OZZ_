@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface BoardLikesRepository extends JpaRepository<BoardLikes, BoardLikes.BoardLikesId> {
 
     int countByBoard_Id(Long boardId);
+
+    Optional<BoardLikes> findByBoard_IdAndUser_Id(Long boardId, Long userId);
 }

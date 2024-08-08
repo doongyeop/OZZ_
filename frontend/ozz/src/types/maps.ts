@@ -50,11 +50,31 @@ export const seasonMap: { [key: string]: string } = {
 }
 
 export const styleMap: { [key: string]: string } = {
-  캐주얼: 'CASUAL',
-  포멀: 'FORMAL',
+  전체: 'ALL',
   스트릿: 'STREET',
-  스포츠: 'SPORTS',
-  빈티지: 'VINTAGE',
+  캐주얼: 'CASUAL',
+  스포티: 'SPORTS',
+  포멀: 'FORMAL',
+  로맨틱: 'ROMANTIC',
+  엘레강스: 'ELEGANT',
+  매니시: 'MANNISH',
+  모던: 'MODERN',
+  내추럴: 'NATURAL',
+  에스닉: 'ETHNIC',
+}
+
+export const styleInvMap: { [key: string]: string } = {
+  ALL: '전체',
+  STREET: '스트릿',
+  CASUAL: '캐주얼',
+  SPORTS: '스포티',
+  FORMAL: '포멀',
+  ROMANTIC: '로맨틱',
+  ELEGANT: '엘레강스',
+  MANNISH: '매니시',
+  MODERN: '모던',
+  NATURAL: '내추럴',
+  ETHNIC: '에스닉',
 }
 
 export const fitMap: { [key: string]: string } = {

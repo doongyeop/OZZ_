@@ -91,6 +91,7 @@ const mockData: CoordishotDetail = {
   age: 20,
 }
 
+// 컨테이너가 필요할까? 라는 리팩토링적 의문
 export default function CoordiShotContainer() {
   const [coordishot, setCoordishot] = useState<CoordishotDetail | null>(null)
 

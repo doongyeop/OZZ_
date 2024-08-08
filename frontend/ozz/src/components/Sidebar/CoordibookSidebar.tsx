@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaChevronDown } from 'react-icons/fa'
-import styles from '@/styles/ClosetSidebar.module.css'
+import styles from '@/styles/CoordibookSidebar.module.css'
 import CreateCoordibookModal from '@/components/Modal/CreateCoordibookModal'
 
 type CoordibookSidebarProps = {
@@ -61,7 +61,7 @@ export default function CoordibookSidebar({
           createdDate: '2024-08-06T01:40:12.825788',
           imageFile: {
             fileId: 4,
-            filePath: '/images/tops01.png',
+            filePath: '/images/tops02.png',
             fileName: '상의.png',
             fileType: 'image/png',
           },
@@ -123,13 +123,13 @@ export default function CoordibookSidebar({
           className={`${styles.toggleButtonClose} flex justify-center`}
           onClick={() => onClose()}
         >
-          <FaChevronDown />
+          <FaChevronDown size={20} />
         </button>
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarHeader}>
             <h3>코디북</h3>
           </div>
-          <div className={styles.clothesList}>
+          <div className={styles.coordibookList}>
             {coordibooks.map((item) => (
               <div
                 key={item.coordinateId}
