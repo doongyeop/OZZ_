@@ -9,7 +9,6 @@ import java.util.List;
 public record BoardUpdateRequest(
         String content,
         Long imgFileId,
-        int age,
         List<Style> styleList,
         List<Tag> tagList
 ) {

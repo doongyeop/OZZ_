@@ -29,6 +29,7 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    // response가 이상함
     @GetMapping("/")
     @Operation(summary = "모든 알림 조회", description = "특정 사용자의 모든 알림을 조회합니다.")
     public ResponseEntity<List<Notification>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
@@ -49,7 +50,7 @@ public class NotificationController {
         notificationService.deleteAllNotifications(userId);
         return ResponseEntity.noContent().build();
     }
-
+    // TODO 500에러
     @GetMapping("/{boardId}")
     @Operation(summary = "좋아요 알림 조회", description = "특정 게시글의 좋아요 알림 내용을 조회합니다.")
     public ResponseEntity<NotificationResponse> getLikeNotifications(@PathVariable("boardId") Long boardId) {

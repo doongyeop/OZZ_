@@ -8,12 +8,13 @@ import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BoardService {
     Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request);
 
-    Optional<Board> getBoardsByUserId(Long userId);
+    List<Board> getBoardsByUserId(Long userId);
 
     Page<Board> getBoards(Pageable pageable);
 

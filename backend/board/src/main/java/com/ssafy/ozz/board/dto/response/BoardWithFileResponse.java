@@ -1,5 +1,6 @@
 package com.ssafy.ozz.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssafy.ozz.board.domain.Board;
 import com.ssafy.ozz.library.file.FileInfo;
 import com.ssafy.ozz.library.clothes.properties.Style;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toEnums;
-
+@JsonIgnoreProperties({"boardLikes", "tags"})
 @Schema(description = "게시글 상세 정보 DTO with 파일 및 사용자 정보")
 public record BoardWithFileResponse(
         Long id,
