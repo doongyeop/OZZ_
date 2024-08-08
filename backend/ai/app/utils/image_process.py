@@ -85,7 +85,6 @@ def leave_only_clothes(image:Image)-> tuple[Image, Image]:
     # Merge the channels back
     transparent_image = Image.merge("RGBA", (r, g, b, a))
     not_transparent_image = Image.merge("RGB", (r, g, b))
-
     return transparent_image, not_transparent_image
 
 def cropImg(category : str, trans_image:Image, image:Image) -> Image:
@@ -137,10 +136,14 @@ def crop_objects(pil_img, prob, boxes, labels, threshold=0.8)->Image:
             return cropped_img
 
 def process(imgUrl, category)-> Image:
-    temp_image=download_img(imgUrl)
+    downloaded_img=download_img(imgUrl)
     logging.info("image download from " + imgUrl)
-    temp_image,tmp_img=leave_only_clothes(temp_image)
+    trans_img,not_trans_img = leave_only_clothes(downloaded_img)
     logging.info("image leaved only clothes -> url : " + imgUrl)
-    image = cropImg(category, temp_image, tmp_img)
-    logging.info("image croped " + category)
-    return image
+    image = cropImg(category, trans_img, not_trans_img)
+    if(image is not None):
+        logging.info("image croped category : " + category)
+        return image
+    else:
+        logging.info("image not croped category : " + category)
+        return not_trans_img
