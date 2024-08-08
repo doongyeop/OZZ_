@@ -97,6 +97,7 @@ public class Clothes {
         this.imageFileId = imageFileId;
         this.categoryLow = categoryLow;
         this.userId = userId;
+        this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
     }
 
