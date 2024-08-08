@@ -9,6 +9,4 @@ public interface BoardLikesService {
 
     NotificationResponse getLikeNotifications(Long boardId);
 
-//    int getLikesCountByBoardId(Long boardId);
-
 }

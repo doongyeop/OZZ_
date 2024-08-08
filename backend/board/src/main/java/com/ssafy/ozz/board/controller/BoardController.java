@@ -131,15 +131,6 @@ public class BoardController {
         return ResponseEntity.ok(new BoardWithFileResponse(board, fileInfo, userResponse));
     }
 
-    //    //   RequestBody 수정 // @JsonIgnoreProperties({"boardLikes", "tags"})
-//    @PutMapping("/{boardId}")
-//    @Operation(summary = "게시글 수정(이미지X)", description = "게시글의 이미지를 제외한 항목을 수정합니다.")
-//    public ResponseEntity<BoardResponse> updateBoard(
-//            @PathVariable Long boardId,
-//            @RequestBody BoardUpdateRequest request) {
-//        BoardResponse response = boardService.updateBoard(boardId, request);
-//        return ResponseEntity.ok(response);
-//    }
     //  500에러
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
