@@ -32,7 +32,7 @@ import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 public class ClothesController {
     private final ClothesService clothesService;
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "새 옷 추가", description = "데이터베이스에 새 옷을 추가합니다.")
     public ResponseEntity<Long> addClothes(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
 //        Long userId = 1L;
