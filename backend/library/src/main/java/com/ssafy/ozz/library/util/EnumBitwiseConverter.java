@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class EnumBitwiseConverter {
 
     public static <E extends Enum<E>> Integer toBit(E e){
-        return 1 << e.ordinal();
+        return e == null ? null : (1 << e.ordinal());
     }
 
     public static <E extends Enum<E>> Integer toBits(List<E> enums){
@@ -20,15 +20,17 @@ public class EnumBitwiseConverter {
         return value;
     }
 
-    public static <E extends Enum<E>> List<E> toEnums(Class<E> enumClass, int value) {
+    public static <E extends Enum<E>> List<E> toEnums(Class<E> enumClass, Integer value) {
         List<E> enums = new ArrayList<>();
-        int index = 0;
-        while (value != 0) {
-            if ((value & 1) == 1) {
-                enums.add(fromIndex(enumClass, index));
+        if(value != null){
+            int index = 0;
+            while (value != 0) {
+                if ((value & 1) == 1) {
+                    enums.add(fromIndex(enumClass, index));
+                }
+                value >>= 1;
+                index++;
             }
-            value >>= 1;
-            index++;
         }
         return enums;
     }
