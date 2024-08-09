@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Modal from '@/components/Modal'
-import { Texture, textureMap, textureInvMap } from '@/types/clothing'
+import { Texture, textureMap } from '@/types/clothing'
 
 type TextureModalProps = {
   onClose: () => void
@@ -23,7 +23,6 @@ const mainMaterials = [
   '가죽',
   '면',
   '울',
-  '레이온',
   '폴리',
   '기타',
 ]
@@ -31,12 +30,11 @@ const mainMaterials = [
 const otherMaterials = [
   '퍼',
   '니트',
-  '무톤',
+  '무스탕',
   '레이스',
   '메시',
   '코듀로이',
   '플리스',
-  '무스탕',
   '시퀸글리터',
   '네오프렌',
   '저지',
@@ -45,7 +43,6 @@ const otherMaterials = [
   '벨벳',
   '비닐',
   '쉬폰',
-  '시폰',
 ]
 
 export default function TextureModal({ onClose, setValue }: TextureModalProps) {
@@ -68,6 +65,7 @@ export default function TextureModal({ onClose, setValue }: TextureModalProps) {
       .filter(([_, isSelected]) => isSelected)
       .map(([material]) => textureMap[material as keyof typeof textureMap])
     setValue(selectedList)
+    console.log('텍스쳐 모달 : ', selectedList)
     onClose()
   }
 

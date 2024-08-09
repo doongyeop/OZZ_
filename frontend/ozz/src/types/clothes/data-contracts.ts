@@ -372,7 +372,7 @@ export interface ClothesCreateRequest {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'

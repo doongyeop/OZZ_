@@ -9,7 +9,8 @@ import {
   ClothesCreateRequest,
 } from '@/types/clothes/data-contracts'
 
-const token = ''
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2Mjg0NywiZXhwIjoxNzIzMjIyODQ3fQ.SmqFRmLOjNlfUMwlQaySKZp5ezkavyoTm2kLyJ62Qxo'
 const api = new ClothesApi({
   securityWorker: async () => ({
     headers: {

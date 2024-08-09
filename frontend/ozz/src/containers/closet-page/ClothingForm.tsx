@@ -121,7 +121,7 @@ export default function ClothingForm({
     const request: ClothesCreateRequest = {
       name,
       size: size || 'FREE',
-      fit: fit ? fitMap[fit] : undefined,
+      fit: fit ? fit : undefined,
       memo: memo || '',
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
@@ -152,19 +152,19 @@ export default function ClothingForm({
                 | 'GOLD',
           )
         : [],
-      textureList: texture.map((t) => textureMap[t]),
-      seasonList: season ? season.map((s) => seasonMap[s]) : [],
-      styleList: style ? style.map((s) => styleMap[s]) : [],
-      patternList: pattern ? pattern.map((p) => patternMap[p]) : [],
+      textureList: texture ? texture : [],
+      seasonList: season ? season : [],
+      styleList: style ? style : [],
+      patternList: pattern ? pattern : [],
       categoryLowId,
     }
 
-    // console.log('옷 등록할게요 ><')
-    // console.log(imageFile.type)
-    // console.log(request)
-    // Object.entries(request).forEach(([key, value]) => {
-    //   console.log(`${key}: ${value}`)
-    // })
+    console.log('옷 등록할게요 ><')
+    console.log(imageFile.type)
+    console.log(request)
+    Object.entries(request).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`)
+    })
     onSubmit(imageFile, request)
   }
 
@@ -225,11 +225,16 @@ export default function ClothingForm({
       label: '소재',
       path: 'texture',
       component: TextureModal,
-      value:
-        texture.join(', ').length > 10
-          ? texture.map((t) => textureInvMap[t]).join(', ')
-          : '',
-      setValue: (texture: Texture[]) => setTexture(texture),
+      value: texture
+        ? texture.join(', ').length > 20
+          ? `${texture.map((t) => textureInvMap[t]).join(', ')}...`
+          : texture.map((t) => textureInvMap[t]).join(', ')
+        : '',
+      setValue: (texture: Texture[]) => {
+        console.log(texture)
+        console.log('소재 저장')
+        setTexture(texture)
+      },
     },
     {
       label: '색',
