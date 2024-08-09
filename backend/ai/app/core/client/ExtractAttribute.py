@@ -29,7 +29,7 @@ attributes:
 4. seasonList: Suitable season to wear. Multiple values.
 - possible values: SPRING, SUMMER, AUTUMN, WINTER.
 5. styleList: Unique appearance or atmosphere. Multiple values
-- possible values: CASUAL, CLASSIC, MANNISH, FEMININE, HIPPIE, MODERN, COUNTRY, GENDERLESS, SPORTY, RETRO, MILITARY, PREPPY, TOMBOY, ROMANTIC, WESTERN, SOPHISTICATED, COTTAGER, RESORT, KITSCH, KIDULT, STREET, SEXY, ORIENTAL, AVANT_GARDE, HIPHOP, PUNK.
+- possible values: ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC
 6. textureList: Multiple values.
 - possible values: FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER.
 7. extra: Please list in words the attributes of clothing items that cannot be expressed by criteria 1-6.
