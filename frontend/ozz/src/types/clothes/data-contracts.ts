@@ -59,7 +59,7 @@ export interface CategoryLowResponse {
 /** 옷 기본 정보 DTO */
 export interface ClothesBasicResponse {
   /** @format int64 */
-  clothesId?: number
+  clothesId: number
   name?: string
   /** @format date-time */
   createdDate?: string
@@ -116,8 +116,8 @@ export interface CoordinateResponse {
 
 export interface FileInfo {
   /** @format int64 */
-  fileId?: number
-  filePath?: string
+  fileId: number
+  filePath: string
   fileName?: string
   fileType?: string
 }
@@ -588,14 +588,14 @@ export interface Pageable {
 
 export interface PageableObject {
   /** @format int64 */
-  offset?: number
+  offset: number
   sort?: SortObject
-  paged?: boolean
+  paged: boolean
   /** @format int32 */
-  pageNumber?: number
+  pageNumber: number
   /** @format int32 */
-  pageSize?: number
-  unpaged?: boolean
+  pageSize: number
+  unpaged: boolean
 }
 
 export interface SliceCoordinateBasicResponse {
@@ -631,28 +631,28 @@ export interface ClothesSearchCondition {
 /** 옷 기본 정보 DTO */
 export interface ClothesBasicWithFileResponse {
   /** @format int64 */
-  clothesId?: number
+  clothesId: number
   name?: string
   /** @format date-time */
   createdDate?: string
   /** 하위 카테고리 정보 DTO */
   categoryLow?: CategoryLowResponse
-  imageFile?: FileInfo
+  imageFile: FileInfo
 }
 
 export interface SliceClothesBasicWithFileResponse {
   /** @format int32 */
-  size?: number
-  content?: ClothesBasicWithFileResponse[]
+  size: number
+  content: ClothesBasicWithFileResponse[]
   /** @format int32 */
-  number?: number
+  number: number
   sort?: SortObject
-  pageable?: PageableObject
+  pageable: PageableObject
   /** @format int32 */
-  numberOfElements?: number
-  first?: boolean
-  last?: boolean
-  empty?: boolean
+  numberOfElements: number
+  first: boolean
+  last: boolean
+  empty: boolean
 }
 
 export interface PropertyResponse {

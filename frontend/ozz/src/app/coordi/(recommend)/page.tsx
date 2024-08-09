@@ -1,5 +1,3 @@
-'use client'
-
 import Weather from '@/containers/coordi/Weather'
 import SelectOptions from '@/containers/coordi/SelectOptions'
 import CoordiOfTheDay from '@/containers/coordi/CoordiOfTheDay'
