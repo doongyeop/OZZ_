@@ -1,7 +1,7 @@
 import HeaderWithBackward from '@/components/HeaderWithBackward'
 import Settings from '@/containers/my-page/settings'
 
-const SettingPage = () => {
+function SettingPage() {
   return (
     <div>
       <HeaderWithBackward title="설정" />

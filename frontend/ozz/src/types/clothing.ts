@@ -304,7 +304,7 @@ export const patternMap: { [key: string]: Pattern } = {
   체크: 'CHECK',
   하운즈투스: 'HOUNDSTOOTH',
 }
-export const patternInvMap: { [key: string]: string } = {
+export const patternInvMap: { [key in Pattern]: string } = {
   SOLID: '무지',
   STRIPED: '줄무늬',
   ZIGZAG: '지그재그',

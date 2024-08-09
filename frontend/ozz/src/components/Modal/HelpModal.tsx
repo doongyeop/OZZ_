@@ -50,6 +50,8 @@ export default function HelpModal({ onClose }: HelpModalProps) {
       <div className="bg-secondary rounded-lg p-6 max-w-md w-72">
         <div className="flex justify-end items-center">
           <button
+            type="button"
+            aria-label="모달 닫기"
             onClick={onClose}
             className="text-primary-400 hover:text-primary-300"
           >
@@ -61,14 +63,12 @@ export default function HelpModal({ onClose }: HelpModalProps) {
         </h2>
         <div className="flex flex-col justify-items-center mb-4">
           <p className="my-2 text-primary-400 text-center">
-            {helpContent[currentPage - 1].text
-              .split('\n')
-              .map((line, index) => (
-                <span key={index}>
-                  {line}
-                  <br />
-                </span>
-              ))}
+            {helpContent[currentPage - 1].text.split('\n').map((line) => (
+              <span key={line}>
+                {line}
+                <br />
+              </span>
+            ))}
           </p>
           <Image
             src={helpContent[currentPage - 1].image}
@@ -81,6 +81,8 @@ export default function HelpModal({ onClose }: HelpModalProps) {
         </div>
         <div className="flex justify-center items-center">
           <button
+            type="button"
+            aria-label="이전"
             onClick={prevPage}
             disabled={currentPage === 1}
             className="text-primary-400 disabled:text-gray-300"
@@ -91,6 +93,8 @@ export default function HelpModal({ onClose }: HelpModalProps) {
             {currentPage} / {totalPages}
           </span>
           <button
+            type="button"
+            aria-label="다음"
             onClick={nextPage}
             disabled={currentPage === totalPages}
             className="text-primary-400 disabled:text-gray-300"

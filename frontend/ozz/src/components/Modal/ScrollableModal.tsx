@@ -19,6 +19,8 @@ export default function ScrollableModal({
         <div className="flex justify-between items-center p-4">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button
+            type="button"
+            aria-label="모달 닫기"
             onClick={onClose}
             className="text-primary-400 hover:text-primary-600"
           >

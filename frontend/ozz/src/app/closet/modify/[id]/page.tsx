@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ClothingData } from '@/types/clothing'
@@ -11,6 +13,7 @@ import {
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
+import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
@@ -26,13 +29,16 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
     }
   }, [params.id])
 
-  const handleSubmit = async (data: FormData) => {
-    try {
-      await updateClothing(params.id, data)
-      // 성공 처리
-    } catch (error) {
-      // 에러 처리
-    }
+  const handleSubmit = async (
+    imageFile: File,
+    request: ClothesCreateRequest,
+  ) => {
+    // try {
+    //   await updateClothing(params.id, data)
+    //   // 성공 처리
+    // } catch (error) {
+    //   // 에러 처리
+    // }
   }
 
   const handleDelete = async () => {

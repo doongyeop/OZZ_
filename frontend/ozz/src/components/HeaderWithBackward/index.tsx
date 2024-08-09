@@ -2,10 +2,16 @@
 
 import { IoChevronBack } from 'react-icons/io5'
 import { useRouter } from 'next/navigation'
-import { HeaderButton } from '../Button/HeaderButton'
+import HeaderButton from '../Button/HeaderButton'
 import Header from '../Header'
 
-export default function HeaderWithBackward({ title = '추천 코디' }) {
+interface HeaderWithBackwardProps {
+  title?: string
+}
+
+export default function HeaderWithBackward({
+  title = '추천 코디',
+}: HeaderWithBackwardProps) {
   const router = useRouter()
 
   return (

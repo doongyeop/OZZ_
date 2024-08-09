@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaChevronDown } from 'react-icons/fa'
@@ -120,6 +122,8 @@ export default function CoordibookSidebar({
     <>
       <div className={`${styles.sidebarGroup}`}>
         <button
+          type="button"
+          aria-label="사이드바 닫기"
           className={`${styles.toggleButtonClose} flex justify-center`}
           onClick={() => onClose()}
         >
@@ -131,7 +135,9 @@ export default function CoordibookSidebar({
           </div>
           <div className={styles.coordibookList}>
             {coordibooks.map((item) => (
-              <div
+              <button
+                type="button"
+                aria-label="코디북"
                 key={item.coordinateId}
                 className={styles.clothItem}
                 onClick={() => handleCoordibookSelect(item.coordinateId)}
@@ -143,7 +149,7 @@ export default function CoordibookSidebar({
                   height={80}
                 />
                 {item.name}
-              </div>
+              </button>
             ))}
           </div>
         </div>

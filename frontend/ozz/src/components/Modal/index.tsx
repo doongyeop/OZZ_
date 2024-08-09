@@ -22,7 +22,12 @@ export default function Modal({
       >
         <div className="flex justify-between items-center pt-3 pl-4 pr-3">
           <h3 className="text-lg font-semibold text-primary-400">{title}</h3>
-          <button onClick={onClose} className="text-primary-400">
+          <button
+            onClick={onClose}
+            className="text-primary-400"
+            type="button"
+            aria-label="모달 닫기"
+          >
             <svg
               className="w-6 h-6"
               fill="none"

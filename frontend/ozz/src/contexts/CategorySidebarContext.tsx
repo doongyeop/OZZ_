@@ -1,7 +1,8 @@
 // src/contexts/CategorySidebarContext.tsx
+
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useMemo, ReactNode } from 'react'
 
 interface CategorySidebarContextType {
   isSidebarOpen: boolean
@@ -32,17 +33,20 @@ export function CategorySidebarProvider({ children }: { children: ReactNode }) {
     closeSidebar()
   }
 
+  const value = useMemo(
+    () => ({
+      isSidebarOpen,
+      toggleSidebar,
+      closeSidebar,
+      selectedCategory,
+      selectedSubcategory,
+      setCategory,
+    }),
+    [isSidebarOpen, selectedCategory, selectedSubcategory],
+  )
+
   return (
-    <CategorySidebarContext.Provider
-      value={{
-        isSidebarOpen,
-        toggleSidebar,
-        closeSidebar,
-        selectedCategory,
-        selectedSubcategory,
-        setCategory,
-      }}
-    >
+    <CategorySidebarContext.Provider value={value}>
       {children}
     </CategorySidebarContext.Provider>
   )
