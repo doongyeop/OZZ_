@@ -106,15 +106,24 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected toQueryString(rawQuery?: QueryParamsType): string {
     const query = rawQuery || {}
-    const keys = Object.keys(query).filter(
-      (key) => 'undefined' !== typeof query[key],
-    )
+    const keys = Object.keys(query).filter((key) => query[key] !== undefined)
+
     return keys
-      .map((key) =>
-        Array.isArray(query[key])
-          ? this.addArrayQueryParam(query, key)
-          : this.addQueryParam(query, key),
-      )
+      .map((key) => {
+        const value = query[key]
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          // 객체가 들어온 경우, 객체의 키-값을 각각의 쿼리 파라미터로 변환
+          return Object.keys(value)
+            .map((innerKey) => this.encodeQueryParam(innerKey, value[innerKey]))
+            .join('&')
+        } else if (Array.isArray(value)) {
+          // 배열 처리
+          return this.addArrayQueryParam(query, key)
+        } else {
+          // 기본 타입 처리
+          return this.addQueryParam(query, key)
+        }
+      })
       .join('&')
   }
 

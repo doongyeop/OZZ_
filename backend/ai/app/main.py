@@ -1,6 +1,10 @@
+import logging
+
 from fastapi import FastAPI
 from app.api.v1.endpoints import attributes, tokenize, purchaseHistory
 from fastapi.middleware.cors import CORSMiddleware
+
+logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
 
@@ -23,5 +27,5 @@ app.add_middleware(
 )
 # API 라우터 설정
 app.include_router(attributes.router, prefix="/api/v1")
-app.include_router(tokenize.router)
-app.include_router(purchaseHistory.router)
+app.include_router(tokenize.router, prefix="/api/v1")
+app.include_router(purchaseHistory.router, prefix="/api/v1")

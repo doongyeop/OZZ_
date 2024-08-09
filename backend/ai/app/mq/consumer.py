@@ -1,76 +1,105 @@
 import json
+import logging
+import os
 from io import BytesIO
 
 import pika
 import requests
+from requests_toolbelt import MultipartEncoder
 
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes
 from app.utils.image_process import process
 
 
-def parseToBaseModel(body)->list[NormalizedClothes]:
-    data: list[dict] = json.loads(body)
-    return list(map(lambda a:NormalizedClothes(**a), data))
+def parseToBaseModel(body)->list[NormalizedClothes]|None:
+    try:
+        data: list[dict] = json.loads(body)
+        return list(map(lambda a:NormalizedClothes(**a), data))
+    except Exception as e:
+        logging.error(e)
+
+    return None
 
 def EAcallback(ch, method, properties, body):
-    print(f"속성 추출 :  {body}")
+
     data = parseToBaseModel(body)
+    if not data:
+        return
+    logging.info(f"속성 추출 :  {data}")
 
-    client = ExtractAttributesURL(data)
-    data = client.get_result()
-    for key in data.keys():
-        # 엔드포인트 URL 및 clothesId 설정
-        url = 'http://your-server.com/{clothesId}'.format(clothesId=key)
-        # 요청 헤더 및 파일 설정
-        body = {
-            'request': (None, data[key].model_dump_json(), 'application/json')
-        }
+    try:
+        client = ExtractAttributesURL(data)
+        data = client.get_result()
+    except Exception as e:
+        logging.error(e)
 
-        # PUT 요청 보내기
-        response = requests.put(url, files=body)
-
-        # 응답 출력
-        print(response.status_code)
-        print(response.json())
+    try:
+        for key in data.keys():
+            # 엔드포인트 URL 및 clothesId 설정
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{key}"
+            # 요청 헤더 및 파일 설정
+            logging.info(f"속성 등록 :  {url}")
+            # PUT 요청 보내기
+            mp_encoder = MultipartEncoder(
+                fields={
+                    "request": ('request',data[key].model_dump_json(),'application/json')
+                }
+            )
+            # PUT 요청 보내기
+            response = requests.put(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+            # 응답 출력
+            logging.info(response)
+    except Exception as e:
+        logging.error(e)
 
 
 def IPcallback(ch, method, properties, body):
-    print(f"이미지 처리 :  {body}")
     data = parseToBaseModel(body)
-    for datum in data:
-        processed_image = process(datum.imgUrl, datum.category)
-        # BytesIO 객체에 이미지 저장
-        image_byte_array = BytesIO()
-        processed_image.save(image_byte_array, format='PNG')
-        image_byte_array.seek(0)
+    if not data:
+        return
+    logging.info(f"이미지 처리 :  {data}")
 
-        # 엔드포인트 URL 및 clothesId 설정
-        url = 'http://locahost/{clothesId}'.format(clothesId=datum.clothId)
+    try:
+        for datum in data:
+            processed_image = process(datum.imgUrl, datum.category)
+            # BytesIO 객체에 이미지 저장
+            image_byte_array = BytesIO()
+            processed_image.save(image_byte_array, format='PNG')
+            image_byte_array.seek(0)
 
-        # 요청 헤더 및 파일 설정
-        headers = {'Content-Type': 'multipart/form-data'}
-        files = {'imageFile': ('image.jpg', image_byte_array, 'image/jpeg')}
+            # 엔드포인트 URL 및 clothesId 설정
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{datum.clothId}/image"
 
-        # PUT 요청 보내기
-        response = requests.put(url, headers=headers, files=files)
+            mp_encoder = MultipartEncoder(
+                fields={
+                    "imageFile": (f'{datum.clothId}.png',image_byte_array, "image/png")
+                }
+            )
 
-        # 응답 출력
-        print(response.status_code)
-        print(response.json())
+            logging.info(f"이미지 등록 :  {url}")
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
+            # patch 요청 보내기
+            response = requests.patch(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
 
-channel.queue_declare(queue='extract-attribute')
-channel.queue_declare(queue='image-process')
+            # 응답 출력
+            logging.info(response)
+    except Exception as e:
+        logging.error(e)
 
-channel.basic_consume(queue='extract-attribute',
-                      on_message_callback=EAcallback,
-                      auto_ack=True)
-channel.basic_consume(queue='image-process',
-                      on_message_callback=IPcallback,
-                      auto_ack=True)
+def start_consumer():
+    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("RABBITMQ_HOST")))
+    channel = connection.channel()
 
-print('Waiting for messages. To exit press CTRL+C')
-channel.start_consuming()
+    channel.queue_declare(queue='extract-attribute')
+    channel.queue_declare(queue='image-process')
+
+    channel.basic_consume(queue='extract-attribute',
+                          on_message_callback=EAcallback,
+                          auto_ack=True)
+    channel.basic_consume(queue='image-process',
+                          on_message_callback=IPcallback,
+                          auto_ack=True)
+
+    print('Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming( )

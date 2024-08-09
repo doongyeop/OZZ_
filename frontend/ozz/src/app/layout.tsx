@@ -4,6 +4,7 @@ import { SelectedItemProvider } from '@/contexts/SelectedItemContext'
 import { CategorySidebarProvider } from '@/contexts/CategorySidebarContext'
 import '@/styles/global.css'
 import localFont from 'next/font/local'
+import Providers from './providers'
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
@@ -25,16 +26,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className}`}>
-        <CategorySidebarProvider>
-          <SelectedItemProvider>
-            <SelectedColorProvider>
-              <div className="py-20">
-                {children}
-                <Navbar />
-              </div>
-            </SelectedColorProvider>
-          </SelectedItemProvider>
-        </CategorySidebarProvider>
+        <Providers>
+          <CategorySidebarProvider>
+            <SelectedItemProvider>
+              <SelectedColorProvider>
+                <div className="py-20">
+                  {children}
+                  <Navbar />
+                </div>
+              </SelectedColorProvider>
+            </SelectedItemProvider>
+          </CategorySidebarProvider>
+        </Providers>
       </body>
     </html>
   )
