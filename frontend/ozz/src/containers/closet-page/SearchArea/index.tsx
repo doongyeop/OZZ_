@@ -18,7 +18,7 @@ export default function SearchArea() {
   const [order, setOrder] = useState<OrderValue>('regist')
 
   return (
-    <div className="p-4 flex justify-between">
+    <div className="p-4 flex justify-between bg-white sticky top-20 shadow-sm">
       <form className="ps-4 flex items-center space-x-2">
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">

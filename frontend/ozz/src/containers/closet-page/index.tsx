@@ -1,65 +1,100 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import { useInfiniteQuery, useQueries } from '@tanstack/react-query'
 import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
 import CategorySidebar from '@/components/Button/CategorySidebar'
 import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 import ClothesList from '@/components/ClothesList'
 import SearchArea from '@/containers/closet-page/SearchArea'
 import EmptyCloset from '@/containers/closet-page/EmptyCloset/page'
-import { fetchMockClothingList } from '@/services/clothingApi'
+import { fetchUserClothes, fetchImage } from '@/services/clothingApi'
+import Loading from '@/app/closet/loading'
+import { useEffect, useRef } from 'react'
+import { ImSpinner8 } from 'react-icons/im'
 
-// interface ClosetPageContainerProps {
-//   isSidebarOpen: boolean
-//   setIsSidebarOpen: (isOpen: boolean) => void
-// }
+const queryKeys = {
+  userClothes: 'userClothes',
+}
 
 export default function ClosetPageContainer() {
-  const { isSidebarOpen, selectedSubcategory } = useCategorySidebar()
-  const [clothingList, setClothingList] = useState<any[]>([])
+  const { isSidebarOpen } = useCategorySidebar()
+  const observerElem = useRef(null)
+
+  // Using useInfiniteQuery to handle infinite scroll
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteQuery({
+    queryKey: [queryKeys.userClothes],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchUserClothes({ page: pageParam, size: 20 }, {}),
+    getNextPageParam: (lastPage) =>
+      // If last page's 'last' field is true, there are no more pages
+      lastPage.last ? undefined : lastPage.number + 1,
+    initialPageParam: 0,
+  })
+
+  // Flatten the pages into a single list
+  const clothingList = data?.pages.flatMap((page) => page.content) || []
 
   useEffect(() => {
-    // 실제 API 요청을 여기서 수행하여 옷 데이터를 가져옵니다.
-    // 예: fetch('/api/clothing').then(res => res.json()).then(data => setClothingItems(data));
-    // 지금은 목업 데이터를 사용합니다.
-    const mockData = fetchMockClothingList()
-    const allContent = mockData.flatMap((item) => item.content)
-    setClothingList(allContent)
-  }, [])
+    const currentElem = observerElem.current
 
-  useEffect(() => {
-    if (selectedSubcategory) {
-      console.log(selectedSubcategory, '로 검색')
-      // 여기서 선택된 서브카테고리에 따라 옷 목록을 필터링하는 로직을 구현할 수 있습니다.
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          await fetchNextPage()
+        }
+      },
+      { threshold: 1.0 },
+    )
+
+    if (currentElem) {
+      observer.observe(currentElem)
     }
-  }, [selectedSubcategory])
 
-  // const handleSelectCategory = async (
-  //   category: string,
-  //   subcategory: string,
-  // ) => {
-  //   setSelectedCategory(category)
-  //   setSelectedSubcategory(subcategory)
-  //   isSidebarOpen = false // Close the sidebar after selecting
-  //   try {
-  //     // const clothes = await fetchFilteredClothes(subcategory);
-  //     // setFilteredClothes(clothes);
+    return () => {
+      if (currentElem) {
+        observer.unobserve(currentElem)
+      }
+    }
+  }, [hasNextPage, fetchNextPage])
 
-  //     console.log(subcategory, '로 검색')
-  //   } catch (error) {
-  //     console.error('Failed to fetch filtered clothes', error)
-  //   }
-  // }
+  // Fetch images for each clothing item
+  const imageQueries = clothingList.map((item) => ({
+    queryKey: ['image', item.imageFile?.filePath],
+    queryFn: () => fetchImage(item.imageFile?.filePath || ''),
+    enabled: !!item.imageFile?.filePath,
+  }))
+
+  const imageResults = useQueries({ queries: imageQueries })
+
+  const defaultImageUrl = '/images/mockup/tops11.png'
+
+  const clothingWithImages = clothingList.map((item, index) => ({
+    ...item,
+    imageUrl: imageResults[index]?.data || defaultImageUrl,
+  }))
 
   return (
-    <div>
+    <div className="h-full">
       {isSidebarOpen && <CategorySidebar />}
-      <SearchArea />
-      {clothingList.length === 0 ? (
+      {isLoading && <Loading />}
+      {isError || clothingWithImages.length === 0 ? (
         <EmptyCloset />
       ) : (
         <>
-          <ClothesList clothingList={clothingList} isSelectable={false} />
+          <SearchArea />
+          <ClothesList clothingList={clothingWithImages} isSelectable={false} />
+          <div ref={observerElem}>
+            {isFetchingNextPage && (
+              <div className="flex justify-center p-4 text-gray-dark">
+                <ImSpinner8 className="animate-spin" />
+              </div>
+            )}
+          </div>
           <ClothesRegistButton />
         </>
       )}
