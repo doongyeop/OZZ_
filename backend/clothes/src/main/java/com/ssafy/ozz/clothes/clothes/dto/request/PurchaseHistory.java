@@ -18,6 +18,7 @@ public record PurchaseHistory (
                 .purchaseDate(purchaseDate)
                 .purchaseSite(purchaseSite)
                 .userId(userId)
+                .imageFileId(0L)
                 .build();
     }
 }

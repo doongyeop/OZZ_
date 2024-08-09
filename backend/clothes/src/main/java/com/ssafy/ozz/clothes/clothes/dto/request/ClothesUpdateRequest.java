@@ -20,6 +20,7 @@ public record ClothesUpdateRequest(
         List<Texture> textureList,
         List<Season> seasonList,
         List<Style> styleList,
-        List<Pattern> patternList
+        List<Pattern> patternList,
+        String extra
 ) {
 }

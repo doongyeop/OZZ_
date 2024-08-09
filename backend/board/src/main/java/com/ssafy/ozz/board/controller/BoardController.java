@@ -30,18 +30,19 @@ public class BoardController {
     private final UserClient userClient;
     private final FileClient fileClient;
 
+    // OK
     @PostMapping("/")
     @Operation(summary = "게시글 등록")
     public ResponseEntity<Long> createBoard(
             @RequestBody BoardCreateRequest request) {
         Long userId = request.userId();
         Long imgFileId = request.imgFileId();
-
         Board board = boardService.createBoard(userId, imgFileId, request);
 
         return ResponseEntity.status(201).body(board.getId());
     }
 
+    // TODO 200은 나오는데 게시글 조회가 안되고 페이지네이션만 됨.
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByUserId(@PathVariable Long userId, Pageable pageable) {
@@ -64,6 +65,7 @@ public class BoardController {
         return ResponseEntity.ok(boardResponses);
     }
 
+    // TODO 500
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoards(Pageable pageable) {
@@ -87,6 +89,7 @@ public class BoardController {
         return ResponseEntity.ok(boardResponses);
     }
 
+    // TODO 500
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
@@ -106,6 +109,7 @@ public class BoardController {
         return ResponseEntity.ok(new BoardResponse(board, fileInfo, userResponse));
     }
 
+    // TODO 500
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByAgeRange(
@@ -133,10 +137,11 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
+    // TODO 500
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByStyle(
-            @RequestParam("style") String style, Pageable pageable) {
+            @RequestParam("style") Integer style, Pageable pageable) {
         Page<BoardResponse> boards = boardService.getBoardsByStyle(pageable, style).map(board -> {
             FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
             UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -155,6 +160,7 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
+    // TODO 500
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
@@ -176,6 +182,7 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
+    // TODO 500
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
     public ResponseEntity<BoardResponse> updateBoard(
@@ -186,7 +193,7 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
-
+    // OK
     @DeleteMapping("/{boardId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
