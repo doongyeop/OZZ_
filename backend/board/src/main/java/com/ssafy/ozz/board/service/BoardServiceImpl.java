@@ -143,3 +143,4 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
 }
+

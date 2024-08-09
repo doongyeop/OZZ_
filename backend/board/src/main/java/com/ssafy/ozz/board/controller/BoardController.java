@@ -196,13 +196,13 @@ public class BoardController {
 
 
 //    @PostMapping("/get/{coordinateId}")
-//    @Operation(summary = "코디를 가져옵니다")
+//    @Operation(summary = "게시글에서 코디가져오기", description = "게시글의 코디를 내 코디북으로 가져옵니다.")
 //    public ResponseEntity<Boolean> getCoordinate(@PathVariable Long coordinateId) {
-//        if (existingGet) {
+//        if (existing) {
 //            delete
 //            return ResponseEntity.ok(false);
 //        }
-//
+//        save
 //        return ResponseEntity.ok(true);
 //    }
 }
