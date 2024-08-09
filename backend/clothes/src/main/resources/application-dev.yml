@@ -18,10 +18,10 @@ spring:
       max-request-size: 5MB
 
   rabbitmq:
-    host: ${RABBIT_MQ_HOST:localhost}
-    port: ${RABBIT_MQ_PORT:5672}
-    username: ${RABBIT_MQ_USER:guest}
-    password: ${RABBIT_MQ_PW:guest}
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PW:guest}
 
 eureka:
   client:
