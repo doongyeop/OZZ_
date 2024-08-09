@@ -52,6 +52,7 @@ services:
       FASTAPI_URL: http://ozz-ai:${AI_PORT}
     networks:
       - spring-cloud-network
+      - message-queue-network
     depends_on:
       - mysql-db
       - ozz-eureka
@@ -244,6 +245,15 @@ services:
     networks:
       - spring-cloud-network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672" # management page port
+      - "5672:5672" # main port
+    networks:
+      - message-queue-network
+
 volumes:
   mysql-data:
     driver: local
@@ -254,4 +264,6 @@ volumes:
 
 networks:
   spring-cloud-network:
+    driver: bridge
+  message-queue-network:
     driver: bridge

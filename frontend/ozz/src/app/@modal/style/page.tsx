@@ -1,27 +1,20 @@
-import React, { useState } from 'react'
+'use client'
+
+import { useState } from 'react'
 import Modal from '@/components/Modal'
-import { Style } from 'util'
+import { Style, styleMap } from '@/types/clothing'
 
 type StyleModalProps = {
   onClose: () => void
-  setValue: (value: string[]) => void
+  setValue: (value: Style[]) => void
 }
 
-const styles = [
-  '포멀',
-  '매니시',
-  '엘레강스',
-  '에스닉',
-  '모던',
-  '내추럴',
-  '로맨틱',
-  '스포티',
-  '스트릿',
-  '캐주얼',
-]
+const styles = Object.keys(styleMap)
 
 export default function StyleModal({ onClose, setValue }: StyleModalProps) {
-  const [style, setStyle] = useState<{ [key: string]: boolean }>({
+  const [selectedStyles, setSelectedStyles] = useState<{
+    [key: string]: boolean
+  }>({
     포멀: false,
     매니시: false,
     엘레강스: false,
@@ -35,14 +28,18 @@ export default function StyleModal({ onClose, setValue }: StyleModalProps) {
   })
 
   const toggleSeason = (style: string) => {
-    setStyle((prevStyles) => ({
+    setSelectedStyles((prevStyles) => ({
       ...prevStyles,
       [style]: !prevStyles[style],
     }))
   }
 
   const handleSave = () => {
-    const selected = Object.keys(style).filter((s) => style[s])
+    const selected: Style[] = (
+      Object.keys(selectedStyles) as (keyof typeof styleMap)[]
+    )
+      .filter((s) => selectedStyles[s])
+      .map((s) => styleMap[s])
     setValue(selected)
     onClose()
   }
@@ -55,7 +52,7 @@ export default function StyleModal({ onClose, setValue }: StyleModalProps) {
             key={s}
             type="button"
             className={`px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-sm font-semibold ${
-              style[s]
+              selectedStyles[s]
                 ? 'bg-primary-400 text-secondary'
                 : 'bg-secondary text-primary-400'
             }`}

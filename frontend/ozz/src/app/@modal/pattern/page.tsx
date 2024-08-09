@@ -1,9 +1,12 @@
+'use client'
+
 import { useState } from 'react'
 import Modal from '@/components/Modal'
+import { Pattern, patternMap, patternInvMap } from '@/types/clothing'
 
 type PatternModalProps = {
   onClose: () => void
-  setValue: (value: { name: string; img: string }) => void
+  setValue: (value: Pattern[]) => void
 }
 
 const patterns = [
@@ -28,18 +31,22 @@ const patterns = [
 ]
 
 export default function PatternModal({ onClose, setValue }: PatternModalProps) {
-  const [selectedPattern, setSelectedPattern] = useState<{
-    name: string
-    img: string
-  } | null>(null)
+  const [selectedPattern, setSelectedPattern] = useState<Pattern[]>([])
 
   const handlePatternClick = (pattern: { name: string; img: string }) => {
-    if (selectedPattern?.name === pattern.name) {
-      setValue(pattern)
-      onClose()
+    const patternKey = patternMap[pattern.name]
+    const isSelected = selectedPattern.includes(patternKey)
+
+    if (isSelected) {
+      setSelectedPattern(selectedPattern.filter((p) => p !== patternKey))
     } else {
-      setSelectedPattern(pattern)
+      setSelectedPattern([...selectedPattern, patternKey])
     }
+  }
+
+  const handleSave = () => {
+    setValue(selectedPattern)
+    onClose()
   }
 
   return (
@@ -50,7 +57,7 @@ export default function PatternModal({ onClose, setValue }: PatternModalProps) {
             key={pattern.name}
             type="button"
             className={`p-1 mr-1 mb-1 rounded-xl text-xs font-semibold border-2 border-primary-400  ${
-              selectedPattern?.name === pattern.name
+              selectedPattern.includes(patternMap[pattern.name])
                 ? 'bg-primary-400 text-secondary'
                 : 'bg-secondary text-primary-400'
             }`}
@@ -68,6 +75,14 @@ export default function PatternModal({ onClose, setValue }: PatternModalProps) {
             </div>
           </button>
         ))}
+      </div>
+      <div className="mt-2 flex w-full justify-center">
+        <button
+          className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
+          onClick={handleSave}
+        >
+          저장
+        </button>
       </div>
     </Modal>
   )

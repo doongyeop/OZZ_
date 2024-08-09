@@ -19,32 +19,16 @@ export interface CoordinateClothesCreateRequest {
 export interface CoordinateUpdateRequest {
   name?: string
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   clothesList?: CoordinateClothesCreateRequest[]
 }
@@ -52,7 +36,7 @@ export interface CoordinateUpdateRequest {
 /** 하위 카테고리 정보 DTO */
 export interface CategoryLowResponse {
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   name?: string
 }
 
@@ -81,32 +65,16 @@ export interface CoordinateResponse {
   coordinateId?: number
   name?: string
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   /** @format date-time */
   createdDate?: string
@@ -125,7 +93,7 @@ export interface FileInfo {
 /** 옷 수정 요청 DTO */
 export interface ClothesUpdateRequest {
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   name?: string
   size?: 'FREE' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
   fit?: 'OVER_FIT' | 'SEMI_OVER_FIT' | 'REGULAR_FIT' | 'SLIM_FIT'
@@ -185,32 +153,16 @@ export interface ClothesUpdateRequest {
   )[]
   seasonList?: ('SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER')[]
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   patternList?: (
     | 'SOLID'
@@ -302,32 +254,16 @@ export interface ClothesWithFileResponse {
   )[]
   seasonList?: ('SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER')[]
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   patternList?: (
     | 'SOLID'
@@ -359,32 +295,16 @@ export interface ClothesWithFileResponse {
 export interface CoordinateCreateRequest {
   name?: string
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   clothesList?: CoordinateClothesCreateRequest[]
 }
@@ -450,32 +370,16 @@ export interface ClothesCreateRequest {
   )[]
   seasonList?: ('SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER')[]
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   patternList?: (
     | 'SOLID'
@@ -498,7 +402,7 @@ export interface ClothesCreateRequest {
     | 'HOUNDSTOOTH'
   )[]
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
 }
 
 export interface CoordinateBasicResponse {
@@ -506,32 +410,16 @@ export interface CoordinateBasicResponse {
   coordinateId?: number
   name?: string
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   /** @format date-time */
   createdDate?: string
@@ -540,32 +428,16 @@ export interface CoordinateBasicResponse {
 
 export interface CoordinateSearchCondition {
   styleList?: (
-    | 'CASUAL'
-    | 'CLASSIC'
+    | 'FORMAL'
     | 'MANNISH'
-    | 'FEMININE'
-    | 'HIPPIE'
+    | 'ELEGANCE'
+    | 'ETHNIC'
     | 'MODERN'
-    | 'COUNTRY'
-    | 'GENDERLESS'
-    | 'SPORTY'
-    | 'RETRO'
-    | 'MILITARY'
-    | 'PREPPY'
-    | 'TOMBOY'
+    | 'NATURAL'
     | 'ROMANTIC'
-    | 'WESTERN'
-    | 'SOPHISTICATED'
-    | 'COTTAGER'
-    | 'RESORT'
-    | 'KITSCH'
-    | 'KIDULT'
+    | 'SPORTY'
     | 'STREET'
-    | 'SEXY'
-    | 'ORIENTAL'
-    | 'AVANT_GARDE'
-    | 'HIPHOP'
-    | 'PUNK'
+    | 'CASUAL'
   )[]
   /** @format int64 */
   favoriteGroupId?: number
@@ -622,9 +494,9 @@ export interface SortObject {
 /** 옷 검색 DTO */
 export interface ClothesSearchCondition {
   /** @format byte */
-  categoryHighId?: string
+  categoryHighId?: number
   /** @format byte */
-  categoryLowId?: string
+  categoryLowId?: number
   keyword?: string
 }
 
