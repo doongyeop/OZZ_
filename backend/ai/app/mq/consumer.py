@@ -5,6 +5,7 @@ from io import BytesIO
 
 import pika
 import requests
+from requests_toolbelt import MultipartEncoder
 
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes
@@ -38,16 +39,17 @@ def EAcallback(ch, method, properties, body):
             # 엔드포인트 URL 및 clothesId 설정
             url = f"{os.getenv('CLOTHES_ENDPOINT')}/{key}"
             # 요청 헤더 및 파일 설정
-            body = {
-                'request': (None, data[key].model_dump_json(), 'application/json')
-            }
             logging.info(f"속성 등록 :  {url}")
             # PUT 요청 보내기
-            response = requests.put(url, files=body)
-
+            mp_encoder = MultipartEncoder(
+                fields={
+                    "request": ('request',data[key].model_dump_json(),'application/json')
+                }
+            )
+            # PUT 요청 보내기
+            response = requests.put(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
             # 응답 출력
-            print(response.status_code)
-            print(response.json())
+            logging.info(response)
     except Exception as e:
         logging.error(e)
 
@@ -67,25 +69,26 @@ def IPcallback(ch, method, properties, body):
             image_byte_array.seek(0)
 
             # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{datum.clothId}"
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{datum.clothId}/image"
 
-            # 요청 헤더 및 파일 설정
-            headers = {'Content-Type': 'multipart/form-data'}
-            files = {'imageFile': ('image.jpg', image_byte_array, 'image/jpeg')}
+            mp_encoder = MultipartEncoder(
+                fields={
+                    "imageFile": (f'{datum.clothId}.png',image_byte_array, "image/png")
+                }
+            )
 
             logging.info(f"이미지 등록 :  {url}")
 
-            # PUT 요청 보내기
-            response = requests.put(url, headers=headers, files=files)
+            # patch 요청 보내기
+            response = requests.patch(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
 
             # 응답 출력
-            print(response.status_code)
-            print(response.json())
+            logging.info(response)
     except Exception as e:
         logging.error(e)
 
 def start_consumer():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("RABBITMQ_URL")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("RABBITMQ_HOST")))
     channel = connection.channel()
 
     channel.queue_declare(queue='extract-attribute')
