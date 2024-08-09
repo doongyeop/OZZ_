@@ -1,7 +1,50 @@
 'use client'
 
 import axios from 'axios'
+import { Api as ClothesApi } from '@/types/clothes/Api'
+import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData } from '@/types/clothing'
+import {
+  ClothesSearchCondition,
+  GetClothesOfUserData,
+  Pageable,
+} from '@/types/clothes/data-contracts'
+
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzE2MTk1NywiZXhwIjoxNzIzMjIxOTU3fQ.VY4NlD1UxVPhLKbtSxhASn2Y4IeabKJwxSGQ9-AuaK0'
+
+const clothesApi = new ClothesApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+const fileApi = new FileApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+export async function fetchUserClothes(
+  pageable: Pageable,
+  searchCondition: ClothesSearchCondition = {},
+): Promise<GetClothesOfUserData> {
+  const response = await clothesApi.getClothesOfUser({
+    condition: searchCondition,
+    pageable,
+  })
+  return response.json()
+}
+
+export async function fetchImage(filePath: string): Promise<string> {
+  const response = await fileApi.downloadFile(filePath)
+  const blob = await response.blob()
+  return URL.createObjectURL(blob)
+}
 
 export const createClothing = async (data: FormData) => {
   // TODO: 추후 수정
@@ -11,11 +54,9 @@ export const createClothing = async (data: FormData) => {
         'Content-Type': 'multipart/form-data',
       },
     })
-    // 성공 처리 (예: 알림 표시, 페이지 이동 등)
     return response.data
   } catch (error) {
     // 에러 처리
-    console.error('Error creating clothing:', error)
     throw error
   }
 }

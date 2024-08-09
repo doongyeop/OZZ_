@@ -41,8 +41,6 @@ export default function Closet() {
     setShowHelpModal(false)
   }
 
-  // 여기 있는 header를 레이아웃으로 분리하려면 전역 상태관리가 들어가야합니다.
-  // 상단바 버튼을 클릭하는 상태를 props로 전달해야하기 때문...
   return (
     <>
       <Header

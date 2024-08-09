@@ -282,7 +282,7 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<GetClothesOfUserData, any>({
+    this.request<GetClothesOfUserData>({
       path: `/api/clothes/users`,
       method: 'GET',
       query: query,
