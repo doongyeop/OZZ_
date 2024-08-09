@@ -20,7 +20,7 @@ public interface BoardService {
 
     void deleteBoard(Long boardId);
 
-    Page<Board> getBoardsByStyle(Pageable pageable, Integer style);
+    Page<Board> getBoardsByStyle(Pageable pageable, String style);
 
     Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge);
 

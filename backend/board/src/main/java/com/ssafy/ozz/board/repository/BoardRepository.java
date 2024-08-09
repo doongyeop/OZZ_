@@ -14,7 +14,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findByCreatedDateAfterOrderByLikesDesc(Date date, Pageable pageable);
 
-    Page<Board> findByStyle(Integer style, Pageable pageable);
+    Page<Board> findByStyle(String style, Pageable pageable);
 
     Page<Board> findByAgeBetween(int startAge, int endAge, Pageable pageable);
 }
