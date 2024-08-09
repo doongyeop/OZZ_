@@ -32,6 +32,7 @@ export default function BrandModal({ onClose, setValue }: BrandModalProps) {
         <button
           className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
           onClick={handleSave}
+          type="button"
         >
           저장
         </button>

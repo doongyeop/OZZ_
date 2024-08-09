@@ -2,19 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import CameraIcon from '../../../public/icons/camera.svg'
-import BrandModal from '@/app/@modal/brand/page'
-import CategoryModal from '@/app/@modal/category/page'
-import PurchaseDateModal from '@/app/@modal/purchaseDate/page'
-import PurchaseSiteModal from '@/app/@modal/purchaseSite/page'
-import SeasonModal from '@/app/@modal/season/page'
-import SizeModal from '@/app/@modal/size/page'
-import FitModal from '@/app/@modal/fit/page'
-import TextureModal from '@/app/@modal/texture/page'
-import ColorModal from '@/app/@modal/color/page'
-import StyleModal from '@/app/@modal/style/page'
-import PatternModal from '@/app/@modal/pattern/page'
-import MemoModal from '@/app/@modal/memo/page'
+import BrandModal from '@/components/Modal/BrandModal'
+import CategoryModal from '@/components/Modal/CategoryModal'
+import PurchaseDateModal from '@/components/Modal/PurchaseDateModal'
+import PurchaseSiteModal from '@/components/Modal/PurchaseSiteModal'
+import SeasonModal from '@/components/Modal/SeasonModal'
+import SizeModal from '@/components/Modal/SizeModal'
+import FitModal from '@/components/Modal/FitModal'
+import TextureModal from '@/components/Modal/TextureModal'
+import ColorModal from '@/components/Modal/ColorModal'
+import StyleModal from '@/components/Modal/StyleModal'
+import PatternModal from '@/components/Modal/PatternModal'
+import MemoModal from '@/components/Modal/MemoModal'
 import {
   ClothingData,
   Size,
@@ -40,6 +39,7 @@ import {
   categoryNameToLowIdMap,
 } from '@/types/clothing'
 import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
+import CameraIcon from '../../../public/icons/camera.svg'
 
 type ClothingFormProps = {
   initialData?: ClothingData
@@ -121,7 +121,7 @@ export default function ClothingForm({
     const request: ClothesCreateRequest = {
       name,
       size: size || 'FREE',
-      fit: fit ? fit : undefined,
+      fit: fit || undefined,
       memo: memo || '',
       brand: brandName || '',
       purchaseDate: purchaseDate || '',
@@ -152,10 +152,10 @@ export default function ClothingForm({
                 | 'GOLD',
           )
         : [],
-      textureList: texture ? texture : [],
-      seasonList: season ? season : [],
-      styleList: style ? style : [],
-      patternList: pattern ? pattern : [],
+      textureList: texture || [],
+      seasonList: season || [],
+      styleList: style || [],
+      patternList: pattern || [],
       categoryLowId,
     }
 
@@ -358,7 +358,7 @@ export default function ClothingForm({
                               <span
                                 className="inline-block w-5 h-5 rounded-full mr-1.5"
                                 style={{ backgroundColor: c.colorCode }}
-                              ></span>
+                              />
                               <span
                                 className="text-primary-400 mr-2"
                                 onClick={() => setOpenModal(item.path)}

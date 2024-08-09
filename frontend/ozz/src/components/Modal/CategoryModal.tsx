@@ -17,7 +17,6 @@ export default function CategoryModal({
   onClose,
   setValue,
 }: CategoryModalProps) {
-  const [category, setCategory] = useState<string>('')
   const [selectedMainCategory, setSelectedMainCategory] =
     useState<CategoryHigh | null>(null)
 
@@ -35,7 +34,6 @@ export default function CategoryModal({
 
   const handleBack = () => {
     setSelectedMainCategory(null)
-    setCategory('')
   }
 
   return (
@@ -58,7 +56,10 @@ export default function CategoryModal({
       ) : (
         <>
           <div className="flex flex-wrap w-full pl-1 pr-2 mb-2">
-            <button className="px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-secondary text-sm bg-primary-400 font-bold">
+            <button
+              className="px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-secondary text-sm bg-primary-400 font-bold"
+              type="button"
+            >
               {selectedMainCategory}
             </button>
             <button

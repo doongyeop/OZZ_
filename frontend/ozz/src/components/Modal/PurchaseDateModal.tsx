@@ -39,7 +39,7 @@ export default function PurchaseDateModal({
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant={'outline'}
+            variant="outline"
             className={cn(
               'w-full justify-start text-left font-normal ',
               // !purchaseDate && 'text-muted-foreground',

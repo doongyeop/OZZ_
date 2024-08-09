@@ -41,14 +41,14 @@ export default function ConfirmModal({
         </h3>
         <div className="flex justify-center space-x-2 mt-5">
           <Button
-            variant={'outline'}
+            variant="outline"
             onClick={onClose}
             className="w-16 h-8 px-4 py-2 rounded-3xl"
           >
             아니오
           </Button>
           <Button
-            variant={'outline'}
+            variant="outline"
             onClick={onConfirm}
             className="w-16 h-8 px-4 py-2 rounded-3xl"
           >

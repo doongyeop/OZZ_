@@ -51,7 +51,7 @@ export default function ColorModal({ onClose, setValue }: ColorModalProps) {
               <span
                 className="inline-block w-4 h-4 rounded-full mr-1"
                 style={{ backgroundColor: color.colorCode }}
-              ></span>
+              />
               <span className="mr-0.5">{color.name}</span>
             </div>
           </button>
