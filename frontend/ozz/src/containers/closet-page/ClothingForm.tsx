@@ -46,7 +46,6 @@ export default function ClothingForm({
   submitButtonText,
 }: ClothingFormProps) {
   const [openModal, setOpenModal] = useState<string | null>(null)
-
   const [name, setName] = useState('')
   const [brandName, setBrandName] = useState('')
   const [categoryName, setCategoryName] = useState<string | null>(null)
@@ -66,6 +65,7 @@ export default function ClothingForm({
 
   useEffect(() => {
     if (initialData) {
+      console.log('initialData', initialData)
       setName(initialData.name || '')
       setBrandName(initialData.brandName || '')
       setCategoryName(initialData.categoryName || '')

@@ -4,16 +4,33 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ClothingData } from '@/types/clothing'
+
 import {
   fetchMockClothing,
   updateClothing,
   deleteClothing,
 } from '@/services/clothingApi'
+import { Api as ClothesApi } from '@/types/clothes/Api'
+import {
+  AddClothesPayload,
+  ClothesCreateRequest,
+} from '@/types/clothes/data-contracts'
+import { ClothingData } from '@/types/clothing'
+import { getClothingDetails, fetchImage } from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
-import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
+
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzE2MTk1NywiZXhwIjoxNzIzMjIxOTU3fQ.VY4NlD1UxVPhLKbtSxhASn2Y4IeabKJwxSGQ9-AuaK0'
+
+const api = new ClothesApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
@@ -24,8 +41,21 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
 
   useEffect(() => {
     if (params.id) {
-      const fetchedData = fetchMockClothing(params.id as number)
-      setClothingData(fetchedData)
+      const fetchClothingData = async () => {
+        try {
+          const data = await getClothingDetails(params.id)
+          // 이미지 파일 경로를 처리하는 부분
+          if (data.imageFile && data.imageFile.filePath) {
+            const imageUrl = await fetchImage(data.imageFile.filePath)
+            data.imageFile.filePath = imageUrl
+          }
+          setClothingData(data)
+        } catch (error) {
+          console.error('Error fetching clothing data:', error)
+        }
+      }
+
+      fetchClothingData()
     }
   }, [params.id])
 

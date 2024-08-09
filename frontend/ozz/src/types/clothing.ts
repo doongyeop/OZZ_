@@ -1,14 +1,14 @@
 export interface ClothingData {
   id: number
   name: string
-  brandName: string
-  categoryName: string | null
+  categoryName: string
+  brandName: string | null
   purchaseDate: string | null
   purchaseSite: string | null
   season: Season[] | null
   size: Size | null
   fit: Fit | null
-  texture: Texture[]
+  texture: Texture[] | null
   color: Color[] | null
   style: Style[] | null
   pattern: Pattern[] | null
