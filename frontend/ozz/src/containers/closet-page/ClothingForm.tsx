@@ -226,7 +226,7 @@ export default function ClothingForm({
       path: 'texture',
       component: TextureModal,
       value:
-        texture.join(', ').length > 10
+        texture.join(', ').length > 15
           ? texture.map((t) => textureInvMap[t]).join(', ')
           : '',
       setValue: (texture: Texture[]) => setTexture(texture),
