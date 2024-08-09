@@ -7,7 +7,11 @@ interface HeaderButtonProps {
   href?: string
 }
 
-export function HeaderButton({ icon, onClick, href }: HeaderButtonProps) {
+export default function HeaderButton({
+  icon,
+  onClick,
+  href,
+}: HeaderButtonProps) {
   const buttonContent = <div className="p-2">{icon}</div>
 
   if (href) {
@@ -15,8 +19,13 @@ export function HeaderButton({ icon, onClick, href }: HeaderButtonProps) {
   }
 
   return (
-    <div onClick={onClick} className="">
+    <button
+      type="button"
+      onClick={onClick}
+      className=""
+      aria-label="header button"
+    >
       {buttonContent}
-    </div>
+    </button>
   )
 }

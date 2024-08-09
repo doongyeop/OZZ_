@@ -1,9 +1,12 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import Image from 'next/image'
 
-const SignIn = () => {
+function SignIn() {
   const router = useRouter()
 
   const onKaKaoLogin = () => {
@@ -21,7 +24,8 @@ const SignIn = () => {
       <img src="images/logo_3e3e3e.png" alt="OZZ LOGO" className="mb-8 w-40" />
       <h2 className="text-xl w-full text-left my-10">간편 로그인</h2>
       <div className="flex flex-col items-center space-y-2 w-full">
-        <div
+        <button
+          type="button"
           onClick={onKaKaoLogin}
           className="w-full h-10 flex items-center bg-[#FEE500] mx-3 rounded-md"
         >
@@ -33,8 +37,9 @@ const SignIn = () => {
           <span className="flex-grow text-center text-black">
             카카오 로그인
           </span>
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={onNaverLogin}
           id="naverIdLogin"
           className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
@@ -47,7 +52,7 @@ const SignIn = () => {
           <span className="flex-grow text-center text-white">
             네이버 로그인
           </span>
-        </div>
+        </button>
       </div>
     </div>
   )

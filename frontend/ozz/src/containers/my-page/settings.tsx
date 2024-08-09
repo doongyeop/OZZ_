@@ -1,7 +1,8 @@
 'use client'
+
 import React, { useState } from 'react'
 
-const Switcher = () => {
+function Switcher() {
   const [isChecked, setIsChecked] = useState(false)
 
   const handleCheckboxChange = () => {
@@ -10,8 +11,9 @@ const Switcher = () => {
 
   return (
     <div className="flex items-center">
-      <label className="relative inline-flex">
+      <div className="relative inline-flex">
         <input
+          id="checkbox"
           type="checkbox"
           checked={isChecked}
           onChange={handleCheckboxChange}
@@ -19,16 +21,16 @@ const Switcher = () => {
         />
         <div
           className={`block h-6 w-11 rounded-full transition ${isChecked ? 'bg-secondary' : 'bg-gray-300'}`}
-        ></div>
+        />
         <div
           className={`dot absolute left-0.5 top-0.5 h-5 w-5 rounded-full transition ${isChecked ? 'translate-x-full bg-primary-400' : 'bg-white'}`}
-        ></div>
-      </label>
+        />
+      </div>
     </div>
   )
 }
 
-const Settings = () => {
+function Settings() {
   return (
     <div className="flex justify-center w-full">
       <div className="text-sm w-full h-full max-w-sm flex flex-col">

@@ -1,6 +1,9 @@
 'use client'
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useRouter } from 'next/navigation'
-import { DatePicker } from '@/components/Datepicker'
+import DatePicker from '@/components/Datepicker'
 import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
@@ -15,7 +18,7 @@ const api = new UserApi({
   }),
 })
 
-const SignUp = () => {
+function SignUp() {
   const router = useRouter()
   const [nickname, setNickname] = useState('')
   const [responseText, setResponseText] = useState('')
@@ -39,7 +42,7 @@ const SignUp = () => {
     getBirthday()
   }, [])
 
-  const setCookie = (name, value, days) => {
+  const setCookie = (name: string, value: string, days: number) => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString()
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
   }
@@ -74,23 +77,23 @@ const SignUp = () => {
     router.push('/login/signup/success')
   }
 
-  async function checkNicknameDuplication(nickname: string) {
-    if (nickname.length > 15) {
+  async function checkNicknameDuplication(nick: string) {
+    if (nick.length > 15) {
       setErrorText('닉네임은 15자 이내여야 합니다')
       setResponseText('')
       return
     }
-    if (nickname.includes(' ')) {
+    if (nick.includes(' ')) {
       setResponseText('')
       setErrorText('공백은 사용 불가능합니다')
       return
     }
 
     try {
-      const response = await api.checkNickname({ nickname })
+      const response = await api.checkNickname({ nickname: nick })
       setResponseText(await response.text())
       setErrorText('')
-      setNickname(nickname)
+      setNickname(nick)
     } catch (error) {
       setErrorText('이미 사용 중인 닉네임입니다')
       setResponseText('')
@@ -115,6 +118,7 @@ const SignUp = () => {
                 className="focus:outline-none border border-primary-400 rounded-full p-1 px-2 h-10 flex-grow"
               />
               <button
+                type="button"
                 onClick={() => checkNicknameDuplication(nickname)}
                 className="bg-primary-400 rounded-full font-bold text-sm h-10 w-24 leading-none"
               >
@@ -130,8 +134,8 @@ const SignUp = () => {
             <div className="font-bold my-4">생년월일</div>
             {birthday && (
               <DatePicker
-                defaultValue={birthday}
-                buttonClassName={'w-[360px]'}
+                defaultValue={birthday.toISOString()}
+                buttonClassName="w-[360px]"
                 onDateChange={(date) => {
                   setBirthday(date)
                 }}

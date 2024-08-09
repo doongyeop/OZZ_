@@ -1,11 +1,18 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
 
-function getCookie(name) {
+function getCookie(name: string) {
+  if (typeof document === 'undefined') {
+    return null
+  }
   const value = `; ${document.cookie}`
   const parts = value.split(`; ${name}=`)
   if (parts.length === 2) {
-    return decodeURIComponent(parts.pop().split(';').shift())
+    const lastPart = parts.pop()
+    if (lastPart) {
+      return decodeURIComponent(lastPart.split(';').shift() || '')
+    }
   }
   return null
 }
@@ -44,6 +51,7 @@ export default function SignUpDone() {
         지금 바로 옷짱을 채워보세요
       </div>
       <button
+        type="button"
         onClick={goCloset}
         className="font-extrabold mt-4 px-4 py-2 bg-secondary text-primary-400 rounded-full"
       >

@@ -10,7 +10,6 @@ import { IoPencil } from 'react-icons/io5'
 import { HiTrash } from 'react-icons/hi2'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { useState } from 'react'
-import { Divide } from 'lucide-react'
 
 export default function SavedCoordiPage({
   params,
@@ -54,12 +53,11 @@ export default function SavedCoordiPage({
 
   const deleteCoordi = () => {
     // 삭제 기능 추가 필요
-    return
   }
 
   return (
     <>
-      <HeaderWithBackward title={'코디북'} />
+      <HeaderWithBackward title="코디북" />
       <Image
         src={coordinate.image}
         alt={params.id}
@@ -112,6 +110,8 @@ export default function SavedCoordiPage({
         <div
           className="fixed bottom-20 right-4 flex items-center justify-center bg-secondary rounded-full w-[60px] h-[60px] border border-primary-400 hover:bg-primary-400 group"
           onClick={toggleModal}
+          role="presentation"
+          aria-hidden="true"
         >
           <HiTrash
             className="text-primary-400 group-hover:text-secondary"
@@ -129,7 +129,6 @@ export default function SavedCoordiPage({
             messageClassName="text-base"
             onClose={toggleModal}
             onConfirm={deleteCoordi}
-            onCancel={toggleModal}
           />
         )}
       </div>

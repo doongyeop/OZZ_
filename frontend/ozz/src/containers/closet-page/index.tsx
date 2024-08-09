@@ -14,18 +14,9 @@ import { fetchMockClothingList } from '@/services/clothingApi'
 //   setIsSidebarOpen: (isOpen: boolean) => void
 // }
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toISOString().split('T')[0]
-}
-
 export default function ClosetPageContainer() {
   const { isSidebarOpen, selectedSubcategory } = useCategorySidebar()
   const [clothingList, setClothingList] = useState<any[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  // const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-  //   null,
-  // )
 
   useEffect(() => {
     // 실제 API 요청을 여기서 수행하여 옷 데이터를 가져옵니다.

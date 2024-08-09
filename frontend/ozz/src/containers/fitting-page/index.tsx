@@ -45,16 +45,11 @@ const placeholderImages: { [key: string]: string } = {
   가방: '/images/fitting/bag.png',
 }
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toISOString().split('T')[0]
-}
-
 export default function FittingContainer() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false) //사이드바 열고 닫는 변수
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) //사이드바에 카테고리 설정하기
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // 사이드바 열고 닫는 변수
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
   const [fittingItems, setFittingItems] = useState<FittingItem[]>([
-    //가상피팅 배경의 컴포넌트
+    // 가상피팅 배경의 컴포넌트
     { category: '액세서리', type: 'accessory', image: null, isSelected: false },
     { category: '원피스', type: 'onepiece', image: null, isSelected: false },
     { category: '상의', type: 'top', image: null, isSelected: false },
@@ -63,7 +58,7 @@ export default function FittingContainer() {
     { category: '신발', type: 'shoes', image: null, isSelected: false },
     { category: '가방', type: 'bag', image: null, isSelected: false },
   ])
-  const [selectedClothes, setSelectedClothes] = useState<ClothingItem[]>([]) //선택한 옷 리스트
+  const [selectedClothes, setSelectedClothes] = useState<ClothingItem[]>([]) // 선택한 옷 리스트
 
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
@@ -96,7 +91,7 @@ export default function FittingContainer() {
     }
 
     const placeholder = fittingItems.find(
-      (placeholder) => placeholder.category === item.categoryHigh.name,
+      (imageholder) => imageholder.category === item.categoryHigh.name,
     )
     if (!placeholder || placeholder.category !== selectedCategory) {
       // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
@@ -140,6 +135,8 @@ export default function FittingContainer() {
                       layout="responsive"
                     />
                     <button
+                      type="button"
+                      aria-label="제거"
                       onClick={() => handleRemoveItem(item.category)}
                       className={styles.removeButton}
                     >
@@ -157,6 +154,8 @@ export default function FittingContainer() {
                       className="opacity-10"
                     />
                     <button
+                      type="button"
+                      aria-label="옷 추가"
                       onClick={() => handleAddItem(item.category)}
                       className={styles.addButton}
                     >

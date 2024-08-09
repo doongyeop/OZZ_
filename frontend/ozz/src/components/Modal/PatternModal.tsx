@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Modal from '@/components/Modal'
-import { Pattern, patternMap, patternInvMap } from '@/types/clothing'
+import { Pattern, patternMap } from '@/types/clothing'
 
 type PatternModalProps = {
   onClose: () => void
@@ -78,6 +78,7 @@ export default function PatternModal({ onClose, setValue }: PatternModalProps) {
       </div>
       <div className="mt-2 flex w-full justify-center">
         <button
+          type="button"
           className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
           onClick={handleSave}
         >

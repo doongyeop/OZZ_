@@ -1,8 +1,9 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
-import axios from 'axios'
 
 type LikeButtonProps = {
   boardId: number

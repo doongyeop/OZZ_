@@ -23,18 +23,11 @@ import {
   Texture,
   Color,
   Pattern,
-  sizeMap,
-  fitMap,
   fitInvMap,
-  seasonMap,
   seasonInvMap,
-  styleMap,
   styleInvMap,
-  textureMap,
   textureInvMap,
-  colorMap,
   colorInvMap,
-  patternMap,
   patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
@@ -168,6 +161,18 @@ export default function ClothingForm({
     onSubmit(imageFile, request)
   }
 
+  function formatValue<T extends string>(
+    array: T[],
+    map: { [key in string]: string },
+  ): string {
+    const joined = array.map((item) => map[item]).join(', ')
+    return joined.length > 10 ? `${joined.substring(0, 10)}...` : joined
+  }
+
+  function formatMemo(note: string) {
+    return note.length > 10 ? `${note.substring(0, 10)}...` : note
+  }
+
   const closeModal = () => setOpenModal(null)
 
   const modalItems = [
@@ -191,59 +196,52 @@ export default function ClothingForm({
       path: 'purchase-date',
       component: PurchaseDateModal,
       value: purchaseDate,
-      setValue: (purchaseDate: string) => setPurchaseDate(purchaseDate),
+      setValue: (date: string) => setPurchaseDate(date),
     },
     {
       label: '구매처',
       path: 'purchase-site',
       component: PurchaseSiteModal,
       value: purchaseSite,
-      setValue: (purchaseSite: string) => setPurchaseSite(purchaseSite),
+      setValue: (site: string) => setPurchaseSite(site),
     },
     {
       label: '계절감',
       path: 'season',
       component: SeasonModal,
       value: season ? season.map((s) => seasonInvMap[s]).join(', ') : '',
-      setValue: (season: Season[]) => setSeason(season),
+      setValue: (ss: Season[]) => setSeason(ss),
     },
     {
       label: '사이즈',
       path: 'size',
       component: SizeModal,
       value: size,
-      setValue: (size: Size) => setSize(size),
+      setValue: (s: Size) => setSize(s),
     },
     {
       label: '핏',
       path: 'fit',
       component: FitModal,
       value: fit ? fitInvMap[fit] : '',
-      setValue: (fit: Fit) => setFit(fit),
+      setValue: (f: Fit) => setFit(f),
     },
     {
       label: '소재',
       path: 'texture',
       component: TextureModal,
-      value: texture
-        ? texture.join(', ').length > 20
-          ? `${texture.map((t) => textureInvMap[t]).join(', ')}...`
-          : texture.map((t) => textureInvMap[t]).join(', ')
-        : '',
-      setValue: (texture: Texture[]) => {
-        console.log(texture)
-        console.log('소재 저장')
-        setTexture(texture)
-      },
+      value: texture ? formatValue(texture, textureInvMap) : '',
+      setValue: (t: Texture[]) => setTexture(t),
     },
     {
       label: '색',
       path: 'color',
       component: ColorModal,
       value: color
-        ? color.map((c) => c.name).join(', ').length > 10
-          ? `${color.map((c) => c.name).join(', ')}...`
-          : color.map((c) => c.name).join(', ')
+        ? formatValue(
+            color.map((c) => c.code),
+            colorInvMap,
+          )
         : '',
       setValue: (colors: Color[]) => setColor(colors),
     },
@@ -251,34 +249,22 @@ export default function ClothingForm({
       label: '스타일',
       path: 'style',
       component: StyleModal,
-      value: style
-        ? style.map((s) => styleInvMap[s]).join(', ').length > 10
-          ? `${style.map((s) => styleInvMap[s]).join(', ')}...`
-          : style.map((s) => styleInvMap[s]).join(', ')
-        : '',
-      setValue: (style: Style[]) => setStyle(style),
+      value: style ? formatValue(style, styleInvMap) : '',
+      setValue: (st: Style[]) => setStyle(st),
     },
     {
       label: '패턴',
       path: 'pattern',
       component: PatternModal,
-      value: pattern
-        ? pattern.map((p) => patternInvMap[p]).join(', ').length > 10
-          ? `${pattern.map((p) => patternInvMap[p]).join(', ')}...`
-          : pattern.map((p) => patternInvMap[p]).join(', ')
-        : '',
-      setValue: (pattern: Pattern[]) => setPattern(pattern),
+      value: pattern ? formatValue(pattern, patternInvMap) : '',
+      setValue: (p: Pattern[]) => setPattern(p),
     },
     {
       label: '메모',
       path: 'memo',
       component: MemoModal,
-      value: memo
-        ? memo.length > 10
-          ? `${memo.substring(0, 10)}...`
-          : memo
-        : '',
-      setValue: (memo: string) => setMemo(memo),
+      value: memo ? formatMemo(memo) : '',
+      setValue: (m: string) => setMemo(m),
     },
   ]
 
@@ -341,46 +327,45 @@ export default function ClothingForm({
           </div>
           {/* Form */}
           <div className="w-full max-w-md text-gray-light rounded-lg shadow-md space-y-2 mb-4">
-            {modalItems.map((item, index: number) => (
+            {modalItems.map((item) => (
               <div
-                key={index}
+                key={item.path}
                 className="flex justify-between items-center border-b border-[#000000] border-opacity-30 py-2"
               >
                 <span>{item.label}</span>
 
                 <div className="flex justify-center items-center">
-                  {item.value && (
-                    <>
-                      {item.label === '색' && Array.isArray(color) ? (
-                        <>
-                          {color.slice(0, 3).map((c, index) => (
-                            <div key={c.code} className="flex">
-                              <span
-                                className="inline-block w-5 h-5 rounded-full mr-1.5"
-                                style={{ backgroundColor: c.colorCode }}
-                              />
-                              <span
-                                className="text-primary-400 mr-2"
-                                onClick={() => setOpenModal(item.path)}
-                              >
-                                {c.name}
-                              </span>
-                            </div>
-                          ))}
-                          {color.length > 3 && (
-                            <span className="text-primary-400 mr-2">...</span>
-                          )}
-                        </>
-                      ) : (
-                        <span
-                          className="text-primary-400 mr-2"
-                          onClick={() => setOpenModal(item.path)}
-                        >
-                          {typeof item.value === 'string' ? item.value : ''}
-                        </span>
-                      )}
-                    </>
-                  )}
+                  {item.value &&
+                    (item.label === '색' && Array.isArray(color) ? (
+                      <>
+                        {color.slice(0, 3).map((c) => (
+                          <div key={c.code} className="flex">
+                            <span
+                              className="inline-block w-5 h-5 rounded-full mr-1.5"
+                              style={{ backgroundColor: c.colorCode }}
+                            />
+                            <button
+                              type="button"
+                              className="text-primary-400 mr-2"
+                              onClick={() => setOpenModal(item.path)}
+                            >
+                              {c.name}
+                            </button>
+                          </div>
+                        ))}
+                        {color.length > 3 && (
+                          <span className="text-primary-400 mr-2">...</span>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-primary-400 mr-2"
+                        onClick={() => setOpenModal(item.path)}
+                      >
+                        {typeof item.value === 'string' ? item.value : ''}
+                      </button>
+                    ))}
                   <button
                     onClick={() => setOpenModal(item.path)}
                     className=""

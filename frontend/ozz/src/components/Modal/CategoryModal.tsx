@@ -57,12 +57,13 @@ export default function CategoryModal({
         <>
           <div className="flex flex-wrap w-full pl-1 pr-2 mb-2">
             <button
-              className="px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-secondary text-sm bg-primary-400 font-bold"
               type="button"
+              className="px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-secondary text-sm bg-primary-400 font-bold"
             >
               {selectedMainCategory}
             </button>
             <button
+              type="button"
               onClick={handleBack}
               className="m-1 px-3 py-0.5 rounded-lg border-2 border-primary-400 text-primary-400 text-sm"
             >
