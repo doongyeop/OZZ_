@@ -1,4 +1,5 @@
 import json
+import logging
 
 import os
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
@@ -57,8 +58,6 @@ def leave_only_clothes(image:Image)-> tuple[Image, Image]:
     # Create a mask where the segments to remove are set to 1, others to 0
     mask = np.isin(pred_seg_np, segments_to_remove).astype(np.uint8)
 
-    # Convert the mask to an image
-    mask_image = Image.fromarray(mask * 255).convert("L")
     # Split the original image into channels
     r, g, b = image.split()
 
@@ -86,13 +85,9 @@ def leave_only_clothes(image:Image)-> tuple[Image, Image]:
     # Merge the channels back
     transparent_image = Image.merge("RGBA", (r, g, b, a))
     not_transparent_image = Image.merge("RGB", (r, g, b))
-
-    # # Save the result
-    # output_image_path = os.path.join(output_dir, f"transparent_{filename}.png")
-    # transparent_image.save(output_image_path)
     return transparent_image, not_transparent_image
 
-def cropImg(category : str, trans_image:Image, image:Image):
+def cropImg(category : str, trans_image:Image, image:Image) -> Image:
     # 잘라내기할 카테고리와 라벨 매핑
     if category == "accessory":
         return
@@ -113,7 +108,7 @@ def cropImg(category : str, trans_image:Image, image:Image):
     # 결과 시각화 및 객체 저장
     probas = outputs.logits.softmax(-1)[0, :, :-1]
     bboxes_scaled = rescale_bboxes(outputs.pred_boxes[0].cpu(), image.size)
-    crop_objects(trans_image, probas, bboxes_scaled, category2label[category], threshold=0.5)
+    return crop_objects(trans_image, probas, bboxes_scaled, category2label[category], threshold=0.5)
 
 # Bounding box와 클래스 정보를 얻어오기
 def box_cxcywh_to_xyxy(x):
@@ -141,6 +136,14 @@ def crop_objects(pil_img, prob, boxes, labels, threshold=0.8)->Image:
             return cropped_img
 
 def process(imgUrl, category)-> Image:
-    temp_image=download_img(imgUrl)
-    temp_image,tmp_img=leave_only_clothes(temp_image)
-    return cropImg(category, temp_image, tmp_img)
+    downloaded_img=download_img(imgUrl)
+    logging.info("image download from " + imgUrl)
+    trans_img,not_trans_img = leave_only_clothes(downloaded_img)
+    logging.info("image leaved only clothes -> url : " + imgUrl)
+    image = cropImg(category, trans_img, not_trans_img)
+    if(image is not None):
+        logging.info("image croped category : " + category)
+        return image
+    else:
+        logging.info("image not croped category : " + category)
+        return not_trans_img

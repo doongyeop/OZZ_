@@ -18,8 +18,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +75,14 @@ public class ClothesController {
         return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, request, imageFile));
     }
 
+    @PatchMapping(value = "/{clothesId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "옷 이미지 수정", description = "ID를 통해 특정 옷의 이미지를 수정합니다.")
+    public ResponseEntity<Long> updateClothes(
+            @PathVariable Long clothesId,
+            @RequestPart(required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, imageFile));
+    }
+
     @DeleteMapping("/{clothesId}")
     @Operation(summary = "옷 삭제", description = "ID를 통해 특정 옷을 삭제합니다.")
     public ResponseEntity<Void> deleteClothes(@PathVariable Long clothesId) {
@@ -93,11 +103,9 @@ public class ClothesController {
                 .body(Arrays.stream(property.getPropertyClass().asSubclass(Property.class).getEnumConstants()).map(PropertyResponse::new).toList());
     }
 
-    @PostMapping("/batch")
+    @PostMapping(path="/batch",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "불러오기로 새 옷 추가", description = "온라인 마켓의 구매내역을 통해 옷장을 채웁니다")
-    public ResponseEntity<?> addClothes(@RequestPart List<PurchaseHistory> purchaseHistories) {
-        Long userId = 1L;
-        clothesService.batchRegisterPurchaseHistory(userId, purchaseHistories);
-        return ResponseEntity.ok(0);
+    public Flux<ServerSentEvent<String>> startBatch(@RequestBody List<PurchaseHistory> purchaseHistories) {
+        return clothesService.batchRegisterPurchaseHistory(1L, purchaseHistories);
     }
 }

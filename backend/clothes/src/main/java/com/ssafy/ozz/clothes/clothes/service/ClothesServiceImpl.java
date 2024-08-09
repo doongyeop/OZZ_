@@ -95,6 +95,7 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changeSeason(toBits(request.seasonList()));
         clothes.changeStyle(toBits(request.styleList()));
         clothes.changePattern(toBits(request.patternList()));
+        clothes.changeExtra(request.extra());
         return clothes;
     }
 
@@ -112,6 +113,15 @@ public class ClothesServiceImpl implements ClothesService {
         }
 
         return new ClothesWithFileResponse(clothes, fileInfo);
+    }
+
+    @Override
+    public Long updateClothes(Long clothesId, MultipartFile imageFile) {
+        Clothes clothes = getClothes(clothesId);
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        clothes.updateImageFile(fileInfo.fileId());
+
+        return clothesId;
     }
 
     @Override
@@ -134,26 +144,23 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Flux<ServerSentEvent<String>> batchRegisterPurchaseHistory(Long userId, List<PurchaseHistory> purchaseHistories) {
         int totalItems = purchaseHistories.size();
-        int batchSize = 10;
+        final int batchSize = 10;
 
         Sinks.Many<ServerSentEvent<String>> sink = Sinks.many().unicast().onBackpressureBuffer();
-        System.out.println("요청 저리");
 
-        webClient.mutate().baseUrl("http://localhost:8000").build()
-                .post()
-                .uri("/purchase-history/normalize")
+        webClient.post()
+                .uri("/api/v1/purchase-history/normalize")
                 .bodyValue(purchaseHistories)
                 .retrieve()
                 .bodyToFlux(NormalizedResponse.class)
-                .publishOn(Schedulers.boundedElastic())
-                .publishOn(Schedulers.boundedElastic())
                 .flatMap(response->{
                     int index= response.index()*batchSize;
                     List<ExtractAttribute> extractAttributes = new ArrayList<>();
                     for (NormalizedItem item : response.data()) {
                         if(!item.category().equals("None")){
                             PurchaseHistory purchaseHistory=purchaseHistories.get(index);
-                            Long clothId = clothesRepository.save(purchaseHistory.toEntity(userId,item.name())).getClothesId();
+                            Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name());
+                            Long clothId = clothesRepository.save(normalizedHistory).getClothesId();
                             ExtractAttribute temp=item.toExtractAttribute(clothId, purchaseHistory.imgUrl());
                             extractAttributes.add(temp);
                         }
@@ -161,10 +168,10 @@ public class ClothesServiceImpl implements ClothesService {
                     }
                     mqService.send(extractAttributes);
                     System.out.println(extractAttributes);
-                    return Mono.just(100*((index+1)/((totalItems/batchSize)+1)));
+                    return Mono.just(100*((response.index()+1)/(Math.ceil(totalItems/(double)batchSize))));
                 })
                 .doOnNext(progress -> {
-                    sink.tryEmitNext(ServerSentEvent.builder(progress+"%").build());
+                    sink.tryEmitNext(ServerSentEvent.builder((int)Math.ceil(progress)+"%").build());
                 })
                 .doOnComplete(sink::tryEmitComplete)
                 .subscribe();
