@@ -42,7 +42,12 @@ export default function CategorySidebar() {
     <div className="z-50 absolute left-0 h-full w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
       <div className="flex flex-col">
         <div className="mt-2 text-right">
-          <button onClick={closeSidebar} className="text-primary-400 w-6 h-6">
+          <button
+            onClick={closeSidebar}
+            className="text-primary-400 w-6 h-6"
+            type="button"
+            aria-label="Close sidebar"
+          >
             <IoClose />
           </button>
         </div>
@@ -50,6 +55,7 @@ export default function CategorySidebar() {
           {Object.entries(categories).map(([category, subcategories]) => (
             <div key={category} className="mb-2">
               <button
+                type="button"
                 className={`w-full flex justify-center items-center p-2 text-center text-lg ${
                   expandedCategory === category
                     ? 'text-primary-400'
@@ -63,6 +69,7 @@ export default function CategorySidebar() {
                 <div className="ml-4">
                   {subcategories.map((subcategory) => (
                     <button
+                      type="button"
                       key={subcategory}
                       className="block w-full text-right p-1 text-gray-light hover:text-primary-400"
                       onClick={() => setCategory(category, subcategory)}

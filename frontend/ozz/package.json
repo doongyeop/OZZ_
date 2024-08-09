@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "eslint --fix .",
     "format": "prettier --check --ignore-path .gitignore .",
-    "format:fix": "prettier --write --ignore-path .gitignore ."
+    "format:fix": "prettier --write --ignore-path .gitignore .",
+    "fix": "npm run lint:fix && npm run format:fix"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -51,6 +53,7 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-next": "14.2.5",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",

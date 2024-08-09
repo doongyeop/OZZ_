@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
+import HeaderButton from '@/components/Button/HeaderButton'
 import { FaCirclePlus } from 'react-icons/fa6'
 import { IoNotifications } from 'react-icons/io5'
 

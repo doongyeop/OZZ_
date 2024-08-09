@@ -1,12 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 
 import { CoordishotDetail } from '@/types/coordishot'
 import CoordiTag from '@/components/CoordiTag'
 import CoordishotCard from '@/components/Card/CoordishotCard'
-import CoordiShotContainer from '@/containers/coordishot-page/'
 
 const mockData: CoordishotDetail = {
   boardId: 1,
@@ -95,7 +94,7 @@ const mockData: CoordishotDetail = {
 }
 
 export default function CoordiShotPage({ params }: { params: { id: number } }) {
-  const router = useRouter()
+  // const router = useRouter()
   const [coordishot, setCoordishot] = useState<CoordishotDetail | null>(null)
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 'use client'
+
 import { useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
@@ -20,7 +21,7 @@ export default function CoordiBook() {
 
   const createCoordiBook = () => {
     setCreateModal(true)
-    //코디북 생성 ~~
+    // 코디북 생성 ~~
   }
 
   const closeModal = () => {
@@ -92,7 +93,9 @@ export default function CoordiBook() {
           </svg>
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
-          <span onClick={createCoordiBook}>새 코디북 생성</span>
+          <button type="button" onClick={createCoordiBook}>
+            새 코디북 생성
+          </button>
         </CardTitle>
       </div>
       {mockCoordibooks.map((group) => (
@@ -132,6 +135,7 @@ export default function CoordiBook() {
               </svg>
             </div>
             <button
+              type="button"
               onClick={closeModal}
               className="px-3 py-1 mt-4 rounded-full text-sm text-primary-400 border border-primary-400 font-bold hover:text-secondary hover:bg-primary-400"
             >

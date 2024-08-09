@@ -62,11 +62,21 @@ export default function TextureModal({ onClose, setValue }: TextureModalProps) {
 
   const handleSave = () => {
     const selectedList: Texture[] = Object.entries(selectedMaterials)
-      .filter(([_, isSelected]) => isSelected)
+      .filter(([, isSelected]) => isSelected)
       .map(([material]) => textureMap[material as keyof typeof textureMap])
     setValue(selectedList)
-    console.log('텍스쳐 모달 : ', selectedList)
     onClose()
+  }
+
+  const getButtonClassName = (material: string) => {
+    if (material === '기타') {
+      return showOtherMaterials
+        ? 'border-primary-400 text-secondary bg-primary-400'
+        : 'border-primary-400 text-primary-400 bg-secondary'
+    }
+    return selectedMaterials[material]
+      ? 'border-primary-400 text-secondary bg-primary-400'
+      : 'border-primary-400 text-primary-400 bg-secondary'
   }
 
   return (
@@ -76,15 +86,7 @@ export default function TextureModal({ onClose, setValue }: TextureModalProps) {
           <button
             key={material}
             type="button"
-            className={`px-2 py-0.5 m-1 rounded-lg border-2 text-sm ${
-              material === '기타'
-                ? showOtherMaterials
-                  ? 'border-primary-400 text-secondary bg-primary-400'
-                  : 'border-primary-400 text-primary-400 bg-secondary'
-                : selectedMaterials[material]
-                  ? 'border-primary-400 text-secondary bg-primary-400'
-                  : 'border-primary-400 text-primary-400 bg-secondary'
-            }`}
+            className={`px-2 py-0.5 m-1 rounded-lg border-2 text-sm ${getButtonClassName(material)}`}
             onClick={() => {
               if (material === '기타') {
                 setShowOtherMaterials(!showOtherMaterials)
@@ -116,6 +118,7 @@ export default function TextureModal({ onClose, setValue }: TextureModalProps) {
         )}
         <div className="mt-2 flex w-full justify-center">
           <button
+            type="button"
             className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
             onClick={handleSave}
           >

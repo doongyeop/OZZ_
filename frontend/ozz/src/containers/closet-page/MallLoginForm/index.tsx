@@ -62,7 +62,7 @@ export function InputForm({ mall }: { mall: string }) {
   }
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
+    /* eslint-disable react/jsx-props-no-spreading */
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-3">
         <FormField

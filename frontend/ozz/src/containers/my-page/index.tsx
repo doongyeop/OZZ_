@@ -1,6 +1,8 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Image from 'next/image'
 import Modal from '@/components/Modal'
 import { Api as UserApi } from '@/types/user/Api'
 import { Api as FileApi } from '@/types/file/Api'
@@ -38,7 +40,12 @@ const authApi = new AuthApi({
   }),
 })
 
-const MyPageIndex = () => {
+export default function MyPageIndex() {
+  const user = {
+    nickname: 'ozz',
+    email: '123123@ozz.com',
+    profile_file_id: null,
+  }
   const router = useRouter()
   const [modal, setModal] = useState(false)
   const [user, setUser] = useState({})
@@ -116,10 +123,13 @@ const MyPageIndex = () => {
     <div className="flex flex-col items-center p-4 min-h-screen">
       <div className="flex items-center p-6 rounded-lg w-full max-w-sm">
         {profileSrc ? (
-          <img
+          <Image
             src={profileSrc}
             alt="프로필 사진"
             className="rounded-full w-16 h-16"
+            width={64} // w-16에 해당하는 픽셀 값
+            height={64} // h-16에 해당하는 픽셀 값
+            priority // 페이지 로딩 시 우선적으로 로드할 경우
           />
         ) : (
           <FaUser className="fill-gray-300 w-16 h-16 rounded-full" />
@@ -135,19 +145,40 @@ const MyPageIndex = () => {
       </div>
       <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-96 rounded-lg h-24 font-medium text-sm">
         <button
+          type="button"
           onClick={goCoordiShot}
           className="flex-1 py-2 flex flex-col items-center justify-center h-24 "
         >
           <HiPhotograph className="fill-primary-400 w-5 h-5" />
           코디샷
         </button>
-        <span className="w-px bg-primary-400 my-8"></span>
-        <button className="flex-1 py-2 flex flex-col items-center justify-center">
-          <HiBell className="w-5 h-5 fill-primary-400" />
+        <span className="w-px bg-primary-400 my-8" />
+        <button
+          type="button"
+          className="flex-1 py-2 flex flex-col items-center justify-center"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="mb-2"
+          >
+            <path
+              d="M10 2C6.68632 2 4.00003 4.68629 4.00003 8V11.5858L3.29292 12.2929C3.00692 12.5789 2.92137 13.009 3.07615 13.3827C3.23093 13.7564 3.59557 14 4.00003 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L16 11.5858V8C16 4.68629 13.3137 2 10 2Z"
+              className="fill-primary-400"
+            />
+            <path
+              d="M10 18C8.34315 18 7 16.6569 7 15H13C13 16.6569 11.6569 18 10 18Z"
+              className="fill-primary-400"
+            />
+          </svg>
           알림
         </button>
-        <span className="w-px bg-primary-400 my-8"></span>
+        <span className="w-px bg-primary-400 my-8" />
         <button
+          type="button"
           onClick={goSetting}
           className="flex-1 py-2 flex flex-col items-center justify-center"
         >
@@ -157,10 +188,20 @@ const MyPageIndex = () => {
       </div>
       <div className="flex flex-col mt-4 space-y-2 w-full max-w-sm text-sm font-medium">
         <h3 className="font-bold text-base py-2">더보기</h3>
-        <button className="py-2 text-left">서비스 소개</button>
-        <button className="py-2 text-left">약관 및 정책</button>
-        <button className="py-2 text-left">오픈소스 라이브러리</button>
-        <button className="py-2 text-left" onClick={() => setModal(true)}>
+        <button type="button" className="py-2 text-left">
+          서비스 소개
+        </button>
+        <button type="button" className="py-2 text-left">
+          약관 및 정책
+        </button>
+        <button type="button" className="py-2 text-left">
+          오픈소스 라이브러리
+        </button>
+        <button
+          type="button"
+          className="py-2 text-left"
+          onClick={() => setModal(true)}
+        >
           로그아웃
         </button>
         {modal && (
@@ -170,13 +211,15 @@ const MyPageIndex = () => {
             </p>
             <div className="flex justify-center mt-4">
               <button
+                type="button"
                 onClick={() => setModal(false)}
                 className="font-bold mr-4 p-1 w-14 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
               >
                 아니오
               </button>
               <button
-                onClick={() => logOut(user.id)}
+                type="button"
+                onClick={logOut}
                 className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
               >
                 예
@@ -188,5 +231,3 @@ const MyPageIndex = () => {
     </div>
   )
 }
-
-export default MyPageIndex

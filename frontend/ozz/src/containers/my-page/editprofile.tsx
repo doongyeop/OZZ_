@@ -1,6 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { DatePicker } from '@/components/Datepicker'
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { useState, ReactNode, useCallback } from 'react'
+import Image from 'next/image'
+// import DatePicker from '@/components/Datepicker'
 import Modal from '@/components/Modal'
 import UploadModal from './modal'
 import { Api as FileApi } from '@/types/file/Api'
@@ -16,87 +20,75 @@ const fileApi = new FileApi({
   }),
 })
 
-const ProfileEdit = () => {
-  const [user, setUser] = useState<any>(null)
-  const [profilePic, setProfilePic] = useState<any>(null)
+interface FieldProps {
+  label: string
+  id: string
+  children: ReactNode
+}
+
+function Field({ label, id, children }: FieldProps) {
+  return (
+    <div className="w-full text-sm font-medium">
+      <label htmlFor={id}>{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function ProfileEdit() {
+  const [user, setUser] = useState({
+    birth: '1998-12-07',
+    nickname: '까미언니',
+    email: 'kkamisister1207@gmail.com',
+    profile_file_id: 'https://cdn2.thecatapi.com/images/2nk.jpg',
+  })
+
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
 
-  function get_cookie(name: string) {
-    var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)')
-    return value ? value[2] : null
-  }
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = get_cookie('userInfo')
-      if (userData) {
-        const parsedData = JSON.parse(decodeURIComponent(userData))
-        console.log(parsedData)
-        setUser(parsedData)
-        // console.log('사진파일아이디는요~!~!~!~', parsedData.profileFileId)
-        await getProfilePic(parsedData.profileFileId)
-      }
-    }
-    fetchUser()
-  }, [])
-  const getProfilePic = async (picId: number) => {
-    try {
-      const response = await fileApi.getFile(picId)
-      const data = await response.json()
-      setProfilePic(data)
-      const picRes = await fileApi.downloadFile(data.filePath)
-      const blob = await picRes.blob()
-      const urlStr = URL.createObjectURL(blob)
-      setProfilePic(urlStr)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  function toggleProfileModal() {
+  const toggleProfileModal = useCallback(() => {
     if (profileModal) {
       setUploadModal(false) // ProfileModal이 닫힐 때 UploadModal도 닫기
     }
     setProfileModal((prev) => !prev)
-  }
+  }, [profileModal])
 
-  function toggleDeleteModal() {
+  const toggleDeleteModal = useCallback(() => {
     setDeleteModal((prev) => !prev)
-  }
+  }, [])
 
-  function toggleUploadModal() {
+  const toggleUploadModal = useCallback(() => {
     setUploadModal((prev) => !prev)
-  }
+  }, [])
 
-  function resetProfilePic() {
-    setUser((prev: any) => ({
-      ...prev,
-      profileFileId: null,
-    }))
-  }
+  const resetProfilePic = useCallback(() => {
+    // setUser((prev) => ({
+    //   ...prev,
+    //   profile_file_id: null,
+    // }))
+  }, [])
 
-  const handleDateChange = (date: Date) => {
-    setUser((prev: any) => ({
-      ...prev,
-      birth: date,
-    }))
-  }
-
-  const deleteUser = () => {
+  const deleteUser = useCallback(() => {
     // 회원 탈퇴 로직 추가
     console.log('회원 탈퇴 처리')
-  }
+  }, [])
+  const handleResetProfilePic = useCallback(() => {
+    resetProfilePic()
+    toggleProfileModal()
+  }, [resetProfilePic, toggleProfileModal])
 
   return (
     <div className="relative w-full min-h-screen max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
-        {profilePic ? (
-          <img
-            src={profilePic}
+        {user.profile_file_id ? (
+          <Image
+            src={user.profile_file_id}
             alt="프로필 이미지"
-            className="w-[100px] h-[100px] rounded-full"
+            width={100}
+            height={100}
+            className="rounded-full"
           />
         ) : (
           <svg
@@ -118,6 +110,7 @@ const ProfileEdit = () => {
           </svg>
         )}
         <button
+          type="button"
           onClick={toggleProfileModal}
           className="w-32 mt-2 px-4 py-2 border border-primary-400 text-xs font-medium rounded h-[30px] flex items-center justify-center hover:bg-primary-400 hover:text-white"
         >
@@ -130,14 +123,16 @@ const ProfileEdit = () => {
             className="overflow-visible"
           >
             <div className="relative text-sm text-white flex flex-col space-y-4 px-3">
-              <button onClick={toggleUploadModal} className="text-left">
+              <button
+                type="button"
+                onClick={toggleUploadModal}
+                className="text-left"
+              >
                 사진 올리기
               </button>
               <button
-                onClick={() => {
-                  resetProfilePic()
-                  toggleProfileModal()
-                }}
+                type="button"
+                onClick={() => handleResetProfilePic}
                 className="text-left"
               >
                 기본 이미지로 변경
@@ -189,15 +184,16 @@ const ProfileEdit = () => {
           </div>
         </Field>
 
-        <Field label="생년월일" id="birth">
+        {/* <Field label="생년월일" id="birth">
           <DatePicker
             defaultValue={user?.birth}
             buttonClassName="w-[360px] text-xs font-medium border-[#ECECEE] h-[30px] rounded hover:border-primary-400"
-            onDateChange={handleDateChange}
+            onDateChange={}
           />
-        </Field>
+        </Field> */}
       </div>
       <button
+        type="button"
         onClick={toggleDeleteModal}
         className="text-xs absolute bottom-8 w-full border border-[#DB6262] text-[#DB6262] h-[30px] flex items-center justify-center rounded px-2 py-1"
       >
@@ -215,12 +211,14 @@ const ProfileEdit = () => {
             </div>
             <div className="space-x-4 text-primary-400 text-sm flex justify-center font-bold">
               <button
+                type="button"
                 onClick={toggleDeleteModal}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
                 취소
               </button>
               <button
+                type="button"
                 onClick={deleteUser}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
@@ -233,20 +231,5 @@ const ProfileEdit = () => {
     </div>
   )
 }
-
-const Field = ({
-  label,
-  id,
-  children,
-}: {
-  label: string
-  id: string
-  children: React.ReactNode
-}) => (
-  <div className="w-full text-sm font-medium">
-    <label htmlFor={id}>{label}</label>
-    {children}
-  </div>
-)
 
 export default ProfileEdit

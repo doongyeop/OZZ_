@@ -6,7 +6,7 @@ import Modal from '@/components/Modal'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import cn from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -39,7 +39,7 @@ export default function PurchaseDateModal({
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant={'outline'}
+            variant="outline"
             className={cn(
               'w-full justify-start text-left font-normal ',
               // !purchaseDate && 'text-muted-foreground',

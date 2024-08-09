@@ -4,7 +4,7 @@ import axios from 'axios'
 import { ClothingData } from '@/types/clothing'
 
 export const createClothing = async (data: FormData) => {
-  //TODO: 추후 수정
+  // TODO: 추후 수정
   try {
     const response = await axios.post('/api/clothing', data, {
       headers: {
@@ -21,7 +21,7 @@ export const createClothing = async (data: FormData) => {
 }
 
 export const updateClothing = async (id: number, data: FormData) => {
-  //TODO: 옷 상세 조회
+  // TODO: 옷 상세 조회
   const response = await axios.put(`/api/clothes/${id}`, data)
   return response.data
 }
@@ -98,13 +98,13 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   categoryName: '상의 > 반팔',
   purchaseDate: '2023-01-01',
   purchaseSite: '온라인 스토어',
-  season: ['봄', '가을'],
+  season: ['SPRING', 'AUTUMN'],
   size: 'M',
-  fit: '레귤러핏',
-  texture: ['면', '폴리에스터'],
-  color: [{ name: '검정', code: '#000000' }],
-  style: ['캐주얼', '데일리'],
-  pattern: { name: '무지', img: 'graphic.png' },
+  fit: 'REGULAR_FIT',
+  texture: ['COTTON', 'SYNTHETIC_POLYESTER'],
+  color: [],
+  style: ['CASUAL', 'STREET'],
+  pattern: ['SOLID'],
   memo: '자주 입는 옷입니다.',
   image: null, // 실제 이미지 파일은 목업 데이터에서 제외
 })

@@ -17,10 +17,10 @@ export default function SeasonModal({ onClose, setValue }: SeasonModalProps) {
     겨울: false,
   })
 
-  const toggleSeason = (season: string) => {
+  const toggleSeason = (prevSeason: string) => {
     setSeason((prevSeasons) => ({
       ...prevSeasons,
-      [season]: !prevSeasons[season],
+      [prevSeason]: !prevSeasons[prevSeason],
     }))
   }
 
@@ -54,6 +54,7 @@ export default function SeasonModal({ onClose, setValue }: SeasonModalProps) {
       </div>
       <div className="mt-2 flex w-full justify-center">
         <button
+          type="button"
           className="w-[55px] h-[25px] border-2 border-primary-400 rounded-2xl bg-secondary text-primary-400 text-xs font-semibold hover:bg-primary-400 hover:text-secondary"
           onClick={handleSave}
         >

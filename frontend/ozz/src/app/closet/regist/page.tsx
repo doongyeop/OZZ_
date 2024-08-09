@@ -10,7 +10,8 @@ import {
 } from '@/types/clothes/data-contracts'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2Mjg0NywiZXhwIjoxNzIzMjIyODQ3fQ.SmqFRmLOjNlfUMwlQaySKZp5ezkavyoTm2kLyJ62Qxo'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzE2MTk1NywiZXhwIjoxNzIzMjIxOTU3fQ.VY4NlD1UxVPhLKbtSxhASn2Y4IeabKJwxSGQ9-AuaK0'
+
 const api = new ClothesApi({
   securityWorker: async () => ({
     headers: {
