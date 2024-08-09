@@ -2,6 +2,7 @@ package com.ssafy.ozz.auth.global.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -51,5 +52,7 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
     }
     // 모두 추출
-
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).build().parseSignedClaims(token).getBody();
+    }
 }
