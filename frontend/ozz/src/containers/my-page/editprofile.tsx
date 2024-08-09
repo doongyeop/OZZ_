@@ -1,18 +1,32 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { useState, ReactNode, useCallback } from 'react'
 import Image from 'next/image'
-// import DatePicker from '@/components/Datepicker'
 import Modal from '@/components/Modal'
 import UploadModal from './modal'
 import { Api as FileApi } from '@/types/file/Api'
+import { Api as AuthApi } from '@/types/auth/Api'
+import { Api as UserApi } from '@/types/user/Api'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE3NTY1MSwiZXhwIjoxNzIzMjM1NjUxfQ.mhY4jM6zYKYI6pClJcSAQvcjrjNX8v8GFv054TYucB4'
+const token = 'your_token_here'
 
 const fileApi = new FileApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+const authApi = new AuthApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+const userApi = new UserApi({
   securityWorker: async () => ({
     headers: {
       Authorization: `Bearer ${token}`,
@@ -36,20 +50,21 @@ function Field({ label, id, children }: FieldProps) {
 }
 
 function ProfileEdit() {
-  const [user, setUser] = useState({
-    birth: '1998-12-07',
-    nickname: '까미언니',
-    email: 'kkamisister1207@gmail.com',
-    profile_file_id: 'https://cdn2.thecatapi.com/images/2nk.jpg',
-  })
-
+  const [user, setUser] = useState<any>({})
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
 
+  async function getUser() {
+    const response = await userApi.getUserInfo()
+    const data = await response.json()
+    console.log('data', data)
+    setUser(data)
+  }
+
   const toggleProfileModal = useCallback(() => {
     if (profileModal) {
-      setUploadModal(false) // ProfileModal이 닫힐 때 UploadModal도 닫기
+      setUploadModal(false)
     }
     setProfileModal((prev) => !prev)
   }, [profileModal])
@@ -63,16 +78,12 @@ function ProfileEdit() {
   }, [])
 
   const resetProfilePic = useCallback(() => {
-    // setUser((prev) => ({
-    //   ...prev,
-    //   profile_file_id: null,
-    // }))
+    setUser((prev: any) => ({
+      ...prev,
+      profile_file_id: null,
+    }))
   }, [])
 
-  const deleteUser = useCallback(() => {
-    // 회원 탈퇴 로직 추가
-    console.log('회원 탈퇴 처리')
-  }, [])
   const handleResetProfilePic = useCallback(() => {
     resetProfilePic()
     toggleProfileModal()
@@ -132,7 +143,7 @@ function ProfileEdit() {
               </button>
               <button
                 type="button"
-                onClick={() => handleResetProfilePic}
+                onClick={handleResetProfilePic}
                 className="text-left"
               >
                 기본 이미지로 변경
@@ -183,14 +194,6 @@ function ProfileEdit() {
             </div>
           </div>
         </Field>
-
-        {/* <Field label="생년월일" id="birth">
-          <DatePicker
-            defaultValue={user?.birth}
-            buttonClassName="w-[360px] text-xs font-medium border-[#ECECEE] h-[30px] rounded hover:border-primary-400"
-            onDateChange={}
-          />
-        </Field> */}
       </div>
       <button
         type="button"

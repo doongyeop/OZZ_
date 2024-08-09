@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
 import { Api as UserApi } from '@/types/user/Api'
@@ -12,6 +12,7 @@ import { HiPhotograph } from 'react-icons/hi'
 import { HiBell } from 'react-icons/hi'
 import { IoIosSettings } from 'react-icons/io'
 import { FaChevronRight } from 'react-icons/fa'
+import LoadingPage from '@/components/Loading/loading'
 
 const token =
   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE3NTY1MSwiZXhwIjoxNzIzMjM1NjUxfQ.mhY4jM6zYKYI6pClJcSAQvcjrjNX8v8GFv054TYucB4'
@@ -41,20 +42,16 @@ const authApi = new AuthApi({
 })
 
 export default function MyPageIndex() {
-  const user = {
-    nickname: 'ozz',
-    email: '123123@ozz.com',
-    profile_file_id: null,
-  }
   const router = useRouter()
   const [modal, setModal] = useState(false)
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState()
   const [profileSrc, setProfileSrc] = useState('')
-  const [profilePic, setProfilePic] = useState({})
+  const [profilePic, setProfilePic] = useState()
   const setCookie = (name: string, value: any, days: number) => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString()
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
   }
+  const [loading, setLoading] = useState(true)
 
   const deleteAllCookies = () => {
     document.cookie.split(';').forEach((cookie) => {
@@ -89,6 +86,8 @@ export default function MyPageIndex() {
       }
     } catch (error) {
       console.error('유저 정보를 가져오는 중 오류 발생:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -109,7 +108,7 @@ export default function MyPageIndex() {
 
   const logOut = async (userId: number) => {
     try {
-      console.log('userId로전달되고있는 건요ㅕ,,', userId)
+      console.log('userId로 전달되고 있는 건요:', userId)
       const response = await authApi.deleteRefreshTokenOfUser(userId)
       console.log(response)
       deleteAllCookies()
@@ -121,113 +120,106 @@ export default function MyPageIndex() {
 
   return (
     <div className="flex flex-col items-center p-4 min-h-screen">
-      <div className="flex items-center p-6 rounded-lg w-full max-w-sm">
-        {profileSrc ? (
-          <Image
-            src={profileSrc}
-            alt="프로필 사진"
-            className="rounded-full w-16 h-16"
-            width={64} // w-16에 해당하는 픽셀 값
-            height={64} // h-16에 해당하는 픽셀 값
-            priority // 페이지 로딩 시 우선적으로 로드할 경우
-          />
-        ) : (
-          <FaUser className="fill-gray-300 w-16 h-16 rounded-full" />
-        )}
-        <div className="ml-4 flex-1">
-          <div className="bg-secondary text-primary-400 font-bold text-xl inline-block">
-            {user.nickname}
-          </div>
-          <span className="font-bold text-xl">님</span>
-          <div className="text-secondary text-sm">{user.email}</div>
-        </div>
-        <FaChevronRight onClick={goEdit} className="w-7 fill-[#CCCED0]" />
-      </div>
-      <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-96 rounded-lg h-24 font-medium text-sm">
-        <button
-          type="button"
-          onClick={goCoordiShot}
-          className="flex-1 py-2 flex flex-col items-center justify-center h-24 "
-        >
-          <HiPhotograph className="fill-primary-400 w-5 h-5" />
-          코디샷
-        </button>
-        <span className="w-px bg-primary-400 my-8" />
-        <button
-          type="button"
-          className="flex-1 py-2 flex flex-col items-center justify-center"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="mb-2"
-          >
-            <path
-              d="M10 2C6.68632 2 4.00003 4.68629 4.00003 8V11.5858L3.29292 12.2929C3.00692 12.5789 2.92137 13.009 3.07615 13.3827C3.23093 13.7564 3.59557 14 4.00003 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L16 11.5858V8C16 4.68629 13.3137 2 10 2Z"
-              className="fill-primary-400"
-            />
-            <path
-              d="M10 18C8.34315 18 7 16.6569 7 15H13C13 16.6569 11.6569 18 10 18Z"
-              className="fill-primary-400"
-            />
-          </svg>
-          알림
-        </button>
-        <span className="w-px bg-primary-400 my-8" />
-        <button
-          type="button"
-          onClick={goSetting}
-          className="flex-1 py-2 flex flex-col items-center justify-center"
-        >
-          <IoIosSettings className="fill-primary-400 w-5 h-5" />
-          설정
-        </button>
-      </div>
-      <div className="flex flex-col mt-4 space-y-2 w-full max-w-sm text-sm font-medium">
-        <h3 className="font-bold text-base py-2">더보기</h3>
-        <button type="button" className="py-2 text-left">
-          서비스 소개
-        </button>
-        <button type="button" className="py-2 text-left">
-          약관 및 정책
-        </button>
-        <button type="button" className="py-2 text-left">
-          오픈소스 라이브러리
-        </button>
-        <button
-          type="button"
-          className="py-2 text-left"
-          onClick={() => setModal(true)}
-        >
-          로그아웃
-        </button>
-        {modal && (
-          <Modal onClose={() => setModal(false)}>
-            <p className="font-bold text-base text-center text-primary-400">
-              로그아웃 하시겠습니까?
-            </p>
-            <div className="flex justify-center mt-4">
-              <button
-                type="button"
-                onClick={() => setModal(false)}
-                className="font-bold mr-4 p-1 w-14 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
-              >
-                아니오
-              </button>
-              <button
-                type="button"
-                onClick={logOut}
-                className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
-              >
-                예
-              </button>
+      {loading ? (
+        <LoadingPage
+          messages={['유저 정보를', '로딩 중입니다']}
+          footerMessage={'조금만 기다려주세요'}
+        />
+      ) : (
+        <div>
+          <div className="flex items-center p-6 rounded-lg w-full max-w-sm">
+            {profileSrc ? (
+              <Image
+                src={profileSrc}
+                alt="프로필 사진"
+                className="rounded-full w-16 h-16"
+                width={64} // w-16에 해당하는 픽셀 값
+                height={64} // h-16에 해당하는 픽셀 값
+                priority // 페이지 로딩 시 우선적으로 로드할 경우
+              />
+            ) : (
+              <FaUser className="fill-gray-300 w-16 h-16 rounded-full" />
+            )}
+            <div className="ml-4 flex-1">
+              <div className="bg-secondary text-primary-400 font-bold text-xl inline-block">
+                {user.nickname}
+              </div>
+              <span className="font-bold text-xl">님</span>
+              <div className="text-secondary text-sm">{user.email}</div>
             </div>
-          </Modal>
-        )}
-      </div>
+            <FaChevronRight onClick={goEdit} className="w-7 fill-[#CCCED0]" />
+          </div>
+          <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-96 rounded-lg h-24 font-medium text-sm">
+            <button
+              type="button"
+              onClick={goCoordiShot}
+              className="flex-1 py-2 flex flex-col items-center justify-center h-24 "
+            >
+              <HiPhotograph className="fill-primary-400 w-5 h-5" />
+              코디샷
+            </button>
+            <span className="w-px bg-primary-400 my-8" />
+            <button
+              type="button"
+              className="flex-1 py-2 flex flex-col items-center justify-center"
+            >
+              <HiBell className="fill-primary-400 w-5 h-5" />
+              알림
+            </button>
+            <span className="w-px bg-primary-400 my-8" />
+            <button
+              type="button"
+              onClick={goSetting}
+              className="flex-1 py-2 flex flex-col items-center justify-center"
+            >
+              <IoIosSettings className="fill-primary-400 w-5 h-5" />
+              설정
+            </button>
+          </div>
+          <div className="flex flex-col mt-4 space-y-2 w-full max-w-sm text-sm font-medium">
+            <h3 className="font-bold text-base py-2">더보기</h3>
+            <button type="button" className="py-2 text-left">
+              서비스 소개
+            </button>
+            <button type="button" className="py-2 text-left">
+              약관 및 정책
+            </button>
+            <button type="button" className="py-2 text-left">
+              오픈소스 라이브러리
+            </button>
+            <button
+              type="button"
+              className="py-2 text-left"
+              onClick={() => setModal(true)}
+            >
+              로그아웃
+            </button>
+            {modal && (
+              <Modal onClose={() => setModal(false)}>
+                <p className="font-bold text-base text-center text-primary-400">
+                  로그아웃 하시겠습니까?
+                </p>
+                <div className="flex justify-center mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setModal(false)}
+                    className="font-bold mr-4 p-1 w-14 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
+                  >
+                    아니오
+                  </button>
+                  <button
+                    type="button"
+                    onClick={logOut(user.id)}
+                    className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
+                  >
+                    예
+                  </button>
+                </div>
+              </Modal>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
