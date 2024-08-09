@@ -46,6 +46,7 @@ public class BoardServiceImpl implements BoardService {
                 .imgFileId(imgFileId)
                 .userId(userId)
                 .age(request.age())
+                .coordinateId(request.coordinateId())
                 .style(toBits(request.styleList()))
                 .likes(0)
                 .createdDate(new Date())
