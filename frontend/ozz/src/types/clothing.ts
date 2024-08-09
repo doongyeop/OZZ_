@@ -13,7 +13,7 @@ export interface ClothingData {
   style: Style[] | null
   pattern: Pattern[] | null
   memo: string | null
-  image: File | null
+  image: string | null
 }
 
 export interface Color {
@@ -518,4 +518,27 @@ export const colorInvMap: { [key: string]: string } = {
   와인: 'WINE',
   네온: 'NEON',
   골드: 'GOLD',
+}
+
+export const colorCodeMap: {[key: string]:string} = {
+  WHITE: '#FFFFFF',
+  BLACK: '#000000',
+  GRAY: '#E7E7E7',
+  RED: '#FF0000',
+  PINK: '#FEE0DE',
+  ORANGE: '#FF820E',
+  BEIGE: '#E2C79C',
+  YELLOW: '#FEE600',
+  BROWN: '#844F1D',
+  GREEN: '#1A9268',
+  KHAKI: '#666B17',
+  MINT: '#6BF1D8',
+  BLUE: '#1F4CE3',
+  NAVY: '#060350',
+  SKY: '#C5E3FF',
+  PURPLE: '#9C53BE',
+  LAVENDER: '#D7BEF5',
+  WINE: '#9E213F',
+  NEON: '#2FF40A',
+  GOLD: '#E6C345',
 }

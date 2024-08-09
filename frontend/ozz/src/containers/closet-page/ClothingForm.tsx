@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo  } from 'react'
 import Image from 'next/image'
 import BrandModal from '@/components/Modal/BrandModal'
 import CategoryModal from '@/components/Modal/CategoryModal'
@@ -27,6 +27,7 @@ import {
   seasonInvMap,
   styleInvMap,
   textureInvMap,
+  colorMap,
   colorInvMap,
   patternInvMap,
   categoryNameToLowIdMap,
@@ -55,7 +56,7 @@ export default function ClothingForm({
   const [size, setSize] = useState<Size>('FREE')
   const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
-  const [color, setColor] = useState<Color[] | null>([])
+  const [color, setColor] = useState<Color[]>([])
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
@@ -65,7 +66,6 @@ export default function ClothingForm({
 
   useEffect(() => {
     if (initialData) {
-      console.log('initialData', initialData)
       setName(initialData.name || '')
       setBrandName(initialData.brandName || '')
       setCategoryName(initialData.categoryName || '')
@@ -82,7 +82,7 @@ export default function ClothingForm({
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
       if (initialData.image) {
-        setImagePreview(URL.createObjectURL(initialData.image))
+        setImagePreview(initialData.image)
       }
     }
   }, [initialData])
@@ -174,7 +174,7 @@ export default function ClothingForm({
   }
 
   const closeModal = () => setOpenModal(null)
-
+  
   const modalItems = [
     {
       label: '브랜드',
@@ -240,7 +240,7 @@ export default function ClothingForm({
       value: color
         ? formatValue(
             color.map((c) => c.code),
-            colorInvMap,
+            colorMap,
           )
         : '',
       setValue: (colors: Color[]) => setColor(colors),
@@ -267,7 +267,6 @@ export default function ClothingForm({
       setValue: (m: string) => setMemo(m),
     },
   ]
-
   return (
     <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
       <form onSubmit={handleSubmit}>
@@ -337,22 +336,24 @@ export default function ClothingForm({
                 <div className="flex justify-center items-center">
                   {item.value &&
                     (item.label === '색' && Array.isArray(color) ? (
-                      <>
-                        {color.slice(0, 3).map((c) => (
-                          <div key={c.code} className="flex">
-                            <span
-                              className="inline-block w-5 h-5 rounded-full mr-1.5"
-                              style={{ backgroundColor: c.colorCode }}
-                            />
-                            <button
-                              type="button"
-                              className="text-primary-400 mr-2"
-                              onClick={() => setOpenModal(item.path)}
-                            >
-                              {c.name}
-                            </button>
-                          </div>
-                        ))}
+                    <>
+                      {color.slice(0, 3).map((c) => {
+                            return (
+                              <div key={c.code} className="flex">
+                                <span
+                                  className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                  style={{ backgroundColor: c.colorCode }}
+                                />
+                                <button
+                                  type="button"
+                                  className="text-primary-400 mr-2"
+                                  onClick={() => setOpenModal(item.path)}
+                                >
+                                  {c.name}
+                                </button>
+                              </div>
+                            );
+                        })}
                         {color.length > 3 && (
                           <span className="text-primary-400 mr-2">...</span>
                         )}
