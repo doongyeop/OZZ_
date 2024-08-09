@@ -29,7 +29,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     @Override
     @Transactional
     public boolean toggleLike(Long boardId, Long userId) {
-        Optional<BoardLikes> existingLike = boardLikesRepository.findById(new BoardLikes.BoardLikesId(boardId, userId));
+        Optional<BoardLikes> existingLike = boardLikesRepository.findByBoard_IdAndUser_Id(boardId, userId);
 
         if (existingLike.isPresent()) {
             boardLikesRepository.delete(existingLike.get());
