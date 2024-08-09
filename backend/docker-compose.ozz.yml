@@ -27,8 +27,10 @@ services:
       SPRING_ELASTICSEARCH_USERNAME: ${SPRING_ELASTICSEARCH_USERNAME}
       SPRING_ELASTICSEARCH_PASSWORD: ${SPRING_ELASTICSEARCH_PASSWORD}
       FASTAPI_URL: http://ozz-ai:${AI_PORT}
+      RABBITMQ_HOST: rabbitmq
     networks:
       - spring-cloud-network
+      - message-queue-network
     depends_on:
       - ozz-eureka
       - ozz-file
@@ -92,6 +94,19 @@ services:
       - ozz-eureka
       - ozz-auth
 
+  ozz-ai:
+    container_name: ozz-ai
+    build: ./ai
+    environment:
+      - AI_PORT=${AI_PORT}
+      - RABBITMQ_HOST=rabbitmq
+      - CLOTHES_ENDPOINT=http://ozz-clothes:${CLOTHES_PORT}/api/clothes
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - ${AI_PORT}:${AI_PORT}
+    networks:
+      - message-queue-network
+
   ozz-favorite:
     container_name: ozz-favorite
     build: ./favorite
@@ -126,14 +141,6 @@ services:
     depends_on:
       - ozz-eureka
 
-  ozz-ai:
-    container_name: ozz-ai
-    build: ./ai
-    ports:
-      - ${AI_PORT}:${AI_PORT}
-    networks:
-      - spring-cloud-network
-
   ozz-gateway:
     container_name: ozz-gateway
     build: ./gateway
@@ -161,4 +168,6 @@ volumes:
 
 networks:
   spring-cloud-network:
+    driver: bridge
+  message-queue-network:
     driver: bridge
