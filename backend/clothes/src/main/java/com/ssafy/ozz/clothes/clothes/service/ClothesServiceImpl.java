@@ -117,6 +117,15 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
+    public Long updateClothes(Long clothesId, MultipartFile imageFile) {
+        Clothes clothes = getClothes(clothesId);
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        clothes.updateImageFile(fileInfo.fileId());
+
+        return clothesId;
+    }
+
+    @Override
     public void deleteClothes(Long clothesId) {
         clothesRepository.deleteById(clothesId);
     }
@@ -151,7 +160,8 @@ public class ClothesServiceImpl implements ClothesService {
                     for (NormalizedItem item : response.data()) {
                         if(!item.category().equals("None")){
                             PurchaseHistory purchaseHistory=purchaseHistories.get(index);
-                            Long clothId = clothesRepository.save(purchaseHistory.toEntity(userId,item.name())).getClothesId();
+                            Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name());
+                            Long clothId = clothesRepository.save(normalizedHistory).getClothesId();
                             ExtractAttribute temp=item.toExtractAttribute(clothId, purchaseHistory.imgUrl());
                             extractAttributes.add(temp);
                         }

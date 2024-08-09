@@ -75,6 +75,14 @@ public class ClothesController {
         return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, request, imageFile));
     }
 
+    @PatchMapping(value = "/{clothesId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "옷 이미지 수정", description = "ID를 통해 특정 옷의 이미지를 수정합니다.")
+    public ResponseEntity<Long> updateClothes(
+            @PathVariable Long clothesId,
+            @RequestPart(required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok().body(clothesService.updateClothes(clothesId, imageFile));
+    }
+
     @DeleteMapping("/{clothesId}")
     @Operation(summary = "옷 삭제", description = "ID를 통해 특정 옷을 삭제합니다.")
     public ResponseEntity<Void> deleteClothes(@PathVariable Long clothesId) {

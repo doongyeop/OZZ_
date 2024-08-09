@@ -29,6 +29,7 @@ public interface ClothesService {
 
     Clothes updateClothes(Long clothesId, ClothesUpdateRequest request);
     ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile);
+    Long updateClothes(Long clothesId, MultipartFile imageFile);
 
     void deleteClothes(Long clothesId);
 
