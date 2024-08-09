@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSelectedItem } from '@/contexts/SelectedItemContext'
+import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
 
 interface ClothesListProps {
-  clothingList: any[]
+  clothingList: (ClothesBasicWithFileResponse & { imageUrl: string })[]
   isSelectable: boolean
 }
 
@@ -18,7 +19,9 @@ export default function ClothesList({
 }: ClothesListProps) {
   const { selectedItem, setSelectedItem } = useSelectedItem()
 
-  const handleSelectItem = (item: any) => {
+  const handleSelectItem = (
+    item: ClothesBasicWithFileResponse & { imageUrl: string },
+  ) => {
     if (selectedItem && selectedItem.clothesId === item.clothesId) {
       setSelectedItem(null)
     } else {
@@ -27,7 +30,7 @@ export default function ClothesList({
   }
 
   return (
-    <div className="flex flex-col justify-start items-center h-96">
+    <div className="flex flex-col justify-start items-center">
       {clothingList.map((item) =>
         isSelectable ? (
           <div
@@ -42,17 +45,22 @@ export default function ClothesList({
           >
             <div className="flex items-center mb-4 mt-4">
               <Image
-                src={item.imageFile.filePath}
-                alt={item.name}
+                src={item.imageUrl}
+                alt={item.name ?? 'No name'}
                 width={75}
                 height={75}
-                className="mr-4"
+                className="mr-4 aspect-square object-contain"
+                priority
               />
               <div>
                 <div className="text-sm text-gray-500">
-                  {formatDate(item.createdDate)}
+                  {item.createdDate
+                    ? formatDate(item.createdDate)
+                    : 'No date available'}
                 </div>
-                <div className="text-lg font-semibold">{item.name}</div>
+                <div className="text-lg font-semibold">
+                  {item.name ?? 'Unnamed Item'}
+                </div>
               </div>
             </div>
             <hr />
@@ -66,17 +74,22 @@ export default function ClothesList({
           >
             <div className="flex items-center mb-4 mt-4 cursor-pointer">
               <Image
-                src={item.imageFile.filePath}
-                alt={item.name}
+                src={item.imageUrl ?? '/images/mockup/tops11.png'}
+                alt={item.name ?? 'No name available'}
                 width={75}
                 height={75}
-                className="mr-4"
+                className="mr-4 aspect-square object-contain"
+                priority
               />
               <div>
                 <div className="text-sm text-gray-500">
-                  {formatDate(item.createdDate)}
+                  {item.createdDate
+                    ? formatDate(item.createdDate)
+                    : 'No date available'}
                 </div>
-                <div className="text-lg font-semibold">{item.name}</div>
+                <div className="text-lg font-semibold">
+                  {item.name ?? 'Unnamed Item'}
+                </div>
               </div>
             </div>
             <hr />

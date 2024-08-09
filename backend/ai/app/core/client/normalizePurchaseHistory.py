@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 import uuid
 
@@ -111,7 +112,7 @@ Example results:
                 parsed_result, self.buffer = self.parse_stream_data(self.buffer)
 
                 if parsed_result:
-                    print(parsed_result)
+                    logging.info("purchase history normalized -> " + str(parsed_result))
                     yield {
                         "event": "test",
                         "id": str(uuid.uuid4()),

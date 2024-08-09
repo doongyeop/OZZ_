@@ -22,20 +22,6 @@ spring:
   cloud:
     stream:
       defaultBinder: rabbit
-      bindings:
-        imageProcess-out-0:
-          destination: image-process
-        extractAttribute-out-0:
-          destination: extract-attribute
-      rabbit:
-        bindings:
-          imageProcess-out-0:
-            producer:
-              bind-queue: true
-
-          extractAttribute-out-0:
-            producer:
-              bind-queue: true
 
 logging:
   level:
