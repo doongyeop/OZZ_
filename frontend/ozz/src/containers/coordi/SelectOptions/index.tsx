@@ -1,14 +1,16 @@
 'use client'
 
-import ColorModal from '@/app/@modal/color/page'
-import OutlineButton from '@/components/Button/OutlineButton'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import Image from 'next/image'
+
 import { BiCloset } from 'react-icons/bi'
 import { MdOutlineColorLens } from 'react-icons/md'
+
+import ColorModal from '@/components/Modal/ColorModal'
+import OutlineButton from '@/components/Button/OutlineButton'
 import { useSelectedItem } from '@/contexts/SelectedItemContext'
 import { useSelectedColor } from '@/contexts/SelectedColorContext'
-import Image from 'next/image'
 
 export default function SelectOptions() {
   const router = useRouter()
