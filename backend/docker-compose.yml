@@ -50,6 +50,7 @@ services:
       SPRING_ELASTICSEARCH_USERNAME: ${SPRING_ELASTICSEARCH_USERNAME}
       SPRING_ELASTICSEARCH_PASSWORD: ${SPRING_ELASTICSEARCH_PASSWORD}
       FASTAPI_URL: http://ozz-ai:${AI_PORT}
+      RABBITMQ_HOST: rabbitmq
     networks:
       - spring-cloud-network
       - message-queue-network
@@ -127,7 +128,7 @@ services:
     build: ./ai
     environment:
       - AI_PORT=${AI_PORT}
-      - RABBITMQ_URL=rabbitmq
+      - RABBITMQ_HOST=rabbitmq
       - CLOTHES_ENDPOINT=http://ozz-clothes:${CLOTHES_PORT}/api/clothes
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
