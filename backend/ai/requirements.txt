@@ -13,4 +13,4 @@ pika
 sse_starlette
 matplotlib
 torchvision
-request-toolbelt
+requests-toolbelt
