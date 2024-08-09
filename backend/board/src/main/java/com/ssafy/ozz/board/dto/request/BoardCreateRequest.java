@@ -1,40 +1,50 @@
 package com.ssafy.ozz.board.dto.request;
 
 import com.ssafy.ozz.board.domain.Board;
+import com.ssafy.ozz.board.domain.Tag;
 import com.ssafy.ozz.library.clothes.properties.Style;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "게시글 생성 요청 DTO")
 public record BoardCreateRequest(
         String content,
-        List<Tag> tagList,
-        Long imgFileId,
-        Long userId,
+        Long userId, // 작성자
+        Long imgFileId, // 코디 사진
+        Long coordinateId, // 코디 불러오기 용 코디Id
         int age,
+        List<TagDto> tagList,
         List<Style> styleList
 ) {
-    @Schema(description = "태그 정보")
-    public static record Tag(
-            Long clothesId,
-            double xPosition,
-            double yPosition
-    ) {
-    }
-
     public Board toEntity() {
-        return Board.builder()
+        Board board = Board.builder()
                 .content(content)
-                .imgFileId(imgFileId)
                 .userId(userId)
-                .style(toBits(styleList))
+                .imgFileId(imgFileId)
+                .coordinateId(coordinateId)
                 .age(age)
                 .likes(0)
+                .style(toBits(styleList))
                 .createdDate(new Date())
                 .build();
+
+        if (tagList != null) {
+            List<Tag> tags = tagList.stream()
+                    .map(tagRequest -> Tag.builder()
+                            .clothesId(tagRequest.clothesId())
+                            .xPosition(tagRequest.xPosition())
+                            .yPosition(tagRequest.yPosition())
+                            .board(board)
+                            .build())
+                    .collect(Collectors.toList());
+            board.getTags().addAll(tags);
+        }
+
+        return board;
     }
 }

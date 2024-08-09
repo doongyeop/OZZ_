@@ -13,6 +13,7 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "tags_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

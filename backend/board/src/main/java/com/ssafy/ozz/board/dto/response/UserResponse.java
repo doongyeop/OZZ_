@@ -10,6 +10,5 @@ public record UserResponse(
         Date birth,
         Long profileFileId,
         FileInfo profileImg
-
 ) {
 }
