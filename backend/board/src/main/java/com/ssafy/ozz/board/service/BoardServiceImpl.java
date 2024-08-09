@@ -129,7 +129,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<Board> getBoardsByStyle(Pageable pageable, String style) {
+    public Page<Board> getBoardsByStyle(Pageable pageable, Integer style) {
         return boardRepository.findByStyle(style, pageable);
     }
 

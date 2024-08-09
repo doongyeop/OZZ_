@@ -141,7 +141,7 @@ public class BoardController {
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByStyle(
-            @RequestParam("style") String style, Pageable pageable) {
+            @RequestParam("style") Integer style, Pageable pageable) {
         Page<BoardResponse> boards = boardService.getBoardsByStyle(pageable, style).map(board -> {
             FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
             UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
