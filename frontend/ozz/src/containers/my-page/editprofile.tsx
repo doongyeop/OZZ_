@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, ReactNode, useCallback } from 'react'
+import { useState, ReactNode, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
 import UploadModal from './modal'
+import { HiPencil } from 'react-icons/hi'
+import { FaUser } from 'react-icons/fa6'
 import { Api as FileApi } from '@/types/file/Api'
 import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
 
-const token = 'your_token_here'
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2NzQ5NSwiZXhwIjoxNzIzMjI3NDk1fQ.88TdF66wvJ9jNoBH8k1dpOsgonu0QzyHWqRoxs0iNnc'
 
 const fileApi = new FileApi({
   securityWorker: async () => ({
@@ -62,6 +65,10 @@ function ProfileEdit() {
     setUser(data)
   }
 
+  useEffect(() => {
+    getUser()
+  }, [])
+
   const toggleProfileModal = useCallback(() => {
     if (profileModal) {
       setUploadModal(false)
@@ -93,33 +100,18 @@ function ProfileEdit() {
     <div className="relative w-full min-h-screen max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
-        {user.profile_file_id ? (
-          <Image
-            src={user.profile_file_id}
-            alt="프로필 이미지"
-            width={100}
-            height={100}
-            className="rounded-full"
-          />
-        ) : (
-          <svg
-            width="100"
-            height="100"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-[100px] h-[100px] rounded-full"
-          >
-            <path
-              d="M10 9C11.6569 9 13 7.65685 13 6C13 4.34315 11.6569 3 10 3C8.34315 3 7 4.34315 7 6C7 7.65685 8.34315 9 10 9Z"
-              className="fill-gray-300"
+        <div className="relative w-[100px] h-[100px]">
+          {user.profile_file_id ? (
+            <Image
+              src={user.profile_file_id}
+              alt="프로필 이미지"
+              layout="fill"
+              className="rounded-full"
             />
-            <path
-              d="M3 18C3 14.134 6.13401 11 10 11C13.866 11 17 14.134 17 18H3Z"
-              className="fill-gray-300"
-            />
-          </svg>
-        )}
+          ) : (
+            <FaUser className="rounded-full fill-gray-300 w-full h-full" />
+          )}
+        </div>
         <button
           type="button"
           onClick={toggleProfileModal}
@@ -167,30 +159,15 @@ function ProfileEdit() {
         </Field>
 
         <Field label="닉네임" id="nickname">
-          <div className="relative text-xs font-medium">
+          <div className="relative text-xs font-medium group">
             <input
               id="nickname"
               type="text"
               defaultValue={user?.nickname || ''}
-              className="px-3 w-full block border border-[#ECECEE] rounded focus:outline-none focus:ring-none h-[30px] hover:border-primary-400"
+              className="px-3 w-full block border border-[#ECECEE] rounded focus:outline-none focus:ring-none h-[30px] group-hover:border-primary-400"
             />
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13.5858 3.58579C14.3668 2.80474 15.6332 2.80474 16.4142 3.58579C17.1953 4.36683 17.1953 5.63316 16.4142 6.41421L15.6213 7.20711L12.7929 4.37868L13.5858 3.58579Z"
-                  fill="#CCCED0"
-                />
-                <path
-                  d="M11.3787 5.79289L3 14.1716V17H5.82842L14.2071 8.62132L11.3787 5.79289Z"
-                  fill="#CCCED0"
-                />
-              </svg>
+              <HiPencil className="fill-gray-300 w-3.5 h-3.5 group-hover:fill-primary-400" />
             </div>
           </div>
         </Field>
@@ -222,7 +199,7 @@ function ProfileEdit() {
               </button>
               <button
                 type="button"
-                onClick={deleteUser}
+                // onClick={deleteUser}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
                 확인

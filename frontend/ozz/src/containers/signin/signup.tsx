@@ -9,8 +9,7 @@ import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzA5NTU5NCwiZXhwIjoxNzIzMTU1NTk0fQ.gPXyouBMWSdHP5pYFKReF2ebLYOXRaZUDhr-gZjhkaU'
-
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE5OTUwNCwiZXhwIjoxNzIzMjU5NTA0fQ.kN5qWK_w6rZ05wORfky-rmdhrHlV7PGEpDY_JNQCgp4'
 const api = new UserApi({
   securityWorker: async () => ({
     headers: {
