@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useState } from 'react'
 import { CoordishotDetail } from '@/types/coordishot'
 import CoordiTag from '@/components/CoordiTag'

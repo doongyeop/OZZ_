@@ -1,12 +1,14 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
 import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
+import HeaderButton from '@/components/Button/HeaderButton'
 import TagButton from '@/components/Button/TagButton'
 import {
   Popover,
@@ -17,7 +19,7 @@ import { FaBars } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
 import { mockFavoriteDetails } from '@/types/coordibook'
-import { styleMap, styleInvMap } from '@/types/maps'
+import { styleMap, styleInvMap, Style } from '@/types/clothing'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
@@ -28,7 +30,6 @@ export default function CoordiBookDetailPage({
 }: CoordiBookDetailPageProps) {
   const searchParams = useSearchParams()
   const name = searchParams.get('name') || '코디북 이름'
-  const { id } = params
 
   const styleTags = [
     '전체',
@@ -63,7 +64,7 @@ export default function CoordiBookDetailPage({
   const filteredItems = selectedTags.includes('전체')
     ? mockFavoriteDetails
     : mockFavoriteDetails.filter((item) =>
-        item.coordinate.styleList.some((style) =>
+        item.coordinate.styleList.some((style: Style) =>
           selectedTags.some(
             (tag) => styleInvMap[style] === tag || style === styleMap[tag],
           ),
@@ -72,7 +73,7 @@ export default function CoordiBookDetailPage({
 
   return (
     <div>
-      <Header title={'코디북'} leftButton={leftButton} />
+      <Header title="코디북" leftButton={leftButton} />
       <div className="m-4">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl">{name}</h1>

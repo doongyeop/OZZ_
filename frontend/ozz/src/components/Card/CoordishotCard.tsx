@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FaBookmark, FaHeart, FaRegHeart } from 'react-icons/fa6'
@@ -13,11 +15,14 @@ type CoordishotCardProps = {
 
 export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
   const handleLikeChange = (isLiked: boolean, totalLikes: number) => {
-    coordishot.like.isLike = isLiked
-    coordishot.like.total = totalLikes
+    const updatedCoordishot = { ...coordishot }
+    updatedCoordishot.like.isLike = isLiked
+    updatedCoordishot.like.total = totalLikes
   }
   const handleBookmarkToggle = () => {
-    coordishot.isBookmark = !coordishot.isBookmark
+    const updatedCoordishot = { ...coordishot }
+    updatedCoordishot.isBookmark = !updatedCoordishot.isBookmark
+    // 이후 필요한 처리를 추가합니다 (예: 상태 업데이트)
   }
 
   return (
@@ -57,7 +62,7 @@ export default function CoordishotCard({ coordishot }: CoordishotCardProps) {
               name={tag.clothes.name}
               x_position={tag.x_position}
               y_position={tag.y_position}
-              clothesId={tag.clothesTagId} //TODO: 수정이 필요함. 태그 아이디가 아니라 ClothedsId로
+              clothesId={tag.clothesTagId} // TODO: 수정이 필요함. 태그 아이디가 아니라 ClothedsId로
             />
           ))}
           <div className="mt-0 p-4">

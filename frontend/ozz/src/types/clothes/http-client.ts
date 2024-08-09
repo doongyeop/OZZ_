@@ -144,14 +144,21 @@ export class HttpClient<SecurityDataType = unknown> {
     [ContentType.FormData]: (input: any) =>
       Object.keys(input || {}).reduce((formData, key) => {
         const property = input[key]
-        formData.append(
-          key,
-          property instanceof Blob
-            ? property
-            : typeof property === 'object' && property !== null
-              ? JSON.stringify(property)
-              : `${property}`,
-        )
+        if (key === 'request') {
+          formData.append(
+            key,
+            new Blob([JSON.stringify(property)], { type: 'application/json' }),
+          )
+        } else {
+          formData.append(
+            key,
+            property instanceof Blob
+              ? property
+              : typeof property === 'object' && property !== null
+                ? JSON.stringify(property)
+                : `${property}`,
+          )
+        }
         return formData
       }, new FormData()),
     [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),

@@ -1,9 +1,12 @@
 'use client'
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
 import styles from '@/styles/ClosetSidebar.module.css'
-import CategoryModal from '@/app/@modal/category/page'
+import CategoryModal from '../Modal/CategoryModal'
 
 type ClothingItem = {
   id: string
@@ -31,6 +34,104 @@ type ClosetSidebarProps = {
   onSelectItem: (item: ClothingItem) => void
   onCategoryChange: (category: string | null) => void
 }
+
+const dummyClothes: ClothingItem[] = [
+  {
+    id: '1',
+    name: 'Basic White T-shirt',
+    createdDate: '2023-05-15T10:30:00Z',
+    imageFile: {
+      fileId: 7,
+      filePath: '/images/mockup/tops01.png',
+      fileName: '상의.png',
+      fileType: 'image/png',
+    },
+    categoryHigh: {
+      categoryHighId: 1,
+      name: '상의',
+    },
+    categoryLow: {
+      categoryLowId: 1,
+      name: '셔츠',
+    },
+  },
+  {
+    id: '2',
+    name: 'Blue Jeans',
+    createdDate: '2023-06-20T12:00:00Z',
+    imageFile: {
+      fileId: 8,
+      filePath: '/images/mockup/pants01.png',
+      fileName: '하의.png',
+      fileType: 'image/png',
+    },
+    categoryHigh: {
+      categoryHighId: 2,
+      name: '하의',
+    },
+    categoryLow: {
+      categoryLowId: 2,
+      name: '청바지',
+    },
+  },
+  {
+    id: '3',
+    name: 'Winter Jacket',
+    createdDate: '2022-12-01T09:00:00Z',
+    imageFile: {
+      fileId: 9,
+      filePath: '/images/mockup/outer01.png',
+      fileName: '아우터.png',
+      fileType: 'image/png',
+    },
+    categoryHigh: {
+      categoryHighId: 3,
+      name: '아우터',
+    },
+    categoryLow: {
+      categoryLowId: 3,
+      name: '자켓',
+    },
+  },
+  {
+    id: '4',
+    name: 'Summer Hat',
+    createdDate: '2023-07-10T14:30:00Z',
+    imageFile: {
+      fileId: 10,
+      filePath: '/images/mockup/accessory01.png',
+      fileName: '액세서리.png',
+      fileType: 'image/png',
+    },
+    categoryHigh: {
+      categoryHighId: 4,
+      name: '액세서리',
+    },
+    categoryLow: {
+      categoryLowId: 4,
+      name: '모자',
+    },
+  },
+  {
+    id: '5',
+    name: 'Leather Bag',
+    createdDate: '2023-03-05T11:00:00Z',
+    imageFile: {
+      fileId: 11,
+      filePath: '/images/mockup/bag01.png',
+      fileName: '가방.png',
+      fileType: 'image/png',
+    },
+    categoryHigh: {
+      categoryHighId: 5,
+      name: '가방',
+    },
+    categoryLow: {
+      categoryLowId: 5,
+      name: '가방',
+    },
+  },
+]
 
 export default function ClosetSidebar({
   isSidebarOpen,
@@ -62,108 +163,13 @@ export default function ClosetSidebar({
 
   // TODO : 사용자의 옷장 목록 가져오기 API 구현
   // TODO : 카테고리 필터링 기능 구현
-  const dummyClothes: ClothingItem[] = [
-    {
-      id: '1',
-      name: 'Basic White T-shirt',
-      createdDate: '2023-05-15T10:30:00Z',
-      imageFile: {
-        fileId: 7,
-        filePath: '/images/mockup/tops01.png',
-        fileName: '상의.png',
-        fileType: 'image/png',
-      },
-      categoryHigh: {
-        categoryHighId: 1,
-        name: '상의',
-      },
-      categoryLow: {
-        categoryLowId: 1,
-        name: '셔츠',
-      },
-    },
-    {
-      id: '2',
-      name: 'Blue Jeans',
-      createdDate: '2023-06-20T12:00:00Z',
-      imageFile: {
-        fileId: 8,
-        filePath: '/images/mockup/pants01.png',
-        fileName: '하의.png',
-        fileType: 'image/png',
-      },
-      categoryHigh: {
-        categoryHighId: 2,
-        name: '하의',
-      },
-      categoryLow: {
-        categoryLowId: 2,
-        name: '청바지',
-      },
-    },
-    {
-      id: '3',
-      name: 'Winter Jacket',
-      createdDate: '2022-12-01T09:00:00Z',
-      imageFile: {
-        fileId: 9,
-        filePath: '/images/mockup/outer01.png',
-        fileName: '아우터.png',
-        fileType: 'image/png',
-      },
-      categoryHigh: {
-        categoryHighId: 3,
-        name: '아우터',
-      },
-      categoryLow: {
-        categoryLowId: 3,
-        name: '자켓',
-      },
-    },
-    {
-      id: '4',
-      name: 'Summer Hat',
-      createdDate: '2023-07-10T14:30:00Z',
-      imageFile: {
-        fileId: 10,
-        filePath: '/images/mockup/accessory01.png',
-        fileName: '액세서리.png',
-        fileType: 'image/png',
-      },
-      categoryHigh: {
-        categoryHighId: 4,
-        name: '액세서리',
-      },
-      categoryLow: {
-        categoryLowId: 4,
-        name: '모자',
-      },
-    },
-    {
-      id: '5',
-      name: 'Leather Bag',
-      createdDate: '2023-03-05T11:00:00Z',
-      imageFile: {
-        fileId: 11,
-        filePath: '/images/mockup/bag01.png',
-        fileName: '가방.png',
-        fileType: 'image/png',
-      },
-      categoryHigh: {
-        categoryHighId: 5,
-        name: '가방',
-      },
-      categoryLow: {
-        categoryLowId: 5,
-        name: '가방',
-      },
-    },
-  ]
 
   return (
     <>
       <div className={`${styles.sidebarGroup} ${isOpen ? styles.open : ''}`}>
         <button
+          type="button"
+          aria-label="사이드바 접고 펴기"
           className={`${isOpen ? styles.toggleButtonOpen : styles.toggleButtonClose} flex justify-center`}
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -173,6 +179,8 @@ export default function ClosetSidebar({
           <div className={styles.sidebarHeader}>
             <h3>내 옷짱에서 가져오기</h3>
             <button
+              type="button"
+              aria-label="사이드바 닫기"
               onClick={() => setIsModalOpen(true)}
               className="flex justify-center items-center px-2 py-0.5 m-1 rounded-lg border-2 border-primary-400 text-primary-400 text-sm"
             >
@@ -181,7 +189,9 @@ export default function ClosetSidebar({
           </div>
           <div className={styles.clothesList}>
             {dummyClothes.map((item) => (
-              <div
+              <button
+                type="button"
+                aria-label="옷 등록"
                 key={item.id}
                 className={styles.clothItem}
                 onClick={() => onSelectItem(item)}
@@ -192,7 +202,7 @@ export default function ClosetSidebar({
                   width={80}
                   height={80}
                 />
-              </div>
+              </button>
             ))}
           </div>
         </div>

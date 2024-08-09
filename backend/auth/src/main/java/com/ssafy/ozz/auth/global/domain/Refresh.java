@@ -10,6 +10,7 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@RedisHash
 public class Refresh {
 
     @Id

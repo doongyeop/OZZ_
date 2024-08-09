@@ -1,6 +1,6 @@
 import SignUp from '@/containers/signin/signup'
 
-const SignUpPage = () => {
+function SignUpPage() {
   return (
     <div>
       <SignUp />

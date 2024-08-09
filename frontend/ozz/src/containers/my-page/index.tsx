@@ -1,9 +1,11 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import Image from 'next/image'
 import Modal from '@/components/Modal'
 
-const MyPageIndex = () => {
+export default function MyPageIndex() {
   const user = {
     nickname: 'ozz',
     email: '123123@ozz.com',
@@ -34,10 +36,13 @@ const MyPageIndex = () => {
     <div className="flex flex-col items-center p-4 min-h-screen">
       <div className="flex items-center p-6 rounded-lg w-full max-w-sm">
         {profileSrc ? (
-          <img
+          <Image
             src={profileSrc}
             alt="프로필 사진"
             className="rounded-full w-16 h-16"
+            width={64} // w-16에 해당하는 픽셀 값
+            height={64} // h-16에 해당하는 픽셀 값
+            priority // 페이지 로딩 시 우선적으로 로드할 경우
           />
         ) : (
           <svg
@@ -83,6 +88,7 @@ const MyPageIndex = () => {
       </div>
       <div className="flex mt-4 mb-6 border border-primary-400 w-full max-w-96 rounded-lg h-24 font-medium text-sm">
         <button
+          type="button"
           onClick={goCoordiShot}
           className="flex-1 py-2 flex flex-col items-center justify-center h-24 "
         >
@@ -103,8 +109,11 @@ const MyPageIndex = () => {
           </svg>
           코디샷
         </button>
-        <span className="w-px bg-primary-400 my-8"></span>
-        <button className="flex-1 py-2 flex flex-col items-center justify-center">
+        <span className="w-px bg-primary-400 my-8" />
+        <button
+          type="button"
+          className="flex-1 py-2 flex flex-col items-center justify-center"
+        >
           <svg
             width="20"
             height="20"
@@ -124,8 +133,9 @@ const MyPageIndex = () => {
           </svg>
           알림
         </button>
-        <span className="w-px bg-primary-400 my-8"></span>
+        <span className="w-px bg-primary-400 my-8" />
         <button
+          type="button"
           onClick={goSetting}
           className="flex-1 py-2 flex flex-col items-center justify-center"
         >
@@ -149,10 +159,20 @@ const MyPageIndex = () => {
       </div>
       <div className="flex flex-col mt-4 space-y-2 w-full max-w-sm text-sm font-medium">
         <h3 className="font-bold text-base py-2">더보기</h3>
-        <button className="py-2 text-left">서비스 소개</button>
-        <button className="py-2 text-left">약관 및 정책</button>
-        <button className="py-2 text-left">오픈소스 라이브러리</button>
-        <button className="py-2 text-left" onClick={() => setModal(true)}>
+        <button type="button" className="py-2 text-left">
+          서비스 소개
+        </button>
+        <button type="button" className="py-2 text-left">
+          약관 및 정책
+        </button>
+        <button type="button" className="py-2 text-left">
+          오픈소스 라이브러리
+        </button>
+        <button
+          type="button"
+          className="py-2 text-left"
+          onClick={() => setModal(true)}
+        >
           로그아웃
         </button>
         {modal && (
@@ -162,12 +182,14 @@ const MyPageIndex = () => {
             </p>
             <div className="flex justify-center mt-4">
               <button
+                type="button"
                 onClick={() => setModal(false)}
                 className="font-bold mr-4 p-1 w-14 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
               >
                 아니오
               </button>
               <button
+                type="button"
                 onClick={logOut}
                 className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
               >
@@ -180,5 +202,3 @@ const MyPageIndex = () => {
     </div>
   )
 }
-
-export default MyPageIndex

@@ -1,3 +1,5 @@
+import { Style } from './clothing'
+
 export interface ImageFile {
   fileId: number
   filePath: string
@@ -8,7 +10,7 @@ export interface ImageFile {
 export interface Coordinate {
   coordinateId: number
   name: string
-  styleList: string[]
+  styleList: Style[]
   createdDate: string
   imageFile: ImageFile
 }
@@ -187,7 +189,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 5,
       name: '여름 휴가 코디 1',
-      styleList: ['SUMMER'],
+      styleList: ['STREET'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 5,
@@ -203,7 +205,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 6,
       name: '여름 휴가 코디 2',
-      styleList: ['SUMMER'],
+      styleList: ['STREET'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 6,
@@ -219,7 +221,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 7,
       name: '비즈니스 캐주얼 1',
-      styleList: ['BUSINESS'],
+      styleList: ['ELEGANT'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 7,
@@ -235,7 +237,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 8,
       name: '비즈니스 캐주얼 2',
-      styleList: ['BUSINESS'],
+      styleList: ['FORMAL'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 8,
@@ -251,7 +253,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 9,
       name: '겨울 아우터 코디 1',
-      styleList: ['WINTER'],
+      styleList: ['NATURAL'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 9,
@@ -267,7 +269,7 @@ export const mockFavoriteDetails: FavoriteDetail[] = [
     coordinate: {
       coordinateId: 10,
       name: '겨울 아우터 코디 2',
-      styleList: ['WINTER'],
+      styleList: ['MANNISH'],
       createdDate: '2024-08-07T00:42:22.146Z',
       imageFile: {
         fileId: 10,

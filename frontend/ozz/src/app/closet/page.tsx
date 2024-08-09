@@ -5,10 +5,10 @@ import { FaBars } from 'react-icons/fa'
 import Image from 'next/image'
 
 import Header from '@/components/Header'
-import { HeaderButton } from '@/components/Button/HeaderButton'
+import HeaderButton from '@/components/Button/HeaderButton'
 import ClosetPageContainer from '@/containers/closet-page'
 import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
-import HelpModal from '@/app/@modal/help'
+import HelpModal from '@/components/Modal/HelpModal'
 
 export default function Closet() {
   const [showHelpModal, setShowHelpModal] = useState(false)

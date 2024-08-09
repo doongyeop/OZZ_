@@ -195,6 +195,7 @@ export class Api<
       type: ContentType.FormData,
       ...params,
     })
+
   /**
    * @description ID를 통해 특정 코디 세부 정보를 조회합니다.
    *

@@ -1,13 +1,31 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
+
+function getCookie(name: string) {
+  if (typeof document === 'undefined') {
+    return null
+  }
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) {
+    const lastPart = parts.pop()
+    if (lastPart) {
+      return decodeURIComponent(lastPart.split(';').shift() || '')
+    }
+  }
+  return null
+}
 
 export default function SignUpDone() {
   const router = useRouter()
-  const user = { nickname: '커피사조' }
+  // 쿠키 값을 가져오는 함수
 
   const goCloset = () => {
     router.push('/closet')
   }
+
+  const nickname = getCookie('nickname')
 
   return (
     <div className="w-full max-w-xs mx-auto min-h-screen flex flex-col justify-center items-center">
@@ -27,12 +45,13 @@ export default function SignUpDone() {
         />
       </svg>
       <div className="text-center mt-4 font-bold text-[#7A7C7E]">
-        <span className="text-secondary">{user.nickname}</span>님 가입을
+        <span className="text-secondary">{nickname}</span>님 가입을
         축하드립니다!
         <br />
         지금 바로 옷짱을 채워보세요
       </div>
       <button
+        type="button"
         onClick={goCloset}
         className="font-extrabold mt-4 px-4 py-2 bg-secondary text-primary-400 rounded-full"
       >

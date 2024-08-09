@@ -17,6 +17,12 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+  rabbitmq:
+    host: ${RABBIT_MQ_HOST}
+    port: ${RABBIT_MQ_PORT}
+    username: ${RABBIT_MQ_USER}
+    password: ${RABBIT_MQ_PW}
+
 eureka:
   client:
     fetch-registry: true

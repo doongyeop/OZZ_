@@ -31,10 +31,10 @@ public class ClothesDocument {
     private float[] vector;
 
     @Field(type = FieldType.Byte)
-    private Size size;
+    private Integer size;
 
     @Field(type = FieldType.Byte)
-    private Fit fit;
+    private Integer fit;
 
     @Field(type = FieldType.Text, analyzer = "korean")
     private String memo;
@@ -82,8 +82,8 @@ public class ClothesDocument {
     public ClothesDocument(Clothes clothes) {
         this.clothesId = clothes.getClothesId();
         this.name = clothes.getName();
-        this.size = clothes.getSize();
-        this.fit = clothes.getFit();
+        this.size = clothes.getSize().ordinal();
+        this.fit = clothes.getFit().ordinal();
         this.memo = clothes.getMemo();
         this.brand = clothes.getBrand();
         this.createdDate = clothes.getCreatedDate();

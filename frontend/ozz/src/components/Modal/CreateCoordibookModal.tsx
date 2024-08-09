@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 type CreateCoordibookModalProps = {
   onClose: () => void
@@ -32,12 +32,14 @@ export default function CreateCoordibookModal({
         />
         <div className="flex justify-end">
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 mr-4"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             className="bg-primary-400 text-white p-2 rounded-lg"
           >

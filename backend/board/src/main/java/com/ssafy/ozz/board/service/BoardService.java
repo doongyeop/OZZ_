@@ -4,25 +4,19 @@ import com.ssafy.ozz.board.domain.Board;
 import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
-import com.ssafy.ozz.board.dto.response.BoardWithFileResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface BoardService {
     Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request);
 
-    List<Board> getBoardsByUserId(Long userId);
+    Page<Board> getBoardsByUserId(Long userId, Pageable pageable);
 
     Page<Board> getBoards(Pageable pageable);
 
     Board getBoard(Long boardId);
 
-    BoardResponse updateBoard(Long boardId, BoardUpdateRequest request);
-
-    BoardWithFileResponse updateBoardFile(Long boardId, BoardUpdateRequest request, Long imgFileId);
+    BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
 
     void deleteBoard(Long boardId);
 

@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-<<<<<<< backend/ai/app/main.py
-from app.api.v1.endpoints import attributes
+from app.api.v1.endpoints import attributes, tokenize, purchaseHistory
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
@@ -9,7 +8,10 @@ origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:5500",
+    "http://localhost:8000",
+    "http://127.0.0.1:5500",
+    "http://127.0.0.1:8000"
 ]
 
 app.add_middleware(
@@ -21,3 +23,5 @@ app.add_middleware(
 )
 # API 라우터 설정
 app.include_router(attributes.router, prefix="/api/v1")
+app.include_router(tokenize.router)
+app.include_router(purchaseHistory.router)
