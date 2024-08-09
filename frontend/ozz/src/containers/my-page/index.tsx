@@ -1,8 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Modal from '@/components/Modal'
-import { Api as UserAPi } from '@/types/user/Api'
+import { Api as UserApi } from '@/types/user/Api'
+import { Api as FileApi } from '@/types/file/Api'
 import { FaUser } from 'react-icons/fa6'
 import { HiPhotograph } from 'react-icons/hi'
 import { HiBell } from 'react-icons/hi'
@@ -12,19 +13,59 @@ import { FaChevronRight } from 'react-icons/fa'
 const token =
   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzA5NTU5NCwiZXhwIjoxNzIzMTU1NTk0fQ.gPXyouBMWSdHP5pYFKReF2ebLYOXRaZUDhr-gZjhkaU'
 
-// const api = new UserAPi({
-//   securityWorker: async () =>
-// })
+const userApi = new UserApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+const fileApi = new FileApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
 
 const MyPageIndex = () => {
   const router = useRouter()
   const [modal, setModal] = useState(false)
+  const [user, setUser] = useState({})
+  const [profileSrc, setProfileSrc] = useState(null)
+  const [profilePic, setProfilePic] = useState({})
 
-  const user = {
-    nickname: 'ozz',
-    email: '123123@ozz.com',
-    profile_file_id: null,
+  const loadProfilePic = async (picId: string) => {
+    try {
+      const response = await fileApi.getFile(picId)
+      const data = await response.json()
+      setProfilePic(data)
+
+      const picRes = await fileApi.downloadFile(data.filePath)
+      setProfileSrc(picRes.url)
+      // console.log('picData', picRes.url)
+    } catch (error) {
+      console.log(error)
+    }
   }
+
+  const getUser = async () => {
+    try {
+      const response = await userApi.getUserInfo()
+      const userData = await response.json()
+      setUser(userData)
+      if (userData.profileFileId) {
+        await loadProfilePic(userData.profileFileId)
+      }
+    } catch (error) {
+      console.error('유저 정보를 가져오는 중 오류 발생:', error)
+    }
+  }
+
+  useEffect(() => {
+    getUser()
+  }, [])
 
   const goEdit = () => {
     router.push('/mypage/edit')
@@ -41,8 +82,6 @@ const MyPageIndex = () => {
     console.log('로그아웃 완료')
     setModal(false)
   }
-
-  const profileSrc = user.profile_file_id ? user.profile_file_id : null
 
   return (
     <div className="flex flex-col items-center p-4 min-h-screen">
