@@ -39,10 +39,10 @@ public class Board {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "boards", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardLikes> boardLikes;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "boards", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags;
 
     @Column(name = "coordinate_id")
