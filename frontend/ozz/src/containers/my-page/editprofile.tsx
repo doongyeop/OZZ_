@@ -3,23 +3,60 @@ import { useState, useEffect } from 'react'
 import { DatePicker } from '@/components/Datepicker'
 import Modal from '@/components/Modal'
 import UploadModal from './modal'
+import { Api as FileApi } from '@/types/file/Api'
+
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE3NTY1MSwiZXhwIjoxNzIzMjM1NjUxfQ.mhY4jM6zYKYI6pClJcSAQvcjrjNX8v8GFv054TYucB4'
+
+const fileApi = new FileApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
 
 const ProfileEdit = () => {
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState<any>(null)
+  const [profilePic, setProfilePic] = useState<any>(null)
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
+
   function get_cookie(name: string) {
     var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)')
     return value ? value[2] : null
   }
 
-  useEffect(setUser() {
-    user = await get_cookie('user')
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = get_cookie('userInfo')
+      if (userData) {
+        const parsedData = JSON.parse(decodeURIComponent(userData))
+        console.log(parsedData)
+        setUser(parsedData)
+        // console.log('사진파일아이디는요~!~!~!~', parsedData.profileFileId)
+        await getProfilePic(parsedData.profileFileId)
+      }
+    }
+    fetchUser()
   }, [])
+  const getProfilePic = async (picId: number) => {
+    try {
+      const response = await fileApi.getFile(picId)
+      const data = await response.json()
+      setProfilePic(data)
+      const picRes = await fileApi.downloadFile(data.filePath)
+      const blob = await picRes.blob()
+      const urlStr = URL.createObjectURL(blob)
+      setProfilePic(urlStr)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   function toggleProfileModal() {
     if (profileModal) {
-      setUploadModal(false) /
+      setUploadModal(false) // ProfileModal이 닫힐 때 UploadModal도 닫기
     }
     setProfileModal((prev) => !prev)
   }
@@ -33,9 +70,16 @@ const ProfileEdit = () => {
   }
 
   function resetProfilePic() {
-    setUser((prev) => ({
+    setUser((prev: any) => ({
       ...prev,
-      profile_file_id: null,
+      profileFileId: null,
+    }))
+  }
+
+  const handleDateChange = (date: Date) => {
+    setUser((prev: any) => ({
+      ...prev,
+      birth: date,
     }))
   }
 
@@ -48,9 +92,9 @@ const ProfileEdit = () => {
     <div className="relative w-full min-h-screen max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
-        {user.profile_file_id ? (
+        {profilePic ? (
           <img
-            src={user.profile_file_id}
+            src={profilePic}
             alt="프로필 이미지"
             className="w-[100px] h-[100px] rounded-full"
           />
@@ -110,7 +154,7 @@ const ProfileEdit = () => {
           <input
             id="email"
             type="text"
-            value={user.email}
+            value={user?.email || ''}
             readOnly
             className="mt-1 block w-full px-3 py-2 rounded text-[#CCCED0] focus:outline-none text-xs font-medium bg-gray-light cursor-not-allowed h-[30px]"
           />
@@ -121,7 +165,7 @@ const ProfileEdit = () => {
             <input
               id="nickname"
               type="text"
-              defaultValue={user.nickname}
+              defaultValue={user?.nickname || ''}
               className="px-3 w-full block border border-[#ECECEE] rounded focus:outline-none focus:ring-none h-[30px] hover:border-primary-400"
             />
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
@@ -147,8 +191,9 @@ const ProfileEdit = () => {
 
         <Field label="생년월일" id="birth">
           <DatePicker
-            defaultValue={user.birth}
+            defaultValue={user?.birth}
             buttonClassName="w-[360px] text-xs font-medium border-[#ECECEE] h-[30px] rounded hover:border-primary-400"
+            onDateChange={handleDateChange}
           />
         </Field>
       </div>
@@ -189,7 +234,15 @@ const ProfileEdit = () => {
   )
 }
 
-const Field = ({ label, id, children }) => (
+const Field = ({
+  label,
+  id,
+  children,
+}: {
+  label: string
+  id: string
+  children: React.ReactNode
+}) => (
   <div className="w-full text-sm font-medium">
     <label htmlFor={id}>{label}</label>
     {children}

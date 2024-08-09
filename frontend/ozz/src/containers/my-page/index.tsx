@@ -12,7 +12,7 @@ import { IoIosSettings } from 'react-icons/io'
 import { FaChevronRight } from 'react-icons/fa'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2NzQ5NSwiZXhwIjoxNzIzMjI3NDk1fQ.88TdF66wvJ9jNoBH8k1dpOsgonu0QzyHWqRoxs0iNnc'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE3NTY1MSwiZXhwIjoxNzIzMjM1NjUxfQ.mhY4jM6zYKYI6pClJcSAQvcjrjNX8v8GFv054TYucB4'
 
 const userApi = new UserApi({
   securityWorker: async () => ({
@@ -44,7 +44,7 @@ const MyPageIndex = () => {
   const [user, setUser] = useState({})
   const [profileSrc, setProfileSrc] = useState('')
   const [profilePic, setProfilePic] = useState({})
-  const setCookie = (name, value, days) => {
+  const setCookie = (name: string, value: any, days: number) => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString()
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
   }
@@ -57,7 +57,7 @@ const MyPageIndex = () => {
     })
   }
 
-  const loadProfilePic = async (picId: number) => {
+  const getProfilePic = async (picId: number) => {
     try {
       const response = await fileApi.getFile(picId)
       const data = await response.json()
@@ -66,7 +66,6 @@ const MyPageIndex = () => {
       const blob = await picRes.blob()
       const urlStr = URL.createObjectURL(blob)
       setProfileSrc(urlStr)
-      setCookie('profilePic', urlStr, 1)
     } catch (error) {
       console.log(error)
     }
@@ -79,7 +78,7 @@ const MyPageIndex = () => {
       setUser(userData)
       setCookie('userInfo', JSON.stringify(userData), 1)
       if (userData.profileFileId) {
-        await loadProfilePic(userData.profileFileId)
+        await getProfilePic(userData.profileFileId)
       }
     } catch (error) {
       console.error('유저 정보를 가져오는 중 오류 발생:', error)
@@ -102,16 +101,15 @@ const MyPageIndex = () => {
   }
 
   const logOut = async (userId: number) => {
-    // try {
-    //   console.log('userId로전달되고있는 건요ㅕ,,', userId)
-    //   const response = await authApi.deleteRefreshTokenOfUser(userId)
-    //   console.log(response)
-    //   deleteAllCookies()
-    //   router.push('/login')
-    // } catch (error) {
-    //   console.error('로그아웃 중 오류 발생:', error)
-    // }
-    // 로그아웃 이슈 미해결 미쳤다 왜 로그아웃 안 됨ㅜ.ㅠ(근데 내 문제 아니고 백 문제아님?)
+    try {
+      console.log('userId로전달되고있는 건요ㅕ,,', userId)
+      const response = await authApi.deleteRefreshTokenOfUser(userId)
+      console.log(response)
+      deleteAllCookies()
+      router.push('/login')
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error)
+    }
   }
 
   return (
