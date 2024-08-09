@@ -80,8 +80,11 @@ public class Clothes {
     @Column
     Long userId;
 
+    @Column
+    private String extra;
+
     @Builder
-    public Clothes(String name, Size size, Fit fit, String memo, String brand, LocalDate purchaseDate, String purchaseSite, Integer color, Integer texture, Integer pattern, Integer style, Integer season, Long imageFileId, CategoryLow categoryLow, Long userId) {
+    public Clothes(String name, Size size, Fit fit, String memo, String brand, LocalDate purchaseDate, String purchaseSite, Integer color, Integer texture, Integer pattern, Integer style, Integer season, Long imageFileId, CategoryLow categoryLow, Long userId, String extra) {
         this.name = name;
         this.size = size;
         this.fit = fit;
@@ -99,6 +102,7 @@ public class Clothes {
         this.userId = userId;
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
+        this.extra = extra;
     }
 
     //== 비즈니스 로직 ==//
@@ -158,6 +162,10 @@ public class Clothes {
         if(imageFileId != null) this.imageFileId = imageFileId;
     }
 
+    public void changeExtra(String extra) {
+        if(extra != null) this.extra = extra;
+    }
+
     //== 테스트 기능 ==//
 
     // Method to create a mock Clothes object
@@ -181,6 +189,7 @@ public class Clothes {
         clothes.imageFileId = (long) RANDOM.nextInt(1000); // Random Long
         clothes.categoryLow = categoryHigh.getCategoryLowList().get(RANDOM.nextInt(categoryHigh.getCategoryLowList().size())); // Assume CategoryLow has a no-args constructor
         clothes.userId = userId;
+        clothes.extra = "";
 
         return clothes;
     }

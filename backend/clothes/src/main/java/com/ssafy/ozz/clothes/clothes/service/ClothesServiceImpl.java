@@ -96,6 +96,7 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changeSeason(toBits(request.seasonList()));
         clothes.changeStyle(toBits(request.styleList()));
         clothes.changePattern(toBits(request.patternList()));
+        clothes.changeExtra(request.extra());
         return clothes;
     }
 
