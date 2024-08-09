@@ -1,24 +1,25 @@
 'use client'
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DatePicker } from '@/components/Datepicker'
 import Modal from '@/components/Modal'
 import UploadModal from './modal'
 
 const ProfileEdit = () => {
-  const [user, setUser] = useState({
-    birth: '1998-12-07',
-    nickname: '까미언니',
-    email: 'kkamisister1207@gmail.com',
-    profile_file_id: 'https://cdn2.thecatapi.com/images/2nk.jpg',
-  })
-
+  const [user, setUser] = useState({})
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
+  function get_cookie(name: string) {
+    var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)')
+    return value ? value[2] : null
+  }
 
+  useEffect(setUser() {
+    user = await get_cookie('user')
+  }, [])
   function toggleProfileModal() {
     if (profileModal) {
-      setUploadModal(false) // ProfileModal이 닫힐 때 UploadModal도 닫기
+      setUploadModal(false) /
     }
     setProfileModal((prev) => !prev)
   }

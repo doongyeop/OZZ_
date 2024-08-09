@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Modal from '@/components/Modal'
 import { Api as UserApi } from '@/types/user/Api'
 import { Api as FileApi } from '@/types/file/Api'
+import { Api as AuthApi } from '@/types/auth/Api'
 import { FaUser } from 'react-icons/fa6'
 import { HiPhotograph } from 'react-icons/hi'
 import { HiBell } from 'react-icons/hi'
@@ -11,7 +12,7 @@ import { IoIosSettings } from 'react-icons/io'
 import { FaChevronRight } from 'react-icons/fa'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzA5NTU5NCwiZXhwIjoxNzIzMTU1NTk0fQ.gPXyouBMWSdHP5pYFKReF2ebLYOXRaZUDhr-gZjhkaU'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2NzQ5NSwiZXhwIjoxNzIzMjI3NDk1fQ.88TdF66wvJ9jNoBH8k1dpOsgonu0QzyHWqRoxs0iNnc'
 
 const userApi = new UserApi({
   securityWorker: async () => ({
@@ -29,22 +30,43 @@ const fileApi = new FileApi({
   }),
 })
 
+const authApi = new AuthApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
 const MyPageIndex = () => {
   const router = useRouter()
   const [modal, setModal] = useState(false)
   const [user, setUser] = useState({})
-  const [profileSrc, setProfileSrc] = useState(null)
+  const [profileSrc, setProfileSrc] = useState('')
   const [profilePic, setProfilePic] = useState({})
+  const setCookie = (name, value, days) => {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString()
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
+  }
 
-  const loadProfilePic = async (picId: string) => {
+  const deleteAllCookies = () => {
+    document.cookie.split(';').forEach((cookie) => {
+      const eqPos = cookie.indexOf('=')
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+    })
+  }
+
+  const loadProfilePic = async (picId: number) => {
     try {
       const response = await fileApi.getFile(picId)
       const data = await response.json()
       setProfilePic(data)
-
       const picRes = await fileApi.downloadFile(data.filePath)
-      setProfileSrc(picRes.url)
-      // console.log('picData', picRes.url)
+      const blob = await picRes.blob()
+      const urlStr = URL.createObjectURL(blob)
+      setProfileSrc(urlStr)
+      setCookie('profilePic', urlStr, 1)
     } catch (error) {
       console.log(error)
     }
@@ -55,6 +77,7 @@ const MyPageIndex = () => {
       const response = await userApi.getUserInfo()
       const userData = await response.json()
       setUser(userData)
+      setCookie('userInfo', JSON.stringify(userData), 1)
       if (userData.profileFileId) {
         await loadProfilePic(userData.profileFileId)
       }
@@ -78,9 +101,17 @@ const MyPageIndex = () => {
     router.push('/coordishot')
   }
 
-  const logOut = async () => {
-    console.log('로그아웃 완료')
-    setModal(false)
+  const logOut = async (userId: number) => {
+    // try {
+    //   console.log('userId로전달되고있는 건요ㅕ,,', userId)
+    //   const response = await authApi.deleteRefreshTokenOfUser(userId)
+    //   console.log(response)
+    //   deleteAllCookies()
+    //   router.push('/login')
+    // } catch (error) {
+    //   console.error('로그아웃 중 오류 발생:', error)
+    // }
+    // 로그아웃 이슈 미해결 미쳤다 왜 로그아웃 안 됨ㅜ.ㅠ(근데 내 문제 아니고 백 문제아님?)
   }
 
   return (
@@ -147,7 +178,7 @@ const MyPageIndex = () => {
                 아니오
               </button>
               <button
-                onClick={logOut}
+                onClick={() => logOut(user.id)}
                 className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
               >
                 예
