@@ -28,7 +28,7 @@ export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER'
 export type Style =
   | 'FORMAL'
   | 'MANNISH'
-  | 'ELEGANCE'
+  | 'ELEGANT'
   | 'ETHNIC'
   | 'MODERN'
   | 'NATURAL'
@@ -178,12 +178,12 @@ export const sizeMap: { [key: string]: Size } = {
 export const textureMap: { [key: string]: Texture } = {
   퍼: 'FUR',
   니트: 'KNIT',
-  무톤: 'MOUTON',
+  무스탕: 'MOUTON',
   레이스: 'LACE',
   스웨이드: 'SUEDE',
   린넨: 'LINEN',
   앙고라: 'ANGORA',
-  메쉬: 'MESH',
+  메시: 'MESH',
   코듀로이: 'CORDUROY',
   플리스: 'FLEECE',
   시퀸글리터: 'SEQUIN_GLITTER',
@@ -206,12 +206,12 @@ export const textureMap: { [key: string]: Texture } = {
 export const textureInvMap: { [key in Texture]: string } = {
   FUR: '퍼',
   KNIT: '니트',
-  MOUTON: '무톤',
+  MOUTON: '무스탕',
   LACE: '레이스',
   SUEDE: '스웨이드',
   LINEN: '린넨',
   ANGORA: '앙고라',
-  MESH: '메쉬',
+  MESH: '메시',
   CORDUROY: '코듀로이',
   FLEECE: '플리스',
   SEQUIN_GLITTER: '시퀸글리터',
@@ -248,7 +248,7 @@ export const seasonInvMap: { [key: string]: string } = {
 export const styleMap: { [key: string]: Style } = {
   포멀: 'FORMAL',
   매니시: 'MANNISH',
-  엘레강스: 'ELEGANCE',
+  엘레강스: 'ELEGANT',
   에스닉: 'ETHNIC',
   모던: 'MODERN',
   내추럴: 'NATURAL',
@@ -261,7 +261,7 @@ export const styleMap: { [key: string]: Style } = {
 export const styleInvMap: { [key in Style]: string } = {
   FORMAL: '포멀',
   MANNISH: '매니시',
-  ELEGANCE: '엘레강스',
+  ELEGANT: '엘레강스',
   ETHNIC: '에스닉',
   MODERN: '모던',
   NATURAL: '내추럴',
