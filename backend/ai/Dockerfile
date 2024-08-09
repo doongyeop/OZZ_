@@ -11,7 +11,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 애플리케이션 소스 코드를 컨테이너의 작업 디렉토리로 복사
-COPY . .
+COPY ./app ./app
+COPY ./run.py ./run.py
+COPY ./start.sh ./start.sh
 
 # uvicorn을 사용하여 FastAPI 애플리케이션 실행
 CMD ["bash", "./start.sh"]
