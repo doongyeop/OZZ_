@@ -20,7 +20,7 @@ function SignUp() {
 
   useEffect(() => {
     syncTokensWithCookies()
-
+    console.log('회원가입 하자')
     const fetchUserInfo = async () => {
       console.log('유저 정보 가져오기')
       try {
