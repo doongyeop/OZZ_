@@ -11,8 +11,8 @@ import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 
-const token = '토큰냅다박기'
-
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 const api = new UserApi({
   securityWorker: async () => ({
     headers: {
@@ -58,9 +58,11 @@ function SignUp() {
         router.push('/login/signup/success')
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
+        return false
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
+      return false
     }
   }
 
@@ -128,15 +130,14 @@ function SignUp() {
           </div>
           <div className="mt-5 mb-10 mx-auto w-[360px]">
             <div className="font-bold my-4">생년월일</div>
-            {birthday && (
-              <DatePicker
-                defaultValue={birthday.toISOString()}
-                buttonClassName="w-[360px]"
-                onDateChange={(date) => {
-                  setBirthday(date)
-                }}
-              />
-            )}
+
+            <DatePicker
+              defaultValue={birthday ? birthday.toISOString() : undefined}
+              buttonClassName="w-[360px]"
+              onDateChange={(date) => {
+                setBirthday(date)
+              }}
+            />
           </div>
           <div className="flex justify-center space-x-3 w-full mt-5">
             <FiChevronsLeft
