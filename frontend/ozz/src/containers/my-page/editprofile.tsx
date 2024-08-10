@@ -41,6 +41,13 @@ interface FieldProps {
   id: string
   children: ReactNode
 }
+interface User {
+  email: string
+  birth: Date
+  createdDate?: Date
+  nickname: string
+  profileFileId?: number
+}
 
 function Field({ label, id, children }: FieldProps) {
   return (
@@ -52,16 +59,32 @@ function Field({ label, id, children }: FieldProps) {
 }
 
 function ProfileEdit() {
-  const [user, setUser] = useState<any>({})
+  const [user, setUser] = useState<User | null>(null)
+
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
+  const [profileSrc, setProfileSrc] = useState('')
 
   async function getUser() {
-    const response = await userApi.getUserInfo()
-    const data = await response.json()
-    console.log('data', data)
-    setUser(data)
+    try {
+      const response = await userApi.getUserInfo()
+      const data = await response.json()
+      console.log('data', data)
+      setUser(data)
+
+      if (data.profileFileId) {
+        const res = await fileApi.getFile(data.profileFileId)
+        const picData = await res.json()
+        const picRes = await fileApi.downloadFile(picData.filePath)
+        const blob = await picRes.blob()
+        const urlStr = URL.createObjectURL(blob)
+        console.log('이게 내 url', urlStr)
+        setProfileSrc(urlStr)
+      }
+    } catch (error) {
+      console.log('getUser 오류 발생', error)
+    }
   }
 
   useEffect(() => {
@@ -100,11 +123,11 @@ function ProfileEdit() {
       {/* Profile Image Section */}
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
         <div className="relative w-[100px] h-[100px]">
-          {user.profile_file_id ? (
+          {profileSrc ? (
             <Image
-              src={user.profile_file_id}
+              src={profileSrc}
               alt="프로필 이미지"
-              layout="fill"
+              fill
               className="rounded-full"
             />
           ) : (
