@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
@@ -56,7 +58,7 @@ export default function MyPageIndex() {
     document.cookie.split(';').forEach((cookie) => {
       const eqPos = cookie.indexOf('=')
       const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
     })
   }
 
@@ -127,7 +129,7 @@ export default function MyPageIndex() {
       {loading ? (
         <LoadingPage
           messages={['유저 정보를', '로딩 중입니다']}
-          footerMessage={'조금만 기다려주세요'}
+          footerMessage="조금만 기다려주세요"
         />
       ) : (
         <div>

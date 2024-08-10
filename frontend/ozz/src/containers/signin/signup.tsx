@@ -11,16 +11,6 @@ import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
-const api = new UserApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
 function SignUp() {
   const router = useRouter()
   const [nickname, setNickname] = useState('')
@@ -32,6 +22,7 @@ function SignUp() {
     syncTokensWithCookies()
 
     const fetchUserInfo = async () => {
+      console.log('유저 정보 가져오기')
       try {
         await getUserInfo().then((userInfo) => {
           console.log('userInfo: ', userInfo)
@@ -56,13 +47,14 @@ function SignUp() {
         console.log('회원가입 확인 : ', response)
         document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
         router.push('/login/signup/success')
+        return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
-        return false
+        return false // 오류 발생 시 false 반환
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
-      return false
+      return false // 응답 텍스트가 없는 경우 false 반환
     }
   }
 
