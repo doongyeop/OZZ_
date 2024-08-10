@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import static com.ssafy.ozz.clothes.clothes.domain.QClothes.clothes;
 import static com.ssafy.ozz.clothes.coordinate.domain.QCoordinate.coordinate;
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
@@ -24,7 +25,8 @@ public class CoordinateQueryRepositoryImpl extends Querydsl4RepositorySupport<Co
         return selectFrom(coordinate)
                 .where(
                     userIdEq(userId),
-                    styleOr(toBits(condition.styleList()))
+                    styleOr(toBits(condition.styleList())),
+                    nameContainKeyword(condition.keyword())
                 )
                 .fetch();
     }
@@ -35,7 +37,8 @@ public class CoordinateQueryRepositoryImpl extends Querydsl4RepositorySupport<Co
                 selectFrom(coordinate)
                 .where(
                     userIdEq(userId),
-                    styleOr(toBits(condition.styleList()))
+                    styleOr(toBits(condition.styleList())),
+                    nameContainKeyword(condition.keyword())
                 )
         );
     }
@@ -46,5 +49,8 @@ public class CoordinateQueryRepositoryImpl extends Querydsl4RepositorySupport<Co
 
     public BooleanExpression styleOr(Integer style){
         return style != null ? Expressions.booleanTemplate("BITAND({0},{1}) != 0", coordinate.style, style) : null;
+    }
+    public BooleanExpression nameContainKeyword(String keyword){
+        return keyword != null ? coordinate.name.contains(keyword) : null;
     }
 }
