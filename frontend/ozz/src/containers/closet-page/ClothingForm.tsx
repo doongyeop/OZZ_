@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo  } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import BrandModal from '@/components/Modal/BrandModal'
 import CategoryModal from '@/components/Modal/CategoryModal'
@@ -174,7 +174,7 @@ export default function ClothingForm({
   }
 
   const closeModal = () => setOpenModal(null)
-  
+
   const modalItems = [
     {
       label: '브랜드',
@@ -336,23 +336,23 @@ export default function ClothingForm({
                 <div className="flex justify-center items-center">
                   {item.value &&
                     (item.label === '색' && Array.isArray(color) ? (
-                    <>
-                      {color.slice(0, 3).map((c) => {
-                            return (
-                              <div key={c.code} className="flex">
-                                <span
-                                  className="inline-block w-5 h-5 rounded-full mr-1.5"
-                                  style={{ backgroundColor: c.colorCode }}
-                                />
-                                <button
-                                  type="button"
-                                  className="text-primary-400 mr-2"
-                                  onClick={() => setOpenModal(item.path)}
-                                >
-                                  {c.name}
-                                </button>
-                              </div>
-                            );
+                      <>
+                        {color.slice(0, 3).map((c) => {
+                          return (
+                            <div key={c.code} className="flex">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                style={{ backgroundColor: c.colorCode }}
+                              />
+                              <button
+                                type="button"
+                                className="text-primary-400 mr-2"
+                                onClick={() => setOpenModal(item.path)}
+                              >
+                                {c.name}
+                              </button>
+                            </div>
+                          )
                         })}
                         {color.length > 3 && (
                           <span className="text-primary-400 mr-2">...</span>

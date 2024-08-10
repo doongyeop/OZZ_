@@ -520,7 +520,7 @@ export const colorInvMap: { [key: string]: string } = {
   골드: 'GOLD',
 }
 
-export const colorCodeMap: {[key: string]:string} = {
+export const colorCodeMap: { [key: string]: string } = {
   WHITE: '#FFFFFF',
   BLACK: '#000000',
   GRAY: '#E7E7E7',

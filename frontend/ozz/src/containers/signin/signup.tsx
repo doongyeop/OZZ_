@@ -2,11 +2,14 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useRouter } from 'next/navigation'
-import DatePicker from '@/components/Datepicker'
-import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
+import { Api as UserApi } from '@/types/user/Api'
+import DatePicker from '@/components/Datepicker'
+import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 
 const token = '토큰냅다박기'
 
@@ -25,27 +28,22 @@ function SignUp() {
   const [errorText, setErrorText] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
-  const getBirthday = async () => {
-    try {
-      const res = await api.getUserInfo()
-      const userData = await res.json()
-      // console.log('userData', userData)
-      const bday = new Date(userData.birth)
-      setBirthday(bday)
-      // console.log('생년월일 정보를 가져왔습니다:', bday)
-    } catch (error) {
-      // console.error('생년월일 정보를 가져오는 중 오류 발생:', error)
-    }
-  }
-
   useEffect(() => {
-    getBirthday()
-  }, [])
+    syncTokensWithCookies()
 
-  const setCookie = (name: string, value: string, days: number) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
-  }
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          console.log('userInfo: ', userInfo)
+          const bday = new Date(userInfo.birth)
+          setBirthday(bday)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
+  }, [])
 
   const confirmSignUp = async () => {
     if (responseText) {
@@ -54,12 +52,10 @@ function SignUp() {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        const userUpdateResponse = await api.updateUser(userData)
-        const data = await userUpdateResponse.json()
-        // console.log(data)
-        // console.log('회원가입이 성공적으로 완료되었습니다.')
-
-        setCookie('nickname', userData.nickname, 7)
+        const response = await updateUser(userData)
+        console.log('회원가입 확인 : ', response)
+        document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
+        router.push('/login/signup/success')
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
       }
@@ -72,12 +68,12 @@ function SignUp() {
     router.back()
   }
 
-  const handleNext = () => {
-    confirmSignUp()
+  const handleNext = async () => {
+    await confirmSignUp()
     router.push('/login/signup/success')
   }
 
-  async function checkNicknameDuplication(nick: string) {
+  const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15) {
       setErrorText('닉네임은 15자 이내여야 합니다')
       setResponseText('')
@@ -90,8 +86,8 @@ function SignUp() {
     }
 
     try {
-      const response = await api.checkNickname({ nickname: nick })
-      setResponseText(await response.text())
+      const response = await checkNickname(nick)
+      setResponseText(response)
       setErrorText('')
       setNickname(nick)
     } catch (error) {
