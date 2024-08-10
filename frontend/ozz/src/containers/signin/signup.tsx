@@ -8,8 +8,8 @@ import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 
-const token = '토큰냅다박기'
-
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 const api = new UserApi({
   securityWorker: async () => ({
     headers: {
@@ -58,13 +58,15 @@ function SignUp() {
         const data = await userUpdateResponse.json()
         // console.log(data)
         // console.log('회원가입이 성공적으로 완료되었습니다.')
-
         setCookie('nickname', userData.nickname, 7)
+        return true
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
+        return false
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
+      return false
     }
   }
 
@@ -72,9 +74,13 @@ function SignUp() {
     router.back()
   }
 
-  const handleNext = () => {
-    confirmSignUp()
-    router.push('/login/signup/success')
+  const handleNext = async () => {
+    const isSignupSuccess = await confirmSignUp()
+    if (isSignupSuccess) {
+      router.push('/login/signup/success')
+    } else {
+      window.alert('닉네임을 설정하세요')
+    }
   }
 
   async function checkNicknameDuplication(nick: string) {
@@ -132,15 +138,14 @@ function SignUp() {
           </div>
           <div className="mt-5 mb-10 mx-auto w-[360px]">
             <div className="font-bold my-4">생년월일</div>
-            {birthday && (
-              <DatePicker
-                defaultValue={birthday.toISOString()}
-                buttonClassName="w-[360px]"
-                onDateChange={(date) => {
-                  setBirthday(date)
-                }}
-              />
-            )}
+
+            <DatePicker
+              defaultValue={birthday ? birthday.toISOString() : undefined}
+              buttonClassName="w-[360px]"
+              onDateChange={(date) => {
+                setBirthday(date)
+              }}
+            />
           </div>
           <div className="flex justify-center space-x-3 w-full mt-5">
             <FiChevronsLeft
