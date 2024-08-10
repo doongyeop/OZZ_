@@ -71,7 +71,6 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findByUserId(userId, pageable);
     }
 
-
     @Override
     public Page<Board> getBoards(Pageable pageable) {
         return boardRepository.findAll(pageable);
@@ -79,7 +78,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board getBoard(Long boardId) {
-        System.out.println(boardRepository.findById(boardId).get());
         return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
     }
 
