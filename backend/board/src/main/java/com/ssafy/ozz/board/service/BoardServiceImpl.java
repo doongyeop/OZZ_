@@ -81,7 +81,6 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
     }
 
-
     @Override
     public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);

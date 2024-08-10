@@ -38,10 +38,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("refresh", refresh);
 
         Cookie accessCookie = new Cookie("access", access);
+        accessCookie.setPath("/");
 //        accessCookie.setHttpOnly(true); 클라이언트에서 접근 못하게
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refresh", refresh);
+        refreshCookie.setPath("/");
 //        refreshCookie.setHttpOnly(true);
         response.addCookie(refreshCookie);
 
