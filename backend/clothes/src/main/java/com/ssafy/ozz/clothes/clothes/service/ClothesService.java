@@ -23,6 +23,8 @@ public interface ClothesService {
 
     Slice<Clothes> getClothesOfUser(Long userId, ClothesSearchCondition condition, Pageable pageable);
 
+    List<Clothes> getClothesOfUser(Long userId);
+
     Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
 
     Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable);

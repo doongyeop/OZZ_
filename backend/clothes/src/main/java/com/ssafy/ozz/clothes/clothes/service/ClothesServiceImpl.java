@@ -4,10 +4,7 @@ import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.dto.request.*;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedItem;
-import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
 import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
@@ -68,6 +65,12 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public Slice<Clothes> getClothesOfUser(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         return clothesRepository.findByUserId(userId, condition, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Clothes> getClothesOfUser(Long userId) {
+        return clothesRepository.findAllByUserIdAndProcessingLessThanEqual(userId,0);
     }
 
     @Override

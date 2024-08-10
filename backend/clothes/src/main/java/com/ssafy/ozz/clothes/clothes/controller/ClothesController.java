@@ -58,6 +58,14 @@ public class ClothesController {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
     }
 
+    @GetMapping("/users/all")
+    @Operation(summary = "사용자의 모든 옷 조회", description = "특정 사용자의 모든 상세 옷 정보를 조회합니다.")
+    public ResponseEntity<List<ClothesForRecommendationResponse>> getClothesOfUser(
+//            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId
+    ) {
+        return ResponseEntity.ok(clothesService.getClothesOfUser(1L).stream().map(ClothesForRecommendationResponse::new).toList());
+    }
+
     @GetMapping("/search")
     @Operation(summary = "키워드로 옷 검색", description = "검색된 옷 목록을 슬라이스 형태로 조회합니다.")
     public ResponseEntity<Slice<ClothesBasicWithFileResponse>> searchClothes(
