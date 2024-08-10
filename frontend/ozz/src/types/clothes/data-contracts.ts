@@ -494,9 +494,9 @@ export interface SortObject {
 /** 옷 검색 DTO */
 export interface ClothesSearchCondition {
   /** @format byte */
-  categoryHighId?: number
+  categoryHighId?: number | string
   /** @format byte */
-  categoryLowId?: number
+  categoryLowId?: number | string
   keyword?: string
 }
 
@@ -509,7 +509,7 @@ export interface ClothesBasicWithFileResponse {
   createdDate?: string
   /** 하위 카테고리 정보 DTO */
   categoryLow?: CategoryLowResponse
-  imageFile: FileInfo
+  imageFile: FileInfo | null
 }
 
 export interface SliceClothesBasicWithFileResponse {

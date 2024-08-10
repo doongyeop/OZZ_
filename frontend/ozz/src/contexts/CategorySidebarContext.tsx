@@ -1,15 +1,20 @@
-// src/contexts/CategorySidebarContext.tsx
-
 'use client'
 
-import { createContext, useContext, useState, useMemo, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+  ReactNode,
+} from 'react'
 
 interface CategorySidebarContextType {
   isSidebarOpen: boolean
   toggleSidebar: () => void
   closeSidebar: () => void
-  selectedCategory: string | null
-  selectedSubcategory: string | null
+  selectedCategory: string | undefined
+  selectedSubcategory: string | undefined
   setCategory: (category: string, subcategory: string) => void
 }
 
@@ -19,19 +24,24 @@ const CategorySidebarContext = createContext<
 
 export function CategorySidebarProvider({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null,
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined,
   )
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    string | undefined
+  >(undefined)
 
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev)
-  const closeSidebar = () => setIsSidebarOpen(false)
+  const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), [])
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), [])
 
-  const setCategory = (category: string, subcategory: string) => {
-    setSelectedCategory(category)
-    setSelectedSubcategory(subcategory)
-    closeSidebar()
-  }
+  const setCategory = useCallback(
+    (category: string, subcategory: string) => {
+      setSelectedCategory(category)
+      setSelectedSubcategory(subcategory)
+      closeSidebar()
+    },
+    [closeSidebar],
+  )
 
   const value = useMemo(
     () => ({
@@ -42,7 +52,14 @@ export function CategorySidebarProvider({ children }: { children: ReactNode }) {
       selectedSubcategory,
       setCategory,
     }),
-    [isSidebarOpen, selectedCategory, selectedSubcategory],
+    [
+      isSidebarOpen,
+      selectedCategory,
+      selectedSubcategory,
+      toggleSidebar,
+      closeSidebar,
+      setCategory,
+    ],
   )
 
   return (

@@ -5,18 +5,30 @@ import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 import ClothesList from '@/components/ClothesList'
 import SearchArea from '@/containers/closet-page/SearchArea'
 import EmptyCloset from '@/containers/closet-page/EmptyCloset/page'
-import { fetchUserClothes, fetchImage } from '@/services/clothingApi'
+import { fetchImage, fetchUserClothes } from '@/services/clothingApi'
 import Loading from '@/app/closet/loading'
 import { useEffect, useRef } from 'react'
 import { ImSpinner8 } from 'react-icons/im'
+import { categoryMap, categoryNameToLowIdMap } from '@/types/clothing'
 
 const queryKeys = {
   userClothes: 'userClothes',
 }
 
 export default function ClosetPageContainer() {
-  const { isSidebarOpen } = useCategorySidebar()
+  const { isSidebarOpen, selectedCategory, selectedSubcategory } =
+    useCategorySidebar()
   const observerElem = useRef(null)
+
+  // 카테고리 이름을 ID로 변환
+  const categoryHighId =
+    selectedCategory && selectedCategory
+      ? categoryMap[selectedCategory]?.id
+      : ''
+  const categoryLowId =
+    selectedSubcategory && selectedSubcategory !== '전체'
+      ? categoryNameToLowIdMap[selectedSubcategory]
+      : ''
 
   // Using useInfiniteQuery to handle infinite scroll
   const {
@@ -27,9 +39,16 @@ export default function ClosetPageContainer() {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: [queryKeys.userClothes],
-    queryFn: ({ pageParam = 0 }) =>
-      fetchUserClothes({ page: pageParam, size: 20 }, {}),
+    queryKey: [queryKeys.userClothes, selectedCategory, selectedSubcategory],
+    queryFn: ({ pageParam = 0 }) => {
+      return fetchUserClothes(
+        { page: pageParam, size: 20 },
+        {
+          categoryHighId,
+          categoryLowId,
+        },
+      )
+    },
     getNextPageParam: (lastPage) =>
       // If last page's 'last' field is true, there are no more pages
       lastPage.last ? undefined : lastPage.number + 1,
@@ -79,7 +98,7 @@ export default function ClosetPageContainer() {
   }))
 
   return (
-    <div className="h-full">
+    <div>
       {isSidebarOpen && <CategorySidebar />}
       {isLoading && <Loading />}
       {isError || clothingWithImages.length === 0 ? (
