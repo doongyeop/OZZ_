@@ -1,5 +1,6 @@
 package com.ssafy.ozz.board.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class BoardLikes {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boards_id", nullable = false)
+    @JsonBackReference
     private Board board;
 
     @Id

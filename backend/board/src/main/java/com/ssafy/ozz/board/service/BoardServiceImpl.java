@@ -140,4 +140,22 @@ public class BoardServiceImpl implements BoardService {
         Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
+
+    @Override
+    public BoardResponse mapToBoardResponse(Board board) {
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId(),
+                userInfo.nickname(),
+                userInfo.Birth(),
+                userInfo.profileFileId(),
+                profileImg
+        );
+
+        return new BoardResponse(board, boardImg, userResponse);
+    }
+
 }
