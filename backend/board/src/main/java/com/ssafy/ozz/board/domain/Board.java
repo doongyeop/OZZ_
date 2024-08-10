@@ -1,5 +1,6 @@
 package com.ssafy.ozz.board.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,9 +40,11 @@ public class Board {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardLikes> boardLikes;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags;
 
