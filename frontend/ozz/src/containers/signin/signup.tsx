@@ -42,10 +42,10 @@ function SignUp() {
     getBirthday()
   }, [])
 
-  const setCookie = (name: string, value: string, days: number) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
-  }
+  // const setCookie = (name: string, value: string, days: number) => {
+  //   const expires = new Date(Date.now() + days * 864e5).toUTCString()
+  //   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
+  // }
 
   const confirmSignUp = async () => {
     if (responseText) {
@@ -58,7 +58,7 @@ function SignUp() {
         const data = await userUpdateResponse.json()
         // console.log(data)
         // console.log('회원가입이 성공적으로 완료되었습니다.')
-        setCookie('nickname', userData.nickname, 7)
+        // setCookie('nickname', userData.nickname, 7)
         return true
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
