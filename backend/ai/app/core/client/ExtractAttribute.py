@@ -35,13 +35,13 @@ attributes:
 7. extra: Please list in words the attributes of clothing items that cannot be expressed by criteria 1-6.
 8. category: Please categorize into subcategories.
 - Possible values:
-    - 상의: 탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티, 맨투맨 
+    - 상의: 탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티
     - 하의: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠
     - 아우터: 코트, 재킷, 점퍼, 패딩, 베스트, 가디건, 짚업
     - 원피스: 드레스, 점프수트
-    - 신발: 운동화, 구두, 샌들/슬리퍼
+    - 신발: 운동화, 구두, 샌들
     - 악세서리: 주얼리, 기타, 모자
-    - 가방: 백팩, 힙색
+    - 가방: 가방, 백팩, 힙색
 
 rule:
 <clothes><order></order><info></info></clothes>
