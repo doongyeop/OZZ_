@@ -1,5 +1,3 @@
-'use client'
-
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -9,17 +7,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+import React from 'react'
 import { IoSearch } from 'react-icons/io5'
 
-type OrderValue = 'regist' | 'purchase' | 'use'
+type OrderValue = 'createdDate' | 'purchaseDate'
 
-export default function SearchArea() {
-  const [order, setOrder] = useState<OrderValue>('regist')
+interface SearchAreaProps {
+  searchKeyword: string
+  setSearchKeyword: (keyword: string) => void
+  order: OrderValue
+  setOrder: (order: OrderValue) => void
+  onSubmit: () => void
+}
+
+export default function SearchArea({
+  searchKeyword,
+  setSearchKeyword,
+  order,
+  setOrder,
+  onSubmit,
+}: SearchAreaProps) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit()
+  }
 
   return (
     <div className="p-4 flex justify-between bg-white sticky top-20 shadow-sm">
-      <form className="ps-4 flex items-center space-x-2">
+      <form
+        className="ps-4 flex items-center space-x-2"
+        onSubmit={handleSubmit}
+      >
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">
             <IoSearch size="20" className="text-secondary" />
@@ -28,6 +46,8 @@ export default function SearchArea() {
             className="pl-10 border-secondary"
             type="search"
             placeholder="키워드를 입력하세요"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
           />
         </div>
       </form>
@@ -41,9 +61,8 @@ export default function SearchArea() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="regist">등록순</SelectItem>
-              <SelectItem value="purchase">구매일자순</SelectItem>
-              <SelectItem value="use">인기순</SelectItem>
+              <SelectItem value="createdDate">등록순</SelectItem>
+              <SelectItem value="purchaseDate">구매일자순</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

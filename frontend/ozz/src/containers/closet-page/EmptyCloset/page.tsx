@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 export default function EmptyCloset() {
   return (
-    <div className="flex flex-col items-center justify-center mt-48">
+    <div className="flex flex-col items-center justify-center pt-52">
       <CgClose size={80} className="text-gray-dark" />
       <p className="text-gray-dar mt-2">아직 옷짱에 옷이 없어요 ㅜ.ㅜ</p>
       <Link href="/closet/regist">

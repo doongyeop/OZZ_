@@ -11,7 +11,7 @@ import {
 } from '@/types/clothes/data-contracts'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzE2MTk1NywiZXhwIjoxNzIzMjIxOTU3fQ.VY4NlD1UxVPhLKbtSxhASn2Y4IeabKJwxSGQ9-AuaK0'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzI2NTcyNiwiZXhwIjoxNzIzMzI1NzI2fQ.xckSDQHcn0K51y7p4KSGMm5fec1QFOVza2ABnTiuRaQ'
 
 const clothesApi = new ClothesApi({
   securityWorker: async () => ({
@@ -31,7 +31,7 @@ const fileApi = new FileApi({
 
 export async function fetchUserClothes(
   pageable: Pageable,
-  searchCondition: ClothesSearchCondition = {},
+  searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -48,17 +48,12 @@ export async function fetchImage(filePath: string): Promise<string> {
 
 export const createClothing = async (data: FormData) => {
   // TODO: 추후 수정
-  try {
-    const response = await axios.post('/api/clothing', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    return response.data
-  } catch (error) {
-    // 에러 처리
-    throw error
-  }
+  const response = await axios.post('/api/clothing', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
 }
 
 export const updateClothing = async (id: number, data: FormData) => {

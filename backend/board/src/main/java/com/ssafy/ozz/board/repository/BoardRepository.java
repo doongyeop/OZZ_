@@ -17,4 +17,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByStyle(Integer style, Pageable pageable);
 
     Page<Board> findByAgeBetween(int startAge, int endAge, Pageable pageable);
+
 }
