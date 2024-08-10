@@ -47,15 +47,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        refreshCookie.setHttpOnly(true);
         response.addCookie(refreshCookie);
 
+//        response.addHeader("Set-Cookie", "access=" + access + "; Path=/; SameSite=None; HttpOnly");
+//        response.addHeader("Set-Cookie", "refresh=" + refresh + "; Path=/; SameSite=None; HttpOnly");
+
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             if (existingUser.get().getNickname() == null) { // 최초 로그인 한 사람이면 닉네임 변경 페이지로 이동
-                response.sendRedirect("http://localhost:3000/login/signup");
+                response.sendRedirect("https://i11a804.p.ssafy.io/login/signup");
                 return;
             }
         }
 
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("https://i11a804.p.ssafy.io/");
 
     }
 }
