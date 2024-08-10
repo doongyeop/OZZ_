@@ -96,6 +96,7 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changeStyle(toBits(request.styleList()));
         clothes.changePattern(toBits(request.patternList()));
         clothes.changeExtra(request.extra());
+        clothes.updateProcessing(request.processing());
         return clothes;
     }
 
@@ -120,7 +121,7 @@ public class ClothesServiceImpl implements ClothesService {
         Clothes clothes = getClothes(clothesId);
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
         clothes.updateImageFile(fileInfo.fileId());
-
+        clothes.updateProcessing(-1);
         return clothesId;
     }
 

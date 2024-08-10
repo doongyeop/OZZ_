@@ -40,10 +40,12 @@ def EAcallback(ch, method, properties, body):
             url = f"{os.getenv('CLOTHES_ENDPOINT')}/{key}"
             # 요청 헤더 및 파일 설정
             logging.info(f"속성 등록 :  {url}")
+            attr_data=data[key].model_dump()
+            attr_data["processing"]=-2
             # PUT 요청 보내기
             mp_encoder = MultipartEncoder(
                 fields={
-                    "request": ('request',data[key].model_dump_json(),'application/json')
+                    "request": ('request',json.dumps(attr_data),'application/json')
                 }
             )
             # PUT 요청 보내기
