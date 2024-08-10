@@ -56,6 +56,11 @@ export const createClothing = async (data: FormData) => {
   return response.data
 }
 
+export async function getClothingDetails(clothesId: number) {
+  const response = await clothesApi.getClothes(clothesId)
+  return response.json()
+}
+
 export const updateClothing = async (id: number, data: FormData) => {
   // TODO: 옷 상세 조회
   const response = await axios.put(`/api/clothes/${id}`, data)
