@@ -14,7 +14,7 @@ import { FaChevronRight } from 'react-icons/fa'
 import LoadingPage from '@/components/Loading/loading'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE3NTY1MSwiZXhwIjoxNzIzMjM1NjUxfQ.mhY4jM6zYKYI6pClJcSAQvcjrjNX8v8GFv054TYucB4'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 
 const userApi = new UserApi({
   securityWorker: async () => ({
@@ -43,7 +43,7 @@ const authApi = new AuthApi({
 export default function MyPageIndex() {
   const router = useRouter()
   const [modal, setModal] = useState(false)
-  const [user, setUser] = useState()
+  const [user, setUser] = useState<any>(null)
   const [profileSrc, setProfileSrc] = useState('')
   const [profilePic, setProfilePic] = useState()
   const setCookie = (name: string, value: any, days: number) => {
@@ -75,18 +75,23 @@ export default function MyPageIndex() {
   }
 
   const getUser = async () => {
+    setLoading(true) // 데이터를 가져오기 전에 로딩 상태로 설정
     try {
       const response = await userApi.getUserInfo()
       const userData = await response.json()
-      setUser(userData)
-      setCookie('userInfo', JSON.stringify(userData), 1)
-      if (userData.profileFileId) {
-        await getProfilePic(userData.profileFileId)
+      if (userData) {
+        setUser(userData)
+        setCookie('userInfo', JSON.stringify(userData), 1)
+        if (userData.profileFileId) {
+          await getProfilePic(userData.profileFileId)
+        }
+      } else {
+        setLoading(true) // userData가 없을 경우 로딩 상태로 유지
       }
     } catch (error) {
       console.error('유저 정보를 가져오는 중 오류 발생:', error)
     } finally {
-      setLoading(false)
+      setLoading(false) // 데이터 처리 후 로딩 상태 해제
     }
   }
 
@@ -208,7 +213,7 @@ export default function MyPageIndex() {
                   </button>
                   <button
                     type="button"
-                    onClick={logOut(user.id)}
+                    onClick={() => logOut(user.id)}
                     className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
                   >
                     예

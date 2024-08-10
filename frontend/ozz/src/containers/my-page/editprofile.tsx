@@ -11,8 +11,7 @@ import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE2NzQ5NSwiZXhwIjoxNzIzMjI3NDk1fQ.88TdF66wvJ9jNoBH8k1dpOsgonu0QzyHWqRoxs0iNnc'
-
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 const fileApi = new FileApi({
   securityWorker: async () => ({
     headers: {

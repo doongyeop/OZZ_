@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react'
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzE5OTUwNCwiZXhwIjoxNzIzMjU5NTA0fQ.kN5qWK_w6rZ05wORfky-rmdhrHlV7PGEpDY_JNQCgp4'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 const api = new UserApi({
   securityWorker: async () => ({
     headers: {
@@ -138,15 +138,14 @@ function SignUp() {
           </div>
           <div className="mt-5 mb-10 mx-auto w-[360px]">
             <div className="font-bold my-4">생년월일</div>
-            {birthday && (
-              <DatePicker
-                defaultValue={birthday.toISOString()}
-                buttonClassName="w-[360px]"
-                onDateChange={(date) => {
-                  setBirthday(date)
-                }}
-              />
-            )}
+
+            <DatePicker
+              defaultValue={birthday ? birthday.toISOString() : undefined}
+              buttonClassName="w-[360px]"
+              onDateChange={(date) => {
+                setBirthday(date)
+              }}
+            />
           </div>
           <div className="flex justify-center space-x-3 w-full mt-5">
             <FiChevronsLeft
