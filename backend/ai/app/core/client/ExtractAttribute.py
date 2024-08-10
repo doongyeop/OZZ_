@@ -21,32 +21,33 @@ Identify only the attributes of a single representative garment shown in each ph
 
 attributes:
 1. fit: Type to how clothes fit body. Single value.
-- Possible values: OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT.
+<possibleValues>OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT</possibleValues>
 2. colorList: Identify up to 3 primary colors, Multiple values.
-- possible values: WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD.
+<possibleValues>WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD.</possibleValues>
 3. patternList: Multiple values.
-- possible values: SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH.
+<possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH.</possibleValues>
 4. seasonList: Suitable season to wear. Multiple values.
-- possible values: SPRING, SUMMER, AUTUMN, WINTER.
+<possibleValues>SPRING, SUMMER, AUTUMN, WINTER.</possibleValues>
 5. styleList: Unique appearance or atmosphere. Multiple values
-- possible values: ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC
+<possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
 6. textureList: Multiple values.
-- possible values: FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER.
+<possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER.</possibleValues>
 7. extra: Please list in words the attributes of clothing items that cannot be expressed by criteria 1-6.
-8. category: Please categorize into subcategories.
-- Possible values:
-    - 상의: 탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티
-    - 하의: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠
-    - 아우터: 코트, 재킷, 점퍼, 패딩, 베스트, 가디건, 짚업
-    - 원피스: 드레스, 점프수트
-    - 신발: 운동화, 구두, 샌들
-    - 악세서리: 주얼리, 기타, 모자
-    - 가방: 가방, 백팩, 힙색
+8. category: Please categorize into subcategories. Possible values are expressed as <parent category>subcategories</parent category>.
+<possibleValues>
+<상의>탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티</상의>
+<하의>: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠</하의>
+<아우터>코트, 재킷, 점퍼, 패딩, 베스트, 가디건, 짚업</아우터>
+<원피스>드레스, 점프수트</원피스>
+<신발>운동화, 구두, 샌들</신발>
+<악세서리>주얼리, 기타, 모자</악세서리>
+<가방>가방, 백팩, 힙색</가방>
+</parent category>
 
 rule:
 <clothes><order></order><info></info></clothes>
 The values wrapped in <order> are the order of the clothing photos.
-The information contained in <info> are attributes that have already been identified for each garment. Please apply it over the photo analysis content.
+The information wrapped in <info> is an attribute that has already been identified for each garment. If the identified information is given, please refer to it.
 
 Response Format:
 Please return it in JSON format as in the following example.
@@ -81,12 +82,13 @@ Please return it in JSON format as in the following example.
                          "점프수트": 21,
                          "운동화": 22,
                          "구두": 23,
-                         "샌들/슬리퍼": 24,
+                         "샌들": 24,
                          "주얼리": 25,
                          "기타": 26,
                          "모자": 27,
-                         "백팩": 28,
-                         "힙색": 29}
+                         "가방":28,
+                         "백팩": 29,
+                         "힙색": 30}
         if "List" in key:
             return item.split(', ')
         elif "category" == key:
@@ -128,9 +130,9 @@ Please return it in JSON format as in the following example.
                     "content": user_content
                 },
             ],
-            temperature=1,
+            temperature=0,
             max_tokens=75 * len(user_content),
-            top_p=1,
+            top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0
         )
