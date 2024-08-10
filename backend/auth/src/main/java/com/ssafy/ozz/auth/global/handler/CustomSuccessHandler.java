@@ -47,8 +47,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        refreshCookie.setHttpOnly(true);
         response.addCookie(refreshCookie);
 
-        response.addHeader("Set-Cookie", "access=" + access + "; Path=/; SameSite=None; HttpOnly");
-        response.addHeader("Set-Cookie", "refresh=" + refresh + "; Path=/; SameSite=None; HttpOnly");
+//        response.addHeader("Set-Cookie", "access=" + access + "; Path=/; SameSite=None; HttpOnly");
+//        response.addHeader("Set-Cookie", "refresh=" + refresh + "; Path=/; SameSite=None; HttpOnly");
 
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
