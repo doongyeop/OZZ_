@@ -95,6 +95,7 @@ export const initializeApiClients = (tokens: Tokens) => {
     securityWorker: async () => {
       await validateAndRefreshToken()
       return {
+        baseUrl: 'https://i11a804.p.ssafy.io',
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
         },
