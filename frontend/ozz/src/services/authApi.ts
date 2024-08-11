@@ -15,27 +15,27 @@ export interface Tokens {
 
 let authApi: AuthApi<Tokens> | null = null
 
-export const fetchTokensFromServer = async (): Promise<Tokens | null> => {
-  try {
-    const response = await fetch('/api/authTokens', {
-      credentials: 'include',
-    })
-    console.log('Response status:', response.status)
-    console.log('Response headers:', response.headers)
-    if (response.ok) {
-      const tokens = await response.json()
-      console.log('토큰 : ', tokens)
-      return tokens
-    }
-    console.error('Failed to fetch tokens:', response.statusText)
-    const errorText = await response.text()
-    console.error('Error details:', errorText)
-    return null
-  } catch (error) {
-    console.error('Error fetching tokens:', error)
-    return null
-  }
-}
+// export const fetchTokensFromServer = async (): Promise<Tokens | null> => {
+//   try {
+//     const response = await fetch('/api/authTokens', {
+//       credentials: 'include',
+//     })
+//     console.log('Response status:', response.status)
+//     console.log('Response headers:', response.headers)
+//     if (response.ok) {
+//       const tokens = await response.json()
+//       console.log('토큰 : ', tokens)
+//       return tokens
+//     }
+//     console.error('Failed to fetch tokens:', response.statusText)
+//     const errorText = await response.text()
+//     console.error('Error details:', errorText)
+//     return null
+//   } catch (error) {
+//     console.error('Error fetching tokens:', error)
+//     return null
+//   }
+// }
 
 export const getTokens = (): Tokens | undefined => {
   const tokens = queryClient.getQueryData<Tokens>(['tokens'])
@@ -67,10 +67,9 @@ export const removeCookie = (name: string) => {
 
 // 쿠키와 react-query 상태를 동기화하는 함수
 export const syncTokensWithCookies = async () => {
-  console.log('토큰 가져가러 감')
+  console.log('토큰 가져오자')
   // const tokens = await fetchTokensFromServer()
   const cookieString = document.cookie
-  console.log('cookieString: ', cookieString)
   // 쿠키 문자열을 cookie 라이브러리로 파싱합니다.
   const cookies = cookie.parse(cookieString)
   console.log('cookies: ', cookies)
@@ -78,15 +77,9 @@ export const syncTokensWithCookies = async () => {
   const refreshToken = cookies.refresh || ''
 
   if (accessToken && refreshToken) {
-    const tokens: Tokens = {
-      accessToken,
-      refreshToken,
-    }
-
-    if (tokens) {
-      queryClient.setQueryData(['tokens'], tokens)
-      initializeApi(tokens)
-    }
+    const tokens: Tokens = { accessToken, refreshToken }
+    queryClient.setQueryData(['tokens'], tokens)
+    initializeApi(tokens)
   } else {
     console.log('토큰이 존재하지 않습니다.')
   }
