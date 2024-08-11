@@ -54,6 +54,16 @@ export default function DatePicker({
     defaultValue ? new Date(defaultValue) : new Date(),
   )
 
+  React.useEffect(() => {
+    if (defaultValue) {
+      const newDate = new Date(defaultValue)
+      setSelectedDate(newDate)
+      setViewDate(newDate)
+      console.log('selectedDate:', selectedDate)
+      console.log('viewDate:', viewDate)
+    }
+  }, [defaultValue])
+
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date)
     setIsPopoverOpen(false)
