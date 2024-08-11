@@ -1,35 +1,24 @@
-// src/app/api/authTokens/route.ts
+'use server'
+
 /* eslint-disable import/prefer-default-export */
 
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { NextApiRequest, NextApiResponse } from 'next'
+import cookie from 'cookie'
 
-export async function GET() {
-  console.log('authTokens GET 시작')
-  const cookieStore = cookies()
-  const accessToken = cookieStore.get('access')?.value
-  const refreshToken = cookieStore.get('refresh')?.value
-  // const cookieHeader = req.headers.get('cookie')
-  // console.log('cookieHeader? ', cookieHeader)
-  // if (cookieHeader) {
-  //   const cookies = cookieHeader.split('; ').reduce(
-  //     (acc, cookie) => {
-  //       const [name, ...value] = cookie.split('=')
-  //       acc[name] = value.join('=')
-  //       return acc
-  //     },
-  //     {} as Record<string, string>,
-  //   )
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  // 쿠키 헤더에서 쿠키를 파싱합니다.
+  const cookies = cookie.parse(req.headers.cookie || '')
 
-  //   const accessToken = cookies.access
-  //   const refreshToken = cookies.refresh
-  // }
+  // 특정 쿠키를 가져옵니다.
+  const accessToken = cookies.access
+  const refreshToken = cookies.refresh
 
-  console.log('쿠키에서 읽어온 accessToken:', accessToken)
-  console.log('쿠키에서 읽어온 refreshToken:', refreshToken)
+  console.log('Access Token:', accessToken)
+  console.log('Refresh Token:', refreshToken)
 
   if (accessToken && refreshToken) {
-    return NextResponse.json({ accessToken, refreshToken })
+    return res.status(200).json({ accessToken, refreshToken })
+  } else {
+    return res.status(404).json({ message: 'Tokens not found' })
   }
-  return NextResponse.json({ message: 'Tokens not found' }, { status: 401 })
 }
