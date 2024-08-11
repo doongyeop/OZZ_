@@ -47,6 +47,7 @@ public class BoardServiceImpl implements BoardService {
                 .age(request.age())
                 .style(toBits(request.styleList()))
                 .likes(0)
+                .coordinateId(request.coordinateId())
                 .createdDate(new Date())
                 .build();
 
@@ -90,6 +91,7 @@ public class BoardServiceImpl implements BoardService {
         board = board.toBuilder()
                 .content(request.content())
                 .imgFileId(imgFileId)
+                .coordinateId(request.coordinateId())
                 .style(toBits(request.styleList()))
                 .build();
 
