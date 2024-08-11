@@ -7,7 +7,7 @@ import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
 import cookie from 'cookie'
 
-const API_URL = 'http://i11a804.p.ssafy.io:8080'
+const API_URL = 'https://i11a804.p.ssafy.io:8080'
 
 export interface Tokens {
   accessToken: string
