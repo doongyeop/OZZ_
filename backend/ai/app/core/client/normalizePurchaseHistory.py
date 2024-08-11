@@ -72,9 +72,9 @@ Example results:
                     ]
                 }
             ],
-            temperature=1,
+            temperature=0,
             max_tokens=50*len(self.purchase_histories),
-            top_p=1,
+            top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0,
             stream=True,
@@ -84,7 +84,7 @@ Example results:
 
     def parse_stream_data(self, data):
         parsed_dict = {}
-        pattern = r'"(\d+)": (\[.*?\])'
+        pattern = r'"(\d+)": (\[\s*\{.*?\}\s*\])'
         match = re.search(pattern, data, re.DOTALL)
         if not match:
             return None, data
