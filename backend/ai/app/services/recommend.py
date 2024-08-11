@@ -35,3 +35,7 @@ class RecommendService:
         print(recommend_info.model_dump_json())
         outfitRecommendtaion =  OutfitRecommendation(recommend_info)
         print(outfitRecommendtaion.get_result())
+
+    def make_snapshot(self):
+        #TODO 코디 스냅샷 만들기
+        return "IMAGE"

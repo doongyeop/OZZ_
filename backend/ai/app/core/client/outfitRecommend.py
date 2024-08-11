@@ -46,14 +46,18 @@ Request example :
 Result:
 Before reporting the result, check if the clothes are properly composed.
 Report the recommended clothes in JSON format, including a brief title, the ids of the composed clothes, and <recommendation_reason> for the recommendation.
+Please choose the style of the recommended outfit from the <possibleValues>.
+<possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
 Recommend up to 3 outfits, and if you cannot make an outfit that meets the conditions, please write a reason why you cannot make it in "result".
+
 
 Result example:
 {
 "result":"success"
 "outfit":[{
         "title": "가을 캐주얼 룩",
-        "items": ["12","54","23","56","2352"]
+        "items": ["12","54","23","56","2352"],
+        "style": "FORMAL",
         "recommendation_reason": <recommendation_reason>
     }]
 }
@@ -88,9 +92,10 @@ Result example:
         )
         return json.loads(response.choices[0].message.content)
 
-    def parse_response(self, rseponse:dict):
-        if rseponse["result"]=="success":
-            return list(map(lambda a:RecommendedOutfit(**a),rseponse["outfit"]))
+    def parse_response(self, response:dict):
+        print(response)
+        if response["result"]=="success":
+            return list(map(lambda a:RecommendedOutfit(**a),response["outfit"]))
         else:
             return []
 

@@ -1,13 +1,15 @@
+from typing import Union
+
 from pydantic import BaseModel
 
 class Clothes(BaseModel):
     id: int
-    fit: str
+    fit: Union[str|None]=None
     colorList: list[str]
-    patternList: list[str]
-    seasonList: list[str]
-    styleList: list[str]
-    textureList: list[str]
+    patternList: Union[list[str]|None]=None
+    seasonList: Union[list[str]|None]=None
+    styleList: Union[list[str]|None]=None
+    textureList: Union[list[str]|None]=None
     extra: str
     category: str
 
@@ -29,3 +31,4 @@ class RecommendedOutfit(BaseModel):
     title: str
     items: list[int]
     recommendation_reason: str
+    style: str
