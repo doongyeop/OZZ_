@@ -107,8 +107,8 @@ export const initializeApiClients = (tokens: Tokens) => {
 export const syncTokensWithCookies = async () => {
   const cookieString = document.cookie
   const cookies = cookie.parse(cookieString)
-  console.log('토큰 가져오자')
-  console.log('cookies: ', cookies)
+  // console.log('토큰 가져오자')
+  // console.log('cookies: ', cookies)
 
   const accessToken = cookies.access || ''
   const refreshToken = cookies.refresh || ''
