@@ -11,8 +11,8 @@ import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
+const token = ''
+// 'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
 const api = new UserApi({
   securityWorker: async () => ({
     headers: {
@@ -76,8 +76,8 @@ function SignUp() {
   }
 
   const checkNicknameDuplication = async (nick: string) => {
-    if (nick.length > 15) {
-      setErrorText('닉네임은 15자 이내여야 합니다')
+    if (nick.length > 15 || nick.length < 1) {
+      setErrorText('닉네임은 1 ~ 15자 이내여야 합니다')
       setResponseText('')
       return
     }
