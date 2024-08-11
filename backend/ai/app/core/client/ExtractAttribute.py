@@ -67,7 +67,7 @@ Response Format:
 Please return it in JSON format as in the following example.
 Multiple values are separated by commas in a string.
 {
-<order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "상의>티셔츠"}
+<order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "티셔츠"}
 }
 """
 
@@ -179,6 +179,7 @@ class ExtractAttributesURL(ExtractAttribute):
     dataList: list
 
     def __init__(self, data: list[NormalizedClothes]):
+        super().__init__()
         self.dataList = data
 
     def make_user_content(self) -> list:
@@ -191,7 +192,7 @@ class ExtractAttributesURL(ExtractAttribute):
                 }
             }, {
                 "type": "text",
-                "text": f"<clothes><order>{data.clothId}</order><info>{data.category + (',' + data.color if data.color else '')}</info></clothes>"
+                "text": f"<clothes><order>{data.clothId}</order><type>{data.category}</type><color>{data.color if data.color else ''}</color></clothes>"
             }])
         return content_list
 
@@ -201,9 +202,12 @@ class ExtractAttributesURL(ExtractAttribute):
 
 class ExtractAttributesImage(ExtractAttribute):
     image: UploadFile
+    type: str
 
-    def __init__(self, image: UploadFile):
+    def __init__(self, image: UploadFile,type):
+        super().__init__()
         self.image = image
+        self.type = type
 
     def make_user_content(self) -> list:
         return [{
@@ -213,7 +217,7 @@ class ExtractAttributesImage(ExtractAttribute):
             }
         }, {
             "type": "text",
-            "text": f"<clothes><order>{0}</order><info></info></clothes>"
+            "text": f"<clothes><order>{0}</order><type></type></clothes>"
         }]
 
     def get_result(self):

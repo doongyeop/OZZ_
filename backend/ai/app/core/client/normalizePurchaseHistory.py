@@ -40,7 +40,8 @@ Example results:
 }
 """
     purchase_histories:list[PurchaseHistory]
-    def __init__(self, purchase_histories:list[PurchaseHistory]):
+    def __init__(self, purchase_histories: list[PurchaseHistory]):
+        super().__init__()
         self.purchase_histories=purchase_histories
 
     def make_user_prompt(self):

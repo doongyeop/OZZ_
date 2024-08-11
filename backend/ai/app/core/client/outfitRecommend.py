@@ -58,7 +58,8 @@ Result example:
     }]
 }
 """
-    def __init__(self, recomend:Recommend):
+    def __init__(self, recomend: Recommend):
+        super().__init__()
         self.recommend = recomend
 
     def get_response(self):

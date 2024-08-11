@@ -1,4 +1,3 @@
-import openai
 from openai import OpenAI
 
 from app.core.client.clothesMetadata import ClothesMetadata, clothesMetadata
