@@ -33,9 +33,11 @@ export const initializeUserApi = (tokens: Tokens) => {
 
 // 쿠키에서 토큰을 가져와 userApi 초기화
 export const syncUserApiWithCookies = () => {
-  syncTokensWithCookies() // authApi의 syncTokensWithCookies 함수 호출
+  syncTokensWithCookies() // 쿠키에서 토큰을 가져오고, 초기화.
   const tokens = getTokens()
-  if (tokens) {
+  console.log('syncUserApiWithCookies 호출', tokens)
+  if (tokens && !userApi) {
+    // userApi가 아직 초기화되지 않은 경우에만 초기화.
     initializeUserApi(tokens)
   }
 }
