@@ -2,6 +2,7 @@
 
 import { QueryClient } from '@tanstack/react-query'
 import { Api as AuthApi } from '@/types/auth/Api'
+import cookie from 'cookie'
 
 const API_URL = 'http://i11a804.p.ssafy.io:8080'
 
@@ -17,7 +18,6 @@ let authApi: AuthApi<Tokens> | null = null
 export const fetchTokensFromServer = async (): Promise<Tokens | null> => {
   try {
     const response = await fetch('/api/authTokens', {
-      method: 'GET',
       credentials: 'include',
     })
     console.log('Response status:', response.status)
@@ -68,11 +68,27 @@ export const removeCookie = (name: string) => {
 // 쿠키와 react-query 상태를 동기화하는 함수
 export const syncTokensWithCookies = async () => {
   console.log('토큰 가져가러 감')
-  const tokens = await fetchTokensFromServer()
+  // const tokens = await fetchTokensFromServer()
+  const cookieString = document.cookie
+  console.log('cookieString: ', cookieString)
+  // 쿠키 문자열을 cookie 라이브러리로 파싱합니다.
+  const cookies = cookie.parse(cookieString)
+  console.log('cookies: ', cookies)
+  const accessToken = cookies.access || ''
+  const refreshToken = cookies.refresh || ''
 
-  if (tokens) {
-    queryClient.setQueryData(['tokens'], tokens)
-    initializeApi(tokens)
+  if (accessToken && refreshToken) {
+    const tokens: Tokens = {
+      accessToken,
+      refreshToken,
+    }
+
+    if (tokens) {
+      queryClient.setQueryData(['tokens'], tokens)
+      initializeApi(tokens)
+    }
+  } else {
+    console.log('토큰이 존재하지 않습니다.')
   }
 }
 
