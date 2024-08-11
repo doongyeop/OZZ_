@@ -20,11 +20,16 @@ export const fetchTokensFromServer = async (): Promise<Tokens | null> => {
       method: 'GET',
       credentials: 'include',
     })
+    console.log('Response status:', response.status)
+    console.log('Response headers:', response.headers)
     if (response.ok) {
       const tokens = await response.json()
+      console.log('토큰 : ', tokens)
       return tokens
     }
     console.error('Failed to fetch tokens:', response.statusText)
+    const errorText = await response.text()
+    console.error('Error details:', errorText)
     return null
   } catch (error) {
     console.error('Error fetching tokens:', error)
@@ -62,6 +67,7 @@ export const removeCookie = (name: string) => {
 
 // 쿠키와 react-query 상태를 동기화하는 함수
 export const syncTokensWithCookies = async () => {
+  console.log('토큰 가져가러 감')
   const tokens = await fetchTokensFromServer()
 
   if (tokens) {

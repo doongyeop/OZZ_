@@ -40,7 +40,7 @@ public record ClothesResponse(
                 toEnums(Season.class, clothes.getSeason()),
                 toEnums(Style.class, clothes.getStyle()),
                 toEnums(Pattern.class, clothes.getPattern()),
-                new CategoryLowResponse(clothes.getCategoryLow())
+                CategoryLowResponse.of(clothes.getCategoryLow())
         );
     }
 }
