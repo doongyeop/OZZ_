@@ -10,6 +10,7 @@ from requests_toolbelt import MultipartEncoder
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes
 from app.utils.image_process import process
+from app.utils.image_utils import resize_and_convert_to_png
 
 
 def parseToBaseModel(body)->list[NormalizedClothes]|None:
@@ -65,6 +66,8 @@ def IPcallback(ch, method, properties, body):
     try:
         for datum in data:
             processed_image = process(datum.imgUrl, datum.category)
+            #이미지 크기 및 확장자 정규화
+            processed_image = resize_and_convert_to_png(processed_image)
             # BytesIO 객체에 이미지 저장
             image_byte_array = BytesIO()
             processed_image.save(image_byte_array, format='PNG')
