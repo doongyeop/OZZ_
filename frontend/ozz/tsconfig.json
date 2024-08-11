@@ -19,9 +19,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "target": "es6",
-    "downlevelIteration": true
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
