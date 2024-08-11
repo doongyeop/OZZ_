@@ -8,11 +8,12 @@ import { getUserApi, removeTokens } from './authApi'
 
 export const getUserInfo = async () => {
   const userApi = getUserApi()
-  console.log('getUserInfo 실행', userApi)
+  console.log('getUserInfo 실행')
   if (!userApi) throw new Error('User API not initialized')
   const response = await userApi.getUserInfo()
-  console.log('response :', response.json())
-  return response.json()
+  const userInfo = await response.json()
+  console.log('response :', userInfo)
+  return userInfo
 }
 
 export const updateUser = async (data: UserUpdateRequest) => {
