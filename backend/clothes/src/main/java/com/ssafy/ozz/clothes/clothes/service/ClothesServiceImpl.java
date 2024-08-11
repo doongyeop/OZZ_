@@ -161,7 +161,7 @@ public class ClothesServiceImpl implements ClothesService {
                     int index= response.index()*batchSize;
                     List<ExtractAttribute> extractAttributes = new ArrayList<>();
                     for (NormalizedItem item : response.data()) {
-                        if(!item.category().equals("None")){
+                        if(item.category()!=null){
                             PurchaseHistory purchaseHistory=purchaseHistories.get(index);
                             Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name());
                             Long clothId = clothesRepository.save(normalizedHistory).getClothesId();

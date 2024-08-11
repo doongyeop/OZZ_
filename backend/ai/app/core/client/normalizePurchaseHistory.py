@@ -95,6 +95,12 @@ Example results:
         # JSON 형식으로 파싱
         value_list = json.loads(value)
 
+        # 값 검증
+        for item in value_list:
+            for k,v in item.items():
+                if v=="None":
+                    item[k]=None
+
         # 딕셔너리에 추가
         parsed_dict["index"] = int(key)
         parsed_dict["data"] = value_list
