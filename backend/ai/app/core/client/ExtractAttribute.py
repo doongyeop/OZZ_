@@ -2,38 +2,49 @@ import json
 import logging
 from typing import Any
 
-from dotenv import load_dotenv
 from fastapi import UploadFile
-from openai import OpenAI
 
+from app.core.client.openAIClient import OpenAIClient
 from app.schemas.attributes import NormalizedClothes, Attributes
 from app.utils.image_utils import remove_background_and_encode
 
-load_dotenv()
-client = OpenAI()
-
-class ExtractAttribute:
-    client = client
+class ExtractAttribute(OpenAIClient):
     system_prompt: str = """
 your role:
-You are an AI expert in clothing analysis. Analyze photos of clothing items and identify them based on the following attributes.
-Identify only the attributes of a single representative garment shown in each photo.
+You are an AI expert in clothing analysis. Analyze photos of items and identify them based on the following attributes.
 
-attributes:
-1. fit: Type to how clothes fit body. Single value. `None` if there is no possible matching value.
+Request Format:
+<clothes><order></order><type></type><color></color></clothes>
+The values wrapped in <order> are the order of the clothing photos.
+The information wrapped in <color> is an color that has already been identified for each garment.
+
+Attributes:
+1. <fit>
+<Constraint>Type to how clothes fit body. Single value. `None` if there is no possible matching value.</Constraint>
 <possibleValues>OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT</possibleValues>
-2. colorList: Identify up to 3 primary colors, Multiple values. It must match with possible values.
+</fit>
+2. <colorList>
+<Constraint>Identify up to 3 primary colors, Multiple values. Essential value</Constraint>
 <possibleValues>WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD</possibleValues>
-3. patternList: Multiple values. `None` if there is no possible matching value.
-<possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH.</possibleValues>
-4. seasonList: Suitable season to wear. Multiple values. `None` if there is no possible matching value.
-<possibleValues>SPRING, SUMMER, AUTUMN, WINTER.</possibleValues>
-5. styleList: Unique appearance or atmosphere. Multiple values. `None` if there is no possible matching value.
+</colorList>
+3. <patternList>
+<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
+<possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH</possibleValues>
+</patternList>
+4. <seasonList>
+<Constraint>Suitable season to wear. Multiple values. `None` if there is no possible matching value</Constraint>
+<possibleValues>SPRING, SUMMER, AUTUMN, WINTER</possibleValues>
+</seasonList>
+5. <styleList>
+<Constraint>Unique appearance or atmosphere. Multiple values. `None` if there is no possible matching value</Constraint>
 <possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
-6. textureList: Multiple values. `None` if there is no possible matching value.
-<possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER.</possibleValues>
-7. extra: Please list in detail in words the attributes of clothing items that cannot be expressed using criteria 1-6.
-8. category: Please categorize into subcategories. It must match with possible values. Possible values are expressed as <parent category>subcategories</parent category>.
+</styleList>
+6. <textureList>
+<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
+<possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER</possibleValues>
+</textureList>
+7. <category>
+<Constraint>Please categorize into subcategories. Essential value. Possible values are expressed as <parent category>subcategories</parent category></Constraint>
 <possibleValues>
 <상의>탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티</상의>
 <하의>: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠</하의>
@@ -42,15 +53,19 @@ attributes:
 <신발>운동화, 구두, 샌들</신발>
 <악세서리>주얼리, 기타, 모자</악세서리>
 <가방>가방, 백팩, 힙색</가방>
-<possibleValues>
+</possibleValues>
+</category>
 
-rule:
-<clothes><order></order><info></info></clothes>
-The values wrapped in <order> are the order of the clothing photos.
-The information wrapped in <info> is an attribute that has already been identified for each garment. If the identified information is given, please refer to it.
+Follow these steps to extract the properties:
+step1 - If <color> exists, ignore the color guessed from the photo and use the <possibleValues> from <colorList> that most closely resembles the <color> value.
+step2 - Guess all properties of the item corresponding to <type> in the photo based on `Attributes:`.
+step3 - Check whether the guessed property complies with the <Constraint> of `Attributes:` and correct the incorrect part.
+step4 - Check whether the guessed property exists in the <possibleValues> of each `Attributes:` and if not, replace it with the most similar value.
+step5 - Please list the properties of items that cannot be expressed using `Attributes:` in detail in words and express them as `extra`.
 
 Response Format:
 Please return it in JSON format as in the following example.
+Multiple values are separated by commas in a string.
 {
 <order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "상의>티셔츠"}
 }

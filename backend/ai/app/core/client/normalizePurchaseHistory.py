@@ -3,14 +3,11 @@ import logging
 import re
 import uuid
 
-from openai import OpenAI
-
+from app.core.client.openAIClient import OpenAIClient
 from app.schemas.purchaseHistory import PurchaseHistory
 
-client = OpenAI()
 
-class NormalizePurchaseHistory:
-    client = client
+class NormalizePurchaseHistory(OpenAIClient):
     buffer = ""
     system_prompt = """
 Your role: 
@@ -53,7 +50,7 @@ Example results:
         }
 
     def get_stream(self):
-        stream = client.chat.completions.create(
+        stream = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {

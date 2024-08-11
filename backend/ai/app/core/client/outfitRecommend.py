@@ -1,13 +1,9 @@
 import json
 
-from openai import OpenAI
-
+from app.core.client.openAIClient import OpenAIClient
 from app.schemas.recommend import Recommend, RecommendedOutfit
 
-client = OpenAI()
-
-class OutfitRecommendation:
-    client = client
+class OutfitRecommendation(OpenAIClient):
     recommend:Recommend
     system_prompt = """
 Role:
