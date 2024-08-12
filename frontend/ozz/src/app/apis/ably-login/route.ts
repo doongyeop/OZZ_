@@ -52,7 +52,7 @@ const sendPurchaseHistoryToServer = async (purchaseHistory: OrderData[]) => {
   console.log(purchaseHistory)
   console.log('구매내역', purchaseHistory.length, '개')
 
-  const api = getClothesApi()
+  const api = await getClothesApi()
 
   try {
     const response = await api.startBatch(purchaseHistory)

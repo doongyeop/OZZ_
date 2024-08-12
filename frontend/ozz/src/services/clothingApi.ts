@@ -1,6 +1,5 @@
 'use client'
 
-import axios from 'axios'
 // import { Api as ClothesApi } from '@/types/clothes/Api'
 // import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData, colors, colorCodeMap, colorMap } from '@/types/clothing'
@@ -16,7 +15,7 @@ import {
 import { getClothesApi, getFileApi } from '@/services/authApi'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NTkzMzIsImV4cCI6MTcyMzUxOTMzMn0.sjWbvXhRkioIPttOXaG7mYMdDTvWqYeBHLdxVjU85q4'
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NjEzNTUsImV4cCI6MTcyMzUyMTM1NX0.GIx1wc04hMC3Z2t-YUicdRqa-t8Az_jWD67ScwaTvWU'
 
 // const clothesApi = new ClothesApi({
 //   securityWorker: async () => ({
@@ -38,7 +37,7 @@ export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
 
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -59,7 +58,7 @@ export const createClothing = async (
   imageFile: File,
   request: ClothesCreateRequest,
 ) => {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
   const payload: AddClothesPayload = {
     imageFile,
     request,
@@ -69,7 +68,7 @@ export const createClothing = async (
 }
 
 export async function getClothingDetails(clothesId: number) {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
 
   const response = await clothesApi.getClothes(clothesId)
   const data = await response.json()
@@ -118,7 +117,7 @@ export const updateClothing = async (
   imageFile: File,
   request: ClothesUpdateRequest,
 ) => {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
   const payload: UpdateClothesPayload = {
     imageFile,
     request,
@@ -129,7 +128,8 @@ export const updateClothing = async (
 }
 
 export const deleteClothing = async (id: number) => {
-  const response = await axios.delete(`/api/clothes/${id}`)
+  const clothesApi = await getClothesApi()
+  const response = await clothesApi.deleteClothes(id)
   return response.data
 }
 
