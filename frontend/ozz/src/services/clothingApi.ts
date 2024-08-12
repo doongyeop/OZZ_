@@ -1,8 +1,8 @@
 'use client'
 
 import axios from 'axios'
-import { Api as ClothesApi } from '@/types/clothes/Api'
-import { Api as FileApi } from '@/types/file/Api'
+// import { Api as ClothesApi } from '@/types/clothes/Api'
+// import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData, colors, colorCodeMap, colorMap } from '@/types/clothing'
 import {
   ClothesSearchCondition,
@@ -13,30 +13,46 @@ import {
   ClothesUpdateRequest,
   UpdateClothesPayload,
 } from '@/types/clothes/data-contracts'
+import { getClothesApi, getFileApi } from '@/services/authApi'
+// import { Api as ClothesApi } from '@/types/clothes/Api'
+// import { Api as FileApi } from '@/types/file/Api'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6InJlZnJlc2giLCJpZCI6IjExIiwiaWF0IjoxNzIzNDUxMDMxLCJleHAiOjE3MjM1Mzc0MzF9.aWXld4ku45ye56iA2Dd8ml4XbNIsrKnXIzc5119fOb4'
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+//
+// const clothesApi = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
 
-const clothesApi = new ClothesApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6InJlZnJlc2giLCJpZCI6IjExIiwiaWF0IjoxNzIzNDUxMDMxLCJleHAiOjE3MjM1Mzc0MzF9.aWXld4ku45ye56iA2Dd8ml4XbNIsrKnXIzc5119fOb4'
 
-const fileApi = new FileApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+// const clothesApi = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
+
+// const fileApi = new FileApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
 
 export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
+  const clothesApi = getClothesApi()
+
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
     pageable,
@@ -45,6 +61,8 @@ export async function fetchUserClothes(
 }
 
 export async function fetchImage(filePath: string): Promise<string> {
+  const fileApi = getFileApi()
+
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
   return URL.createObjectURL(blob)
@@ -54,6 +72,7 @@ export const createClothing = async (
   imageFile: File,
   request: ClothesCreateRequest,
 ) => {
+  const clothesApi = getClothesApi()
   const payload: AddClothesPayload = {
     imageFile,
     request,
@@ -63,6 +82,8 @@ export const createClothing = async (
 }
 
 export async function getClothingDetails(clothesId: number) {
+  const clothesApi = getClothesApi()
+
   const response = await clothesApi.getClothes(clothesId)
   const data = await response.json()
 
@@ -110,6 +131,7 @@ export const updateClothing = async (
   imageFile: File,
   request: ClothesUpdateRequest,
 ) => {
+  const clothesApi = getClothesApi()
   const payload: UpdateClothesPayload = {
     imageFile,
     request,

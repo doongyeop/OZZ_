@@ -10,7 +10,7 @@ import {
 import React from 'react'
 import { IoSearch } from 'react-icons/io5'
 
-type OrderValue = 'createdDate' | 'purchaseDate'
+export type OrderValue = 'createdDate' | 'purchaseDate'
 
 interface SearchAreaProps {
   searchKeyword: string

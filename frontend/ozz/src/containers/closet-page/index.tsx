@@ -3,15 +3,13 @@ import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
 import CategorySidebar from '@/components/Button/CategorySidebar'
 import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 import ClothesList from '@/components/ClothesList'
-import SearchArea from '@/containers/closet-page/SearchArea'
+import SearchArea, { OrderValue } from '@/containers/closet-page/SearchArea'
 import EmptyCloset from '@/containers/closet-page/EmptyCloset/page'
 import { fetchImage, fetchUserClothes } from '@/services/clothingApi'
 import Loading from '@/app/closet/loading'
 import { useEffect, useRef, useState } from 'react'
 import { ImSpinner8 } from 'react-icons/im'
 import { categoryMap, categoryNameToLowIdMap } from '@/types/clothing'
-
-type OrderValue = 'createdDate' | 'purchaseDate'
 
 const queryKeys = {
   userClothes: 'userClothes',
