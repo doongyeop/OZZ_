@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { HiPhotograph, HiFolder } from 'react-icons/hi'
+
 interface UploadModalProps {
   onClose: () => void
 }

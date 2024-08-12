@@ -1,33 +1,38 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 // import { Api as ClothesApi } from '@/types/clothes/Api'
-import { Api as FavoriteApi } from '@/types/favorite/Api'
+// import { Api as FavoriteApi } from '@/types/favorite/Api'
 // import { Api as UserApi } from '@/types/user/Api'
+// import { CreateFavoriteGroupData } from '@/types/favorite/data-contracts'
 import Modal from '@/components/Modal'
 import { HiPencil, HiPlus } from 'react-icons/hi'
 import { Coordibook } from '@/types/coordibook'
 // import { ImGift } from 'react-icons/im'
 import { getUserInfo } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
+import {
+  createFavoriteGroup,
+  getFavoritesGroupListOfUsers,
+} from '@/services/favoriteApi'
 
-interface Favorite {
-  favoriteId: number
-  coordinate: {
-    coordinateId: number
-    name: string
-    styleList: []
-    createdDate: string
-    imageFile: {
-      fileId: number
-      filePath: string
-      fileName: string
-      fileType: string
-    }
-  }
-}
+// interface Favorite {
+//   favoriteId: number
+//   coordinate: {
+//     coordinateId: number
+//     name: string
+//     styleList: []
+//     createdDate: string
+//     imageFile: {
+//       fileId: number
+//       filePath: string
+//       fileName: string
+//       fileType: string
+//     }
+//   }
+// }
 
 // const token =
 //   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNyIsImlhdCI6MTcyMzQyMTY4MywiZXhwIjoxNzIzNDgxNjgzfQ.qYPB-IKzczSUxiJzlpF8z6U_MbpIaEmQC2PUG4vvkjk'
@@ -36,12 +41,12 @@ export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
-  const [user, setUser] = useState()
+  // const [user, setUser] = useState()
   const [groups, setGroups] = useState<Coordibook[]>([])
-  const [favorites, setFavorites] = useState<{ [key: number]: Favorite[] }>({})
+  // const [favorites, setFavorites] = useState<{ [key: number]: Favorite[] }>({})
   const router = useRouter()
 
-  /////////////////////////////////////유저유저유저유저
+  // /////////유저
   // const favApi = new FavoriteApi({
   //   securityWorker: async () => ({
   //     headers: {
@@ -61,24 +66,18 @@ export default function CoordiBook() {
   //   const data = await res.json()
   //   setUser(data)
   // }
-  //////////////////////////////////////////////////////
+  //
 
   async function fetchGroups() {
-    const res = await favApi.getFavoritesGroupListOfUsers()
-    const data = await res.json()
-    setGroups(data)
+    const res = await getFavoritesGroupListOfUsers()
+    setGroups(res)
   }
 
   useEffect(() => {
     syncTokensWithCookies()
     const fetchUserInfo = async () => {
       try {
-        await getUserInfo().then((userInfo) => {
-          console.log('userInfo: ', userInfo)
-          const bday = new Date(userInfo.birth)
-          console.log('bday: ', bday)
-          setBirthday(bday)
-        })
+        await getUserInfo()
       } catch (error) {
         console.error('Failed to fetch user info:', error)
       }
@@ -95,15 +94,21 @@ export default function CoordiBook() {
     router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
   }
 
+  const closeModal = () => {
+    setCreateModal(false)
+  }
+
   async function createCoordiBook() {
     if (!newGroupName) {
       alert('그룹이름을 입력하세요')
       return
     }
 
+    closeModal()
+
     const requestData = { name: newGroupName }
     try {
-      const response = await favApi.createFavoriteGroup(requestData)
+      const response = await createFavoriteGroup(requestData)
       console.log(response)
       setNewGroupName('')
       closeModal()
@@ -112,9 +117,6 @@ export default function CoordiBook() {
     }
   }
 
-  const closeModal = () => {
-    setCreateModal(false)
-  }
   const getFavGrp = (group: Coordibook) => {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
@@ -128,9 +130,9 @@ export default function CoordiBook() {
             }`}
           >
             {group.imageFileList.length > 0 ? (
-              group.imageFileList.slice(0, 4).map((image, index) => (
+              group.imageFileList.slice(0, 4).map((image) => (
                 <div
-                  key={index}
+                  key={image.fileId}
                   className={`${
                     group.imageFileList.length >= 4
                       ? 'w-1/2 h-1/2 overflow-hidden'
@@ -173,7 +175,7 @@ export default function CoordiBook() {
         <div key={group.favoriteGroupId}>{getFavGrp(group)}</div>
       ))}
       {createModal && (
-        <Modal title="코디북 이름" onClose={closeModal}>
+        <Modal title="코디북 이름" onClose={() => closeModal()}>
           <div className="flex flex-col items-center">
             <div className="relative w-full">
               <input

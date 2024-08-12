@@ -7,11 +7,12 @@ import { Popover } from '@radix-ui/react-popover'
 import Image from 'next/image'
 import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
-import Modal from '@/components/Modal'
 import { Api as FileApi } from '@/types/file/Api'
 import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
 import DatePicker from '@/components/Datepicker'
+import Modal from '@/components/Modal'
+import UploadModal from './modal'
 
 const token =
   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
