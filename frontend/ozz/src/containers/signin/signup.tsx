@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
-import { Api as UserApi } from '@/types/user/Api'
+import { UserUpdateRequest } from '@/types/user/data-contracts'
 import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
@@ -36,14 +36,11 @@ function SignUp() {
   const confirmSignUp = async () => {
     if (responseText) {
       try {
-        const userData = {
+        const userData: UserUpdateRequest = {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        console.log('responseText', responseText)
         const response = await updateUser(userData)
-        console.log('회원가입 확인 : ', response)
-        // document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {

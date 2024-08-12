@@ -16,12 +16,16 @@ export const getUserInfo = async () => {
 
 export const updateUser = async (data: UserUpdateRequest) => {
   const userApi = getUserApi()
-  console.log('userApi: ', userApi)
+  // console.log(
+  //   'User API updateUser 호출 시 사용된 토큰:',
+  //   getTokens()?.accessToken,
+  // )
+
   if (!userApi) throw new Error('User API not initialized')
   const response = await userApi.updateUser(data)
-  console.log('response: ', response)
+  // console.log('response: ', response)
   const userInfo = await response.json()
-  console.log('userInfo: ', userInfo)
+  // console.log('userInfo: ', userInfo)
   return userInfo
 }
 
