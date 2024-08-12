@@ -12,7 +12,9 @@ import {
 export const getFile = async (fileId: number): Promise<GetFileData> => {
   const fileApi = getFileApi()
   if (!fileApi) throw new Error('File API not initialized')
-  return fileApi.getFile(fileId)
+  const response = fileApi.getFile(fileId)
+  const data = (await response).json()
+  return data
 }
 
 // 파일 업데이트
@@ -43,10 +45,14 @@ export const uploadFile = async (data: UploadPayload): Promise<UploadData> => {
 export const downloadFile = async (filePath: string): Promise<File> => {
   const fileApi = getFileApi()
   if (!fileApi) throw new Error('File API not initialized')
-
-  const response = await fileApi.downloadFile(filePath)
-  const blob = await response.blob()
-  const fileName = filePath.split('/').pop() || 'downloaded_file'
-
-  return new File([blob], fileName)
+  try {
+    const response = await fileApi.downloadFile(filePath)
+    console.log('downloadFile실행중 response:', response)
+    const blob = await response.blob()
+    console.log('downloadFile실행중 blob: ', blob)
+    const fileName = filePath.split('/').pop() || 'downloaded_file'
+    return new File([blob], fileName)
+  } catch (error) {
+    console.log('downloadFile 중 에러발생', error)
+  }
 }

@@ -5,7 +5,7 @@
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getUserInfo } from '@/services/userApi'
-// import { getFile, downloadFile } from '@/services/fileApi'
+import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
@@ -31,26 +31,34 @@ export default function MyPageIndex() {
     })
   }
 
-  // const getProfilePic = async (picId: number) => {
-  //   try {
-  //     await getFile(picId)
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
+  const getProfilePic = async (picId: number) => {
+    try {
+      const fileData = await getFile(picId)
+      console.log('getFile 성공', fileData)
+      const picture = await downloadFile(fileData.filePath)
+      console.log('downloadFile 성공', picture)
+      // // 여기서 Blob URL을 만들어서 profileSrc에 저장
+      // const urlStr = URL.createObjectURL(picture)
+      // setProfileSrc(urlStr)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     setLoading(true)
     syncTokensWithCookies()
     const fetchUserInfo = async () => {
       try {
-        await getUserInfo().then((userInfo) => {
-          setUser(userInfo)
-        })
+        const userInfo = await getUserInfo()
+        setUser(userInfo)
+        if (userInfo.profileFileId) {
+          await getProfilePic(userInfo.profileFileId)
+        }
         setLoading(false)
       } catch (error) {
         console.error('Failed to fetch user info:', error)
+        setLoading(false)
       }
     }
     fetchUserInfo()
@@ -67,16 +75,13 @@ export default function MyPageIndex() {
     router.push('/coordishot')
   }
 
-  const logOut = async (userId: number) => {
-    // try {
-    //   console.log('userId로 전달되고 있는 건요:', userId)
-    //   const response = await authApi.deleteRefreshTokenOfUser(userId)
-    //   console.log(response)
-    //   deleteAllCookies()
-    //   router.push('/login')
-    // } catch (error) {
-    //   console.error('로그아웃 중 오류 발생:', error)
-    // }
+  const logOut = async () => {
+    try {
+      deleteAllCookies()
+      router.push('/login')
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error)
+    }
   }
 
   return (
@@ -172,7 +177,7 @@ export default function MyPageIndex() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => logOut(user.id)}
+                    onClick={() => logOut()}
                     className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
                   >
                     예
