@@ -41,10 +41,13 @@ function SignUp() {
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
         // const response = await updateUser(userData)
-        const response = await getUserApi().updateUser(userData)
-        const data = await response.json()
-
         // console.log('회원가입 확인 : ', response)
+        console.log('userData: ', userData)
+        const userApi = getUserApi()
+        console.log('userApi: ', userApi)
+        const response = await userApi.updateUser(userData)
+        console.log('response: ', response)
+        const data = await response.json()
         console.log('회원가입 확인 : ', data)
         if (userData.nickname) {
           document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
