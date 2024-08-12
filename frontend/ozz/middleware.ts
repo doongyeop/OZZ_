@@ -1,7 +1,9 @@
 // middleware.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  console.log('Middleware executed for path:', request.nextUrl.pathname)
   const path = request.nextUrl.pathname
 
   // 공개 경로 정의 (로그인이 필요 없는 경로)
@@ -12,6 +14,8 @@ export function middleware(request: NextRequest) {
 
   // 쿠키에서 토큰 확인 (또는 다른 인증 방식 사용)
   const token = request.cookies.get('access')?.value || ''
+  console.log('Is public path:', isPublicPath)
+  console.log('Token found in cookies:', token)
 
   // 로그인이 필요한 경로에 접근하려 하는데 토큰이 없는 경우
   if (!isPublicPath && !token) {
