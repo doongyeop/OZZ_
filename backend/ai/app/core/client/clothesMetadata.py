@@ -4,6 +4,7 @@ import requests
 from pydantic import BaseModel
 import logging
 
+
 class LowCategory(BaseModel):
     categoryLowId: int
     name: str
@@ -51,7 +52,7 @@ class Properties:
     def get_values(self):
         return ", ".join(self.properties)
 
-    def validate(self, input_value:str|list[str]):
+    def validate(self, input_value: str | list[str]):
         if input_value is None:
             if self.is_essential:
                 return False
@@ -77,36 +78,47 @@ class ClothesMetadata:
     pattern: Properties
 
     def __init__(self):
+        self.category_dict_data = None
+        self.low_category_2_code_data = None
+        self.attr_dict_data = None
         response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/categories")
         if response.ok:
             self.categories = response.json()
+            self.category_dict_data = self.category_dict()
+            self.low_category_2_code_data = self.low_category_2_code()
         else:
             logging.error(f"{response.request.url} 카테고리 불러오기 실패, {str(response.json())}")
             raise ConnectionError
         response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/properties/all")
         if response.ok:
             self.attributes = response.json()
-            attr_dict_data = self.attr_dict()
-            self.fit = Properties("FIT", attr_dict_data["FIT"], False, False, "Type to how clothes fit body.")
-            self.season = Properties("SEASON", attr_dict_data["SEASON"], True, False, "Suitable season to wear.")
-            self.size = Properties("SIZE", attr_dict_data["SIZE"], False, False, "")
-            self.style = Properties("STYLE", attr_dict_data["STYLE"], True, False, "Unique appearance or atmosphere.")
-            self.texture = Properties("TEXTURE", attr_dict_data["TEXTURE"], True, False, "")
-            self.color = Properties("COLOR", attr_dict_data["COLOR"], True, True, "Identify up to 3 primary colors,")
-            self.pattern = Properties("PATTERN", attr_dict_data["PATTERN"], True, False, "")
+            self.attr_dict_data = self.attr_dict()
+            self.fit = Properties("FIT", self.attr_dict_data["FIT"], False, False, "Type to how clothes fit body.")
+            self.season = Properties("SEASON", self.attr_dict_data["SEASON"], True, False, "Suitable season to wear.")
+            self.size = Properties("SIZE", self.attr_dict_data["SIZE"], False, False, "")
+            self.style = Properties("STYLE", self.attr_dict_data["STYLE"], True, False,
+                                    "Unique appearance or atmosphere.")
+            self.texture = Properties("TEXTURE", self.attr_dict_data["TEXTURE"], True, False, "")
+            self.color = Properties("COLOR", self.attr_dict_data["COLOR"], True, True,
+                                    "Identify up to 3 primary colors,")
+            self.pattern = Properties("PATTERN", self.attr_dict_data["PATTERN"], True, False, "")
         else:
             logging.error(f"{response.request.url} 옷 속성 불러오기 실패, {str(response.json())}")
             raise ConnectionError
 
     def attr_dict(self):
+        if self.attr_dict_data is not None:
+            return self.attr_dict_data
         result = {}
-        for category in self.attributes:
-            category_name = category['name']
-            codes = [prop['code'] for prop in category['properties']]
+        for attr in self.attributes:
+            category_name = attr['name']
+            codes = [attr_values['code'] for attr_values in attr['properties']]
             result[category_name] = codes
         return result
 
     def category_dict(self):
+        if self.category_dict_data is not None:
+            return self.category_dict_data
         result = {}
         for category in self.categories:
             category_name = category['name']
@@ -115,7 +127,9 @@ class ClothesMetadata:
         return result
 
     def low_category_2_code(self):
-        low_category_2_code_dict={}
+        if self.low_category_2_code_data is not None:
+            return self.low_category_2_code_data
+        low_category_2_code_dict = {}
         for category in self.categories:
             for low_category in category['categoryLowList']:
                 low_category_2_code_dict[low_category["name"]] = low_category["categoryLowId"]
@@ -127,5 +141,6 @@ class ClothesMetadata:
                 if lowCategory['categoryLowId'] == lowcategoryId:
                     return category['categoryHighId']
         return None  # 일치하는 lowcategoryId가 없을 경우 None 반환
+
 
 clothesMetadata = ClothesMetadata()
