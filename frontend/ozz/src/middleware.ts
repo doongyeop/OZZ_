@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  console.log('Middleware executed for path:', request.nextUrl.pathname)
   const path = request.nextUrl.pathname
+  console.log('Middleware executed for path:', path)
 
   // 공개 경로 정의 (로그인이 필요 없는 경로)
   const publicPaths = ['/login']
