@@ -128,7 +128,7 @@ export const updateClothing = async (
 }
 
 export const deleteClothing = async (id: number) => {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
   const response = await clothesApi.deleteClothes(id)
   return response.data
 }
