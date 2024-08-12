@@ -1,16 +1,11 @@
-from typing import Union
+from fastapi import APIRouter, Header, Depends
 
-from fastapi import APIRouter, UploadFile, Header, Depends
-
-from app.core.client.ExtractAttribute import ExtractAttributesImage
-from app.schemas.attributes import Attributes
-from app.schemas.recommend import Consider
+from app.schemas.recommend import Consider, RecommendationsResponse
 from app.services.recommend import RecommendService
 
 router = APIRouter(prefix="/recommend", tags=["Recommendations"])
 
 
-@router.post("")
+@router.post("", response_model=list[RecommendationsResponse])
 async def extract_attributes(consider: Consider,x_user_id:str = Header(default=None),service:RecommendService=Depends(RecommendService)):
-    service.get_recommend_outfit(x_user_id,consider)
-    return
+    return service.get_recommend_outfit(x_user_id,consider)

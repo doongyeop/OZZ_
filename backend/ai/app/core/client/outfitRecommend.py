@@ -82,7 +82,7 @@ Result example:
                 },
             ],
             temperature=1,
-            max_tokens=75 * len(self.recommend.clothes),
+            max_tokens=75 * len(self.recommend.clothes)+10,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
@@ -103,6 +103,6 @@ Result example:
         return [
             {
                 "type": "text",
-                "text": self.recommend.model_dump_json()
+                "text": self.recommend.model_dump_json(exclude=set("imgPath"))
             }
         ]
