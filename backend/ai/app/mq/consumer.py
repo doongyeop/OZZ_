@@ -10,6 +10,7 @@ from requests_toolbelt import MultipartEncoder
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes
 from app.utils.image_process import process
+from app.utils.image_utils import resize_and_convert_to_png
 
 
 def parseToBaseModel(body)->list[NormalizedClothes]|None:
@@ -37,13 +38,15 @@ def EAcallback(ch, method, properties, body):
     try:
         for key in data.keys():
             # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{key}"
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{key}"
             # 요청 헤더 및 파일 설정
             logging.info(f"속성 등록 :  {url}")
+            attr_data=data[key].model_dump()
+            attr_data["processing"]=-2
             # PUT 요청 보내기
             mp_encoder = MultipartEncoder(
                 fields={
-                    "request": ('request',data[key].model_dump_json(),'application/json')
+                    "request": ('request',json.dumps(attr_data),'application/json')
                 }
             )
             # PUT 요청 보내기
@@ -63,13 +66,15 @@ def IPcallback(ch, method, properties, body):
     try:
         for datum in data:
             processed_image = process(datum.imgUrl, datum.category)
+            #이미지 크기 및 확장자 정규화
+            processed_image = resize_and_convert_to_png(processed_image)
             # BytesIO 객체에 이미지 저장
             image_byte_array = BytesIO()
             processed_image.save(image_byte_array, format='PNG')
             image_byte_array.seek(0)
 
             # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{datum.clothId}/image"
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{datum.clothId}/image"
 
             mp_encoder = MultipartEncoder(
                 fields={
