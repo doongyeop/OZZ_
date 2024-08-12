@@ -2,21 +2,22 @@
 import logging
 
 from app.core.client.openAIClient import OpenAIClient
-import traceback
 
 from app.schemas.attributes import GPTAttrResponse, Attributes
 
 
 class ValidateProperty(OpenAIClient):
     system_prompt: str = """
-You are a validator who verifies the values of each attribute.
-Check if the values of each attribute are values that exist in <possible values>.
-If there is an incorrect value that does not exist in <possible values>, correct the incorrect value to the closest value among <possible values>.
+You are the manager who validates and modifies the value of each property.
+Check if the value of each property exists in <possible values>.
+If there is an incorrect value that does not exist in <possible values>, modify the incorrect value to the most similar value among <possible values>.
 
-I will give you data in JSON format.
-Respond to me with the same data in JSON format.
+Request format:
+{<integer id>:<properties you need to validate>}
+Response format should also be the same JSON:
+{<integer id>:<properties you validated and modified>}
 """
-    invalid_data: dict[int, Attributes] = {}
+    invalid_data: dict[int, Attributes]
 
     def get_response(self):
         response = self.client.chat.completions.create(
@@ -111,6 +112,8 @@ Respond to me with the same data in JSON format.
         ]
 
     def process(self, raw_data: dict[int, Attributes]):
+        self.invalid_data = {}
+
         for k, datum in raw_data.items():
             if not self.validate_data(datum):
                 self.invalid_data[k] = datum
@@ -134,7 +137,7 @@ I'll give you the value in the format {`parent category`:[`incorrect value list`
 
 Give me the response in JSON format {`parent category`:{`Incorrect value`:`Correctly matched subcategory`}}, like {"가방":{"크로스백":"힙색","핸드백":"가방"}}
 """
-    invalid_subcategories: dict[str, list[str]] = {}
+    invalid_subcategories: dict[str, list[str]]
 
     def get_response(self) -> dict[str, dict[str, str]]:
         response = self.client.chat.completions.create(
@@ -196,6 +199,7 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
             raise Exception("존재하지 않는 상위 카테고리 :" + raw_GPTAttrResponse.parentCategory)
 
     def process(self, raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
+        self.invalid_subcategories = {}
         invalid_data = []
 
         for key, datum in raw_data.items():
