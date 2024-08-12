@@ -36,53 +36,19 @@ function SignUp() {
   const confirmSignUp = async () => {
     if (responseText) {
       try {
-        // const userData: UserUpdateRequest = {
-        //   nickname,
-        //   birth: birthday?.toISOString() || '', // ISO 형식으로 변환
-        // }
-        // const response = await updateUser(userData)
+        const userData: UserUpdateRequest = {
+          nickname,
+          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
+        }
+        const response = await updateUser(userData)
         // console.log('회원가입 확인 : ', response)
         // console.log('userData: ', userData)
         // const userApi = getUserApi()
         // console.log('userApi: ', userApi)
         // const response = await userApi.updateUser(userData)
-        // console.log('response: ', response)
-        // const data = await response.json()
-        // console.log('회원가입 확인 : ', data)
-
-        const raw = JSON.stringify({
-          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
-          nickname,
-        })
-
-        const myHeaders = new Headers()
-        myHeaders.append('Content-Type', 'application/json')
-        myHeaders.append(
-          'Authorization',
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiOSIsImlhdCI6MTcyMzQ0MDM1MCwiZXhwIjoxNzIzNTAwMzUwfQ.MPmxRr-75v_NzH2BaZqzikL1QWarbIrTjbKDE5ndcBg',
-        )
-
-        // const raw = JSON.stringify({
-        //   birth: '2024-08-28T01:05:44.121Z',
-        //   nickname: '킹왕짱',
-        // })
-
-        const requestOptions: RequestInit = {
-          method: 'PUT',
-          headers: myHeaders,
-          body: raw,
-          redirect: 'follow',
-        }
-
-        fetch('https://i11a804.p.ssafy.io/api/users/', requestOptions)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            return response.text()
-          })
-          .then((result) => console.log(result))
-          .catch((error) => console.error('Error:', error))
+        console.log('response: ', response)
+        const data = await response.json()
+        console.log('회원가입 확인 : ', data)
 
         // if (userData.nickname) {
         //   document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`

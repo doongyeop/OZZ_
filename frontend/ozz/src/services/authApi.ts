@@ -58,6 +58,7 @@ export const redirectToLogin = () => {
 export const validateAndRefreshToken = async () => {
   const tokens = getTokens()
   console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
+  console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {
@@ -84,9 +85,11 @@ export const validateAndRefreshToken = async () => {
 }
 
 export const initializeApiClients = (tokens: Tokens) => {
+  console.log('Initializing API Clients with tokens:', tokens)
   authApi = new AuthApi<Tokens>({
     securityWorker: async () => {
       await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.
+      console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -98,6 +101,7 @@ export const initializeApiClients = (tokens: Tokens) => {
   userApi = new UserApi({
     securityWorker: async () => {
       await validateAndRefreshToken()
+      console.log('User API Token:', tokens?.accessToken) // userApi 토큰 확인
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -111,14 +115,14 @@ export const initializeApiClients = (tokens: Tokens) => {
 export const syncTokensWithCookies = async () => {
   const cookieString = document.cookie
   const cookies = cookie.parse(cookieString)
-  // console.log('토큰 가져오자')
-  // console.log('cookies: ', cookies)
+  console.log('쿠키에서 가져온 토큰들:', cookies)
 
   const accessToken = cookies.access || ''
   const refreshToken = cookies.refresh || ''
 
   if (accessToken && refreshToken) {
     const tokens: Tokens = { accessToken, refreshToken }
+    console.log('쿠키에서 동기화된 토큰들:', tokens)
     setTokens(tokens)
   } else {
     console.log('토큰이 존재하지 않습니다.')
