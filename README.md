@@ -1,32 +1,14 @@
 # 옷짱 : OZZ
 
-**2024.07.02 (월) ~ 2024.08.19 (금)**<br>
+**2024.07.02 (월) ~ 2024.08.19 (금)**  
 **삼성 청년 소프트웨어 아카데미 11기 2학기 공통 프로젝트**
 
 ## 팀원 구성
 
-<div align="center">
+| **이보연👑** |　　**한수한**   | **김혜인** |　**서종원**  | **김하연** | **이동엽** |
+| :----------: | :------------: | :--------: | :---------: | :--------: | :--------: |
+|  **FRONT**   | **BACK&INFRA** | **FRONT**  | **BACK&AI** | **FRONT**  |  **BACK**  |
 
-<table style="margin: auto; text-align: center;">
-  <tr>
-    <td><strong>이보연 👑</strong></td>
-    <td><strong>한수한</strong></td>
-    <td><strong>김혜인</strong></td>
-    <td><strong>서종원</strong></td>
-    <td><strong>김하연</strong></td>
-    <td><strong>이동엽</strong></td>
-  </tr>
-  <tr>
-    <td>FRONT</td>
-    <td>BACK & INFRA</td>
-    <td>FRONT</td>
-    <td>BACK & AI</td>
-    <td>FRONT</td>
-    <td>BACK</td>
-  </tr>
-</table>
-
-</div>
 
 ## 기획 배경
 
@@ -67,13 +49,13 @@
 ![Java](https://img.shields.io/badge/Java-000000?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-cloud)
-[![Eureka](https://img.shields.io/badge/Eureka-8A2C2E?style=for-the-badge&logo=java&logoColor=white)](https://spring.io/projects/spring-cloud-netflix)
+![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Eureka](https://img.shields.io/badge/Eureka-8A2C2E?style=for-the-badge&logo=java&logoColor=white)
 ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white)  
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-[![Matplotlib](https://img.shields.io/badge/Matplotlib-003366?style=for-the-badge&logo=matplotlib&logoColor=white)](https://matplotlib.org/)  
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-003366?style=for-the-badge&logo=matplotlib&logoColor=white)  
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
