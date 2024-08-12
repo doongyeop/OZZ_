@@ -7,9 +7,24 @@
 
 <div align="center">
 
-| **이보연👑** |   **한수한**   | **김혜인** | **서종원**  | **김하연** | **이동엽** |
-| :----------: | :------------: | :--------: | :---------: | :--------: | :--------: |
-|  **FRONT**   | **BACK&INFRA** | **FRONT**  | **BACK&AI** | **FRONT**  |  **BACK**  |
+<table style="margin: auto; text-align: center;">
+  <tr>
+    <td><strong>이보연 👑</strong></td>
+    <td><strong>한수한</strong></td>
+    <td><strong>김혜인</strong></td>
+    <td><strong>서종원</strong></td>
+    <td><strong>김하연</strong></td>
+    <td><strong>이동엽</strong></td>
+  </tr>
+  <tr>
+    <td>FRONT</td>
+    <td>BACK & INFRA</td>
+    <td>FRONT</td>
+    <td>BACK & AI</td>
+    <td>FRONT</td>
+    <td>BACK</td>
+  </tr>
+</table>
 
 </div>
 
