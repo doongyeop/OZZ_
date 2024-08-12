@@ -1,3 +1,5 @@
+import os
+
 import requests
 from pydantic import BaseModel
 import logging
@@ -46,10 +48,12 @@ class Properties:
             constraint_text += f"`{Properties.null_value}` if there is no possible matching value"
         return constraint_text
 
+    def get_values(self):
+        return ", ".join(self.properties)
 
 class ClothesMetadata:
     categories: list[HighCategory]
-    attributes: list[Properties]
+    attributes: list[str]
     fit: Properties
     season: Properties
     size: Properties
@@ -59,13 +63,13 @@ class ClothesMetadata:
     pattern: Properties
 
     def __init__(self):
-        response = requests.get("http://localhost:8081/api/categories")
+        response = requests.get(f"{os.getenv("CLOTHES_ENDPOINT")}/api/categories")
         if response.ok:
             self.categories = response.json()
         else:
             logging.error(f"{response.request.url} 카테고리 불러오기 실패, {str(response.json())}")
             raise ConnectionError
-        response = requests.get("http://localhost:8081/api/clothes/properties/all")
+        response = requests.get(f"{os.getenv("CLOTHES_ENDPOINT")}/api/clothes/properties/all")
         if response.ok:
             self.attributes = response.json()
             attr_dict_data = self.attr_dict()
@@ -98,4 +102,4 @@ class ClothesMetadata:
 
 
 clothesMetadata = ClothesMetadata()
-print(clothesMetadata.color.get_constraint())
+print(clothesMetadata.color.get_values())

@@ -38,7 +38,7 @@ def EAcallback(ch, method, properties, body):
     try:
         for key in data.keys():
             # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{key}"
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{key}"
             # 요청 헤더 및 파일 설정
             logging.info(f"속성 등록 :  {url}")
             attr_data=data[key].model_dump()
@@ -74,7 +74,7 @@ def IPcallback(ch, method, properties, body):
             image_byte_array.seek(0)
 
             # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/{datum.clothId}/image"
+            url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{datum.clothId}/image"
 
             mp_encoder = MultipartEncoder(
                 fields={
