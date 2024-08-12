@@ -2,14 +2,10 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { login } from '@/services/authApi'
 
 function SignIn() {
-  const router = useRouter()
-
   const onKaKaoLogin = () => login('kakao')
   const onNaverLogin = () => login('naver')
 

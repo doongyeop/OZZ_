@@ -60,8 +60,13 @@ function SignUp() {
   }
 
   const handleNext = async () => {
-    await confirmSignUp()
-    router.push('/login/signup/success')
+    if (await confirmSignUp()) {
+      router.push('/login/signup/success')
+    } else {
+      // TODO: 회원가입 실패 처리
+      // ex) 다시 한 번 시도해주세요.
+      alert('회원가입 실패 ㅠㅠ')
+    }
   }
 
   const checkNicknameDuplication = async (nick: string) => {
