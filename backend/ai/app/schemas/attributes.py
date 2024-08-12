@@ -1,14 +1,14 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union
 
 
 class Attributes(BaseModel):
-    fit: str
-    colorList: List[str]
-    patternList: List[str]
-    seasonList: List[str]
-    styleList: List[str]
-    textureList: List[str]
+    fit: Union[str|None]=None
+    colorList: list[str]
+    patternList: Union[list[str]|None]=None
+    seasonList: Union[list[str]|None]=None
+    styleList: Union[list[str]|None]=None
+    textureList: Union[list[str]|None]=None
     extra: str
     categoryLowId: int
 
@@ -16,5 +16,5 @@ class NormalizedClothes(BaseModel):
     clothId:int
     name:str
     category:str
-    color:str
+    color:str|None
     imgUrl:str

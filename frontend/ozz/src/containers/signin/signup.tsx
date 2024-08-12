@@ -1,12 +1,10 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
-import { Api as UserApi } from '@/types/user/Api'
+import { UserUpdateRequest } from '@/types/user/data-contracts'
 import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
@@ -23,9 +21,7 @@ function SignUp() {
     const fetchUserInfo = async () => {
       try {
         await getUserInfo().then((userInfo) => {
-          console.log('userInfo: ', userInfo)
           const bday = new Date(userInfo.birth)
-          console.log('bday: ', bday)
           setBirthday(bday)
         })
       } catch (error) {
@@ -38,13 +34,11 @@ function SignUp() {
   const confirmSignUp = async () => {
     if (responseText) {
       try {
-        const userData = {
+        const userData: UserUpdateRequest = {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        const response = await updateUser(userData)
-        console.log('회원가입 확인 : ', response)
-        document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
+        await updateUser(userData)
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
@@ -62,13 +56,18 @@ function SignUp() {
   }
 
   const handleNext = async () => {
-    await confirmSignUp()
-    router.push('/login/signup/success')
+    if (await confirmSignUp()) {
+      router.push('/login/signup/success')
+    } else {
+      // TODO: 회원가입 실패 처리
+      // ex) 다시 한 번 시도해주세요.
+      alert('회원가입 실패: 다시 한 번 시도해주세요.')
+    }
   }
 
   const checkNicknameDuplication = async (nick: string) => {
-    if (nick.length > 15) {
-      setErrorText('닉네임은 15자 이내여야 합니다')
+    if (nick.length > 15 || nick.length <= 0) {
+      setErrorText('닉네임은 1-15자 이내여야 합니다')
       setResponseText('')
       return
     }
