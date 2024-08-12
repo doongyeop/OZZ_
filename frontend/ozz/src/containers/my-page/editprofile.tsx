@@ -15,7 +15,7 @@ import {
   deleteUser,
   checkNickname,
 } from '@/services/userApi'
-import { getFile, downloadFile } from '@/services/fileApi'
+// import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
 
