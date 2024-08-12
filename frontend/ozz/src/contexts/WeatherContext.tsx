@@ -80,7 +80,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         currentPosition.longitude !== null
       ) {
         const response = await fetch(
-          `/api/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
+          `/apis/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
           { cache: 'force-cache' },
         )
 
