@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
 import { format, parse } from 'date-fns'
-// import { Api as ClothesApi } from '@/types/clothes/Api'
-import { getClothesApi } from '@/services/authApi'
+import { Api as ClothesApi } from '@/types/clothes/Api'
+// import { getClothesApi } from '@/services/authApi'
 
 // URL Constants
 const loginPageUrl = 'https://www.musinsa.com/auth/login'
@@ -141,12 +141,26 @@ async function getMusinsaOrderLists(
 //   }),
 // })
 
+// 서버 전용으로 ClothesApi 인스턴스를 생성하는 함수
+const createClothesApi = (accessToken: string): ClothesApi<unknown> => {
+  return new ClothesApi({
+    securityWorker: async () => ({
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
+  })
+}
+
 // Function to call the startBatch API
-const sendPurchaseHistoryToServer = async (purchaseHistory: Order[]) => {
+const sendPurchaseHistoryToServer = async (
+  purchaseHistory: Order[],
+  accessToken: string,
+) => {
   console.log(purchaseHistory)
   console.log('구매내역', purchaseHistory.length, '개')
 
-  const api = await getClothesApi()
+  const api = createClothesApi(accessToken)
 
   try {
     const responseData = await api.startBatch(purchaseHistory)
@@ -165,8 +179,18 @@ export async function POST(req: NextRequest) {
     const { userId, password } = await req.json()
     const orderList = await getMusinsaOrderLists(userId, password)
 
+    // 서버 사이드에서 쿠키에서 access token을 추출 (Next.js에서 쿠키 파싱)
+    const accessToken = req.headers
+      .get('cookie')
+      ?.split('; ')
+      .find((c) => c.startsWith('access='))
+      ?.split('=')[1]
+    if (!accessToken) {
+      throw new Error('Access token not found')
+    }
+
     // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
-    const response = await sendPurchaseHistoryToServer(orderList)
+    const response = await sendPurchaseHistoryToServer(orderList, accessToken)
 
     // return NextResponse.json(orderList)
     return NextResponse.json(response)

@@ -47,7 +47,7 @@ export async function fetchUserClothes(
 }
 
 export async function fetchImage(filePath: string): Promise<string> {
-  const fileApi = getFileApi()
+  const fileApi = await getFileApi()
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
