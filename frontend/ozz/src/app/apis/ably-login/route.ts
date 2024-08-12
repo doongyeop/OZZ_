@@ -48,11 +48,12 @@ interface OrderData {
 //   }),
 // })
 
-const api = getClothesApi()
-
 const sendPurchaseHistoryToServer = async (purchaseHistory: OrderData[]) => {
   console.log(purchaseHistory)
   console.log('구매내역', purchaseHistory.length, '개')
+
+  const api = getClothesApi()
+
   try {
     const response = await api.startBatch(purchaseHistory)
     if (!response.ok) {
