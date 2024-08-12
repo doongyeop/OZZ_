@@ -9,6 +9,7 @@ import com.ssafy.ozz.clothes.clothes.service.ClothesService;
 import com.ssafy.ozz.library.clothes.properties.Color;
 import com.ssafy.ozz.library.clothes.properties.Property;
 import com.ssafy.ozz.library.clothes.properties.PropertySelector;
+import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,7 +63,7 @@ public class ClothesController {
     public ResponseEntity<List<ClothesForRecommendationResponse>> getClothesOfUser(
 //            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId
     ) {
-        return ResponseEntity.ok(clothesService.getClothesOfUser(1L).stream().map(ClothesForRecommendationResponse::new).toList());
+        return ResponseEntity.ok(clothesService.getClothesOfUser(1L));
     }
 
     @GetMapping("/search")

@@ -3,6 +3,7 @@ package com.ssafy.ozz.clothes.clothes.service;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.dto.request.PurchaseHistory;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.ClothesForRecommendationResponse;
 import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesCreateRequest;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesUpdateRequest;
@@ -23,7 +24,7 @@ public interface ClothesService {
 
     Slice<Clothes> getClothesOfUser(Long userId, ClothesSearchCondition condition, Pageable pageable);
 
-    List<Clothes> getClothesOfUser(Long userId);
+    List<ClothesForRecommendationResponse> getClothesOfUser(Long userId);
 
     Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request);
 

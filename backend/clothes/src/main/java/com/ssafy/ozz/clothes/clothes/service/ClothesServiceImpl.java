@@ -69,8 +69,11 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Clothes> getClothesOfUser(Long userId) {
-        return clothesRepository.findAllByUserIdAndProcessingLessThanEqual(userId,0);
+    public List<ClothesForRecommendationResponse> getClothesOfUser(Long userId) {
+        return clothesRepository.findAllByUserIdAndProcessingLessThanEqual(userId,0).stream().map(clothes -> {
+            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            return new ClothesForRecommendationResponse(clothes, fileInfo);
+        }).toList();
     }
 
     @Override
