@@ -51,6 +51,20 @@ class Properties:
     def get_values(self):
         return ", ".join(self.properties)
 
+    def validate(self, input_value:str|list[str]):
+        if input_value is None:
+            if self.is_essential:
+                return False
+        if self.is_multiple:
+            for e in input_value:
+                if e not in self.properties:
+                    return False
+        else:
+            if input_value not in self.properties:
+                return False
+        return True
+
+
 class ClothesMetadata:
     categories: list[HighCategory]
     attributes: list[str]
@@ -107,6 +121,11 @@ class ClothesMetadata:
                 low_category_2_code_dict[low_category["name"]] = low_category["categoryLowId"]
         return low_category_2_code_dict
 
+    def lowcategoryId_to_highcategoryId(self, lowcategoryId):
+        for category in self.categories:
+            for lowCategory in category['categoryLowList']:
+                if lowCategory['categoryLowId'] == lowcategoryId:
+                    return category['categoryHighId']
+        return None  # 일치하는 lowcategoryId가 없을 경우 None 반환
 
 clothesMetadata = ClothesMetadata()
-print(clothesMetadata.color.get_values())
