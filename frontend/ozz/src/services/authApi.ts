@@ -5,6 +5,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
+import { Api as FavoriteApi } from '@/types/favorite/Api'
 import cookie from 'cookie'
 
 const API_URL = 'http://i11a804.p.ssafy.io:8080'
@@ -17,6 +18,7 @@ export const queryClient = new QueryClient()
 
 let authApi: AuthApi<Tokens> | null = null
 let userApi: UserApi<Tokens> | null = null
+let favoriteApi: FavoriteApi<Tokens> | null = null
 
 export const getTokens = (): Tokens | undefined => {
   return queryClient.getQueryData<Tokens>(['tokens'])
@@ -109,6 +111,17 @@ export const initializeApiClients = (tokens: Tokens) => {
       }
     },
   })
+
+  favoriteApi = new FavoriteApi({
+    securityWorker: async () => {
+      await validateAndRefreshToken()
+      return {
+        headers: {
+          Authorization: `Bearer ${tokens?.accessToken}`,
+        },
+      }
+    },
+  })
 }
 
 // 쿠키와 react-query 상태를 동기화하는 함수
@@ -162,4 +175,10 @@ export const getUserApi = (): UserApi<Tokens> => {
   console.log('토큰 검증 시작')
   validateAndRefreshToken()
   return userApi
+}
+
+export const getFavoriteApi = (): FavoriteApi<Tokens> => {
+  if (!favoriteApi) throw new Error('Favorite API 너 문제있어? 어 있어 ㅠㅠ')
+  validateAndRefreshToken()
+  return favoriteApi
 }
