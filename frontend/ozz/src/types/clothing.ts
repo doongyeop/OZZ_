@@ -14,6 +14,7 @@ export interface ClothingData {
   pattern: Pattern[] | null
   memo: string | null
   image: string | null
+  imageFile: File | null
 }
 
 export interface Color {
