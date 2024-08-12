@@ -51,7 +51,8 @@ export const reissueToken = async () => {
 }
 
 export const redirectToLogin = () => {
-  window.location.href = '/login'
+  console.log('로그인 화면으로 돌아가')
+  // window.location.href = '/login'
 }
 
 export const validateAndRefreshToken = async () => {
