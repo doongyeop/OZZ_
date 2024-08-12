@@ -1,33 +1,36 @@
 'use client'
 
 import axios from 'axios'
-import { Api as ClothesApi } from '@/types/clothes/Api'
-import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData } from '@/types/clothing'
 import {
   ClothesSearchCondition,
   GetClothesOfUserData,
   Pageable,
 } from '@/types/clothes/data-contracts'
+import { getClothesApi, getFileApi } from '@/services/authApi'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzI2NTcyNiwiZXhwIjoxNzIzMzI1NzI2fQ.xckSDQHcn0K51y7p4KSGMm5fec1QFOVza2ABnTiuRaQ'
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+//
+// const clothesApi = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
 
-const clothesApi = new ClothesApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+const clothesApi = getClothesApi()
 
-const fileApi = new FileApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+// const fileApi = new FileApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
+
+const fileApi = getFileApi()
 
 export async function fetchUserClothes(
   pageable: Pageable,

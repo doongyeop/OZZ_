@@ -35,7 +35,7 @@ export function InputForm({ mall }: { mall: string }) {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true) // 요청 시작 시 로딩 상태를 true로 설정
     try {
-      const response = await fetch(`/api/${mall}-login`, {
+      const response = await fetch(`/apis/${mall}-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
