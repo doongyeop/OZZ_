@@ -100,6 +100,13 @@ class ClothesMetadata:
             result[category_name] = low_names
         return result
 
+    def low_category_2_code(self):
+        low_category_2_code_dict={}
+        for category in self.categories:
+            for low_category in category['categoryLowList']:
+                low_category_2_code_dict[low_category["name"]] = low_category["categoryLowId"]
+        return low_category_2_code_dict
+
 
 clothesMetadata = ClothesMetadata()
 print(clothesMetadata.color.get_values())
