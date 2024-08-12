@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { format, parse } from 'date-fns'
+import { Api as ClothesApi } from '@/types/clothes/Api'
 
 puppeteer.use(StealthPlugin())
 
@@ -27,11 +29,43 @@ interface Order {
 }
 
 interface OrderData {
-  orderDate: string
-  goodsName: string
-  goodsImage: string
-  marketName: string
-  options: string[]
+  name: string
+  brand: string
+  purchaseDate: string
+  purchaseSite: string
+  imgUrl: string
+  option: string
+}
+
+const accessToken =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+
+const api = new ClothesApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }),
+})
+
+const sendPurchaseHistoryToServer = async (purchaseHistory: OrderData[]) => {
+  console.log(purchaseHistory)
+  console.log('구매내역', purchaseHistory.length, '개')
+  try {
+    const response = await api.startBatch(purchaseHistory)
+    if (!response.ok) {
+      console.error('Response status:', response.status)
+      console.error('Response statusText:', response.statusText)
+      const errorData = await response.json()
+      console.error('Error response data:', errorData)
+      throw new Error('Failed to send purchase history to the server')
+    }
+
+    return response
+  } catch (error) {
+    console.error('Error response:', error)
+    throw new Error('Failed to send purchase history to the server')
+  }
 }
 
 // eslint-disable-next-line import/prefer-default-export
@@ -93,7 +127,8 @@ export async function POST(request: NextRequest) {
   let moreData = true
 
   while (moreData) {
-    const orderListUrl = `https://api.a-bly.com/webview/orders/?page=${pageNum}&query=&min_ordered_at=2015-09-07&max_ordered_at=2024-12-31`
+    // 여기 기간 바꿔둠!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    const orderListUrl = `https://api.a-bly.com/webview/orders/?page=${pageNum}&query=&min_ordered_at=2024-03-20&max_ordered_at=2024-12-31`
 
     // eslint-disable-next-line no-await-in-loop
     const response = await page.evaluate(
@@ -120,13 +155,23 @@ export async function POST(request: NextRequest) {
     if (response.orders && response.orders.length > 0) {
       response.orders.forEach((order: Order) => {
         order.order_items.forEach((item: OrderItem) => {
-          if (item.processing_status === 5) {
+          if (item.processing_status === 4 || item.processing_status === 5) {
+            // name이 200자를 초과할 경우 자르기
+            const truncatedName =
+              item.goods.name.length > 200
+                ? item.goods.name.substring(0, 200)
+                : item.goods.name
+
             orderData.push({
-              orderDate: order.ordered_at,
-              goodsName: item.goods.name,
-              goodsImage: item.goods.image_still,
-              marketName: item.market.name,
-              options: item.options,
+              name: truncatedName,
+              brand: item.market.name,
+              purchaseDate: format(
+                parse(order.ordered_at, 'yyyy-MM-dd HH:mm', new Date()),
+                'yyyy-MM-dd',
+              ),
+              purchaseSite: '에이블리',
+              imgUrl: item.goods.image_still,
+              option: item.options.toString(),
             })
           }
         })
@@ -139,9 +184,13 @@ export async function POST(request: NextRequest) {
       moreData = false
     }
   }
-
-  console.log('모든 주문 내역:', orderData)
+  //
+  // console.log('모든 주문 내역:', orderData)
+  // console.log(`구매내역 ${orderData.length}개`)
 
   await browser.close()
-  return NextResponse.json(orderData, { status: 200 })
+
+  // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
+  const response = await sendPurchaseHistoryToServer(orderData)
+  return NextResponse.json(response)
 }
