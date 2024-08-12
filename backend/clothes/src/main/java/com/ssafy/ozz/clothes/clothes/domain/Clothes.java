@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -83,8 +84,12 @@ public class Clothes {
     @Column
     private String extra;
 
+    @Column(columnDefinition = "BIT(32)")
+    @ColumnDefault("0")
+    private Integer processing;
+
     @Builder
-    public Clothes(String name, Size size, Fit fit, String memo, String brand, LocalDate purchaseDate, String purchaseSite, Integer color, Integer texture, Integer pattern, Integer style, Integer season, Long imageFileId, CategoryLow categoryLow, Long userId, String extra) {
+    public Clothes(String name, Size size, Fit fit, String memo, String brand, LocalDate purchaseDate, String purchaseSite, Integer color, Integer texture, Integer pattern, Integer style, Integer season, Long imageFileId, CategoryLow categoryLow, Long userId, String extra, Integer processing) {
         this.name = name;
         this.size = size;
         this.fit = fit;
@@ -103,6 +108,7 @@ public class Clothes {
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
         this.extra = extra;
+        this.processing = processing;
     }
 
     //== 비즈니스 로직 ==//
@@ -164,6 +170,17 @@ public class Clothes {
 
     public void changeExtra(String extra) {
         if(extra != null) this.extra = extra;
+    }
+
+    public void updateProcessing(Integer processing) {
+        if(processing == null || processing==0)
+            return;
+        if(processing>0){
+            this.processing|=1<<(processing-1);
+        }else {
+            int mask=((1<<16)-1)^(1<<(-1*processing-1));
+            this.processing&=mask;
+        }
     }
 
     //== 테스트 기능 ==//

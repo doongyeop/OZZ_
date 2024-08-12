@@ -14,3 +14,4 @@ sse_starlette
 matplotlib
 torchvision
 requests-toolbelt
+sqlalchemy
