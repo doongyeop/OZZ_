@@ -1,27 +1,95 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
+// import { Api as ClothesApi } from '@/types/clothes/Api'
+import { Api as FavoriteApi } from '@/types/favorite/Api'
+import { Api as UserApi } from '@/types/user/Api'
 import Modal from '@/components/Modal'
+import { HiPencil, HiPlus } from 'react-icons/hi'
 import {
   Coordibook,
   mockCoordibooks,
   mockFavoriteDetails,
 } from '@/types/coordibook'
 
+interface FavoriteGroupCreateRequest {
+  name: string
+}
+
+interface Favorite {
+  favoriteGroupId: number
+  name: string
+  imageFileList: [
+    {
+      fileId: number
+      filePath: string
+      fileName: string
+      fileType: string
+    },
+  ]
+}
+
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNyIsImlhdCI6MTcyMzQyMTY4MywiZXhwIjoxNzIzNDgxNjgzfQ.qYPB-IKzczSUxiJzlpF8z6U_MbpIaEmQC2PUG4vvkjk'
+
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
+  const [newGroupName, setNewGroupName] = useState('')
+  const [user, setUser] = useState()
+  const [groups, setGroups] = useState<Coordibook[]>([])
   const router = useRouter()
+  const favApi = new FavoriteApi({
+    securityWorker: async () => ({
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  })
+  const userApi = new UserApi({
+    securityWorker: async () => ({
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  })
+  async function getUser() {
+    const res = await userApi.getUserInfo()
+    const data = await res.json()
+    setUser(data)
+  }
+  useEffect(() => {
+    getUser()
+    fetchGroups()
+  }, [])
+
+  async function fetchGroups() {
+    const res = await favApi.getFavoritesGroupListOfUsers()
+    const data = await res.json()
+    setGroups(data)
+  }
 
   const goToCoordiBook = (id: number, name: string) => {
     router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
   }
 
-  const createCoordiBook = () => {
-    setCreateModal(true)
-    // 코디북 생성 ~~
+  async function createCoordiBook() {
+    if (newGroupName.trim() === '') {
+      alert('그룹이름을 입력하세요')
+      return
+    }
+
+    const requestData = { name: newGroupName }
+    try {
+      const response = await favApi.createFavoriteGroup(requestData)
+      console.log(response)
+      setNewGroupName('')
+      closeModal()
+    } catch (error) {
+      console.error('코디북 생성 중 오류 발생:', error)
+    }
   }
 
   const closeModal = () => {
@@ -29,9 +97,21 @@ export default function CoordiBook() {
   }
 
   const getFavGrp = (group: Coordibook) => {
-    // const groupFavorites = mockFavoriteDetails.filter(
-    //   (fav) => fav.favoriteGroupId === group.favoriteGroupId,
-    // )
+    const [favorite, setFavorite] = useState([])
+
+    useEffect(() => {
+      async function fetchGroupById(id: number) {
+        try {
+          const res = await favApi.getFavoritesByGroup(id)
+          const data = await res.json()
+          setFavorite(data)
+        } catch (err) {
+          console.error('코디북 상세 데이터 가져오던 중 오류', err)
+        }
+      }
+
+      fetchGroupById(group.favoriteGroupId)
+    }, [group.favoriteGroupId])
 
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
@@ -73,32 +153,16 @@ export default function CoordiBook() {
     <div className="grid grid-cols-2 gap-4 m-4">
       <div className="aspect-square">
         <Card
-          onClick={createCoordiBook}
+          onClick={() => setCreateModal(true)}
           className="h-full bg-secondary flex items-center justify-center"
         >
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="max-w-[32px] max-h-[32px]"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"
-              className="fill-primary-400"
-            />
-          </svg>
+          <HiPlus className="w-8 h-8 fill-primary-400" />
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
-          <button type="button" onClick={createCoordiBook}>
-            새 코디북 생성
-          </button>
+          <button type="button">새 코디북 생성</button>
         </CardTitle>
       </div>
-      {mockCoordibooks.map((group) => (
+      {groups.map((group) => (
         <div key={group.favoriteGroupId}>{getFavGrp(group)}</div>
       ))}
       {createModal && (
@@ -115,28 +179,13 @@ export default function CoordiBook() {
                 }`}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
+                onChange={(e) => setNewGroupName(e.target.value)}
               />
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-2 top-1/2 transform -translate-y-1/2"
-              >
-                <path
-                  d="M13.5858 3.58579C14.3668 2.80474 15.6332 2.80474 16.4142 3.58579C17.1953 4.36683 17.1953 5.63316 16.4142 6.41421L15.6213 7.20711L12.7929 4.37868L13.5858 3.58579Z"
-                  className="fill-primary-400"
-                />
-                <path
-                  d="M11.3787 5.79289L3 14.1716V17H5.82842L14.2071 8.62132L11.3787 5.79289Z"
-                  className="fill-primary-400"
-                />
-              </svg>
+              <HiPencil className="w-5 h-5 fill-primary-400 absolute left-2 top-1/2 transform -translate-y-1/2" />
             </div>
             <button
               type="button"
-              onClick={closeModal}
+              onClick={createCoordiBook}
               className="px-3 py-1 mt-4 rounded-full text-sm text-primary-400 border border-primary-400 font-bold hover:text-secondary hover:bg-primary-400"
             >
               만들기
