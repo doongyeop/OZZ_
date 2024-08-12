@@ -63,13 +63,13 @@ class ClothesMetadata:
     pattern: Properties
 
     def __init__(self):
-        response = requests.get(f"{os.getenv("CLOTHES_ENDPOINT")}/api/categories")
+        response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/categories")
         if response.ok:
             self.categories = response.json()
         else:
             logging.error(f"{response.request.url} 카테고리 불러오기 실패, {str(response.json())}")
             raise ConnectionError
-        response = requests.get(f"{os.getenv("CLOTHES_ENDPOINT")}/api/clothes/properties/all")
+        response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/properties/all")
         if response.ok:
             self.attributes = response.json()
             attr_dict_data = self.attr_dict()
