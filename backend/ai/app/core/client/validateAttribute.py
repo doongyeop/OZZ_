@@ -1,9 +1,11 @@
 import json
+import logging
 
 from app.core.client.openAIClient import OpenAIClient
-
+import traceback
 
 class ValidateAttribute(OpenAIClient):
+    data:dict[int,dict[str,str]]
     system_prompt: str = """
 You are a validator who verifies the values of each attribute.
 Check if the values of each attribute are values that exist in <possible values>.
@@ -12,12 +14,11 @@ If there is an incorrect value that does not exist in <possible values>, correct
 I will give you data in JSON format.
 Respond to me with the same data in JSON format.
 """
-    def __init__(self,data):
+    def __init__(self,data:dict[int,dict[str,str]]):
         super().__init__()
         self.data=data
 
     def get_response(self) :
-        user_content: list = self.make_user_content()
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
@@ -42,16 +43,47 @@ Respond to me with the same data in JSON format.
 
             ],
             temperature=0,
-            max_tokens=75 * len(user_content),
+            max_tokens=100 * 20,
             top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0
         )
+        print(response.choices[0].message.content)
 
         return json.loads(response.choices[0].message.content)
 
     def get_result(self):
-        return json.dumps(self.get_response())
+        processed_data=self.get_response()
+        validated_data={}
+        for k, v in processed_data.items():
+            try:
+                self.validate(v)
+                validated_data[k]=v
+            except Exception as e:
+                logging.error(f"id: {k} 검증 오류 {str(e)}")
+                print(traceback.format_exc())
+        return processed_data
+
+    def validate(self, processed_data:dict[str,str]):
+        transformed_item = {k: self.transform(k, v) for k, v in processed_data.items()}
+        assert self.clothes_metadata.fit.validate(transformed_item["fit"])
+        assert self.clothes_metadata.color.validate(transformed_item["colorList"])
+        assert self.clothes_metadata.pattern.validate(transformed_item["patternList"])
+        assert self.clothes_metadata.season.validate(transformed_item["seasonList"])
+        assert self.clothes_metadata.style.validate(transformed_item["styleList"])
+        assert self.clothes_metadata.texture.validate(transformed_item["textureList"])
+        assert transformed_item["category"] in self.clothes_metadata.low_category_2_code()
+
+    # 문자열을 분리하여 배열로 변환하는 함수
+    def transform(self, key, item):
+        if item == "None":
+            return None
+        if "List" in key:
+            if isinstance(item, list):
+                return item
+            return item.split(',')
+        else:
+            return item
 
     def make_user_content(self):
         return [{
@@ -60,47 +92,55 @@ Respond to me with the same data in JSON format.
             }]
 
     def make_assistant_content(self):
+        assistant_content = ""
+        assistant_content+=f"""
+1.<fit>
+<Constraint>{self.clothes_metadata.fit.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.fit.get_values()}</possibleValues>
+</fit>
+        """
+        assistant_content+=f"""
+2.<colorList>
+<Constraint>{self.clothes_metadata.color.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.color.get_values()}</possibleValues>
+</colorList>
+        """
+        assistant_content+=f"""
+3.<patternList>
+<Constraint>{self.clothes_metadata.pattern.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.pattern.get_values()}</possibleValues>
+</patternList>
+        """
+        assistant_content+=f"""
+4.<seasonList>
+<Constraint>{self.clothes_metadata.season.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.season.get_values()}</possibleValues>
+</seasonList>
+        """
+        assistant_content+=f"""
+5.<styleList>
+<Constraint>{self.clothes_metadata.style.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.style.get_values()}</possibleValues>
+</styleList>
+        """
+        assistant_content+=f"""
+6.<textureList>
+<Constraint>{self.clothes_metadata.texture.get_constraint()}</Constraint>
+<possibleValues>{self.clothes_metadata.texture.get_values()}</possibleValues>
+</textureList>
+        """
+        category_possible_values=""
+        for high_category, low_category_list in self.clothes_metadata.category_dict().items():
+            category_possible_values+=f"<{high_category}>{', '.join(low_category_list)}</{high_category}>\n>"
+        assistant_content+=f"""
+7.<category>
+<Constraint>Please categorize into subcategories. Possible values are expressed as <parent category>subcategories</parent category></Constraint>
+{category_possible_values}
+</category>
+        """
         return [
             {
                 "type": "text",
-                "text": """
-Attributes:
-1. <fit>
-<Constraint>Type to how clothes fit body. Single value. `None` if there is no possible matching value.</Constraint>
-<possibleValues>OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT</possibleValues>
-</fit>
-2. <colorList>
-<Constraint>Identify up to 3 primary colors, Multiple values. Essential value</Constraint>
-<possibleValues>WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD</possibleValues>
-</colorList>
-3. <patternList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH</possibleValues>
-</patternList>
-4. <seasonList>
-<Constraint>Suitable season to wear. Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>SPRING, SUMMER, AUTUMN, WINTER</possibleValues>
-</seasonList>
-5. <styleList>
-<Constraint>Unique appearance or atmosphere. Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
-</styleList>
-6. <textureList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER</possibleValues>
-</textureList>
-7. <category>
-<Constraint>Please categorize into subcategories. Essential value. Possible values are expressed as <parent category>subcategories</parent category></Constraint>
-<possibleValues>
-<상의>탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티</상의>
-<하의>: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠</하의>
-<아우터>코트, 재킷, 점퍼, 패딩, 베스트, 가디건, 짚업</아우터>
-<원피스>드레스, 점프수트</원피스>
-<신발>운동화, 구두, 샌들</신발>
-<악세서리>주얼리, 기타, 모자</악세서리>
-<가방>가방, 백팩, 힙색</가방>
-</possibleValues>
-</category>
-"""
+                "text": assistant_content
             }
         ]
