@@ -3,43 +3,21 @@
 'use client'
 
 import { useState, ReactNode, useCallback, useEffect } from 'react'
-import { Popover } from '@radix-ui/react-popover'
+import { UserUpdateRequest } from '@/types/user/data-contracts'
 import Image from 'next/image'
 import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
-import { Api as FileApi } from '@/types/file/Api'
-import { Api as AuthApi } from '@/types/auth/Api'
-import { Api as UserApi } from '@/types/user/Api'
 import DatePicker from '@/components/Datepicker'
 import Modal from '@/components/Modal'
+import {
+  getUserInfo,
+  updateUser,
+  deleteUser,
+  checkNickname,
+} from '@/services/userApi'
+import { getFile, downloadFile } from '@/services/fileApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
-
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
-
-const fileApi = new FileApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
-const authApi = new AuthApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
-const userApi = new UserApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
 
 interface FieldProps {
   label: string
@@ -64,8 +42,8 @@ function Field({ label, id, children }: FieldProps) {
 }
 
 function ProfileEdit() {
+  // const [user, setUser] = useState<User | null>(null)
   const [user, setUser] = useState<User | null>(null)
-
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
@@ -73,51 +51,37 @@ function ProfileEdit() {
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
-  async function getUser() {
-    try {
-      const response = await userApi.getUserInfo()
-      const data = await response.json()
-      console.log('data', data)
-      setUser(data)
-      setBirthday(data.birth)
-
-      if (data.profileFileId) {
-        const res = await fileApi.getFile(data.profileFileId)
-        const picData = await res.json()
-        const picRes = await fileApi.downloadFile(picData.filePath)
-        const blob = await picRes.blob()
-        const urlStr = URL.createObjectURL(blob)
-        console.log('이게 내 url', urlStr)
-        setProfileSrc(urlStr)
-      }
-    } catch (error) {
-      console.log('getUser 오류 발생', error)
-    }
-  }
-
   useEffect(() => {
-    getUser()
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          setUser(userInfo)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
   }, [])
 
   const saveUserInfo = async () => {
-    try {
-      const userData = {
-        nickname,
-        birth: birthday?.toISOString(),
+    if ((await checkNickname(nickname)) === '사용 가능한 닉네임입니다.') {
+      try {
+        const userData: UserUpdateRequest = {
+          nickname,
+          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
+        }
+        return true
+      } catch (error) {
+        console.log('회원정보 수정 안 됨', error)
+        return false
       }
-
-      const userUpdateResponse = await userApi.updateUser(userData)
-      const data = await userUpdateResponse.json()
-      return true
-    } catch (error) {
-      console.log('회원정보 수정 안 됨', error)
+    } else {
+      alert('닉네임사용불가')
+      console.log('닉네임 수정 필요쓰')
       return false
     }
-  }
-
-  const deleteUser = () => {
-    const res = userApi.deleteUser()
-    const isDeleted = console.log(res)
   }
 
   const toggleProfileModal = useCallback(() => {
@@ -215,6 +179,7 @@ function ProfileEdit() {
               id="nickname"
               type="text"
               defaultValue={user?.nickname || ''}
+              onChange={(e) => setNickname(e.target.value)}
               className="px-3 w-full block border border-[#ECECEE] rounded focus:outline-none focus:ring-none h-[30px] group-hover:border-primary-400"
             />
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
