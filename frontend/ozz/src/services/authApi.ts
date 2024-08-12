@@ -95,7 +95,7 @@ export const initializeApiClients = (tokens: Tokens) => {
   authApi = new AuthApi<Tokens>({
     securityWorker: async () => {
       await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.
-      console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
+      // console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -107,7 +107,7 @@ export const initializeApiClients = (tokens: Tokens) => {
   userApi = new UserApi({
     securityWorker: async () => {
       await validateAndRefreshToken()
-      console.log('User API Token:', tokens?.accessToken) // userApi 토큰 확인
+      // console.log('User API Token:', tokens?.accessToken) // userApi 토큰 확인
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -201,7 +201,7 @@ export const getAuthApi = (): AuthApi<Tokens> => {
 
 export const getUserApi = (): UserApi<Tokens> => {
   if (!userApi) throw new Error('User API not initialized')
-  console.log('토큰 검증 시작')
+  // console.log('토큰 검증 시작')
   validateAndRefreshToken()
   return userApi
 }
