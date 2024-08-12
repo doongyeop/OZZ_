@@ -23,9 +23,7 @@ function SignUp() {
     const fetchUserInfo = async () => {
       try {
         await getUserInfo().then((userInfo) => {
-          console.log('userInfo: ', userInfo)
           const bday = new Date(userInfo.birth)
-          console.log('bday: ', bday)
           setBirthday(bday)
         })
       } catch (error) {
@@ -44,7 +42,7 @@ function SignUp() {
         }
         const response = await updateUser(userData)
         console.log('회원가입 확인 : ', response)
-        document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
+        // document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
@@ -67,8 +65,8 @@ function SignUp() {
   }
 
   const checkNicknameDuplication = async (nick: string) => {
-    if (nick.length > 15) {
-      setErrorText('닉네임은 15자 이내여야 합니다')
+    if (nick.length > 15 || nick.length <= 0) {
+      setErrorText('닉네임은 1-15자 이내여야 합니다')
       setResponseText('')
       return
     }
