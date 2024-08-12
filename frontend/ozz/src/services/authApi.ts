@@ -155,7 +155,7 @@ export const getAuthApi = (): AuthApi<Tokens> => {
 
 export const getUserApi = (): UserApi<Tokens> => {
   if (!userApi) throw new Error('User API not initialized')
-  validateAndRefreshToken()
   console.log('토큰 검증 시작')
+  validateAndRefreshToken()
   return userApi
 }
