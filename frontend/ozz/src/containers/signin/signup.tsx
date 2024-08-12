@@ -47,9 +47,6 @@ function SignUp() {
         // console.log('userApi: ', userApi)
         // const response = await userApi.updateUser(userData)
         console.log('response: ', response)
-        const data = await response.json()
-        console.log('회원가입 확인 : ', data)
-
         // if (userData.nickname) {
         //   document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
         // }
