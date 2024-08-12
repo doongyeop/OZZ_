@@ -57,29 +57,28 @@ export const reissueToken = async () => {
 }
 
 export const redirectToLogin = () => {
-  console.log('로그인 화면으로 돌아가')
   window.location.href = '/login'
 }
 
 export const validateAndRefreshToken = async () => {
   const tokens = getTokens()
-  // console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
-  // console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
+  console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
+  console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
 
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {
-    // console.log('Access token expired, attempting to reissue') // 로그 추가
+    console.log('Access token expired, attempting to reissue') // 로그 추가
     try {
       const newTokens = await reissueToken()
       if (newTokens) {
-        // console.log('Tokens successfully reissued:', newTokens) // 로그 추가
+        console.log('Tokens successfully reissued:', newTokens) // 로그 추가
         setTokens(newTokens)
       } else {
         throw new Error('Failed to reissue tokens')
       }
     } catch (error: any) {
-      // console.error('Error during token reissue:', error) // 로그 추가
+      console.error('Error during token reissue:', error) // 로그 추가
       if (error.response?.status === 404) {
         console.error('Refresh token expired')
         removeTokens()
@@ -202,7 +201,6 @@ export const getAuthApi = (): AuthApi<Tokens> => {
 
 export const getUserApi = (): UserApi<Tokens> => {
   if (!userApi) throw new Error('User API not initialized')
-  // console.log('토큰 검증 시작')
   validateAndRefreshToken()
   return userApi
 }
@@ -214,6 +212,7 @@ export const getFavoriteApi = (): FavoriteApi<Tokens> => {
 }
 
 export const getClothesApi = (): ClothesApi<Tokens> => {
+  console.log('토큰 검증 시작', clothesApi)
   if (!clothesApi) throw new Error('Clothes API not initialized')
   validateAndRefreshToken()
   return clothesApi
