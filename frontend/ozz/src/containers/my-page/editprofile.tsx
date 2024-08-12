@@ -9,7 +9,6 @@ import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
 import DatePicker from '@/components/Datepicker'
 import Modal from '@/components/Modal'
-import UploadModal from './modal'
 import {
   getUserInfo,
   updateUser,
@@ -18,6 +17,7 @@ import {
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
+import UploadModal from './modal'
 
 interface FieldProps {
   label: string
@@ -80,6 +80,7 @@ function ProfileEdit() {
     } else {
       alert('닉네임사용불가')
       console.log('닉네임 수정 필요쓰')
+      return false
     }
   }
 

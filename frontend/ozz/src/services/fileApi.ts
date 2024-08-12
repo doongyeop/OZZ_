@@ -1,7 +1,6 @@
 import { getFileApi } from './authApi'
 import {
   DeleteData,
-  DownloadFileData,
   GetFileData,
   UpdateData,
   UpdatePayload,
