@@ -20,13 +20,12 @@ function SignUp() {
 
   useEffect(() => {
     syncTokensWithCookies()
-    console.log('회원가입 하자')
     const fetchUserInfo = async () => {
-      console.log('유저 정보 가져오기')
       try {
         await getUserInfo().then((userInfo) => {
           console.log('userInfo: ', userInfo)
           const bday = new Date(userInfo.birth)
+          console.log('bday: ', bday)
           setBirthday(bday)
         })
       } catch (error) {
