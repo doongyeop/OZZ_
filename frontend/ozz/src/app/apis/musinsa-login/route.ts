@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
-import { format } from 'date-fns'
+import { format, parse } from 'date-fns'
+import { getClothesApi } from '@/services/authApi'
 
 // URL Constants
 const loginPageUrl = 'https://www.musinsa.com/auth/login'
 const orderListUrl =
-  'https://www.musinsa.com/order-service/mypage/order_list_opt'
-
-// Define types for responses
-interface OrderListResponse {
-  code: string
-  output: string
-  isPrevButton: string
-}
+  'https://www.musinsa.com/order-service/my/order/get_order_list'
 
 interface Order {
-  orderNumber: string
-  orderDate: string
-  productName: string
-  brandName: string
-  option: string
-  thumbnailUrl: string
+  name: string
+  brand: string
+  purchaseDate: string
   purchaseSite: string
+  imgUrl: string
+  option: string
 }
 
 // Function to fetch CSRF token from login page
@@ -34,7 +27,7 @@ const fetchCSRFToken = async (): Promise<string> => {
   return csrfToken
 }
 
-// Function to login using the CSRF token
+// Function to log in using the CSRF token
 const login = async (
   csrfToken: string,
   userId: string,
@@ -63,28 +56,19 @@ const login = async (
   return response.headers.get('set-cookie')?.split(',') ?? []
 }
 
-// Function to transform thumbnail URL
-const transformThumbnailUrl = (thumbnailUrl: string): string => {
-  let transformedUrl = thumbnailUrl.replace('//', 'https://')
-  transformedUrl = transformedUrl.replace('_120.jpg', '_500.jpg')
-  return transformedUrl
-}
-
 // Function to fetch order list after successful login
 const fetchOrderList = async (
   cookies: string[],
-  page = 1,
+  offset: string = '', // 초기에는 빈 문자열로 시작
   orderList: Order[] = [],
 ): Promise<Order[]> => {
   const today = format(new Date(), 'yyyy-MM-dd')
   const params = new URLSearchParams({
-    state_type: 'ord_4',
-    ord_state: '50',
-    period: 'input',
-    dt_fr: '2009-01-01',
-    dt_to: today,
-    is_ajax: 'Y',
-    page: page.toString(),
+    searchText: '',
+    startDate: '',
+    endDate: today,
+    fulfillmentTypeCode: '',
+    offset, // 마지막 주문의 orderNo를 offset으로 사용
   })
 
   const response = await fetch(`${orderListUrl}?${params}`, {
@@ -93,58 +77,46 @@ const fetchOrderList = async (
     },
   })
 
-  const text = await response.text()
-  const data: OrderListResponse = JSON.parse(text)
-
-  if (data.code === 'success') {
-    const $ = cheerio.load(data.output)
-    $('.order-list__item').each((index, element) => {
-      const orderNumber = $(element).attr('data-ordid') as string
-      const orderDate = $(element)
-        .find('.order-list__payment__date')
-        .text()
-        .trim()
-        .replace(/\./g, '-')
-
-      $(element)
-        .find('.order-goods')
-        .each((i, el) => {
-          const productName = $(el)
-            .find('.order-goods-information__name')
-            .text()
-            .trim()
-          const brandName = $(el)
-            .find('.order-goods-information__brand')
-            .text()
-            .trim()
-          const option = $(el)
-            .find('.order-goods-information__option')
-            .text()
-            .trim()
-          const thumbnailUrl = $(el)
-            .find('.order-goods-thumbnail__image')
-            .attr('src') as string
-
-          const transformedThumbnailUrl = transformThumbnailUrl(thumbnailUrl)
-
-          orderList.push({
-            orderNumber,
-            orderDate,
-            productName,
-            brandName,
-            option,
-            thumbnailUrl: transformedThumbnailUrl,
-            purchaseSite: '무신사',
-          })
-        })
-    })
-
-    if (data.isPrevButton === 'Y') {
-      return fetchOrderList(cookies, page + 1, orderList)
-    }
+  if (!response.ok) {
+    throw new Error('Failed to fetch order list')
   }
 
-  return orderList
+  const data = await response.json()
+
+  const orders = data.list
+    .map((order: any) => {
+      // orderState가 40이거나 50인 옵션만 필터링
+      const filteredOptions = order.orderOptionList.filter(
+        (option: any) => option.orderState === 40 || option.orderState === 50,
+      )
+
+      // 필터링된 옵션을 사용하여 주문 객체 생성
+      return filteredOptions.map((option: any) => {
+        return {
+          name: option.goodsName,
+          brand: option.brandName,
+          purchaseDate: format(
+            parse(order.orderDate, 'yy.MM.dd', new Date()),
+            'yyyy-MM-dd',
+          ),
+          purchaseSite: '무신사',
+          imgUrl: `https:${option.goodsImage}`,
+          option: option.goodsOption,
+        }
+      })
+    })
+    .flat()
+
+  orderList.push(...orders)
+
+  // 더 이상 주문이 없으면 종료
+  if (data.list.length === 0) {
+    return orderList
+  }
+
+  // 다음 페이지로 이동할 때 마지막 주문의 orderNo를 offset으로 사용
+  const lastOrderNo = data.list[data.list.length - 1].orderNo
+  return fetchOrderList(cookies, lastOrderNo, orderList)
 }
 
 // Main function to execute the entire flow
@@ -154,9 +126,34 @@ async function getMusinsaOrderLists(
 ): Promise<Order[]> {
   const csrfToken = await fetchCSRFToken()
   const cookies = await login(csrfToken, userId, password)
-  const orderList = await fetchOrderList(cookies)
-  console.log(orderList)
-  return orderList
+  return fetchOrderList(cookies)
+}
+
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+//
+// const api = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
+
+const api = getClothesApi()
+
+// Function to call the startBatch API
+const sendPurchaseHistoryToServer = async (purchaseHistory: Order[]) => {
+  console.log(purchaseHistory)
+  console.log('구매내역', purchaseHistory.length, '개')
+  try {
+    const responseData = await api.startBatch(purchaseHistory)
+    console.log('Response data:', responseData)
+    return responseData
+  } catch (error) {
+    console.error('Error response:', error)
+    throw new Error('Failed to send purchase history to the server')
+  }
 }
 
 // API route handler
@@ -166,7 +163,11 @@ export async function POST(req: NextRequest) {
     const { userId, password } = await req.json()
     const orderList = await getMusinsaOrderLists(userId, password)
 
-    return NextResponse.json(orderList)
+    // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
+    const response = await sendPurchaseHistoryToServer(orderList)
+
+    // return NextResponse.json(orderList)
+    return NextResponse.json(response)
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.'
