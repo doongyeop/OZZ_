@@ -213,8 +213,9 @@ export const getFavoriteApi = (): FavoriteApi<Tokens> => {
 }
 
 export const getClothesApi = (): ClothesApi<Tokens> => {
+  syncTokensWithCookies()
   validateAndRefreshToken()
-  console.log('토큰 검증 시작', clothesApi)
+  console.log('clothesApi 토큰 검증 시작', clothesApi)
   if (!clothesApi) throw new Error('Clothes API not initialized')
   return clothesApi
 }
