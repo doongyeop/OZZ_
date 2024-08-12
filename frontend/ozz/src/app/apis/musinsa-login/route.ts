@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
 import { format, parse } from 'date-fns'
+// import { Api as ClothesApi } from '@/types/clothes/Api'
 import { getClothesApi } from '@/services/authApi'
 
 // URL Constants
@@ -140,12 +141,13 @@ async function getMusinsaOrderLists(
 //   }),
 // })
 
-const api = getClothesApi()
-
 // Function to call the startBatch API
 const sendPurchaseHistoryToServer = async (purchaseHistory: Order[]) => {
   console.log(purchaseHistory)
   console.log('구매내역', purchaseHistory.length, '개')
+
+  const api = getClothesApi()
+
   try {
     const responseData = await api.startBatch(purchaseHistory)
     console.log('Response data:', responseData)

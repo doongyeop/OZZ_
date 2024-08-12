@@ -126,7 +126,9 @@ export default function CoordiBook() {
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
-              group.imageFileList?.length >= 4 ? 'w-full h-full' : ''
+              group.imageFileList && group.imageFileList.length >= 4
+                ? 'w-full h-full'
+                : ''
             }`}
           >
             {group.imageFileList && group.imageFileList.length > 0 ? (
