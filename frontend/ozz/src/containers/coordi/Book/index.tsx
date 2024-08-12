@@ -5,34 +5,32 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 // import { Api as ClothesApi } from '@/types/clothes/Api'
 import { Api as FavoriteApi } from '@/types/favorite/Api'
-import { Api as UserApi } from '@/types/user/Api'
+// import { Api as UserApi } from '@/types/user/Api'
 import Modal from '@/components/Modal'
 import { HiPencil, HiPlus } from 'react-icons/hi'
-import {
-  Coordibook,
-  mockCoordibooks,
-  mockFavoriteDetails,
-} from '@/types/coordibook'
-
-interface FavoriteGroupCreateRequest {
-  name: string
-}
+import { Coordibook } from '@/types/coordibook'
+// import { ImGift } from 'react-icons/im'
+import { getUserInfo } from '@/services/userApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 
 interface Favorite {
-  favoriteGroupId: number
-  name: string
-  imageFileList: [
-    {
+  favoriteId: number
+  coordinate: {
+    coordinateId: number
+    name: string
+    styleList: []
+    createdDate: string
+    imageFile: {
       fileId: number
       filePath: string
       fileName: string
       fileType: string
-    },
-  ]
+    }
+  }
 }
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNyIsImlhdCI6MTcyMzQyMTY4MywiZXhwIjoxNzIzNDgxNjgzfQ.qYPB-IKzczSUxiJzlpF8z6U_MbpIaEmQC2PUG4vvkjk'
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNyIsImlhdCI6MTcyMzQyMTY4MywiZXhwIjoxNzIzNDgxNjgzfQ.qYPB-IKzczSUxiJzlpF8z6U_MbpIaEmQC2PUG4vvkjk'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
@@ -40,30 +38,30 @@ export default function CoordiBook() {
   const [newGroupName, setNewGroupName] = useState('')
   const [user, setUser] = useState()
   const [groups, setGroups] = useState<Coordibook[]>([])
+  const [favorites, setFavorites] = useState<{ [key: number]: Favorite[] }>({})
   const router = useRouter()
-  const favApi = new FavoriteApi({
-    securityWorker: async () => ({
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  })
-  const userApi = new UserApi({
-    securityWorker: async () => ({
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  })
-  async function getUser() {
-    const res = await userApi.getUserInfo()
-    const data = await res.json()
-    setUser(data)
-  }
-  useEffect(() => {
-    getUser()
-    fetchGroups()
-  }, [])
+
+  /////////////////////////////////////유저유저유저유저
+  // const favApi = new FavoriteApi({
+  //   securityWorker: async () => ({
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }),
+  // })
+  // const userApi = new UserApi({
+  //   securityWorker: async () => ({
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }),
+  // })
+  // async function getUser() {
+  //   const res = await userApi.getUserInfo()
+  //   const data = await res.json()
+  //   setUser(data)
+  // }
+  //////////////////////////////////////////////////////
 
   async function fetchGroups() {
     const res = await favApi.getFavoritesGroupListOfUsers()
@@ -71,12 +69,34 @@ export default function CoordiBook() {
     setGroups(data)
   }
 
+  useEffect(() => {
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          console.log('userInfo: ', userInfo)
+          const bday = new Date(userInfo.birth)
+          console.log('bday: ', bday)
+          setBirthday(bday)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
+    fetchGroups()
+  }, [])
+  // useEffect(() => {
+  //   getUser()
+  //   fetchGroups()
+  // }, [])
+
   const goToCoordiBook = (id: number, name: string) => {
     router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
   }
 
   async function createCoordiBook() {
-    if (newGroupName.trim() === '') {
+    if (!newGroupName) {
       alert('그룹이름을 입력하세요')
       return
     }
@@ -95,51 +115,38 @@ export default function CoordiBook() {
   const closeModal = () => {
     setCreateModal(false)
   }
-
   const getFavGrp = (group: Coordibook) => {
-    const [favorite, setFavorite] = useState([])
-
-    useEffect(() => {
-      async function fetchGroupById(id: number) {
-        try {
-          const res = await favApi.getFavoritesByGroup(id)
-          const data = await res.json()
-          setFavorite(data)
-        } catch (err) {
-          console.error('코디북 상세 데이터 가져오던 중 오류', err)
-        }
-      }
-
-      fetchGroupById(group.favoriteGroupId)
-    }, [group.favoriteGroupId])
-
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
-          className="flex items-center h-full overflow-hidden"
+          className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
-              mockFavoriteDetails.length >= 4 ? 'w-full h-full' : ''
+              group.imageFileList.length >= 4 ? 'w-full h-full' : ''
             }`}
           >
-            {mockFavoriteDetails.slice(0, 4).map((fav) => (
-              <div
-                key={fav.favoriteId}
-                className={`${
-                  mockFavoriteDetails.length >= 4
-                    ? 'w-1/2 h-1/2 overflow-hidden'
-                    : 'h-full w-full'
-                }`}
-              >
-                <img
-                  src={fav.coordinate.imageFile.filePath}
-                  alt={fav.coordinate.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+            {group.imageFileList.length > 0 ? (
+              group.imageFileList.slice(0, 4).map((image, index) => (
+                <div
+                  key={index}
+                  className={`${
+                    group.imageFileList.length >= 4
+                      ? 'w-1/2 h-1/2 overflow-hidden'
+                      : 'h-full w-full'
+                  }`}
+                >
+                  <img
+                    src={image.filePath}
+                    alt={image.fileName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="hidden">암것도 없어요</div>
+            )}
           </CardContent>
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
@@ -154,7 +161,7 @@ export default function CoordiBook() {
       <div className="aspect-square">
         <Card
           onClick={() => setCreateModal(true)}
-          className="h-full bg-secondary flex items-center justify-center"
+          className="h-full bg-secondary flex items-center justify-center shadow-md"
         >
           <HiPlus className="w-8 h-8 fill-primary-400" />
         </Card>
