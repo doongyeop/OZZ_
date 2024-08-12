@@ -11,7 +11,7 @@ import {
 } from '@/types/clothes/data-contracts'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzI2NTcyNiwiZXhwIjoxNzIzMzI1NzI2fQ.xckSDQHcn0K51y7p4KSGMm5fec1QFOVza2ABnTiuRaQ'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
 
 const clothesApi = new ClothesApi({
   securityWorker: async () => ({
