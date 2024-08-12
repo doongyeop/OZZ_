@@ -74,32 +74,32 @@ Respond to me with the same data in JSON format.
     def make_assistant_content(self):
         assistant_content = ""
         assistant_content += f"""
-1.<fit>
+1.<fit>{'' if self.clothes_metadata.fit.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.fit.get_values()}</possibleValues>
 </fit>
 """
         assistant_content += f"""
-2.<colorList>
+2.<colorList>{'' if self.clothes_metadata.color.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.color.get_values()}</possibleValues>
 </colorList>
 """
         assistant_content += f"""
-3.<patternList>
+3.<patternList>{'' if self.clothes_metadata.pattern.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.pattern.get_values()}</possibleValues>
 </patternList>
 """
         assistant_content += f"""
-4.<seasonList>
+4.<seasonList>{'' if self.clothes_metadata.season.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.season.get_values()}</possibleValues>
 </seasonList>
 """
         assistant_content += f"""
-5.<styleList>
+5.<styleList>{'' if self.clothes_metadata.style.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.style.get_values()}</possibleValues>
 </styleList>
 """
         assistant_content += f"""
-6.<textureList>
+6.<textureList>{'' if self.clothes_metadata.texture.is_essential else '`null` value possible'}
 <possibleValues>{self.clothes_metadata.texture.get_values()}</possibleValues>
 </textureList>
 """
@@ -118,7 +118,7 @@ Respond to me with the same data in JSON format.
         for k, datum in valid_data.items():
             if isinstance(k, str):
                 k=int(k)
-            raw_data[int(k)].model_copy(update={**datum}, deep=True)
+            raw_data[k]=raw_data[k].model_copy(update={**datum}, deep=True)
             if not self.validate_data(raw_data[k]):
                 del raw_data[k]
                 logging.error(f"id : {k} 속성 검증 및 정규화 실패")

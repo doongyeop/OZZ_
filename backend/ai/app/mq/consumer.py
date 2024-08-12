@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from io import BytesIO
+import traceback
 
 import pika
 import requests
@@ -13,17 +14,17 @@ from app.utils.image_process import process
 from app.utils.image_utils import resize_and_convert_to_png
 
 
-def parseToBaseModel(body)->list[NormalizedClothes]|None:
+def parseToBaseModel(body) -> list[NormalizedClothes] | None:
     try:
         data: list[dict] = json.loads(body)
-        return list(map(lambda a:NormalizedClothes(**a), data))
+        return list(map(lambda a: NormalizedClothes(**a), data))
     except Exception as e:
-        logging.error(e)
+        logging.error(traceback.format_exc())
 
     return None
 
-def EAcallback(ch, method, properties, body):
 
+def EAcallback(ch, method, properties, body):
     data = parseToBaseModel(body)
     if not data:
         return
@@ -33,7 +34,7 @@ def EAcallback(ch, method, properties, body):
         client = ExtractAttributesURL(data)
         data = client.get_result()
     except Exception as e:
-        logging.error(e)
+        logging.error(traceback.format_exc())
 
     try:
         for key in data.keys():
@@ -41,12 +42,12 @@ def EAcallback(ch, method, properties, body):
             url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{key}"
             # 요청 헤더 및 파일 설정
             logging.info(f"속성 등록 :  {url}")
-            attr_data=data[key].model_dump()
-            attr_data["processing"]=-2
+            attr_data = data[key].model_dump()
+            attr_data["processing"] = -2
             # PUT 요청 보내기
             mp_encoder = MultipartEncoder(
                 fields={
-                    "request": ('request',json.dumps(attr_data),'application/json')
+                    "request": ('request', json.dumps(attr_data), 'application/json')
                 }
             )
             # PUT 요청 보내기
@@ -78,7 +79,7 @@ def IPcallback(ch, method, properties, body):
 
             mp_encoder = MultipartEncoder(
                 fields={
-                    "imageFile": (f'{datum.clothId}.png',image_byte_array, "image/png")
+                    "imageFile": (f'{datum.clothId}.png', image_byte_array, "image/png")
                 }
             )
 
@@ -90,7 +91,8 @@ def IPcallback(ch, method, properties, body):
             # 응답 출력
             logging.info(response)
     except Exception as e:
-        logging.error(e)
+        logging.error(traceback.format_exc())
+
 
 def start_consumer():
     connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("RABBITMQ_HOST")))
@@ -107,4 +109,4 @@ def start_consumer():
                           auto_ack=True)
 
     print('Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming( )
+    channel.start_consuming()

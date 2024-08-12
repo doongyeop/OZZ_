@@ -75,7 +75,11 @@ Please return it in JSON format as in the following example.
     def parse_response(self, response: dict) -> dict[int, Attributes]:
         raw_data = {}
         for k, v in response.items():
+            if isinstance(k, str):
+                k=int(k)
             raw_data[k] = GPTAttrResponse(**v)
+        logging.info("속성 추출 성공 "+str(raw_data))
+        print(raw_data)
         return run_validate(raw_data)
 
     def get_response(self) -> dict[Any, Any]:

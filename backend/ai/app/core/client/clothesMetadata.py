@@ -52,10 +52,12 @@ class Properties:
     def get_values(self):
         return ", ".join(self.properties)
 
-    def validate(self, input_value: str | list[str]):
+    def validate(self, input_value: str | list[str]|None):
         if input_value is None:
             if self.is_essential:
                 return False
+            else:
+                return True
         if self.is_multiple:
             for e in input_value:
                 if e not in self.properties:
