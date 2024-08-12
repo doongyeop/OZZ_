@@ -4,54 +4,23 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { getUserInfo } from '@/services/userApi'
+// import { getFile, downloadFile } from '@/services/fileApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
-import { Api as UserApi } from '@/types/user/Api'
-import { Api as FileApi } from '@/types/file/Api'
-import { Api as AuthApi } from '@/types/auth/Api'
 import { FaUser } from 'react-icons/fa6'
 import { HiPhotograph, HiBell } from 'react-icons/hi'
 import { IoIosSettings } from 'react-icons/io'
 import { FaChevronRight } from 'react-icons/fa'
 import LoadingPage from '@/components/Loading/loading'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
-
-const userApi = new UserApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
-const fileApi = new FileApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
-const authApi = new AuthApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
-
 export default function MyPageIndex() {
   const router = useRouter()
   const [modal, setModal] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [profileSrc, setProfileSrc] = useState('')
-  const [profilePic, setProfilePic] = useState()
-  const setCookie = (name: string, value: any, days: number) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
-  }
+  // const [profilePic, setProfilePic] = useState()
   const [loading, setLoading] = useState(true)
 
   const deleteAllCookies = () => {
@@ -62,43 +31,29 @@ export default function MyPageIndex() {
     })
   }
 
-  const getProfilePic = async (picId: number) => {
-    try {
-      const response = await fileApi.getFile(picId)
-      const data = await response.json()
-      setProfilePic(data)
-      const picRes = await fileApi.downloadFile(data.filePath)
-      const blob = await picRes.blob()
-      const urlStr = URL.createObjectURL(blob)
-      setProfileSrc(urlStr)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const getProfilePic = async (picId: number) => {
+  //   try {
+  //     await getFile(picId)
 
-  const getUser = async () => {
-    setLoading(true) // 데이터를 가져오기 전에 로딩 상태로 설정
-    try {
-      const response = await userApi.getUserInfo()
-      const userData = await response.json()
-      if (userData) {
-        setUser(userData)
-        setCookie('userInfo', JSON.stringify(userData), 1)
-        if (userData.profileFileId) {
-          await getProfilePic(userData.profileFileId)
-        }
-      } else {
-        setLoading(true) // userData가 없을 경우 로딩 상태로 유지
-      }
-    } catch (error) {
-      console.error('유저 정보를 가져오는 중 오류 발생:', error)
-    } finally {
-      setLoading(false) // 데이터 처리 후 로딩 상태 해제
-    }
-  }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
-    getUser()
+    setLoading(true)
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          setUser(userInfo)
+        })
+        setLoading(false)
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
   }, [])
 
   const goEdit = () => {
@@ -113,15 +68,15 @@ export default function MyPageIndex() {
   }
 
   const logOut = async (userId: number) => {
-    try {
-      console.log('userId로 전달되고 있는 건요:', userId)
-      const response = await authApi.deleteRefreshTokenOfUser(userId)
-      console.log(response)
-      deleteAllCookies()
-      router.push('/login')
-    } catch (error) {
-      console.error('로그아웃 중 오류 발생:', error)
-    }
+    // try {
+    //   console.log('userId로 전달되고 있는 건요:', userId)
+    //   const response = await authApi.deleteRefreshTokenOfUser(userId)
+    //   console.log(response)
+    //   deleteAllCookies()
+    //   router.push('/login')
+    // } catch (error) {
+    //   console.error('로그아웃 중 오류 발생:', error)
+    // }
   }
 
   return (
@@ -147,7 +102,9 @@ export default function MyPageIndex() {
               <FaUser className="fill-gray-300 w-16 h-16 rounded-full" />
             )}
             <div className="ml-4 flex-1">
-              <div className="bg-secondary text-primary-400 font-bold text-xl inline-block">
+              <div
+                className={`bg-secondary text-primary-400 font-bold ${user.nickname.length > 12 ? 'text-lg' : 'text-xl'} inline-block`}
+              >
                 {user.nickname}
               </div>
               <span className="font-bold text-xl">님</span>
