@@ -2,22 +2,16 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { login } from '@/services/authApi'
 
 function SignIn() {
   const router = useRouter()
 
-  const onKaKaoLogin = () => {
-    window.location.href =
-      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/kakao'
-  }
-
-  const onNaverLogin = () => {
-    window.location.href =
-      'http://i11a804.p.ssafy.io:8080/oauth2/authorization/naver'
-  }
+  const onKaKaoLogin = () => login('kakao')
+  const onNaverLogin = () => login('naver')
 
   return (
     <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">

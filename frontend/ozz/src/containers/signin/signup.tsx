@@ -2,21 +2,14 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useRouter } from 'next/navigation'
-import DatePicker from '@/components/Datepicker'
-import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
-import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
+import { useRouter } from 'next/navigation'
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNCIsImlhdCI6MTcyMzI2MzI3NCwiZXhwIjoxNzIzMzIzMjc0fQ.akVzmZwAMkVm3Jh5Ed50b19bHASywIVodLoPP2wHJRQ'
-const api = new UserApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
+import { Api as UserApi } from '@/types/user/Api'
+import DatePicker from '@/components/Datepicker'
+import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 
 function SignUp() {
   const router = useRouter()
@@ -25,27 +18,22 @@ function SignUp() {
   const [errorText, setErrorText] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
-  const getBirthday = async () => {
-    try {
-      const res = await api.getUserInfo()
-      const userData = await res.json()
-      // console.log('userData', userData)
-      const bday = new Date(userData.birth)
-      setBirthday(bday)
-      // console.log('생년월일 정보를 가져왔습니다:', bday)
-    } catch (error) {
-      // console.error('생년월일 정보를 가져오는 중 오류 발생:', error)
-    }
-  }
-
   useEffect(() => {
-    getBirthday()
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          console.log('userInfo: ', userInfo)
+          const bday = new Date(userInfo.birth)
+          console.log('bday: ', bday)
+          setBirthday(bday)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
   }, [])
-
-  const setCookie = (name: string, value: string, days: number) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
-  }
 
   const confirmSignUp = async () => {
     if (responseText) {
@@ -54,19 +42,18 @@ function SignUp() {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        const userUpdateResponse = await api.updateUser(userData)
-        const data = await userUpdateResponse.json()
-        // console.log(data)
-        // console.log('회원가입이 성공적으로 완료되었습니다.')
-        setCookie('nickname', userData.nickname, 7)
-        return true
+        const response = await updateUser(userData)
+        console.log('회원가입 확인 : ', response)
+        document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
+        router.push('/login/signup/success')
+        return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
-        return false
+        return false // 오류 발생 시 false 반환
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
-      return false
+      return false // 응답 텍스트가 없는 경우 false 반환
     }
   }
 
@@ -75,15 +62,11 @@ function SignUp() {
   }
 
   const handleNext = async () => {
-    const isSignupSuccess = await confirmSignUp()
-    if (isSignupSuccess) {
-      router.push('/login/signup/success')
-    } else {
-      window.alert('닉네임을 설정하세요')
-    }
+    await confirmSignUp()
+    router.push('/login/signup/success')
   }
 
-  async function checkNicknameDuplication(nick: string) {
+  const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15) {
       setErrorText('닉네임은 15자 이내여야 합니다')
       setResponseText('')
@@ -96,8 +79,8 @@ function SignUp() {
     }
 
     try {
-      const response = await api.checkNickname({ nickname: nick })
-      setResponseText(await response.text())
+      const response = await checkNickname(nick)
+      setResponseText(response)
       setErrorText('')
       setNickname(nick)
     } catch (error) {

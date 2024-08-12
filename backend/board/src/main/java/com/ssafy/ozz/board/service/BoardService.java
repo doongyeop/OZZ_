@@ -25,4 +25,6 @@ public interface BoardService {
     Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge);
 
     Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable);
+
+    BoardResponse mapToBoardResponse(Board board);
 }

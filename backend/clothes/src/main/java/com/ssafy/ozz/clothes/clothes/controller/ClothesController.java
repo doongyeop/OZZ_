@@ -105,7 +105,7 @@ public class ClothesController {
 
     @PostMapping(path="/batch",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "불러오기로 새 옷 추가", description = "온라인 마켓의 구매내역을 통해 옷장을 채웁니다")
-    public Flux<ServerSentEvent<String>> startBatch(@RequestBody List<PurchaseHistory> purchaseHistories) {
-        return clothesService.batchRegisterPurchaseHistory(1L, purchaseHistories);
+    public Flux<ServerSentEvent<String>> startBatch(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestBody List<PurchaseHistory> purchaseHistories) {
+        return clothesService.batchRegisterPurchaseHistory(userId, purchaseHistories);
     }
 }
