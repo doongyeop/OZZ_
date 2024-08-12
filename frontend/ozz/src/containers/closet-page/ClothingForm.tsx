@@ -152,9 +152,6 @@ export default function ClothingForm({
       categoryLowId,
     }
 
-    Object.entries(request).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`)
-    })
     onSubmit(imageFile, request)
   }
 
