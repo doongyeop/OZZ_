@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { format, parse } from 'date-fns'
-import { getClothesApi } from '@/services/authApi'
+// import { getClothesApi } from '@/services/authApi'
+import { Api as ClothesApi } from '@/types/clothes/Api'
 
 puppeteer.use(StealthPlugin())
 
@@ -48,11 +49,25 @@ interface OrderData {
 //   }),
 // })
 
-const sendPurchaseHistoryToServer = async (purchaseHistory: OrderData[]) => {
+// 서버 전용으로 ClothesApi 인스턴스를 생성하는 함수
+const createClothesApi = (accessToken: string): ClothesApi<unknown> => {
+  return new ClothesApi({
+    securityWorker: async () => ({
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
+  })
+}
+
+const sendPurchaseHistoryToServer = async (
+  purchaseHistory: OrderData[],
+  accessToken: string,
+) => {
   console.log(purchaseHistory)
   console.log('구매내역', purchaseHistory.length, '개')
 
-  const api = await getClothesApi()
+  const api = createClothesApi(accessToken)
 
   try {
     const response = await api.startBatch(purchaseHistory)
@@ -187,13 +202,20 @@ export async function POST(request: NextRequest) {
       moreData = false
     }
   }
-  //
-  // console.log('모든 주문 내역:', orderData)
-  // console.log(`구매내역 ${orderData.length}개`)
 
   await browser.close()
 
+  // 서버 사이드에서 쿠키에서 access token을 추출 (Next.js에서 쿠키 파싱)
+  const accessToken = request.headers
+    .get('cookie')
+    ?.split('; ')
+    .find((c) => c.startsWith('access='))
+    ?.split('=')[1]
+  if (!accessToken) {
+    throw new Error('Access token not found')
+  }
+
   // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
-  const response = await sendPurchaseHistoryToServer(orderData)
+  const response = await sendPurchaseHistoryToServer(orderData, accessToken)
   return NextResponse.json(response)
 }
