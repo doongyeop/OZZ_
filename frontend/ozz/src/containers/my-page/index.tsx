@@ -102,7 +102,9 @@ export default function MyPageIndex() {
               <FaUser className="fill-gray-300 w-16 h-16 rounded-full" />
             )}
             <div className="ml-4 flex-1">
-              <div className="bg-secondary text-primary-400 font-bold text-xl inline-block">
+              <div
+                className={`bg-secondary text-primary-400 font-bold ${user.nickname.length > 12 ? 'text-lg' : 'text-xl'} inline-block`}
+              >
                 {user.nickname}
               </div>
               <span className="font-bold text-xl">님</span>
