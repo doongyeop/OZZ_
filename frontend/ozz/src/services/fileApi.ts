@@ -42,7 +42,9 @@ export const uploadFile = async (data: UploadPayload): Promise<UploadData> => {
 }
 
 // 파일 다운로드
-export const downloadFile = async (filePath: string): Promise<File> => {
+export const downloadFile = async (
+  filePath: string,
+): Promise<File | undefined> => {
   const fileApi = getFileApi()
   if (!fileApi) throw new Error('File API not initialized')
   try {
@@ -54,5 +56,6 @@ export const downloadFile = async (filePath: string): Promise<File> => {
     return new File([blob], fileName)
   } catch (error) {
     console.log('downloadFile 중 에러발생', error)
+    return undefined
   }
 }
