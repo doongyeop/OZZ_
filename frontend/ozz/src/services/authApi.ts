@@ -56,18 +56,21 @@ export const redirectToLogin = () => {
 
 export const validateAndRefreshToken = async () => {
   const tokens = getTokens()
+  console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {
+    console.log('Access token expired, attempting to reissue') // 로그 추가
     try {
       const newTokens = await reissueToken()
       if (newTokens) {
-        // newTokens가 존재하는지 확인
+        console.log('Tokens successfully reissued:', newTokens) // 로그 추가
         setTokens(newTokens)
       } else {
         throw new Error('Failed to reissue tokens')
       }
     } catch (error: any) {
+      console.error('Error during token reissue:', error) // 로그 추가
       if (error.response?.status === 404) {
         console.error('Refresh token expired')
         removeTokens()
@@ -145,10 +148,13 @@ export const logout = async (userId: number) => {
 
 export const getAuthApi = (): AuthApi<Tokens> => {
   if (!authApi) throw new Error('Auth API not initialized')
+  validateAndRefreshToken()
   return authApi
 }
 
 export const getUserApi = (): UserApi<Tokens> => {
   if (!userApi) throw new Error('User API not initialized')
+  validateAndRefreshToken()
+  console.log('토큰 검증 시작')
   return userApi
 }
