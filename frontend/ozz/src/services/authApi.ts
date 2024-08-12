@@ -30,7 +30,6 @@ export const getTokens = (): Tokens | undefined => {
 
 export const setTokens = (newTokens: Tokens) => {
   queryClient.setQueryData(['tokens'], newTokens)
-  console.log('토큰을 다 세팅합니다')
   initializeApiClients(newTokens)
 }
 
@@ -63,23 +62,23 @@ export const redirectToLogin = () => {
 
 export const validateAndRefreshToken = async () => {
   const tokens = getTokens()
-  console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
-  console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
+  // console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
+  // console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
 
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {
-    console.log('Access token expired, attempting to reissue') // 로그 추가
+    // console.log('Access token expired, attempting to reissue') // 로그 추가
     try {
       const newTokens = await reissueToken()
       if (newTokens) {
-        console.log('Tokens successfully reissued:', newTokens) // 로그 추가
+        // console.log('Tokens successfully reissued:', newTokens) // 로그 추가
         setTokens(newTokens)
       } else {
         throw new Error('Failed to reissue tokens')
       }
     } catch (error: any) {
-      console.error('Error during token reissue:', error) // 로그 추가
+      // console.error('Error during token reissue:', error) // 로그 추가
       if (error.response?.status === 404) {
         console.error('Refresh token expired')
         removeTokens()
@@ -92,11 +91,10 @@ export const validateAndRefreshToken = async () => {
 }
 
 export const initializeApiClients = (tokens: Tokens) => {
-  console.log('Initializing API Clients with tokens:', tokens)
+  // console.log('Initializing API Clients with tokens:', tokens)
   authApi = new AuthApi<Tokens>({
     securityWorker: async () => {
-      await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.
-      console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
+      await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.]
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -195,33 +193,36 @@ export const logout = async (userId: number) => {
 }
 
 export const getAuthApi = (): AuthApi<Tokens> => {
-  if (!authApi) throw new Error('Auth API not initialized')
+  syncTokensWithCookies()
   validateAndRefreshToken()
+  if (!authApi) throw new Error('Auth API not initialized')
   return authApi
 }
 
 export const getUserApi = (): UserApi<Tokens> => {
-  if (!userApi) throw new Error('User API not initialized')
+  syncTokensWithCookies()
   validateAndRefreshToken()
+  if (!userApi) throw new Error('User API not initialized')
   return userApi
 }
 
 export const getFavoriteApi = (): FavoriteApi<Tokens> => {
-  if (!favoriteApi) throw new Error('Favorite API 너 문제있어? 어 있어 ㅠㅠ')
+  syncTokensWithCookies()
   validateAndRefreshToken()
+  if (!favoriteApi) throw new Error('Favorite API 너 문제있어? 어 있어 ㅠㅠ')
   return favoriteApi
 }
 
 export const getClothesApi = (): ClothesApi<Tokens> => {
   syncTokensWithCookies()
   validateAndRefreshToken()
-  console.log('clothesApi 토큰 검증 시작', clothesApi)
   if (!clothesApi) throw new Error('Clothes API not initialized')
   return clothesApi
 }
 
 export const getFileApi = (): FileApi<Tokens> => {
-  if (!fileApi) throw new Error('File API not initialized')
+  syncTokensWithCookies()
   validateAndRefreshToken()
+  if (!fileApi) throw new Error('File API not initialized')
   return fileApi
 }
