@@ -13,7 +13,6 @@ import {
   UpdateClothesPayload,
 } from '@/types/clothes/data-contracts'
 import { getClothesApi, getFileApi } from '@/services/authApi'
-import axios from 'axios'
 
 // const token =
 //   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NjEzNTUsImV4cCI6MTcyMzUyMTM1NX0.GIx1wc04hMC3Z2t-YUicdRqa-t8Az_jWD67ScwaTvWU'
@@ -38,7 +37,7 @@ export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
-  const clothesApi = await getClothesApi()
+  const clothesApi = getClothesApi()
 
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -59,7 +58,7 @@ export const createClothing = async (
   imageFile: File,
   request: ClothesCreateRequest,
 ) => {
-  const clothesApi = await getClothesApi()
+  const clothesApi = getClothesApi()
   const payload: AddClothesPayload = {
     imageFile,
     request,
@@ -69,7 +68,7 @@ export const createClothing = async (
 }
 
 export async function getClothingDetails(clothesId: number) {
-  const clothesApi = await getClothesApi()
+  const clothesApi = getClothesApi()
 
   const response = await clothesApi.getClothes(clothesId)
   const data = await response.json()
@@ -118,7 +117,7 @@ export const updateClothing = async (
   imageFile: File,
   request: ClothesUpdateRequest,
 ) => {
-  const clothesApi = await getClothesApi()
+  const clothesApi = getClothesApi()
   const payload: UpdateClothesPayload = {
     imageFile,
     request,
@@ -129,7 +128,8 @@ export const updateClothing = async (
 }
 
 export const deleteClothing = async (id: number) => {
-  const response = await axios.delete(`/api/clothes/${id}`)
+  const clothesApi = getClothesApi()
+  const response = await clothesApi.deleteClothes(id)
   return response.data
 }
 
