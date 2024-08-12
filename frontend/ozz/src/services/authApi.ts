@@ -30,6 +30,7 @@ export const getTokens = (): Tokens | undefined => {
 
 export const setTokens = (newTokens: Tokens) => {
   queryClient.setQueryData(['tokens'], newTokens)
+  console.log('토큰을 다 세팅합니다')
   initializeApiClients(newTokens)
 }
 
@@ -91,11 +92,11 @@ export const validateAndRefreshToken = async () => {
 }
 
 export const initializeApiClients = (tokens: Tokens) => {
-  // console.log('Initializing API Clients with tokens:', tokens)
+  console.log('Initializing API Clients with tokens:', tokens)
   authApi = new AuthApi<Tokens>({
     securityWorker: async () => {
       await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.
-      // console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
+      console.log('Auth API Token:', tokens?.accessToken) // authApi 토큰 확인
       return {
         headers: {
           Authorization: `Bearer ${tokens?.accessToken}`,
@@ -212,9 +213,9 @@ export const getFavoriteApi = (): FavoriteApi<Tokens> => {
 }
 
 export const getClothesApi = (): ClothesApi<Tokens> => {
+  validateAndRefreshToken()
   console.log('토큰 검증 시작', clothesApi)
   if (!clothesApi) throw new Error('Clothes API not initialized')
-  validateAndRefreshToken()
   return clothesApi
 }
 
