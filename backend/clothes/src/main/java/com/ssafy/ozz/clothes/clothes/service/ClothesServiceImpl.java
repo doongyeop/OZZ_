@@ -4,10 +4,7 @@ import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.dto.request.*;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesBasicWithFileResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.ClothesWithFileResponse;
-import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedItem;
-import com.ssafy.ozz.clothes.clothes.dto.response.NormalizedResponse;
+import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
 import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
@@ -71,6 +68,12 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Clothes> getClothesOfUser(Long userId) {
+        return clothesRepository.findAllByUserIdAndProcessingLessThanEqual(userId,0);
+    }
+
+    @Override
     public Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
@@ -96,6 +99,7 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changeStyle(toBits(request.styleList()));
         clothes.changePattern(toBits(request.patternList()));
         clothes.changeExtra(request.extra());
+        clothes.updateProcessing(request.processing());
         return clothes;
     }
 
@@ -120,7 +124,7 @@ public class ClothesServiceImpl implements ClothesService {
         Clothes clothes = getClothes(clothesId);
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
         clothes.updateImageFile(fileInfo.fileId());
-
+        clothes.updateProcessing(-1);
         return clothesId;
     }
 
@@ -157,7 +161,7 @@ public class ClothesServiceImpl implements ClothesService {
                     int index= response.index()*batchSize;
                     List<ExtractAttribute> extractAttributes = new ArrayList<>();
                     for (NormalizedItem item : response.data()) {
-                        if(!item.category().equals("None")){
+                        if(item.category()!=null){
                             PurchaseHistory purchaseHistory=purchaseHistories.get(index);
                             Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name());
                             Long clothId = clothesRepository.save(normalizedHistory).getClothesId();

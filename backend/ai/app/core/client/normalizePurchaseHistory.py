@@ -3,14 +3,11 @@ import logging
 import re
 import uuid
 
-from openai import OpenAI
-
+from app.core.client.openAIClient import OpenAIClient
 from app.schemas.purchaseHistory import PurchaseHistory
 
-client = OpenAI()
 
-class NormalizePurchaseHistory:
-    client = client
+class NormalizePurchaseHistory(OpenAIClient):
     buffer = ""
     system_prompt = """
 Your role: 
@@ -43,7 +40,8 @@ Example results:
 }
 """
     purchase_histories:list[PurchaseHistory]
-    def __init__(self, purchase_histories:list[PurchaseHistory]):
+    def __init__(self, purchase_histories: list[PurchaseHistory]):
+        super().__init__()
         self.purchase_histories=purchase_histories
 
     def make_user_prompt(self):
@@ -53,7 +51,7 @@ Example results:
         }
 
     def get_stream(self):
-        stream = client.chat.completions.create(
+        stream = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
@@ -72,9 +70,9 @@ Example results:
                     ]
                 }
             ],
-            temperature=1,
+            temperature=0,
             max_tokens=50*len(self.purchase_histories),
-            top_p=1,
+            top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0,
             stream=True,
@@ -84,7 +82,7 @@ Example results:
 
     def parse_stream_data(self, data):
         parsed_dict = {}
-        pattern = r'"(\d+)": (\[.*?\])'
+        pattern = r'"(\d+)": (\[\s*\{.*?\}\s*\])'
         match = re.search(pattern, data, re.DOTALL)
         if not match:
             return None, data
@@ -94,6 +92,12 @@ Example results:
 
         # JSON 형식으로 파싱
         value_list = json.loads(value)
+
+        # 값 검증
+        for item in value_list:
+            for k,v in item.items():
+                if v=="None":
+                    item[k]=None
 
         # 딕셔너리에 추가
         parsed_dict["index"] = int(key)

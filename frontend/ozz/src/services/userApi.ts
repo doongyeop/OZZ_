@@ -16,9 +16,13 @@ export const getUserInfo = async () => {
 
 export const updateUser = async (data: UserUpdateRequest) => {
   const userApi = getUserApi()
+  console.log('userApi: ', userApi)
   if (!userApi) throw new Error('User API not initialized')
   const response = await userApi.updateUser(data)
-  return response.json()
+  console.log('response: ', response)
+  const userInfo = await response.json()
+  console.log('userInfo: ', userInfo)
+  return userInfo
 }
 
 export const deleteUser = async () => {

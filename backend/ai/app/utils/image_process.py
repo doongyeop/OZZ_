@@ -2,6 +2,8 @@ import json
 import logging
 
 import os
+
+from rembg import remove
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -146,4 +148,4 @@ def process(imgUrl, category)-> Image:
         return image
     else:
         logging.info("image not croped category : " + category)
-        return not_trans_img
+        return remove(downloaded_img)

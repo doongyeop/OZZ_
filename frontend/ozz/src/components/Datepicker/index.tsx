@@ -59,8 +59,6 @@ export default function DatePicker({
       const newDate = new Date(defaultValue)
       setSelectedDate(newDate)
       setViewDate(newDate)
-      console.log('selectedDate:', selectedDate)
-      console.log('viewDate:', viewDate)
     }
   }, [defaultValue])
 

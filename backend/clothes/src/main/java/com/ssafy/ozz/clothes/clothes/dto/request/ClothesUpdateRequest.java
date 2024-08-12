@@ -21,6 +21,7 @@ public record ClothesUpdateRequest(
         List<Season> seasonList,
         List<Style> styleList,
         List<Pattern> patternList,
-        String extra
+        String extra,
+        Integer processing
 ) {
 }

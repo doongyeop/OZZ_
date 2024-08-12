@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
@@ -56,6 +55,14 @@ public class ClothesController {
             @ModelAttribute ClothesSearchCondition condition,
             Pageable pageable) {
         return ResponseEntity.ok(clothesService.getClothesOfUserWithFile(userId, condition, pageable));
+    }
+
+    @GetMapping("/users/all")
+    @Operation(summary = "사용자의 모든 옷 조회", description = "특정 사용자의 모든 상세 옷 정보를 조회합니다.")
+    public ResponseEntity<List<ClothesForRecommendationResponse>> getClothesOfUser(
+//            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId
+    ) {
+        return ResponseEntity.ok(clothesService.getClothesOfUser(1L).stream().map(ClothesForRecommendationResponse::new).toList());
     }
 
     @GetMapping("/search")
@@ -95,7 +102,17 @@ public class ClothesController {
     public ResponseEntity<List<ColorResponse>> getColorList() {
         return ResponseEntity.ok().body(Arrays.stream(Color.values()).map(ColorResponse::new).toList());
     }
-
+    @GetMapping("/properties/all")
+    @Operation(summary = "옷 속성 목록 정보 일괄 조회", description = "옷 속성 목록 정보를 일괄 조회합니다.")
+    public ResponseEntity<List<ClothesAttributesResponse>> getPropertyList() {
+        return ResponseEntity.ok().body(Arrays.stream(PropertySelector.values())
+                .map(property -> new ClothesAttributesResponse(
+                        property.name(),
+                        Arrays.stream(property.getPropertyClass().asSubclass(Property.class).getEnumConstants())
+                                .map(PropertyResponse::new)
+                                .toList()))
+                .toList());
+    }
     @GetMapping("/properties")
     @Operation(summary = "옷 속성 목록 정보 조회", description = "옷 속성 목록 정보를 조회합니다. [FIT, SEASON, SIZE, STYLE, TEXTURE] 중 택1")
     public ResponseEntity<List<PropertyResponse>> getPropertyList(@RequestParam("property") PropertySelector property) {
