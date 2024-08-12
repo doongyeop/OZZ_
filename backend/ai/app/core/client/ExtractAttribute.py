@@ -5,8 +5,10 @@ from typing import Any
 from fastapi import UploadFile
 
 from app.core.client.openAIClient import OpenAIClient
-from app.schemas.attributes import NormalizedClothes, Attributes
+from app.core.client.validateAttribute import run_validate
+from app.schemas.attributes import NormalizedClothes, Attributes, GPTAttrResponse
 from app.utils.image_utils import remove_background_and_encode
+
 
 class ExtractAttribute(OpenAIClient):
     system_prompt: str = """
@@ -20,7 +22,7 @@ The information wrapped in <color> is an color that has already been identified 
 
 Attributes:
 1. <fit>
-<Constraint>Type to how clothes fit body. Single value. `None` if there is no possible matching value.</Constraint>
+<Constraint>Type to how clothes fit body. Single value. `null` if there is no possible matching value.</Constraint>
 <possibleValues>OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT</possibleValues>
 </fit>
 2. <colorList>
@@ -28,23 +30,23 @@ Attributes:
 <possibleValues>WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD</possibleValues>
 </colorList>
 3. <patternList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
+<Constraint>Multiple values. `null` if there is no possible matching value</Constraint>
 <possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH</possibleValues>
 </patternList>
 4. <seasonList>
-<Constraint>Suitable season to wear. Multiple values. `None` if there is no possible matching value</Constraint>
+<Constraint>Suitable season to wear. Multiple values. `null` if there is no possible matching value</Constraint>
 <possibleValues>SPRING, SUMMER, AUTUMN, WINTER</possibleValues>
 </seasonList>
 5. <styleList>
-<Constraint>Unique appearance or atmosphere. Multiple values. `None` if there is no possible matching value</Constraint>
+<Constraint>Unique appearance or atmosphere. Multiple values. `null` if there is no possible matching value</Constraint>
 <possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
 </styleList>
 6. <textureList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
+<Constraint>Multiple values. `null` if there is no possible matching value</Constraint>
 <possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER</possibleValues>
 </textureList>
 7. <category>
-<Constraint>Please categorize into subcategories. Essential value. Possible values are expressed as <parent category>subcategories</parent category></Constraint>
+<Constraint>Please categorize into <subCategory>. Essential value. Possible values are expressed as <parentCategory>sub categories</parentCategory></Constraint>
 <possibleValues>
 <상의>탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티</상의>
 <하의>: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠</하의>
@@ -65,79 +67,16 @@ step5 - Please list the properties of items that cannot be expressed using `Attr
 
 Response Format:
 Please return it in JSON format as in the following example.
-Multiple values are separated by commas in a string.
 {
-<order> value :{"fit" : "OVER_FIT","colorList" : "BLACK, YELLOW","patternList" : "STRIPED","seasonList" : "SPRING, SUMMER, AUTUMN","styleList" : "CASUAL, SPORTY","textureList" : "MESH","extra" : "sleeveless, cropped","category" : "티셔츠"}
+<order> value :{"fit" : "OVER_FIT","colorList" : ["BLACK", "YELLOW"],"patternList" : ["STRIPED"],"seasonList" : ["SPRING", "SUMMER", "AUTUMN"],"styleList" : ["CASUAL", "SPORTY"],"textureList" : ["MESH"],"extra" : "sleeveless, cropped","parentCategory" : "상의","subCategory":"탑"}
 }
 """
 
-    # 문자열을 분리하여 배열로 변환하는 함수
-    def transform(self, key, item):
-        category2code = {"탑": 1,
-                         "블라우스": 2,
-                         "티셔츠": 3,
-                         "니트웨어": 4,
-                         "셔츠": 5,
-                         "브라탑": 6,
-                         "후드티": 7,
-                         "청바지": 8,
-                         "팬츠": 9,
-                         "스커트": 10,
-                         "레깅스": 11,
-                         "조거팬츠": 12,
-                         "코트": 13,
-                         "재킷": 14,
-                         "점퍼": 15,
-                         "패딩": 16,
-                         "베스트": 17,
-                         "가디건": 18,
-                         "짚업": 19,
-                         "드레스": 20,
-                         "점프수트": 21,
-                         "운동화": 22,
-                         "구두": 23,
-                         "샌들": 24,
-                         "주얼리": 25,
-                         "기타": 26,
-                         "모자": 27,
-                         "가방":28,
-                         "백팩": 29,
-                         "힙색": 30,
-                         "악세서리":26}
-        if item == "None":
-            return None
-        if "List" in key:
-            if "color" in key:
-                valid_color=[]
-                for color in item.split(', '):
-                    if color in ["WHITE", "BLACK", "GRAY", "RED", "PINK", "ORANGE", "BEIGE", "YELLOW", "BROWN", "GREEN", "KHAKI", "MINT", "BLUE", "NAVY", "SKY", "PURPLE", "LAVENDER", "WINE", "NEON", "GOLD"]:
-                        valid_color.append(color)
-                if valid_color:
-                    return valid_color
-                else:
-                    return ["WHITE"]
-            else:
-                return item.split(',')
-        elif "category" == key:
-            return category2code[item.split('>')[-1]]
-        else:
-            return item
-
     def parse_response(self, response: dict) -> dict[int, Attributes]:
-        transformed_data = {}
-        last_id=0
-        for id in response.keys():
-            value = response[id]
-            transformed_item = {k: self.transform(k, v) for k, v in value.items()}
-            transformed_item["categoryLowId"] = transformed_item["category"]
-            del transformed_item["category"]
-
-            logging.info("Attribute extracted -> " + str(transformed_data))
-
-            transformed_data[int(id)] = Attributes(**transformed_item)
-            last_id=int(id)
-        logging.info("id: "+str(last_id)+" attribute extracted -> "+str(transformed_data[last_id]))
-        return transformed_data
+        raw_data = {}
+        for k, v in response.items():
+            raw_data[k] = GPTAttrResponse(**v)
+        return run_validate(raw_data)
 
     def get_response(self) -> dict[Any, Any]:
         user_content: list = self.make_user_content()
@@ -204,7 +143,7 @@ class ExtractAttributesImage(ExtractAttribute):
     image: UploadFile
     type: str
 
-    def __init__(self, image: UploadFile,type):
+    def __init__(self, image: UploadFile, type):
         super().__init__()
         self.image = image
         self.type = type
