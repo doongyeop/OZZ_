@@ -38,7 +38,6 @@ public class ClothesController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "새 옷 추가", description = "데이터베이스에 새 옷을 추가합니다.")
     public ResponseEntity<Long> addClothes(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestPart MultipartFile imageFile, @RequestPart ClothesCreateRequest request) {
-//        Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clothesService.saveClothes(userId, imageFile, request).getClothesId());
     }
@@ -61,9 +60,9 @@ public class ClothesController {
     @GetMapping("/users/all")
     @Operation(summary = "사용자의 모든 옷 조회", description = "특정 사용자의 모든 상세 옷 정보를 조회합니다.")
     public ResponseEntity<List<ClothesForRecommendationResponse>> getClothesOfUser(
-//            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId
+            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId
     ) {
-        return ResponseEntity.ok(clothesService.getClothesOfUser(1L));
+        return ResponseEntity.ok(clothesService.getClothesOfUser(userId));
     }
 
     @GetMapping("/search")
