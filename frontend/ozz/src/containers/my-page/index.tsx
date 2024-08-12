@@ -103,7 +103,7 @@ export default function MyPageIndex() {
             )}
             <div className="ml-4 flex-1">
               <div
-                className={`bg-secondary text-primary-400 font-bold ${user.nickname.length > 12 ? 'text-lg' : 'text-xl'} inline-block`}
+                className={`bg-secondary text-primary-400 font-bold ${user.nickname.length > 12 ? 'text-base' : 'text-xl'} inline-block`}
               >
                 {user.nickname}
               </div>
