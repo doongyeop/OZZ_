@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { format, parse } from 'date-fns'
-import { Api as ClothesApi } from '@/types/clothes/Api'
+import { getClothesApi } from '@/services/authApi'
 
 puppeteer.use(StealthPlugin())
 
@@ -37,16 +37,18 @@ interface OrderData {
   option: string
 }
 
-const accessToken =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+// const accessToken =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+//
+// const api = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//     },
+//   }),
+// })
 
-const api = new ClothesApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }),
-})
+const api = getClothesApi()
 
 const sendPurchaseHistoryToServer = async (purchaseHistory: OrderData[]) => {
   console.log(purchaseHistory)

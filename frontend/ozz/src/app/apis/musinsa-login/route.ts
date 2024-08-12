@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
 import { format, parse } from 'date-fns'
-import { Api as ClothesApi } from '@/types/clothes/Api'
+import { getClothesApi } from '@/services/authApi'
 
 // URL Constants
 const loginPageUrl = 'https://www.musinsa.com/auth/login'
@@ -129,16 +129,18 @@ async function getMusinsaOrderLists(
   return fetchOrderList(cookies)
 }
 
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
+//
+// const api = new ClothesApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
 
-const api = new ClothesApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+const api = getClothesApi()
 
 // Function to call the startBatch API
 const sendPurchaseHistoryToServer = async (purchaseHistory: Order[]) => {
