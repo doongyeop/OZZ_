@@ -37,7 +37,7 @@ import CameraIcon from '../../../public/icons/camera.svg'
 
 type ClothingFormProps = {
   initialData?: ClothingData
-  onSubmit: (imageFile: File, request: ClothesCreateRequest) => void
+  onSubmit: (imageFile: File, request: object) => void
   submitButtonText: string
 }
 
@@ -82,6 +82,7 @@ export default function ClothingForm({
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
       if (initialData.image) {
+        setImageFile(initialData.imageFile)
         setImagePreview(initialData.image)
       }
     }
@@ -103,15 +104,15 @@ export default function ClothingForm({
     e.preventDefault()
 
     // 필수 입력 필드 확인
-    if (!name || !categoryName || !imageFile) {
-      alert('이름, 카테고리 및 이미지는 필수 입력 사항입니다.')
+    if (!name || !categoryName || !imageFile || color.length === 0) {
+      alert('이름, 카테고리, 색상 및 이미지는 필수 입력 사항입니다.')
       return
     }
 
     const categoryLowName = categoryName.split(' > ').pop() || ''
     const categoryLowId = categoryNameToLowIdMap[categoryLowName] || undefined
 
-    const request: ClothesCreateRequest = {
+    const request = {
       name,
       size: size || 'FREE',
       fit: fit || undefined,
@@ -152,9 +153,6 @@ export default function ClothingForm({
       categoryLowId,
     }
 
-    console.log('옷 등록할게요 ><')
-    console.log(imageFile.type)
-    console.log(request)
     Object.entries(request).forEach(([key, value]) => {
       console.log(`${key}: ${value}`)
     })

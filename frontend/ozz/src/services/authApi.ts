@@ -62,9 +62,16 @@ export const redirectToLogin = () => {
 }
 
 export const validateAndRefreshToken = async () => {
-  const tokens = getTokens()
+  // const tokens = getTokens()
   // console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
   // console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
+
+  const tokens = {
+    accessToken:
+      'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NTEwMzEsImV4cCI6MTcyMzUxMTAzMX0.gsEfXBzt6vAU77F-k5nN9XJ7tdyGY96Onlp_JpTq0YI',
+    refreshToken:
+      'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6InJlZnJlc2giLCJpZCI6IjExIiwiaWF0IjoxNzIzNDUxMDMxLCJleHAiOjE3MjM1Mzc0MzF9.aWXld4ku45ye56iA2Dd8ml4XbNIsrKnXIzc5119fOb4',
+  }
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {

@@ -8,9 +8,10 @@ import {
   AddClothesPayload,
   ClothesCreateRequest,
 } from '@/types/clothes/data-contracts'
+import { createClothing } from '@/services/clothingApi'
 
 const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzE2MTk1NywiZXhwIjoxNzIzMjIxOTU3fQ.VY4NlD1UxVPhLKbtSxhASn2Y4IeabKJwxSGQ9-AuaK0'
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NTEwMzEsImV4cCI6MTcyMzUxMTAzMX0.gsEfXBzt6vAU77F-k5nN9XJ7tdyGY96Onlp_JpTq0YI'
 
 const api = new ClothesApi({
   securityWorker: async () => ({
@@ -27,13 +28,8 @@ export default function Page() {
     imageFile: File,
     request: ClothesCreateRequest,
   ) => {
-    const payload: AddClothesPayload = {
-      imageFile,
-      request,
-    }
-
     try {
-      const response = await api.addClothes(payload)
+      const response = await createClothing(imageFile, request)
       console.log('Clothes added successfully', response)
       router.push('/closet')
     } catch (error) {
