@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 import { Api as UserApi } from '@/types/user/Api'
+import { UserUpdateRequest } from '@/types/user/data-contracts'
 import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
@@ -36,7 +37,7 @@ function SignUp() {
   const confirmSignUp = async () => {
     if (responseText) {
       try {
-        const userData = {
+        const userData: UserUpdateRequest = {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
