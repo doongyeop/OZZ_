@@ -7,7 +7,11 @@ import { useRouter } from 'next/navigation'
 
 import { ClothesUpdateRequest } from '@/types/clothes/data-contracts'
 import { ClothingData } from '@/types/clothing'
-import { getClothingDetails, updateClothing } from '@/services/clothingApi'
+import {
+  getClothingDetails,
+  updateClothing,
+  deleteClothing,
+} from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
@@ -49,11 +53,10 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
 
   const handleDelete = async () => {
     try {
-      // await deleteClothing(params.id)
-      // 성공 처리 (예: 알림 표시, 페이지 이동 등)
-      router.push('/closet') // 목록 페이지로 이동
+      await deleteClothing(params.id)
+      router.push('/closet')
     } catch (error) {
-      // 에러 처리
+      console.error('Failed to delete clothes', error)
     }
   }
 
