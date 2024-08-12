@@ -9,7 +9,7 @@ import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
 import { UserUpdateRequest } from '@/types/user/data-contracts'
 import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
-import { getUserApi, syncTokensWithCookies } from '@/services/authApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 
 function SignUp() {
   const router = useRouter()
@@ -41,15 +41,6 @@ function SignUp() {
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
         const response = await updateUser(userData)
-        // console.log('회원가입 확인 : ', response)
-        // console.log('userData: ', userData)
-        // const userApi = getUserApi()
-        // console.log('userApi: ', userApi)
-        // const response = await userApi.updateUser(userData)
-        console.log('response: ', response)
-        // if (userData.nickname) {
-        //   document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
-        // }
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {

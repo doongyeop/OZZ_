@@ -57,22 +57,22 @@ export const redirectToLogin = () => {
 
 export const validateAndRefreshToken = async () => {
   const tokens = getTokens()
-  console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
-  console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
+  // console.log('validateAndRefreshToken - tokens:', tokens) // 로그 추가
+  // console.log('validateAndRefreshToken - tokens:', tokens?.accessToken) // 로그 추가
   if (!tokens) throw new Error('No tokens available')
 
   if (isTokenExpired(tokens.accessToken)) {
-    console.log('Access token expired, attempting to reissue') // 로그 추가
+    // console.log('Access token expired, attempting to reissue') // 로그 추가
     try {
       const newTokens = await reissueToken()
       if (newTokens) {
-        console.log('Tokens successfully reissued:', newTokens) // 로그 추가
+        // console.log('Tokens successfully reissued:', newTokens) // 로그 추가
         setTokens(newTokens)
       } else {
         throw new Error('Failed to reissue tokens')
       }
     } catch (error: any) {
-      console.error('Error during token reissue:', error) // 로그 추가
+      // console.error('Error during token reissue:', error) // 로그 추가
       if (error.response?.status === 404) {
         console.error('Refresh token expired')
         removeTokens()
@@ -85,7 +85,7 @@ export const validateAndRefreshToken = async () => {
 }
 
 export const initializeApiClients = (tokens: Tokens) => {
-  console.log('Initializing API Clients with tokens:', tokens)
+  // console.log('Initializing API Clients with tokens:', tokens)
   authApi = new AuthApi<Tokens>({
     securityWorker: async () => {
       await validateAndRefreshToken() // 토큰을 검증하고 갱신합니다.
@@ -115,14 +115,14 @@ export const initializeApiClients = (tokens: Tokens) => {
 export const syncTokensWithCookies = async () => {
   const cookieString = document.cookie
   const cookies = cookie.parse(cookieString)
-  console.log('쿠키에서 가져온 토큰들:', cookies)
+  // console.log('쿠키에서 가져온 토큰들:', cookies)
 
   const accessToken = cookies.access || ''
   const refreshToken = cookies.refresh || ''
 
   if (accessToken && refreshToken) {
     const tokens: Tokens = { accessToken, refreshToken }
-    console.log('쿠키에서 동기화된 토큰들:', tokens)
+    // console.log('쿠키에서 동기화된 토큰들:', tokens)
     setTokens(tokens)
   } else {
     console.log('토큰이 존재하지 않습니다.')
