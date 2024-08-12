@@ -40,6 +40,7 @@ function SignUp() {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
+        console.log('responseText', responseText)
         const response = await updateUser(userData)
         console.log('회원가입 확인 : ', response)
         // document.cookie = `nickname=${encodeURIComponent(userData.nickname)}; path=/; max-age=${7 * 24 * 60 * 60}`
