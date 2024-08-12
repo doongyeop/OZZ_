@@ -11,7 +11,13 @@ function SignIn() {
 
   return (
     <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">
-      <img src="images/logo_3e3e3e.png" alt="OZZ LOGO" className="mb-8 w-40" />
+      <Image
+        src="/images/logo_3e3e3e.png"
+        alt="OZZ LOGO"
+        width={160} // 예시로 너비와 높이를 설정
+        height={190}
+        className="mb-8"
+      />
       <h2 className="text-xl w-full text-left my-10">간편 로그인</h2>
       <div className="flex flex-col items-center space-y-2 w-full">
         <button
@@ -19,9 +25,11 @@ function SignIn() {
           onClick={onKaKaoLogin}
           className="w-full h-10 flex items-center bg-[#FEE500] mx-3 rounded-md"
         >
-          <img
-            src="images/kakao_logo.png"
+          <Image
+            src="/images/kakao_logo.png"
             alt="카카오 로그인"
+            width={40} // 너비와 높이를 적절히 설정
+            height={40}
             className="h-full object-contain"
           />
           <span className="flex-grow text-center text-black">
@@ -34,9 +42,11 @@ function SignIn() {
           id="naverIdLogin"
           className="w-full h-10 flex items-center bg-[#03C75A] mx-3 rounded-md"
         >
-          <img
-            src="images/btnG_아이콘사각.png"
+          <Image
+            src="/images/btnG_아이콘사각.png"
             alt="네이버 로그인"
+            width={40} // 너비와 높이를 적절히 설정
+            height={40}
             className="h-full object-contain"
           />
           <span className="flex-grow text-center text-white">
