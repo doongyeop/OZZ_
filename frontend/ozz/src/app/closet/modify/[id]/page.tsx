@@ -5,24 +5,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { Api as ClothesApi } from '@/types/clothes/Api'
 import { ClothesUpdateRequest } from '@/types/clothes/data-contracts'
 import { ClothingData } from '@/types/clothing'
 import { getClothingDetails, updateClothing } from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
-
-const token =
-  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NTEwMzEsImV4cCI6MTcyMzUxMTAzMX0.gsEfXBzt6vAU77F-k5nN9XJ7tdyGY96Onlp_JpTq0YI'
-
-const api = new ClothesApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(

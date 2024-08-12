@@ -32,7 +32,6 @@ import {
   patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
-import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 import CameraIcon from '../../../public/icons/camera.svg'
 
 type ClothingFormProps = {

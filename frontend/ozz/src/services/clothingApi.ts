@@ -14,22 +14,9 @@ import {
   UpdateClothesPayload,
 } from '@/types/clothes/data-contracts'
 import { getClothesApi, getFileApi } from '@/services/authApi'
-// import { Api as ClothesApi } from '@/types/clothes/Api'
-// import { Api as FileApi } from '@/types/file/Api'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
-//
-// const clothesApi = new ClothesApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
-
-// const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6InJlZnJlc2giLCJpZCI6IjExIiwiaWF0IjoxNzIzNDUxMDMxLCJleHAiOjE3MjM1Mzc0MzF9.aWXld4ku45ye56iA2Dd8ml4XbNIsrKnXIzc5119fOb4'
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NTkzMzIsImV4cCI6MTcyMzUxOTMzMn0.sjWbvXhRkioIPttOXaG7mYMdDTvWqYeBHLdxVjU85q4'
 
 // const clothesApi = new ClothesApi({
 //   securityWorker: async () => ({
