@@ -12,7 +12,8 @@ class Clothes(BaseModel):
     styleList: Union[list[str] | None] = None
     textureList: Union[list[str] | None] = None
     extra: str
-    category: str
+    parentCategory: str
+    subCategory: str
     imgPath: str
 
 
