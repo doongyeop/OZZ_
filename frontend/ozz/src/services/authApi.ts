@@ -213,9 +213,9 @@ export const getFavoriteApi = (): FavoriteApi<Tokens> => {
   return favoriteApi
 }
 
-export const getClothesApi = (): ClothesApi<Tokens> => {
-  syncTokensWithCookies()
-  validateAndRefreshToken()
+export const getClothesApi = async (): Promise<ClothesApi<Tokens>> => {
+  await syncTokensWithCookies()
+  await validateAndRefreshToken()
   if (!clothesApi) throw new Error('Clothes API not initialized')
   return clothesApi
 }
