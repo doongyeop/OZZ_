@@ -6,6 +6,8 @@ import { QueryClient } from '@tanstack/react-query'
 import { Api as AuthApi } from '@/types/auth/Api'
 import { Api as UserApi } from '@/types/user/Api'
 import { Api as FavoriteApi } from '@/types/favorite/Api'
+import { Api as ClothesApi } from '@/types/clothes/Api'
+import { Api as FileApi } from '@/types/file/Api'
 import cookie from 'cookie'
 
 const API_URL = 'http://i11a804.p.ssafy.io:8080'
@@ -19,6 +21,8 @@ export const queryClient = new QueryClient()
 let authApi: AuthApi<Tokens> | null = null
 let userApi: UserApi<Tokens> | null = null
 let favoriteApi: FavoriteApi<Tokens> | null = null
+let clothesApi: ClothesApi<Tokens> | null = null
+let fileApi: FileApi<Tokens> | null = null
 
 export const getTokens = (): Tokens | undefined => {
   return queryClient.getQueryData<Tokens>(['tokens'])
@@ -54,7 +58,7 @@ export const reissueToken = async () => {
 
 export const redirectToLogin = () => {
   console.log('로그인 화면으로 돌아가')
-  // window.location.href = '/login'
+  window.location.href = '/login'
 }
 
 export const validateAndRefreshToken = async () => {
@@ -122,6 +126,28 @@ export const initializeApiClients = (tokens: Tokens) => {
       }
     },
   })
+
+  clothesApi = new ClothesApi({
+    securityWorker: async () => {
+      await validateAndRefreshToken()
+      return {
+        headers: {
+          Authorization: `Bearer ${tokens?.accessToken}`,
+        },
+      }
+    },
+  })
+
+  fileApi = new FileApi({
+    securityWorker: async () => {
+      await validateAndRefreshToken()
+      return {
+        headers: {
+          Authorization: `Bearer ${tokens?.accessToken}`,
+        },
+      }
+    },
+  })
 }
 
 // 쿠키와 react-query 상태를 동기화하는 함수
@@ -152,6 +178,9 @@ export const removeTokens = () => {
   queryClient.removeQueries({ queryKey: ['tokens'] })
   authApi = null
   userApi = null
+  favoriteApi = null
+  clothesApi = null
+  fileApi = null
 }
 
 export const login = async (provider: 'kakao' | 'naver') => {
@@ -181,4 +210,16 @@ export const getFavoriteApi = (): FavoriteApi<Tokens> => {
   if (!favoriteApi) throw new Error('Favorite API 너 문제있어? 어 있어 ㅠㅠ')
   validateAndRefreshToken()
   return favoriteApi
+}
+
+export const getClothesApi = (): ClothesApi<Tokens> => {
+  if (!clothesApi) throw new Error('Clothes API not initialized')
+  validateAndRefreshToken()
+  return clothesApi
+}
+
+export const getFileApi = (): FileApi<Tokens> => {
+  if (!fileApi) throw new Error('File API not initialized')
+  validateAndRefreshToken()
+  return fileApi
 }

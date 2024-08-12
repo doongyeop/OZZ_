@@ -1,11 +1,9 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import Image from 'next/image'
 import { login } from '@/services/authApi'
 
-function SignIn() {
+export default function SignIn() {
   const onKaKaoLogin = () => login('kakao')
   const onNaverLogin = () => login('naver')
 
@@ -57,5 +55,3 @@ function SignIn() {
     </div>
   )
 }
-
-export default SignIn

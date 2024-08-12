@@ -1,7 +1,5 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -40,7 +38,7 @@ function SignUp() {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        const response = await updateUser(userData)
+        await updateUser(userData)
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
@@ -63,7 +61,7 @@ function SignUp() {
     } else {
       // TODO: 회원가입 실패 처리
       // ex) 다시 한 번 시도해주세요.
-      alert('회원가입 실패 ㅠㅠ')
+      alert('회원가입 실패: 다시 한 번 시도해주세요.')
     }
   }
 
