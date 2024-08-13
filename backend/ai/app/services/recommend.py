@@ -59,7 +59,7 @@ class RecommendService:
         outfit_set = []
         for item in items:
             clothes = id_2_clothes[item]
-            high_category = self.clothes_metadata.lowcategoryId_to_highcategoryId(clothes.subCategory)
+            high_category = self.clothes_metadata.lowcategoryName_to_highcategoryId(clothes.subCategory)
             if high_category is not None and high_category not in outfit_set:
                 outfit_set.append((clothes.id, high_category, clothes.imgPath))
         if len(outfit_set) == len(items):
