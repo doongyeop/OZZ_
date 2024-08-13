@@ -2,7 +2,7 @@ import logging
 
 from dotenv import load_dotenv
 
-from app.mq.consumer import start_consumer
+from app.mq.consumer import main
 
 load_dotenv()
 logging.basicConfig(
@@ -11,4 +11,4 @@ logging.basicConfig(
 )
 
 if __name__ == "__main__":
-    start_consumer()
+    main()
