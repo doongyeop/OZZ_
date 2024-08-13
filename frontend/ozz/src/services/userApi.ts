@@ -40,7 +40,7 @@ export const deleteUser = async () => {
 export const uploadProfileImage = async (file: File) => {
   const userApi = getUserApi()
   if (!userApi) throw new Error('User API not initialized')
-  const formData = new FormData()
+  // const formData = new FormData()
   // formData.append('file', file)
   const payload: UploadProfileImagePayload = {
     file,
