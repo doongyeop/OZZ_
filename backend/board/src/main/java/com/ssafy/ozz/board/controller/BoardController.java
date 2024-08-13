@@ -42,7 +42,7 @@ public class BoardController {
     }
 
     // O
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByUserId(
             @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, Pageable pageable) {
