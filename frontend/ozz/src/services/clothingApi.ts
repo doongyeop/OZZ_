@@ -13,10 +13,11 @@ import {
   UpdateClothesPayload,
 } from '@/types/clothes/data-contracts'
 import { getClothesApi, getFileApi } from '@/services/authApi'
+// import { Api as ClothesApi } from '@/types/clothes/Api'
+// import { Api as FileApi } from '@/types/file/Api'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM0NjEzNTUsImV4cCI6MTcyMzUyMTM1NX0.GIx1wc04hMC3Z2t-YUicdRqa-t8Az_jWD67ScwaTvWU'
-
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzUyMzg4MywiZXhwIjoxNzIzNTgzODgzfQ.rVASyfPidOADXu4lR7i3BZTgKVUf1_s6rz9nysfcwZI'
 // const clothesApi = new ClothesApi({
 //   securityWorker: async () => ({
 //     headers: {
@@ -24,7 +25,7 @@ import { getClothesApi, getFileApi } from '@/services/authApi'
 //     },
 //   }),
 // })
-
+//
 // const fileApi = new FileApi({
 //   securityWorker: async () => ({
 //     headers: {
@@ -37,7 +38,7 @@ export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
-  const clothesApi = await getClothesApi()
+  const clothesApi = getClothesApi()
 
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -47,7 +48,7 @@ export async function fetchUserClothes(
 }
 
 export async function fetchImage(filePath: string): Promise<string> {
-  const fileApi = await getFileApi()
+  const fileApi = getFileApi()
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
