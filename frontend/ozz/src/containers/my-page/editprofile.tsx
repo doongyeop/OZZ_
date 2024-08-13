@@ -15,8 +15,10 @@ import {
   updateUser,
   deleteUser,
   checkNickname,
+  deleteProfile,
+  uploadProfileImage,
 } from '@/services/userApi'
-import { getFile, downloadFile, deleteFile } from '@/services/fileApi'
+import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
 
@@ -50,17 +52,17 @@ function ProfileEdit() {
   const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
   const [errorText, setErrorText] = useState('')
-  const [responseText, setResponseText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
   const router = useRouter()
+
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
-      console.log('getFile 성공', fileData)
+      // console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
-      console.log('downloadFile 성공', picture)
+      // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
         setProfileSrc(pictureUrl)
@@ -74,6 +76,7 @@ function ProfileEdit() {
     try {
       const userInfo = await getUserInfo()
       setUser(userInfo)
+      setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
       }
@@ -90,32 +93,33 @@ function ProfileEdit() {
   const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15 || nick.length <= 0) {
       setErrorText('닉네임은 1-15자 이내여야 합니다')
-      setResponseText('')
       return
     }
     if (nick.includes(' ')) {
-      setResponseText('')
       setErrorText('공백은 사용 불가능합니다')
       return
     }
 
     try {
       const response = await checkNickname(nick)
-      setResponseText(response)
-      setErrorText('')
-      setNickname(nick)
+      if (response === '사용 가능한 닉네임입니다.') {
+        setErrorText('')
+        setNickname(nick)
+      }
     } catch (error) {
       setErrorText('이미 사용 중인 닉네임입니다')
-      setResponseText('')
     }
   }
 
   const saveUserInfo = async () => {
     try {
-      await checkNicknameDuplication(nickname)
+      // 닉네임이 변경되지 않은 경우 중복 확인을 건너뜀
+      if (user?.nickname !== nickname) {
+        await checkNicknameDuplication(nickname)
 
-      if (errorText) {
-        return false
+        if (errorText) {
+          return false
+        }
       }
 
       const userData: UserUpdateRequest = {
@@ -124,7 +128,7 @@ function ProfileEdit() {
       }
 
       await updateUser(userData)
-      router.push('/mypage/edit')
+      await fetchUserInfo() // 유저 정보 다시 불러오기
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -147,24 +151,37 @@ function ProfileEdit() {
     setUploadModal((prev) => !prev)
   }, [])
 
-  const resetProfilePic = useCallback(() => {
+  const resetProfilePic = () => {
     if (user?.profileFileId) {
       try {
-        deleteFile(user.profileFileId)
-        router.push('/mypage/edit')
+        console.log('111111까지왓어요')
+        deleteProfile()
+        console.log('222222까지왓어요')
+        fetchUserInfo() // 유저 정보 다시 불러오기
+        console.log('다왓당 키키')
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
     }
-  }, [])
+  }
 
   const handleResetProfilePic = useCallback(() => {
     resetProfilePic()
-    toggleProfileModal()
+    setProfileModal(false)
   }, [resetProfilePic, toggleProfileModal])
 
+  const handleFileSelect = async (file: File) => {
+    try {
+      const response = await uploadProfileImage(file)
+      console.log('프로필 이미지 업로드 성공:', response)
+      await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
+    } catch (error) {
+      console.error('프로필 이미지 업로드 실패:', error)
+    }
+  }
+
   const handleUploadSuccess = useCallback(async () => {
-    router.push('/mypage/edit')
+    await fetchUserInfo() // 유저 정보 다시 불러오기
     toggleProfileModal()
   }, [])
 
@@ -172,6 +189,7 @@ function ProfileEdit() {
     deleteUser()
     router.push('/login')
   }
+
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
@@ -181,6 +199,7 @@ function ProfileEdit() {
             <Image
               src={profileSrc}
               alt="프로필 이미지"
+              style={{ aspectRatio: '1 / 1' }}
               fill
               className="rounded-full"
             />
@@ -219,7 +238,7 @@ function ProfileEdit() {
               {uploadModal && (
                 <UploadModal
                   onClose={toggleUploadModal}
-                  onFileUploadSuccess={handleUploadSuccess}
+                  onFileSelect={handleFileSelect} // 파일 선택 시 업로드 처리
                 />
               )}
             </div>
@@ -254,7 +273,6 @@ function ProfileEdit() {
             {errorText && (
               <span className="text-xs text-red-500">{errorText}</span>
             )}
-            {responseText && <span className="text-xs">{responseText}</span>}
           </div>
         </Field>
 

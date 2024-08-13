@@ -92,6 +92,9 @@ const config: Config = {
       fontFamily: {
         pretendard: ['var(--font-pretendard)'],
       },
+      height: {
+        'screen-minus-36': 'calc(100vh - 9rem)',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

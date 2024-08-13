@@ -106,6 +106,7 @@ services:
       - ${AI_PORT}:${AI_PORT}
     networks:
       - message-queue-network
+      - spring-cloud-network
 
   ozz-favorite:
     container_name: ozz-favorite
@@ -151,6 +152,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       GATEWAY_HOST: http://ozz-gateway:${API_GATEWAY_PORT}
+      AI_HOST: http://ozz-ai:${AI_PORT}
     networks:
       - spring-cloud-network
     depends_on:
