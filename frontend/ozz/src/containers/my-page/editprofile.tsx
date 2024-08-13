@@ -21,7 +21,6 @@ import {
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
-import { getTokens } from '@/services/authApi'
 
 interface FieldProps {
   label: string
@@ -91,7 +90,7 @@ function ProfileEdit() {
     fetchUserInfo()
   }, [])
 
-  const checkNicknameDuplication = async (nick: string) => {
+  const checkNicknameDuplication = async (nick: string): Promise<boolean> => {
     if (nick.length > 15 || nick.length <= 0) {
       setErrorText('닉네임은 1-15자 이내여야 합니다')
       return false
@@ -106,10 +105,9 @@ function ProfileEdit() {
       if (response === '사용 가능한 닉네임입니다.') {
         setErrorText('')
         return true
-      } else {
-        setErrorText('이미 사용 중인 닉네임입니다')
-        return false
       }
+      setErrorText('이미 사용 중인 닉네임입니다')
+      return false
     } catch (error) {
       setErrorText('닉네임 확인 중 오류가 발생했습니다.')
       return false
