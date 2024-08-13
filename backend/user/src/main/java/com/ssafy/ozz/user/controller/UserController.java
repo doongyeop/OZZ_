@@ -8,10 +8,10 @@ import com.ssafy.ozz.user.global.file.FileClient;
 import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
 import com.ssafy.ozz.user.service.UserService;
-import com.ssafy.ozz.user.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RequiredArgsConstructor
@@ -32,7 +31,6 @@ public class UserController {
     private final FileClient fileClient;
     private final AuthClient authClient;
     private final UserService userService;
-    private final JWTUtil jwtUtil;
 
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
@@ -95,6 +93,29 @@ public class UserController {
             return ResponseEntity.status(404).body("User not found");
         }
     }
+
+    @PatchMapping("/")
+    @Operation(summary = "프로필 이미지 삭제")
+    public ResponseEntity<?> deleteProfileImage(
+            @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
+
+        Optional<User> userOptional = userService.getUserById(userId);
+        if (userOptional.isPresent()) {
+            try {
+                User user = userOptional.get();
+                User updatedUser = user.toBuilder()
+                        .profileFileId(null)
+                        .build();
+                userService.updateProfileImg(userId, updatedUser);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Profile image has been deleted successfully");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete profile image");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 
     @DeleteMapping("/")
     @Operation(summary = "회원 탈퇴")
