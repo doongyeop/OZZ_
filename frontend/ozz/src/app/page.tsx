@@ -5,7 +5,7 @@ import StartPage from '@/containers/main-page/StartPage'
 
 export default function Home() {
   const cookieStore = cookies()
-  const accessToken = cookieStore.get('accessToken')?.value
+  const accessToken = cookieStore.get('access')
 
   if (!accessToken) {
     return <StartPage />
