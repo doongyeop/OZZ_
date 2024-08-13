@@ -41,7 +41,7 @@ export default function RootLayout({
             <SelectedItemProvider>
               <SelectedColorProvider>
                 <div id="wrapper">
-                  <div className="pt-20">{children}</div>
+                  <div className="pt-20 pb-16">{children}</div>
                   <Navbar />
                 </div>
               </SelectedColorProvider>
