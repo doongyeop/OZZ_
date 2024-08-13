@@ -20,7 +20,6 @@ export default function MyPageIndex() {
   const [modal, setModal] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [profileSrc, setProfileSrc] = useState('')
-  // const [profilePic, setProfilePic] = useState()
   const [loading, setLoading] = useState(true)
 
   const deleteAllCookies = () => {
@@ -37,11 +36,12 @@ export default function MyPageIndex() {
       console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
       console.log('downloadFile 성공', picture)
-      // // 여기서 Blob URL을 만들어서 profileSrc에 저장
-      // const urlStr = URL.createObjectURL(picture)
-      // setProfileSrc(urlStr)
+      if (picture !== undefined) {
+        const pictureUrl = URL.createObjectURL(picture)
+        setProfileSrc(pictureUrl)
+      }
     } catch (error) {
-      console.log(error)
+      console.log('프로필사진 가져오는 중 오류 발생:', error)
     }
   }
 
