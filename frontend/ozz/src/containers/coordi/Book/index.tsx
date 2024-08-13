@@ -1,16 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
-// import { Api as ClothesApi } from '@/types/clothes/Api'
-// import { Api as FavoriteApi } from '@/types/favorite/Api'
-// import { Api as UserApi } from '@/types/user/Api'
-// import { CreateFavoriteGroupData } from '@/types/favorite/data-contracts'
-import Modal from '@/components/Modal'
+
 import { HiPencil, HiPlus } from 'react-icons/hi'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import Modal from '@/components/Modal'
 import { Coordibook } from '@/types/coordibook'
-// import { ImGift } from 'react-icons/im'
 import { getUserInfo } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import {
@@ -18,77 +14,26 @@ import {
   getFavoritesGroupListOfUsers,
 } from '@/services/favoriteApi'
 
-// interface Favorite {
-//   favoriteId: number
-//   coordinate: {
-//     coordinateId: number
-//     name: string
-//     styleList: []
-//     createdDate: string
-//     imageFile: {
-//       fileId: number
-//       filePath: string
-//       fileName: string
-//       fileType: string
-//     }
-//   }
-// }
-
-// const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNyIsImlhdCI6MTcyMzQyMTY4MywiZXhwIjoxNzIzNDgxNjgzfQ.qYPB-IKzczSUxiJzlpF8z6U_MbpIaEmQC2PUG4vvkjk'
-
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
   // const [user, setUser] = useState()
   const [groups, setGroups] = useState<Coordibook[]>([])
-  // const [favorites, setFavorites] = useState<{ [key: number]: Favorite[] }>({})
   const router = useRouter()
 
-  // /////////유저
-  // const favApi = new FavoriteApi({
-  //   securityWorker: async () => ({
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   }),
-  // })
-  // const userApi = new UserApi({
-  //   securityWorker: async () => ({
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   }),
-  // })
-  // async function getUser() {
-  //   const res = await userApi.getUserInfo()
-  //   const data = await res.json()
-  //   setUser(data)
-  // }
-  //
-
-  async function fetchGroups() {
-    const res = await getFavoritesGroupListOfUsers()
-    setGroups(res)
-  }
-
   useEffect(() => {
-    syncTokensWithCookies()
-    const fetchUserInfo = async () => {
+    const fetchFavoritesGroupList = async () => {
       try {
-        await getUserInfo()
+        const response = await getFavoritesGroupListOfUsers()
+        console.log(response)
+        setGroups(response)
       } catch (error) {
-        console.error('Failed to fetch user info:', error)
+        console.error('Error fetching favorites data:', error)
       }
     }
-    fetchUserInfo()
-    fetchGroups()
+    fetchFavoritesGroupList()
   }, [])
-  // useEffect(() => {
-  //   getUser()
-  //   fetchGroups()
-  // }, [])
 
   const goToCoordiBook = (id: number, name: string) => {
     router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
@@ -100,7 +45,7 @@ export default function CoordiBook() {
 
   async function createCoordiBook() {
     if (!newGroupName) {
-      alert('그룹이름을 입력하세요')
+      alert('그룹 이름을 입력하세요')
       return
     }
 
@@ -111,6 +56,9 @@ export default function CoordiBook() {
       const response = await createFavoriteGroup(requestData)
       console.log(response)
       setNewGroupName('')
+      // 코디북 생성 후 즐겨찾기 목록 다시 불러오기
+      const updatedGroups = await getFavoritesGroupListOfUsers()
+      setGroups(updatedGroups)
       closeModal()
     } catch (error) {
       console.error('코디북 생성 중 오류 발생:', error)

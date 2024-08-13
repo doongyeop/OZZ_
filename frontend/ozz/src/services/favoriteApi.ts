@@ -3,6 +3,18 @@ import {
   FavoriteGroupCreateRequest,
   FavoriteListDeleteRequest,
 } from '../types/favorite/data-contracts'
+// import { Api as FavoriteApi } from '@/types/favorite/Api'
+
+// const token =
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzUyMzg4MywiZXhwIjoxNzIzNTgzODgzfQ.rVASyfPidOADXu4lR7i3BZTgKVUf1_s6rz9nysfcwZI'
+
+// const favoriteApi = new FavoriteApi({
+//   securityWorker: async () => ({
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   }),
+// })
 
 // 즐겨찾기 그룹 생성 함수
 export const createFavoriteGroup = async (
@@ -38,14 +50,14 @@ export const deleteFavorite1 = async (
 
 // 특정 즐겨찾기 그룹의 코디 목록 조회 함수
 export const getFavoritesByGroup = async (favoriteGroupId: number) => {
-  const favoriteApi = getFavoriteApi()
+  const favoriteApi = await getFavoriteApi()
   const response = await favoriteApi.getFavoritesByGroup(favoriteGroupId)
   return response
 }
 
 // 특정 즐겨찾기 그룹 삭제 함수
 export const deleteFavoriteGroup = async (favoriteGroupId: number) => {
-  const favoriteApi = getFavoriteApi()
+  const favoriteApi = await getFavoriteApi()
   const response = await favoriteApi.deleteFavoriteGroup(favoriteGroupId)
   return response
 }
@@ -54,7 +66,7 @@ export const deleteFavoriteGroup = async (favoriteGroupId: number) => {
 export const getFavoritesGroupListOfUsers = async () => {
   const favoriteApi = getFavoriteApi()
   const response = await favoriteApi.getFavoritesGroupListOfUsers()
-  const data = await response.data
+  const data = await response.json()
   return data
 }
 
