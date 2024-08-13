@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RequiredArgsConstructor
