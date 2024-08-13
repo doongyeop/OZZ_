@@ -405,6 +405,18 @@ export interface ClothesCreateRequest {
   categoryLowId?: number
 }
 
+export interface PurchaseHistory {
+  name: string
+  brand: string
+  /** @format date */
+  purchaseDate: string
+  purchaseSite: string
+  imgUrl: string
+  option: string
+}
+
+export type ServerSentEventString = object
+
 export interface CoordinateBasicResponse {
   /** @format int64 */
   coordinateId?: number
@@ -494,9 +506,9 @@ export interface SortObject {
 /** 옷 검색 DTO */
 export interface ClothesSearchCondition {
   /** @format byte */
-  categoryHighId?: number
+  categoryHighId?: number | string
   /** @format byte */
-  categoryLowId?: number
+  categoryLowId?: number | string
   keyword?: string
 }
 
@@ -509,7 +521,7 @@ export interface ClothesBasicWithFileResponse {
   createdDate?: string
   /** 하위 카테고리 정보 DTO */
   categoryLow?: CategoryLowResponse
-  imageFile: FileInfo
+  imageFile: FileInfo | null
 }
 
 export interface SliceClothesBasicWithFileResponse {
@@ -589,6 +601,10 @@ export interface AddClothesPayload {
 
 /** @format int64 */
 export type AddClothesData = number
+
+export type StartBatchPayload = PurchaseHistory[]
+
+export type StartBatchData = ServerSentEventString[]
 
 export type GetCoordinateBasicResponseData = CoordinateBasicResponse
 

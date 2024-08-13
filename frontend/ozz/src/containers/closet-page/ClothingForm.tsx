@@ -27,16 +27,16 @@ import {
   seasonInvMap,
   styleInvMap,
   textureInvMap,
+  colorMap,
   colorInvMap,
   patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
-import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 import CameraIcon from '../../../public/icons/camera.svg'
 
 type ClothingFormProps = {
   initialData?: ClothingData
-  onSubmit: (imageFile: File, request: ClothesCreateRequest) => void
+  onSubmit: (imageFile: File, request: object) => void
   submitButtonText: string
 }
 
@@ -46,7 +46,6 @@ export default function ClothingForm({
   submitButtonText,
 }: ClothingFormProps) {
   const [openModal, setOpenModal] = useState<string | null>(null)
-
   const [name, setName] = useState('')
   const [brandName, setBrandName] = useState('')
   const [categoryName, setCategoryName] = useState<string | null>(null)
@@ -56,7 +55,7 @@ export default function ClothingForm({
   const [size, setSize] = useState<Size>('FREE')
   const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
-  const [color, setColor] = useState<Color[] | null>([])
+  const [color, setColor] = useState<Color[]>([])
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
@@ -82,7 +81,8 @@ export default function ClothingForm({
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
       if (initialData.image) {
-        setImagePreview(URL.createObjectURL(initialData.image))
+        setImageFile(initialData.imageFile)
+        setImagePreview(initialData.image)
       }
     }
   }, [initialData])
@@ -103,15 +103,15 @@ export default function ClothingForm({
     e.preventDefault()
 
     // 필수 입력 필드 확인
-    if (!name || !categoryName || !imageFile) {
-      alert('이름, 카테고리 및 이미지는 필수 입력 사항입니다.')
+    if (!name || !categoryName || !imageFile || color.length === 0) {
+      alert('이름, 카테고리, 색상 및 이미지는 필수 입력 사항입니다.')
       return
     }
 
     const categoryLowName = categoryName.split(' > ').pop() || ''
     const categoryLowId = categoryNameToLowIdMap[categoryLowName] || undefined
 
-    const request: ClothesCreateRequest = {
+    const request = {
       name,
       size: size || 'FREE',
       fit: fit || undefined,
@@ -152,12 +152,6 @@ export default function ClothingForm({
       categoryLowId,
     }
 
-    console.log('옷 등록할게요 ><')
-    console.log(imageFile.type)
-    console.log(request)
-    Object.entries(request).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`)
-    })
     onSubmit(imageFile, request)
   }
 
@@ -240,7 +234,7 @@ export default function ClothingForm({
       value: color
         ? formatValue(
             color.map((c) => c.code),
-            colorInvMap,
+            colorMap,
           )
         : '',
       setValue: (colors: Color[]) => setColor(colors),
@@ -267,7 +261,6 @@ export default function ClothingForm({
       setValue: (m: string) => setMemo(m),
     },
   ]
-
   return (
     <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
       <form onSubmit={handleSubmit}>
@@ -338,21 +331,23 @@ export default function ClothingForm({
                   {item.value &&
                     (item.label === '색' && Array.isArray(color) ? (
                       <>
-                        {color.slice(0, 3).map((c) => (
-                          <div key={c.code} className="flex">
-                            <span
-                              className="inline-block w-5 h-5 rounded-full mr-1.5"
-                              style={{ backgroundColor: c.colorCode }}
-                            />
-                            <button
-                              type="button"
-                              className="text-primary-400 mr-2"
-                              onClick={() => setOpenModal(item.path)}
-                            >
-                              {c.name}
-                            </button>
-                          </div>
-                        ))}
+                        {color.slice(0, 3).map((c) => {
+                          return (
+                            <div key={c.code} className="flex">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                style={{ backgroundColor: c.colorCode }}
+                              />
+                              <button
+                                type="button"
+                                className="text-primary-400 mr-2"
+                                onClick={() => setOpenModal(item.path)}
+                              >
+                                {c.name}
+                              </button>
+                            </div>
+                          )
+                        })}
                         {color.length > 3 && (
                           <span className="text-primary-400 mr-2">...</span>
                         )}

@@ -11,6 +11,7 @@ import com.ssafy.ozz.library.error.exception.UserNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import com.ssafy.ozz.library.user.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -28,31 +31,31 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final FileClient fileClient;
     private final UserClient userClient;
-    // OK
+
     @DeleteMapping("/{notificationId}")
     @Operation(summary = "알림 삭제", description = "알림을 삭제합니다.")
     public ResponseEntity<Void> deleteNotification(@PathVariable Long notificationId) {
         notificationService.deleteNotificationById(notificationId);
         return ResponseEntity.noContent().build();
     }
-    // OK
+
     @PatchMapping("/{notificationId}")
     @Operation(summary = "알림 읽음 처리", description = "알림을 읽음처리 합니다.")
     public ResponseEntity<Void> readNotification(@PathVariable Long notificationId) {
         notificationService.readNotification(notificationId);
         return ResponseEntity.ok().build();
     }
-    // OK
+
     @DeleteMapping("/user/{userId}")
     @Operation(summary = "모든 알림 삭제", description = "사용자에게 온 모든 알림을 삭제합니다.")
     public ResponseEntity<Void> deleteAllNotifications(@PathVariable Long userId) {
         notificationService.deleteAllNotifications(userId);
         return ResponseEntity.noContent().build();
     }
-    // TODO 500
+
     @GetMapping("/")
     @Operation(summary = "모든 알림 조회", description = "특정 사용자의 모든 알림을 조회합니다.")
-    public ResponseEntity<List<NotificationResponse>> getAllNotificationsByUserId(@RequestParam("userId") Long userId) {
+    public ResponseEntity<List<NotificationResponse>> getAllNotificationsByUserId(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         List<Notification> notificationList = notificationService.getAllNotificationsByUserId(userId);
         List<NotificationResponse> responseList = new ArrayList<>();
 

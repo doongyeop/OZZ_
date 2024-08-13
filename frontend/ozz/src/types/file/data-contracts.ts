@@ -9,7 +9,12 @@
  * ---------------------------------------------------------------
  */
 
-export type GetFileData = object
+export type GetFileData = {
+  fileId: number
+  fileName: string
+  filePath: string
+  fileType: string
+}
 
 export interface UpdatePayload {
   /** @format binary */

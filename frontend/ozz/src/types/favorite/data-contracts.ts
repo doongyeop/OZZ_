@@ -64,17 +64,17 @@ export interface FavoriteResponse {
 
 export interface FileInfo {
   /** @format int64 */
-  fileId?: number
-  filePath?: string
-  fileName?: string
-  fileType?: string
+  fileId: number
+  filePath: string
+  fileName: string
+  fileType: string
 }
 
 export interface FavoriteGroupImageResponse {
   /** @format int64 */
-  favoriteGroupId?: number
-  name?: string
-  imageFileList?: FileInfo[]
+  favoriteGroupId: number
+  name: string
+  imageFileList: FileInfo[]
 }
 
 export interface FavoriteListDeleteRequest {
