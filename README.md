@@ -5,9 +5,9 @@
 
 ## 팀원 구성
 
-| **이보연👑** |　　**한수한**   | **김혜인** |　**서종원**  | **김하연** | **이동엽** |
+|　　 **이보연👑**　|　　**한수한**   |　　**김혜인**　　|　　**서종원**　　|　　**김하연**　　|　　**이동엽**　　|
 | :----------: | :------------: | :--------: | :---------: | :--------: | :--------: |
-|  **FRONT**   | **BACK&INFRA** | **FRONT**  | **BACK&AI** | **FRONT**  |  **BACK**  |
+|  **FRONT**   | **BACK & INFRA** | **FRONT**  | **BACK & AI** | **FRONT**  |  **BACK**  |
 
 
 ## 기획 배경
@@ -20,8 +20,6 @@
 **목적**
 
 -   **옷장은 가득 차 있는데, 오늘 무엇을 어떻게 입어야 할지 모르겠다**는 사용자들의 고민을 해결하기 위해 개발하였습니다.
-
-<!-- ## 브랜치 전략 -->
 
 ## 서비스 구조
 
@@ -82,31 +80,38 @@
 [![ERDCloud](https://img.shields.io/badge/ERDCloud-4285F4?style=for-the-badge&logo=cloud&logoColor=white)](https://www.erdcloud.com/d/HWmzKdqNndLE4H9ay)
 [![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/design/7WUqXjKvUcDPLKYMUa9P4Y/%EC%98%B7%EC%A7%B1?node-id=0-1&t=K68NqokoRcvm5jnd-0)
 
-<!-- - 버전 및 이슈관리 : [Gitlab](https://lab.ssafy.com/s11-webmobile1-sub2/S11P12A804)
-- 협업 툴 : [Jira](https://ssafy.atlassian.net/jira/software/c/projects/S11P12A804/boards/7037), [Notion](https://imminent-hamburger-1d8.notion.site/8-0-4-0fbd317ef9d840bc9d31ea8adfa50ceb)
-- 디자인 : [Figma](https://www.figma.com/design/7WUqXjKvUcDPLKYMUa9P4Y/%EC%98%B7%EC%A7%B1?node-id=0-1&t=K68NqokoRcvm5jnd-0)
-<br> -->
 
-<!-- ### [기획 문서](https://docs.google.com/spreadsheets/d/1m-osYYjbe7sdoePF93FguSynrAsAEDxvBsTLJgjsiM8/edit?usp=sharing) -->
-
-<!-- ```
-
-``` -->
 
 ## 서비스 기능
+To Do : GIF 넣기
+
+-   소셜 로그인
+-   개인 정보 변경 / 탈퇴
+-   쇼핑몰 구매목록에서 옷 정보 가져와서 등록하기 (AI)
+-   옷 직접 등록하기
+-   유의어 검색
+-   AI 추천 코디 (AI)
+-   직접 코디해보기
+
 
 ## 후기
 
-> **보연**: A804
+**보연**
+>
 
-> **수한**: A804
+**수한**
+>
 
-> **혜인**: A804
+**혜인**
+>
 
-> **종원**: A804
+**종원**
+>
 
-> **하연**: A804
+**하연**
+>
 
-> **동엽**: A804
+**동엽**
+>
 
 <br>
