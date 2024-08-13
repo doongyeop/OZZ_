@@ -1,11 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
-
-interface Color {
-  name: string
-  code: string
-}
+import { Color } from '@/types/clothing'
 
 interface SelectedColorContextProps {
   selectedColor: Color[]
