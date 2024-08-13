@@ -1,7 +1,16 @@
 import Header from '@/components/Header'
 import MainPageContainer from '@/containers/main-page/Container'
+import { cookies } from 'next/headers'
+import StartPage from '@/containers/main-page/StartPage'
 
-export default async function Home() {
+export default function Home() {
+  const cookieStore = cookies()
+  const accessToken = cookieStore.get('accessToken')?.value
+
+  if (!accessToken) {
+    return <StartPage />
+  }
+
   return (
     <>
       <Header title="OZZ" />
