@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 'use client'
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState, ReactNode, useCallback, useEffect } from 'react'
 import { UserUpdateRequest } from '@/types/user/data-contracts'
@@ -15,7 +15,7 @@ import {
   deleteUser,
   checkNickname,
 } from '@/services/userApi'
-// import { getFile, downloadFile } from '@/services/fileApi'
+import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
 
@@ -24,6 +24,7 @@ interface FieldProps {
   id: string
   children: ReactNode
 }
+
 interface User {
   email: string
   birth: Date
@@ -42,22 +43,40 @@ function Field({ label, id, children }: FieldProps) {
 }
 
 function ProfileEdit() {
-  // const [user, setUser] = useState<User | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
+  const [errorText, setErrorText] = useState('')
+  const [responseText, setResponseText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
+
+  const getProfilePic = async (picId: number) => {
+    try {
+      const fileData = await getFile(picId)
+      console.log('getFile 성공', fileData)
+      const picture = await downloadFile(fileData.filePath)
+      console.log('downloadFile 성공', picture)
+      if (picture !== undefined) {
+        const pictureUrl = URL.createObjectURL(picture)
+        setProfileSrc(pictureUrl)
+      }
+    } catch (error) {
+      console.log('프로필사진 가져오는 중 오류 발생:', error)
+    }
+  }
 
   useEffect(() => {
     syncTokensWithCookies()
     const fetchUserInfo = async () => {
       try {
-        await getUserInfo().then((userInfo) => {
-          setUser(userInfo)
-        })
+        const userInfo = await getUserInfo()
+        setUser(userInfo)
+        if (userInfo.profileFileId) {
+          await getProfilePic(userInfo.profileFileId)
+        }
       } catch (error) {
         console.error('Failed to fetch user info:', error)
       }
@@ -65,21 +84,46 @@ function ProfileEdit() {
     fetchUserInfo()
   }, [])
 
+  const checkNicknameDuplication = async (nick: string) => {
+    if (nick.length > 15 || nick.length <= 0) {
+      setErrorText('닉네임은 1-15자 이내여야 합니다')
+      setResponseText('')
+      return
+    }
+    if (nick.includes(' ')) {
+      setResponseText('')
+      setErrorText('공백은 사용 불가능합니다')
+      return
+    }
+
+    try {
+      const response = await checkNickname(nick)
+      setResponseText(response)
+      setErrorText('')
+      setNickname(nick)
+    } catch (error) {
+      setErrorText('이미 사용 중인 닉네임입니다')
+      setResponseText('')
+    }
+  }
+
   const saveUserInfo = async () => {
-    if ((await checkNickname(nickname)) === '사용 가능한 닉네임입니다.') {
-      try {
-        const userData: UserUpdateRequest = {
-          nickname,
-          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
-        }
-        return true
-      } catch (error) {
-        console.log('회원정보 수정 안 됨', error)
+    try {
+      await checkNicknameDuplication(nickname)
+
+      if (errorText) {
         return false
       }
-    } else {
-      alert('닉네임사용불가')
-      console.log('닉네임 수정 필요쓰')
+
+      const userData: UserUpdateRequest = {
+        nickname,
+        birth: birthday?.toISOString() || '', // ISO 형식으로 변환
+      }
+
+      await updateUser(userData)
+      return true
+    } catch (error) {
+      console.log('회원정보 수정 안 됨', error)
       return false
     }
   }
@@ -185,6 +229,10 @@ function ProfileEdit() {
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
               <HiPencil className="fill-gray-300 w-3.5 h-3.5 group-hover:fill-primary-400" />
             </div>
+            {errorText && (
+              <span className="text-xs text-red-500">{errorText}</span>
+            )}
+            {responseText && <span className="text-xs">{responseText}</span>}
           </div>
         </Field>
 
