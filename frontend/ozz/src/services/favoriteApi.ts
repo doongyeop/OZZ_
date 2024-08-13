@@ -3,7 +3,6 @@ import {
   FavoriteGroupCreateRequest,
   FavoriteListDeleteRequest,
 } from '../types/favorite/data-contracts'
-import { ClothingData } from '@/types/clothing'
 
 // 즐겨찾기 그룹 생성 함수
 export const createFavoriteGroup = async (
