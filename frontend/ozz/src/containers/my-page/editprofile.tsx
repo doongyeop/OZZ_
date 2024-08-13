@@ -4,6 +4,7 @@
 
 import { useState, ReactNode, useCallback, useEffect } from 'react'
 import { UserUpdateRequest } from '@/types/user/data-contracts'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
@@ -15,7 +16,7 @@ import {
   deleteUser,
   checkNickname,
 } from '@/services/userApi'
-import { getFile, downloadFile } from '@/services/fileApi'
+import { getFile, downloadFile, deleteFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
 
@@ -53,6 +54,7 @@ function ProfileEdit() {
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
+  const router = useRouter()
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
@@ -122,7 +124,7 @@ function ProfileEdit() {
       }
 
       await updateUser(userData)
-      await fetchUserInfo()
+      router.push('/mypage/edit')
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -146,10 +148,14 @@ function ProfileEdit() {
   }, [])
 
   const resetProfilePic = useCallback(() => {
-    setUser((prev: any) => ({
-      ...prev,
-      profile_file_id: null,
-    }))
+    if (user?.profileFileId) {
+      try {
+        deleteFile(user.profileFileId)
+        router.push('/mypage/edit')
+      } catch (err) {
+        console.log('프로필 사진 삭제 실패:', err)
+      }
+    }
   }, [])
 
   const handleResetProfilePic = useCallback(() => {
@@ -158,10 +164,14 @@ function ProfileEdit() {
   }, [resetProfilePic, toggleProfileModal])
 
   const handleUploadSuccess = useCallback(async () => {
-    await fetchUserInfo()
+    router.push('/mypage/edit')
     toggleProfileModal()
   }, [])
 
+  const deleteAccount = () => {
+    deleteUser()
+    router.push('/login')
+  }
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
@@ -295,7 +305,7 @@ function ProfileEdit() {
               </button>
               <button
                 type="button"
-                onClick={deleteUser}
+                onClick={deleteAccount}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
                 확인
