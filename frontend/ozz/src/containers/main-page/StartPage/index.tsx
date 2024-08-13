@@ -25,7 +25,7 @@ export default function StartPage() {
       <div className="absolute bottom-24 w-full px-6">
         <button
           type="button"
-          className="relative bg-primary-400 rounded-full p-2 w-full flex items-center justify-center"
+          className="relative bg-primary-400 rounded-full p-2 w-full flex items-center justify-center hover:bg-secondary hover:outline hover:outline-primary-400 hover:text-primary-400 transition duration-200"
           onClick={() => router.push('/login')}
         >
           <span className="font-bold text-lg">옷짱 시작하기</span>
