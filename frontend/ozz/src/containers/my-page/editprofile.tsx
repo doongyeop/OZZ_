@@ -159,6 +159,7 @@ function ProfileEdit() {
       try {
         await deleteProfileImage()
         console.log('프로필 삭제지우는즁')
+        toggleProfileModal()
         await fetchUserInfo()
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
@@ -174,6 +175,7 @@ function ProfileEdit() {
   const handleFileSelect = async (file: File) => {
     try {
       const response = await uploadProfileImage(file)
+      toggleProfileModal()
       console.log('프로필 이미지 업로드 성공:', response)
       await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
     } catch (error) {

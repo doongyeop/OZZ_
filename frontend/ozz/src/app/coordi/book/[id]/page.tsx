@@ -4,11 +4,10 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useLongPress } from 'use-long-press'
 import Image from 'next/image'
 import Link from 'next/link'
-
-import Header from '@/components/Header'
-import HeaderButton from '@/components/Button/HeaderButton'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import TagButton from '@/components/Button/TagButton'
 import {
   Popover,
@@ -55,12 +54,6 @@ export default function CoordiBookDetailPage({
     )
   }
 
-  const toggleSidebar = () => {
-    // 사이드바 토글 기능 추가 필요
-  }
-
-  const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidebar} />
-
   const filteredItems = selectedTags.includes('전체')
     ? mockFavoriteDetails
     : mockFavoriteDetails.filter((item) =>
@@ -73,7 +66,7 @@ export default function CoordiBookDetailPage({
 
   return (
     <div>
-      <Header title="코디북" leftButton={leftButton} />
+      <HeaderWithBackward title="코디북" />
       <div className="m-4">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl">{name}</h1>
