@@ -24,6 +24,7 @@ public record ClothesCreateRequest(
         List<Season> seasonList,
         List<Style> styleList,
         List<Pattern> patternList,
+        String extra,
         Byte categoryLowId
 ) {
     public Clothes toEntity(CategoryLow categoryLow, Long imageFileId, Long userId) {
@@ -43,6 +44,7 @@ public record ClothesCreateRequest(
                 .categoryLow(categoryLow)
                 .imageFileId(imageFileId)
                 .userId(userId)
+                .extra(extra)
                 .build();
     }
 }

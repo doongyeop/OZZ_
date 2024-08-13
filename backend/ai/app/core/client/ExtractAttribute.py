@@ -57,6 +57,7 @@ Attributes:
 <가방>가방, 백팩, 힙색</가방>
 </possibleValues>
 </category>
+8. <isWorn><Constraint>`true` if the item is worn, `false` if not</Constraint><possibleValues>`true`, `false`</possibleValues><isWorn>
 
 Follow these steps to extract the properties:
 step1 - If <color> exists, ignore the color guessed from the photo and use the <possibleValues> from <colorList> that most closely resembles the <color> value.
@@ -68,7 +69,7 @@ step5 - Please list the properties of items that cannot be expressed using `Attr
 Response Format:
 Please return it in JSON format as in the following example.
 {
-<order> value :{"fit" : "OVER_FIT","colorList" : ["BLACK", "YELLOW"],"patternList" : ["STRIPED"],"seasonList" : ["SPRING", "SUMMER", "AUTUMN"],"styleList" : ["CASUAL", "SPORTY"],"textureList" : ["MESH"],"extra" : "sleeveless, cropped","parentCategory" : "상의","subCategory":"탑"}
+<order> value :{"fit" : "OVER_FIT","colorList" : ["BLACK", "YELLOW"],"patternList" : ["STRIPED"],"seasonList" : ["SPRING", "SUMMER", "AUTUMN"],"styleList" : ["CASUAL", "SPORTY"],"textureList" : ["MESH"],"extra" : "sleeveless, cropped","parentCategory" : "상의","subCategory":"탑", "isWorn":true|false}
 }
 """
 
@@ -144,10 +145,10 @@ class ExtractAttributesURL(ExtractAttribute):
 
 
 class ExtractAttributesImage(ExtractAttribute):
-    image: UploadFile
+    image: str
     type: str
 
-    def __init__(self, image: UploadFile, type):
+    def __init__(self, image: str, type:str):
         super().__init__()
         self.image = image
         self.type = type
@@ -156,12 +157,12 @@ class ExtractAttributesImage(ExtractAttribute):
         return [{
             "type": "image_url",
             "image_url": {
-                "url": f"data:image/jpeg;base64,{remove_background_and_encode(self.image)}"
+                "url": f"data:image/jpeg;base64,{ self.image}"
             }
         }, {
             "type": "text",
-            "text": f"<clothes><order>{0}</order><type></type></clothes>"
+            "text": f"<clothes><order>{0}</order><type>{self.type}</type></clothes>"
         }]
 
-    def get_result(self):
+    def get_result(self) -> Attributes:
         return self.parse_response(self.get_response())[0]

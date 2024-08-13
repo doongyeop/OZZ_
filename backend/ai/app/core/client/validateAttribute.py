@@ -120,8 +120,8 @@ Response format should also be the same JSON:
         valid_data = self.get_response()
         for k, datum in valid_data.items():
             if isinstance(k, str):
-                k=int(k)
-            raw_data[k]=raw_data[k].model_copy(update={**datum}, deep=True)
+                k = int(k)
+            raw_data[k] = raw_data[k].model_copy(update={**datum}, deep=True)
             if not self.validate_data(raw_data[k]):
                 del raw_data[k]
                 logging.error(f"id : {k} 속성 검증 및 정규화 실패")
@@ -180,7 +180,7 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
             })
         return [{
             "type": "text",
-            "text": json.dumps(assistant_content,ensure_ascii=False),
+            "text": json.dumps(assistant_content, ensure_ascii=False),
         }]
 
     def make_user_content(self):
@@ -209,14 +209,14 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
                     self.invalid_subcategories[datum.parentCategory] = []
                 if datum.subCategory not in self.invalid_subcategories[datum.parentCategory]:
                     self.invalid_subcategories[datum.parentCategory].append(datum.subCategory)
-        is_clear=True
+        is_clear = True
 
         if len(self.invalid_subcategories) != 0:
-            is_clear=False
+            is_clear = False
             valid_subcategories = self.get_response()
 
             for datum in invalid_data:
-                old_subcategory=datum.subCategory
+                old_subcategory = datum.subCategory
                 datum.subCategory = valid_subcategories[datum.parentCategory][datum.subCategory]
                 logging.info(f"id : 기존 카테고리 : {old_subcategory} -> 새로운 카테고리 : {datum.subCategory}")
 
@@ -236,7 +236,7 @@ validateCategory = ValidateCategory()
 validateProperty = ValidateProperty()
 
 
-def run_validate(raw_data: dict[int, GPTAttrResponse]):
+def run_validate(raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
     init_keys = list(raw_data.keys())
     category_validated_data = validateCategory.process(raw_data)
     valid_data = validateProperty.process(category_validated_data)
