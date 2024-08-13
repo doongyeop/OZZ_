@@ -58,7 +58,7 @@ export const checkNickname = async (nickname: string) => {
 }
 
 export async function deleteProfile() {
-  const apiUrl = 'http://i11a804.p.ssafy.io/api/users/'
+  const apiUrl = 'https://i11a804.p.ssafy.io/api/users/'
 
   // 쿠키에서 AccessToken 가져오기
   const accessToken = document.cookie
@@ -71,6 +71,7 @@ export async function deleteProfile() {
   }
 
   try {
+    console.log('deleteProfile 프로필사진 지우기 시도는 했어요~~~')
     const response = await fetch(apiUrl, {
       method: 'PATCH',
       headers: {
@@ -79,11 +80,13 @@ export async function deleteProfile() {
       },
     })
 
-    if (!response.ok) {
+    if (response.status !== 204) {
+      console.log('클남;; 프로필 삭제 안됨;;;')
       throw new Error('프로필 삭제 실패')
     }
 
     const data = await response.json()
+    console.log('와와 지워졌다 와와!!!!!!!')
     return data
   } catch (error) {
     console.error('프로필 삭제 중 오류 발생:', error)

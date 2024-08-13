@@ -60,9 +60,9 @@ function ProfileEdit() {
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
-      console.log('getFile 성공', fileData)
+      // console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
-      console.log('downloadFile 성공', picture)
+      // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
         setProfileSrc(pictureUrl)
@@ -151,20 +151,23 @@ function ProfileEdit() {
     setUploadModal((prev) => !prev)
   }, [])
 
-  const resetProfilePic = useCallback(() => {
+  const resetProfilePic = () => {
     if (user?.profileFileId) {
       try {
+        console.log('111111까지왓어요')
         deleteProfile()
+        console.log('222222까지왓어요')
         fetchUserInfo() // 유저 정보 다시 불러오기
+        console.log('다왓당 키키')
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
     }
-  }, [user])
+  }
 
   const handleResetProfilePic = useCallback(() => {
     resetProfilePic()
-    toggleProfileModal()
+    setProfileModal(false)
   }, [resetProfilePic, toggleProfileModal])
 
   const handleFileSelect = async (file: File) => {
