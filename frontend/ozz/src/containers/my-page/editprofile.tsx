@@ -15,12 +15,13 @@ import {
   updateUser,
   deleteUser,
   checkNickname,
-  deleteProfile,
+  deleteProfileImage,
   uploadProfileImage,
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
+import { getTokens } from '@/services/authApi'
 
 interface FieldProps {
   label: string
@@ -93,21 +94,25 @@ function ProfileEdit() {
   const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15 || nick.length <= 0) {
       setErrorText('닉네임은 1-15자 이내여야 합니다')
-      return
+      return false
     }
     if (nick.includes(' ')) {
       setErrorText('공백은 사용 불가능합니다')
-      return
+      return false
     }
 
     try {
       const response = await checkNickname(nick)
       if (response === '사용 가능한 닉네임입니다.') {
         setErrorText('')
-        setNickname(nick)
+        return true
+      } else {
+        setErrorText('이미 사용 중인 닉네임입니다')
+        return false
       }
     } catch (error) {
-      setErrorText('이미 사용 중인 닉네임입니다')
+      setErrorText('닉네임 확인 중 오류가 발생했습니다.')
+      return false
     }
   }
 
@@ -115,9 +120,9 @@ function ProfileEdit() {
     try {
       // 닉네임이 변경되지 않은 경우 중복 확인을 건너뜀
       if (user?.nickname !== nickname) {
-        await checkNicknameDuplication(nickname)
+        const isNicknameAvailable = await checkNicknameDuplication(nickname)
 
-        if (errorText) {
+        if (!isNicknameAvailable) {
           return false
         }
       }
@@ -151,24 +156,22 @@ function ProfileEdit() {
     setUploadModal((prev) => !prev)
   }, [])
 
-  const resetProfilePic = () => {
+  const resetProfilePic = async () => {
     if (user?.profileFileId) {
       try {
-        console.log('111111까지왓어요')
-        deleteProfile()
-        console.log('222222까지왓어요')
-        fetchUserInfo() // 유저 정보 다시 불러오기
-        console.log('다왓당 키키')
+        await deleteProfileImage()
+        console.log('프로필 삭제지우는즁')
+        await fetchUserInfo()
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
     }
   }
 
-  const handleResetProfilePic = useCallback(() => {
-    resetProfilePic()
+  const handleResetProfilePic = useCallback(async () => {
+    await resetProfilePic()
     setProfileModal(false)
-  }, [resetProfilePic, toggleProfileModal])
+  }, [resetProfilePic])
 
   const handleFileSelect = async (file: File) => {
     try {
