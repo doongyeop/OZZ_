@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+
 import BrandModal from '@/components/Modal/BrandModal'
 import CategoryModal from '@/components/Modal/CategoryModal'
 import PurchaseDateModal from '@/components/Modal/PurchaseDateModal'
@@ -33,6 +34,7 @@ import {
   categoryNameToLowIdMap,
 } from '@/types/clothing'
 import CameraIcon from '../../../public/icons/camera.svg'
+import { extractClothing } from '@/services/clothingApi'
 
 type ClothingFormProps = {
   initialData?: ClothingData
@@ -59,6 +61,7 @@ export default function ClothingForm({
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
+  const [extra, setExtra] = useState<string[]>([])
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -96,6 +99,59 @@ export default function ClothingForm({
         setImagePreview(reader.result as string)
       }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const handleExtractImage = async () => {
+    if (imageFile && categoryName) {
+      // AI 분석 로직을 여기에 추가
+      const [categoryHighName, categoryLowName] = categoryName.split(' > ')
+      try {
+        const result = await extractClothing(imageFile, categoryHighName)
+        // console.log('response ', result)
+
+        // 로딩 띄우기?
+
+        // 속성 추출 세팅
+        setName(result.name || '')
+        setBrandName(result.brand || '')
+        setCategoryName(
+          `${result.categoryHigh.name} > ${result.categoryLow.name}`,
+        )
+        setPurchaseDate(result.purchaseDate || null)
+        setPurchaseSite(result.purchaseSite || null)
+        setSeason(result.seasonList || [])
+        setSize(result.size || 'FREE')
+        setFit(result.fit || null)
+        setTexture(result.textureList || [])
+        setColor(result.colorList)
+        setStyle(result.styleList || [])
+        setPattern(result.patternList || [])
+        setMemo(result.memo || null)
+        setExtra(result.extra || '')
+
+        // 이미지 데이터 처리 (Base64 디코딩 후 파일로 변환)
+        const byteCharacters = atob(result.image)
+        const byteNumbers = new Array(byteCharacters.length)
+          .fill(0)
+          .map((_, i) => byteCharacters.charCodeAt(i))
+        const byteArray = new Uint8Array(byteNumbers)
+        const img = new Blob([byteArray], { type: 'image/png' })
+
+        const imageFileObj = new File([img], 'extracted-image.png', {
+          type: 'image/png',
+        })
+        setImageFile(imageFileObj)
+        setImagePreview(URL.createObjectURL(imageFileObj))
+        console.log('img ', img)
+        console.log('imageFile ', imageFile)
+        console.log('imagePreview ', imagePreview)
+      } catch (error: any) {
+        console.error('AI 분석 실패 : ', error)
+      }
+    } else {
+      console.error('분석할 이미지가 없습니다.')
+      alert('이미지와 카테고리를 설정해주세요.')
     }
   }
 
@@ -277,18 +333,27 @@ export default function ClothingForm({
             className={`relative flex min-h-[300px] min-w-[300px] max-h-[300px] max-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
           >
             {imagePreview ? (
-              <Image
-                src={imagePreview}
-                alt="Preview"
-                width={300}
-                height={300}
-                className="p-6 object-cover"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                }}
-              />
+              <>
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  width={300}
+                  height={300}
+                  className="p-6 object-cover"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
+                >
+                  AI 분석
+                </button>
+              </>
             ) : (
               <div>
                 <Image
@@ -300,6 +365,13 @@ export default function ClothingForm({
                 <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
                   옷 이미지 등록
                 </span>
+                <button
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
+                >
+                  AI 분석
+                </button>
               </div>
             )}
           </label>
