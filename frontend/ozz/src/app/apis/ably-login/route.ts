@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { format, parse } from 'date-fns'
-// import { getClothesApi } from '@/services/authApi'
 import { Api as ClothesApi } from '@/types/clothes/Api'
 
 puppeteer.use(StealthPlugin())
@@ -38,17 +37,6 @@ interface OrderData {
   option: string
 }
 
-// const accessToken =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzQyNDA3NSwiZXhwIjoxNzIzNDg0MDc1fQ.OcSf5g52sKtY3-tpWzGxgOoc54JI38hAMxNDiJTohoY'
-//
-// const api = new ClothesApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//   }),
-// })
-
 // 서버 전용으로 ClothesApi 인스턴스를 생성하는 함수
 const createClothesApi = (accessToken: string): ClothesApi<unknown> => {
   return new ClothesApi({
@@ -71,14 +59,6 @@ const sendPurchaseHistoryToServer = async (
 
   try {
     const response = await api.startBatch(purchaseHistory)
-    if (!response.ok) {
-      console.error('Response status:', response.status)
-      console.error('Response statusText:', response.statusText)
-      const errorData = await response.json()
-      console.error('Error response data:', errorData)
-      throw new Error('Failed to send purchase history to the server')
-    }
-
     return response
   } catch (error) {
     console.error('Error response:', error)
@@ -86,10 +66,11 @@ const sendPurchaseHistoryToServer = async (
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export async function POST(request: NextRequest) {
-  const { userId, password } = await request.json()
-
+// Puppeteer를 사용하여 로그인하고 주문 내역을 가져오는 함수
+const fetchOrderDataUsingPuppeteer = async (
+  userId: string,
+  password: string,
+): Promise<OrderData[]> => {
   const browser = await puppeteer.launch({
     headless: true,
   })
@@ -134,10 +115,7 @@ export async function POST(request: NextRequest) {
   if (!authToken) {
     console.error('인증 토큰을 찾을 수 없습니다.')
     await browser.close()
-    return NextResponse.json(
-      { error: '인증 토큰을 찾을 수 없습니다.' },
-      { status: 401 },
-    )
+    throw new Error('인증 토큰을 찾을 수 없습니다.')
   }
 
   const orderData: OrderData[] = []
@@ -204,18 +182,33 @@ export async function POST(request: NextRequest) {
   }
 
   await browser.close()
+  return orderData
+}
 
-  // 서버 사이드에서 쿠키에서 access token을 추출 (Next.js에서 쿠키 파싱)
-  const accessToken = request.headers
-    .get('cookie')
-    ?.split('; ')
-    .find((c) => c.startsWith('access='))
-    ?.split('=')[1]
-  if (!accessToken) {
-    throw new Error('Access token not found')
+// eslint-disable-next-line import/prefer-default-export
+export async function POST(request: NextRequest) {
+  try {
+    const { userId, password } = await request.json()
+
+    // Puppeteer를 사용하여 주문 내역 가져오기
+    const orderData = await fetchOrderDataUsingPuppeteer(userId, password)
+
+    // 서버 사이드에서 쿠키에서 access token을 추출 (Next.js에서 쿠키 파싱)
+    const accessToken = request.headers
+      .get('cookie')
+      ?.split('; ')
+      .find((c) => c.startsWith('access='))
+      ?.split('=')[1]
+    if (!accessToken) {
+      throw new Error('Access token not found')
+    }
+
+    // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
+    const response = await sendPurchaseHistoryToServer(orderData, accessToken)
+    return NextResponse.json(response)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred.'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
-
-  // Order 데이터를 PurchaseHistory 타입으로 변환 후 서버에 전달
-  const response = await sendPurchaseHistoryToServer(orderData, accessToken)
-  return NextResponse.json(response)
 }
