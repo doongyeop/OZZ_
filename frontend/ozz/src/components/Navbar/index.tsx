@@ -22,7 +22,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 bg-secondary text-gray-dark py-4">
+    <nav className="sticky bottom-0 inset-x-0 bg-secondary text-gray-dark py-4">
       <ul className="container mx-auto flex justify-around items-center">
         {links.map((link) => (
           <li key={link.name}>

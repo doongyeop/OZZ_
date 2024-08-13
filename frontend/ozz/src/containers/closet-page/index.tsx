@@ -110,10 +110,11 @@ export default function ClosetPageContainer() {
     imageUrl: imageResults[index]?.data || defaultImageUrl,
   }))
 
+  if (isLoading) return <Loading />
+
   return (
     <div>
       {isSidebarOpen && <CategorySidebar />}
-      {isLoading && <Loading />}
       {isError || clothingWithImages.length === 0 ? (
         <EmptyCloset />
       ) : (
