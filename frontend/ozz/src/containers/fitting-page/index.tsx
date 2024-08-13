@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
+
 import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import { FaPlus, FaMinus } from 'react-icons/fa'
+import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
+import { categoryLowIdToHighNameMap } from '@/types/clothing'
 
 type ClothingItem = {
   id: string
@@ -36,7 +39,7 @@ type FittingItem = {
 }
 
 const placeholderImages: { [key: string]: string } = {
-  액세서리: '/images/fitting/accessory.png',
+  악세서리: '/images/fitting/accessory.png',
   원피스: '/images/fitting/onepiece.png',
   상의: '/images/fitting/top.png',
   아우터: '/images/fitting/outer.png',
@@ -50,7 +53,7 @@ export default function FittingContainer() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
   const [fittingItems, setFittingItems] = useState<FittingItem[]>([
     // 가상피팅 배경의 컴포넌트
-    { category: '액세서리', type: 'accessory', image: null, isSelected: false },
+    { category: '악세서리', type: 'accessory', image: null, isSelected: false },
     { category: '원피스', type: 'onepiece', image: null, isSelected: false },
     { category: '상의', type: 'top', image: null, isSelected: false },
     { category: '아우터', type: 'outer', image: null, isSelected: false },
@@ -58,8 +61,9 @@ export default function FittingContainer() {
     { category: '신발', type: 'shoes', image: null, isSelected: false },
     { category: '가방', type: 'bag', image: null, isSelected: false },
   ])
-  const [selectedClothes, setSelectedClothes] = useState<ClothingItem[]>([]) // 선택한 옷 리스트
-
+  const [selectedClothes, setSelectedClothes] = useState<
+    (ClothesBasicWithFileResponse & { imageUrl: string })[]
+  >([]) // 선택한 옷 리스트
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
     setSelectedCategory(category)
@@ -76,23 +80,43 @@ export default function FittingContainer() {
       ),
     )
     setSelectedClothes(
-      selectedClothes.filter((cloth) => cloth.categoryHigh.name !== category),
+      selectedClothes.filter((cloth) => {
+        const categoryLowId = cloth.categoryLow?.categoryLowId
+        if (categoryLowId === undefined) {
+          return true // `undefined`인 경우 필터링하지 않음 (필요에 따라 다르게 처리할 수 있음)
+        }
+        return categoryLowIdToHighNameMap[categoryLowId] !== category
+      }),
     )
   }
 
-  const handleSelectClothingItem = (item: ClothingItem) => {
+  const handleSelectClothingItem = (
+    item: ClothesBasicWithFileResponse & { imageUrl: string },
+  ) => {
     // 사이드바에서 아이템을 선택하면
     const existingItem = selectedClothes.find(
-      (clothingItem) => clothingItem.id === item.id,
+      (clothingItem) => clothingItem.clothesId === item.clothesId,
     )
     if (existingItem) {
       console.error('이미 선택한 아이템입니다.')
       return
     }
 
-    const placeholder = fittingItems.find(
-      (imageholder) => imageholder.category === item.categoryHigh.name,
-    )
+    const categoryLowId = item.categoryLow?.categoryLowId
+    const categoryHighName = categoryLowId
+      ? categoryLowIdToHighNameMap[categoryLowId]
+      : undefined
+
+    if (!categoryHighName) {
+      console.error('잘못된 카테고리 ID입니다.')
+      return
+    }
+
+    const placeholder = fittingItems.find((imageholder) => {
+      return imageholder.category === categoryHighName
+    })
+
+    console.log('placeholder ', placeholder)
     if (!placeholder || placeholder.category !== selectedCategory) {
       // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
       console.error('잘못된 위치입니다.')
@@ -100,8 +124,12 @@ export default function FittingContainer() {
     }
 
     const updatedFittingItems = fittingItems.map((fittingItem) =>
-      fittingItem.category === item.categoryHigh.name
-        ? { ...fittingItem, image: item.imageFile.filePath, isSelected: true }
+      fittingItem.category === categoryHighName
+        ? {
+            ...fittingItem,
+            image: item.imageUrl ? item.imageUrl : '',
+            isSelected: true,
+          }
         : fittingItem,
     )
     console.log('현재 세팅 : ', updatedFittingItems)
@@ -173,12 +201,12 @@ export default function FittingContainer() {
         {selectedClothes.length > 0 ? (
           <ul className="mt-2 px-6">
             {selectedClothes.map((item) => (
-              <li key={item.id} className="mb-2 p-3 border-b">
+              <li key={item.clothesId} className="mb-2 p-3 border-b">
                 <div className="flex items-center">
                   <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
                     <Image
-                      src={item.imageFile.filePath}
-                      alt={item.name}
+                      src={item.imageUrl}
+                      alt={item.name ?? 'No name'}
                       width={75}
                       height={75}
                       style={{
@@ -191,7 +219,7 @@ export default function FittingContainer() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <p className="mb-2">{item.categoryLow.name}</p>
+                    <p className="mb-2">{item.categoryLow?.name}</p>
                     <p className="text-md font-semibold">{item.name}</p>
                   </div>
                 </div>
@@ -230,14 +258,14 @@ passHref
           <ShareCommunityButton />
         </div>
       </div>
-      {isSidebarOpen && (
-        <ClosetSidebar
-          isSidebarOpen={isSidebarOpen}
-          category={selectedCategory}
-          onSelectItem={handleSelectClothingItem}
-          onCategoryChange={handleCategoryChange}
-        />
-      )}
+
+      <ClosetSidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        category={selectedCategory}
+        onSelectItem={handleSelectClothingItem}
+        onCategoryChange={handleCategoryChange}
+      />
     </>
   )
 }

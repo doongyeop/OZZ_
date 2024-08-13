@@ -2,178 +2,148 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useState, useEffect } from 'react'
+import { useInfiniteQuery, useQueries } from '@tanstack/react-query'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+
+import {
+  ClothingData,
+  categoryMap,
+  categoryNameToLowIdMap,
+} from '@/types/clothing'
+import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
+import { fetchImage, fetchUserClothes } from '@/services/clothingApi'
+import CategoryModal from '../Modal/CategoryModal'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
 import styles from '@/styles/ClosetSidebar.module.css'
-import CategoryModal from '../Modal/CategoryModal'
-
-type ClothingItem = {
-  id: string
-  name: string
-  createdDate: string
-  imageFile: {
-    fileId: number
-    filePath: string
-    fileName: string
-    fileType: string
-  }
-  categoryHigh: {
-    categoryHighId: number
-    name: string
-  }
-  categoryLow: {
-    categoryLowId: number
-    name: string
-  }
-}
 
 type ClosetSidebarProps = {
   isSidebarOpen: boolean
+  setIsSidebarOpen: (isOpen: boolean) => void
   category: string | null
-  onSelectItem: (item: ClothingItem) => void
   onCategoryChange: (category: string | null) => void
+  onSelectItem: (
+    item: ClothesBasicWithFileResponse & { imageUrl: string },
+  ) => void
 }
 
-const dummyClothes: ClothingItem[] = [
-  {
-    id: '1',
-    name: 'Basic White T-shirt',
-    createdDate: '2023-05-15T10:30:00Z',
-    imageFile: {
-      fileId: 7,
-      filePath: '/images/mockup/tops01.png',
-      fileName: '상의.png',
-      fileType: 'image/png',
-    },
-    categoryHigh: {
-      categoryHighId: 1,
-      name: '상의',
-    },
-    categoryLow: {
-      categoryLowId: 1,
-      name: '셔츠',
-    },
-  },
-  {
-    id: '2',
-    name: 'Blue Jeans',
-    createdDate: '2023-06-20T12:00:00Z',
-    imageFile: {
-      fileId: 8,
-      filePath: '/images/mockup/pants01.png',
-      fileName: '하의.png',
-      fileType: 'image/png',
-    },
-    categoryHigh: {
-      categoryHighId: 2,
-      name: '하의',
-    },
-    categoryLow: {
-      categoryLowId: 2,
-      name: '청바지',
-    },
-  },
-  {
-    id: '3',
-    name: 'Winter Jacket',
-    createdDate: '2022-12-01T09:00:00Z',
-    imageFile: {
-      fileId: 9,
-      filePath: '/images/mockup/outer01.png',
-      fileName: '아우터.png',
-      fileType: 'image/png',
-    },
-    categoryHigh: {
-      categoryHighId: 3,
-      name: '아우터',
-    },
-    categoryLow: {
-      categoryLowId: 3,
-      name: '자켓',
-    },
-  },
-  {
-    id: '4',
-    name: 'Summer Hat',
-    createdDate: '2023-07-10T14:30:00Z',
-    imageFile: {
-      fileId: 10,
-      filePath: '/images/mockup/accessory01.png',
-      fileName: '액세서리.png',
-      fileType: 'image/png',
-    },
-    categoryHigh: {
-      categoryHighId: 4,
-      name: '액세서리',
-    },
-    categoryLow: {
-      categoryLowId: 4,
-      name: '모자',
-    },
-  },
-  {
-    id: '5',
-    name: 'Leather Bag',
-    createdDate: '2023-03-05T11:00:00Z',
-    imageFile: {
-      fileId: 11,
-      filePath: '/images/mockup/bag01.png',
-      fileName: '가방.png',
-      fileType: 'image/png',
-    },
-    categoryHigh: {
-      categoryHighId: 5,
-      name: '가방',
-    },
-    categoryLow: {
-      categoryLowId: 5,
-      name: '가방',
-    },
-  },
-]
+const queryKeys = {
+  userClothes: 'userClothes',
+}
 
 export default function ClosetSidebar({
   isSidebarOpen,
+  setIsSidebarOpen,
   category,
-  onSelectItem,
   onCategoryChange,
+  onSelectItem,
 }: ClosetSidebarProps) {
-  const [isOpen, setIsOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     category,
   )
-  const [clothingItems, setClothingItems] = useState<ClothingItem[]>([])
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    string | undefined
+  >(undefined)
+  const [clothingItems, setClothingItems] = useState<ClothingData[]>([])
+  const observerElem = useRef(null)
+
+  // 카테고리 이름을 ID로 변환
+  const categoryHighId =
+    selectedCategory && selectedCategory
+      ? categoryMap[selectedCategory]?.id
+      : ''
+  const categoryLowId =
+    selectedSubcategory && selectedSubcategory !== '전체'
+      ? categoryNameToLowIdMap[selectedSubcategory]
+      : ''
+
+  useEffect(() => {
+    setIsSidebarOpen(isSidebarOpen)
+  }, [isSidebarOpen, setIsSidebarOpen])
 
   const handleCategoryChange = (newCategory: string) => {
+    // 카테고리 필터링
+    console.log('newCategory ', newCategory)
     onCategoryChange(newCategory)
+    setSelectedCategory(newCategory)
     setIsModalOpen(false)
   }
 
-  useEffect(() => {
-    setSelectedCategory(category)
-    // 실제 API 호출을 대신하여 목업 데이터로 대체
-    const filteredItems = dummyClothes.filter(
-      (item) => item.categoryLow.name === category,
-    )
-    setClothingItems(filteredItems)
-    setIsOpen(isSidebarOpen)
-  }, [category, isSidebarOpen])
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [queryKeys.userClothes, selectedCategory, selectedSubcategory],
+      queryFn: ({ pageParam = 0 }) => {
+        return fetchUserClothes(
+          { page: pageParam, size: 20, sort: ['createdDate,desc'] },
+          {
+            categoryHighId,
+            categoryLowId,
+            keyword: '',
+          },
+        )
+      },
+      getNextPageParam: (lastPage) =>
+        lastPage.last ? undefined : lastPage.number + 1,
+      initialPageParam: 0,
+    })
 
-  // TODO : 사용자의 옷장 목록 가져오기 API 구현
+  // Flatten the pages into a single list
+  const clothingList = data?.pages.flatMap((page) => page.content) || []
+
+  useEffect(() => {
+    const currentElem = observerElem.current
+
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          await fetchNextPage()
+        }
+      },
+      { threshold: 1.0 },
+    )
+
+    if (currentElem) {
+      observer.observe(currentElem)
+    }
+
+    return () => {
+      if (currentElem) {
+        observer.unobserve(currentElem)
+      }
+    }
+  }, [hasNextPage, fetchNextPage])
+
+  // Fetch images for each clothing item
+  const imageQueries = clothingList.map((item) => ({
+    queryKey: ['image', item.imageFile?.filePath],
+    queryFn: () => fetchImage(item.imageFile?.filePath || ''),
+    enabled: !!item.imageFile?.filePath,
+  }))
+
+  const imageResults = useQueries({ queries: imageQueries })
+
+  const defaultImageUrl = '/images/mockup/tops11.png'
+
+  const clothingWithImages = clothingList.map((item, index) => ({
+    ...item,
+    imageUrl: imageResults[index]?.data || defaultImageUrl,
+  }))
+
   // TODO : 카테고리 필터링 기능 구현
 
   return (
     <>
-      <div className={`${styles.sidebarGroup} ${isOpen ? styles.open : ''}`}>
+      <div
+        className={`${styles.sidebarGroup} ${isSidebarOpen ? styles.open : ''}`}
+      >
         <button
           type="button"
           aria-label="사이드바 접고 펴기"
-          className={`${isOpen ? styles.toggleButtonOpen : styles.toggleButtonClose} flex justify-center`}
-          onClick={() => setIsOpen(!isOpen)}
+          className={`${isSidebarOpen ? styles.toggleButtonOpen : styles.toggleButtonClose} flex justify-center`}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
-          {isOpen ? <FaChevronDown /> : <FaChevronUp />}
+          {isSidebarOpen ? <FaChevronDown /> : <FaChevronUp />}
         </button>
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarHeader}>
@@ -188,17 +158,17 @@ export default function ClosetSidebar({
             </button>
           </div>
           <div className={styles.clothesList}>
-            {dummyClothes.map((item) => (
+            {clothingWithImages.map((item) => (
               <button
                 type="button"
                 aria-label="옷 등록"
-                key={item.id}
+                key={item.clothesId}
                 className={styles.clothItem}
                 onClick={() => onSelectItem(item)}
               >
                 <Image
-                  src={item.imageFile.filePath}
-                  alt={item.name}
+                  src={item.imageUrl}
+                  alt={item.name ?? 'No name'}
                   width={80}
                   height={80}
                 />
