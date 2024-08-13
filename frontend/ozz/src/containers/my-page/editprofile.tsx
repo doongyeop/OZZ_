@@ -15,10 +15,12 @@ import {
   updateUser,
   deleteUser,
   checkNickname,
+  deleteProfile,
 } from '@/services/userApi'
-import { getFile, downloadFile, deleteFile } from '@/services/fileApi'
+import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
+import { set } from 'date-fns'
 
 interface FieldProps {
   label: string
@@ -55,6 +57,7 @@ function ProfileEdit() {
   const [birthday, setBirthday] = useState<Date | null>(null)
 
   const router = useRouter()
+
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
@@ -74,6 +77,8 @@ function ProfileEdit() {
     try {
       const userInfo = await getUserInfo()
       setUser(userInfo)
+      setResponseText('')
+      setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
       }
@@ -124,7 +129,7 @@ function ProfileEdit() {
       }
 
       await updateUser(userData)
-      router.push('/mypage/edit')
+      await fetchUserInfo() // 유저 정보 다시 불러오기
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -150,13 +155,13 @@ function ProfileEdit() {
   const resetProfilePic = useCallback(() => {
     if (user?.profileFileId) {
       try {
-        deleteFile(user.profileFileId)
-        router.push('/mypage/edit')
+        deleteProfile()
+        fetchUserInfo() // 유저 정보 다시 불러오기
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
     }
-  }, [])
+  }, [user])
 
   const handleResetProfilePic = useCallback(() => {
     resetProfilePic()
@@ -164,7 +169,7 @@ function ProfileEdit() {
   }, [resetProfilePic, toggleProfileModal])
 
   const handleUploadSuccess = useCallback(async () => {
-    router.push('/mypage/edit')
+    await fetchUserInfo() // 유저 정보 다시 불러오기
     toggleProfileModal()
   }, [])
 
@@ -172,6 +177,7 @@ function ProfileEdit() {
     deleteUser()
     router.push('/login')
   }
+
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
@@ -181,6 +187,7 @@ function ProfileEdit() {
             <Image
               src={profileSrc}
               alt="프로필 이미지"
+              style={{ aspectRatio: '1 / 1' }}
               fill
               className="rounded-full"
             />
