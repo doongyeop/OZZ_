@@ -1,23 +1,25 @@
-import json
+﻿import json
+import logging
 
 from app.core.client.openAIClient import OpenAIClient
 
+from app.schemas.attributes import GPTAttrResponse, Attributes
 
-class ValidateAttribute(OpenAIClient):
+
+class ValidateProperty(OpenAIClient):
     system_prompt: str = """
-You are a validator who verifies the values of each attribute.
-Check if the values of each attribute are values that exist in <possible values>.
-If there is an incorrect value that does not exist in <possible values>, correct the incorrect value to the closest value among <possible values>.
+You are the manager who validates and modifies the value of each property.
+Check if the value of each property exists in <possible values>.
+If there is an incorrect value that does not exist in <possible values>, modify the incorrect value to the most similar value among <possible values>.
 
-I will give you data in JSON format.
-Respond to me with the same data in JSON format.
+Request format:
+{<integer id>:<properties you need to validate>}
+Response format should also be the same JSON:
+{<integer id>:<properties you validated and modified>}
 """
-    def __init__(self,data):
-        super().__init__()
-        self.data=data
+    invalid_data: dict[int, Attributes]
 
-    def get_response(self) :
-        user_content: list = self.make_user_content()
+    def get_response(self):
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
@@ -27,7 +29,7 @@ Respond to me with the same data in JSON format.
                     "content": [
                         {
                             "type": "text",
-                            "text": ValidateAttribute.system_prompt
+                            "text": ValidateProperty.system_prompt
                         }
                     ]
                 },
@@ -42,65 +44,206 @@ Respond to me with the same data in JSON format.
 
             ],
             temperature=0,
-            max_tokens=75 * len(user_content),
+            max_tokens=100 * 20,
             top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0
         )
-
         return json.loads(response.choices[0].message.content)
 
-    def get_result(self):
-        return json.dumps(self.get_response())
+    def validate_data(self, raw_attributes: Attributes):
+        validations = [
+            self.clothes_metadata.fit.validate(raw_attributes.fit),
+            self.clothes_metadata.color.validate(raw_attributes.colorList),
+            self.clothes_metadata.pattern.validate(raw_attributes.patternList),
+            self.clothes_metadata.season.validate(raw_attributes.seasonList),
+            self.clothes_metadata.style.validate(raw_attributes.styleList),
+            self.clothes_metadata.texture.validate(raw_attributes.textureList)
+        ]
+        if False in validations:
+            return False
+        return True
 
     def make_user_content(self):
+        user_content = {k: v.model_dump(exclude={"extra", "categoryLowId"}) for k, v in self.invalid_data.items()}
+
         return [{
-                "type": "text",
-                "text": json.dumps(self.data),
-            }]
+            "type": "text",
+            "text": json.dumps(user_content)
+        }]
 
     def make_assistant_content(self):
+        assistant_content = ""
+        assistant_content += f"""
+1.<fit>{'' if self.clothes_metadata.fit.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.fit.get_values()}</possibleValues>
+</fit>
+"""
+        assistant_content += f"""
+2.<colorList>{'' if self.clothes_metadata.color.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.color.get_values()}</possibleValues>
+</colorList>
+"""
+        assistant_content += f"""
+3.<patternList>{'' if self.clothes_metadata.pattern.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.pattern.get_values()}</possibleValues>
+</patternList>
+"""
+        assistant_content += f"""
+4.<seasonList>{'' if self.clothes_metadata.season.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.season.get_values()}</possibleValues>
+</seasonList>
+"""
+        assistant_content += f"""
+5.<styleList>{'' if self.clothes_metadata.style.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.style.get_values()}</possibleValues>
+</styleList>
+"""
+        assistant_content += f"""
+6.<textureList>{'' if self.clothes_metadata.texture.is_essential else '`null` value possible'}
+<possibleValues>{self.clothes_metadata.texture.get_values()}</possibleValues>
+</textureList>
+"""
         return [
             {
                 "type": "text",
-                "text": """
-Attributes:
-1. <fit>
-<Constraint>Type to how clothes fit body. Single value. `None` if there is no possible matching value.</Constraint>
-<possibleValues>OVER_FIT, SEMI_OVER_FIT, REGULAR_FIT, SLIM_FIT</possibleValues>
-</fit>
-2. <colorList>
-<Constraint>Identify up to 3 primary colors, Multiple values. Essential value</Constraint>
-<possibleValues>WHITE, BLACK, GRAY, RED, PINK, ORANGE, BEIGE, YELLOW, BROWN, GREEN, KHAKI, MINT, BLUE, NAVY, SKY, PURPLE, LAVENDER, WINE, NEON, GOLD</possibleValues>
-</colorList>
-3. <patternList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>SOLID, STRIPED, ZIGZAG, LEOPARD, ZEBRA, ARGYLE, DOT, PAISLEY, CAMOUFLAGE, FLORAL, LETTERING, GRAPHIC, SKULL, TIE_DYE, GINGHAM, GRADATION, CHECK, HOUNDSTOOTH</possibleValues>
-</patternList>
-4. <seasonList>
-<Constraint>Suitable season to wear. Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>SPRING, SUMMER, AUTUMN, WINTER</possibleValues>
-</seasonList>
-5. <styleList>
-<Constraint>Unique appearance or atmosphere. Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
-</styleList>
-6. <textureList>
-<Constraint>Multiple values. `None` if there is no possible matching value</Constraint>
-<possibleValues>FUR, KNIT, MOUTON, LACE, SUEDE, LINEN, ANGORA, MESH, CORDUROY, FLEECE, SEQUIN_GLITTER, NEOPRENE, DENIM, SILK, JERSEY, SPANDEX, TWEED, JACQUARD, VELVET, LEATHER, VINYL_PVC, COTTON, WOOL_CASHMERE, CHIFFON, SYNTHETIC_POLYESTER</possibleValues>
-</textureList>
-7. <category>
-<Constraint>Please categorize into subcategories. Essential value. Possible values are expressed as <parent category>subcategories</parent category></Constraint>
-<possibleValues>
-<상의>탑, 블라우스, 티셔츠, 니트웨어, 셔츠, 브라탑, 후드티</상의>
-<하의>: 청바지, 팬츠, 스커트, 레깅스, 조거팬츠</하의>
-<아우터>코트, 재킷, 점퍼, 패딩, 베스트, 가디건, 짚업</아우터>
-<원피스>드레스, 점프수트</원피스>
-<신발>운동화, 구두, 샌들</신발>
-<악세서리>주얼리, 기타, 모자</악세서리>
-<가방>가방, 백팩, 힙색</가방>
-</possibleValues>
-</category>
-"""
+                "text": assistant_content
             }
         ]
+
+    def process(self, raw_data: dict[int, Attributes]):
+        self.invalid_data = {}
+
+        for k, datum in raw_data.items():
+            if not self.validate_data(datum):
+                self.invalid_data[k] = datum
+        valid_data = self.get_response()
+        for k, datum in valid_data.items():
+            if isinstance(k, str):
+                k=int(k)
+            raw_data[k]=raw_data[k].model_copy(update={**datum}, deep=True)
+            if not self.validate_data(raw_data[k]):
+                del raw_data[k]
+                logging.error(f"id : {k} 속성 검증 및 정규화 실패")
+        return raw_data
+
+
+class ValidateCategory(OpenAIClient):
+    system_prompt: str = """
+I'll give you the parent category and its subcategories that are already defined.
+Change them to subcategories that have similar values and shapes or usage. Change it to the most similar subcategory within the same parent category
+
+I'll give you the value in the format {`parent category`:[`incorrect value list`]}, like {"가방":["크로스백","핸드백"]}
+
+Give me the response in JSON format {`parent category`:{`Incorrect value`:`Correctly matched subcategory`}}, like {"가방":{"크로스백":"힙색","핸드백":"가방"}}
+"""
+    invalid_subcategories: dict[str, list[str]]
+
+    def get_response(self) -> dict[str, dict[str, str]]:
+        response = self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": ValidateCategory.system_prompt
+                        }
+                    ]
+                },
+                {
+                    "role": "assistant",
+                    "content": self.make_assistant_content()
+                },
+                {
+                    "role": "user",
+                    "content": self.make_user_content()
+                },
+
+            ],
+            temperature=0,
+            max_tokens=100 * 20,
+            top_p=0.9,
+            frequency_penalty=0,
+            presence_penalty=0,
+        )
+        return json.loads(response.choices[0].message.content)
+
+    def make_assistant_content(self):
+        assistant_content = []
+        for k, v in self.clothes_metadata.category_dict().items():
+            assistant_content.append({
+                "parent": k,
+                "subcategories": v
+            })
+        return [{
+            "type": "text",
+            "text": json.dumps(assistant_content,ensure_ascii=False),
+        }]
+
+    def make_user_content(self):
+        return [{
+            "type": "text",
+            "text": json.dumps(self.invalid_subcategories, ensure_ascii=False),
+        }]
+
+    def validate_data(self, raw_GPTAttrResponse: GPTAttrResponse):
+        if raw_GPTAttrResponse.parentCategory in self.clothes_metadata.category_dict():
+            if raw_GPTAttrResponse.subCategory in self.clothes_metadata.low_category_2_code():
+                return True
+            else:
+                return False
+        else:
+            raise Exception("존재하지 않는 상위 카테고리 :" + raw_GPTAttrResponse.parentCategory)
+
+    def process(self, raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
+        self.invalid_subcategories = {}
+        invalid_data = []
+
+        for key, datum in raw_data.items():
+            if not self.validate_data(datum):
+                invalid_data.append(datum)
+                if datum.parentCategory not in self.invalid_subcategories:
+                    self.invalid_subcategories[datum.parentCategory] = []
+                if datum.subCategory not in self.invalid_subcategories[datum.parentCategory]:
+                    self.invalid_subcategories[datum.parentCategory].append(datum.subCategory)
+        is_clear=True
+        if len(self.invalid_subcategories) != 0:
+            is_clear=False
+            valid_subcategories = self.get_response()
+            for datum in invalid_data:
+                datum.subCategory = valid_subcategories[datum.parentCategory][datum.subCategory]
+
+        valid_data = {}
+        for key, datum in raw_data.items():
+            if not is_clear and not self.validate_data(datum):
+                logging.error(f"id : {key} 카테고리 검증 및 정규화 실패")
+                del raw_data[key]
+            else:
+                valid_data[key] = Attributes(
+                    **datum.model_dump(exclude={"parentCategory", "subCategory"}),
+                    categoryLowId=self.clothes_metadata.low_category_2_code()[datum.subCategory]
+                )
+        return valid_data
+
+
+validateCategory = ValidateCategory()
+validateProperty = ValidateProperty()
+
+
+def run_validate(raw_data: dict[int, GPTAttrResponse]):
+    init_keys = list(raw_data.keys())
+    category_validated_data = validateCategory.process(raw_data)
+    valid_data = validateProperty.process(category_validated_data)
+    valid_keys = list(valid_data.keys())
+    removed_data = []
+    for key in init_keys:
+        if key not in valid_keys:
+            removed_data.append(str(key))
+    if removed_data:
+        logging.info(f"key : {', '.join(removed_data)}| 속성 검증 필터링 됨")
+    logging.info(f"key : {', '.join(map(str, valid_keys))}| 최종 속성 검증")
+
+    return valid_data
