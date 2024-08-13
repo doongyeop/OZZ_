@@ -42,20 +42,20 @@ export const uploadProfileImage = async (file: File) => {
   if (!userApi) throw new Error('User API not initialized')
 
   const payload: UploadProfileImagePayload = { file }
-  console.log('사진 올리기 요청 payload:', payload)
+  // console.log('사진 올리기 요청 payload:', payload)
 
   const response = await userApi.uploadProfileImage(payload)
-  console.log('사진 업로드 응답 코드:', response.status)
-  console.log('사진 업로드 응답 메시지:', response.statusText)
+  // console.log('사진 업로드 응답 코드:', response.status)
+  // console.log('사진 업로드 응답 메시지:', response.statusText)
 
   if (response.status === 403) {
     console.log('403 Forbidden 오류 발생: 인증 또는 권한 문제일 수 있습니다.')
   }
 
   const data = await response.json()
-  console.log('사진 올리기 응답 데이터:', data)
+  // console.log('사진 올리기 응답 데이터:', data)
 
-  return response.data
+  return data
 }
 
 export const checkNickname = async (nickname: string) => {
@@ -69,10 +69,10 @@ export const deleteProfileImage = async () => {
   const userApi = getUserApi()
   if (!userApi) throw new Error('User API not initialized')
 
-  console.log('이미지 삭제 요청을 보냅니다...')
+  // console.log('이미지 삭제 요청을 보냅니다...')
   const response = await userApi.deleteProfileImage()
-  console.log('이미지 삭제 응답 코드:', response.status)
-  console.log('이미지 삭제 응답 메시지:', response.statusText)
+  // console.log('이미지 삭제 응답 코드:', response.status)
+  // console.log('이미지 삭제 응답 메시지:', response.statusText)
 
   if (response.status === 403) {
     console.log('403 Forbidden 오류 발생: 인증 또는 권한 문제일 수 있습니다.')
