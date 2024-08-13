@@ -1,12 +1,16 @@
 import React, { useRef } from 'react'
 import { HiPhotograph, HiFolder } from 'react-icons/hi'
-import { uploadFile } from '@/services/fileApi'
+import { uploadProfileImage } from '@/services/userApi'
 
 interface UploadModalProps {
   onClose: () => void
+  onFileUploadSuccess: () => void
 }
 
-export default function UploadModal({ onClose }: UploadModalProps) {
+export default function UploadModal({
+  onClose,
+  onFileUploadSuccess,
+}: UploadModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleUploadClick = () => {
@@ -20,13 +24,13 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   ) => {
     const file = event.target.files?.[0]
     if (file) {
-      console.log('선택된 파일:', file)
       try {
-        const response = await uploadFile({ file })
-        console.log('파일 업로드 성공:', response)
+        const response = await uploadProfileImage(file)
+        console.log('프로필 이미지 업로드 성공:', response)
+        onFileUploadSuccess() // 업로드 성공 후 콜백 호출
         onClose() // 업로드 후 모달 닫기
       } catch (error) {
-        console.error('파일 업로드 실패:', error)
+        console.error('프로필 이미지 업로드 실패:', error)
       }
     }
   }

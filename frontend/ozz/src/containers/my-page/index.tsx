@@ -98,9 +98,10 @@ export default function MyPageIndex() {
               <Image
                 src={profileSrc}
                 alt="프로필 사진"
-                className="rounded-full w-16 h-16"
+                className="rounded-full w-16 h-16 object-cover"
                 width={64} // w-16에 해당하는 픽셀 값
                 height={64} // h-16에 해당하는 픽셀 값
+                style={{ aspectRatio: '1 / 1' }}
                 priority // 페이지 로딩 시 우선적으로 로드할 경우
               />
             ) : (

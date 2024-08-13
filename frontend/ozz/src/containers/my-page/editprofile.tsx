@@ -68,19 +68,20 @@ function ProfileEdit() {
     }
   }
 
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await getUserInfo()
+      setUser(userInfo)
+      if (userInfo.profileFileId) {
+        await getProfilePic(userInfo.profileFileId)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+  }
+
   useEffect(() => {
     syncTokensWithCookies()
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getUserInfo()
-        setUser(userInfo)
-        if (userInfo.profileFileId) {
-          await getProfilePic(userInfo.profileFileId)
-        }
-      } catch (error) {
-        console.error('Failed to fetch user info:', error)
-      }
-    }
     fetchUserInfo()
   }, [])
 
@@ -121,6 +122,7 @@ function ProfileEdit() {
       }
 
       await updateUser(userData)
+      await fetchUserInfo()
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -154,6 +156,11 @@ function ProfileEdit() {
     resetProfilePic()
     toggleProfileModal()
   }, [resetProfilePic, toggleProfileModal])
+
+  const handleUploadSuccess = useCallback(async () => {
+    await fetchUserInfo()
+    toggleProfileModal()
+  }, [])
 
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
@@ -199,7 +206,12 @@ function ProfileEdit() {
               >
                 기본 이미지로 변경
               </button>
-              {uploadModal && <UploadModal onClose={toggleUploadModal} />}
+              {uploadModal && (
+                <UploadModal
+                  onClose={toggleUploadModal}
+                  onFileUploadSuccess={handleUploadSuccess}
+                />
+              )}
             </div>
           </Modal>
         )}
