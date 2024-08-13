@@ -3,8 +3,10 @@ import logging
 import os
 from io import BytesIO
 import traceback
+import time
 
 import pika
+from pika import exceptions
 import requests
 from requests_toolbelt import MultipartEncoder
 
@@ -93,20 +95,46 @@ def IPcallback(ch, method, properties, body):
     except Exception as e:
         logging.error(traceback.format_exc())
 
+def connect_to_rabbitmq():
+    retry_count=12
+    parameters = pika.ConnectionParameters(os.getenv("RABBITMQ_HOST"))  # RabbitMQ 서버의 주소
+    while retry_count>0:
+        try:
+            connection = pika.BlockingConnection(parameters)
+            channel = connection.channel()
+            return connection, channel
+        except exceptions.AMQPConnectionError as e:
+            logging.error(f"Connection failed, retrying in 5 seconds: {e}")
+            retry_count-=1
+            time.sleep(5)
+        except Exception as e:
+            logging.error(f"Connection failed, 알수없는 오류 {e}")
+            retry_count-=12
+    return None, None
 
-def start_consumer():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("RABBITMQ_HOST")))
-    channel = connection.channel()
-
+def consume_messages(channel):
     channel.queue_declare(queue='extract-attribute')
     channel.queue_declare(queue='image-process')
-
     channel.basic_consume(queue='extract-attribute',
                           on_message_callback=EAcallback,
                           auto_ack=True)
     channel.basic_consume(queue='image-process',
                           on_message_callback=IPcallback,
                           auto_ack=True)
+    try:
+        channel.start_consuming()
+    except pika.exceptions.StreamLostError:
+        print("Stream lost, attempting to reconnect...")
+        return False  # 연결이 끊겼음을 알림
 
-    print('Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
+def main():
+    while True:
+        connection, channel = connect_to_rabbitmq()
+        if connection is None:
+            logging.error("RabbitMQ connection failed")
+            return
+        if not consume_messages(channel):
+            continue
+
+if __name__ == "__main__":
+    main()
