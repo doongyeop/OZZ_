@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
@@ -9,11 +10,7 @@ import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
-import {
-  categoryLowIdToHighNameMap,
-  categoryMap,
-  categoryNameToLowIdMap,
-} from '@/types/clothing'
+import { categoryLowIdToHighNameMap } from '@/types/clothing'
 
 type FittingItem = {
   category: string
@@ -198,66 +195,48 @@ export default function FittingContainer() {
           <ul className="mt-2 px-6">
             {selectedClothes.map((item) => (
               <li key={item.clothesId} className="mb-2 p-3 border-b">
-                <div className="flex items-center ">
-                  <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name ?? 'No name'}
-                      width={75}
-                      height={75}
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'contain',
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-row w-full justify-between">
-                    <div className="flex flex-col">
-                      <p className="mb-2">{item.categoryLow?.name}</p>
-                      <p className="text-md font-semibold">{item.name}</p>
+                <Link href={`/closet/modify/${item.clothesId}`} passHref>
+                  <div className="flex items-center cursor-pointer">
+                    <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name ?? 'No name'}
+                        width={75}
+                        height={75}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          width: 'auto',
+                          height: 'auto',
+                          objectFit: 'contain',
+                        }}
+                      />
                     </div>
-                    <button
-                      type="button"
-                      aria-label="제거"
-                      onClick={() => {
-                        const categoryLowId = item.categoryLow?.categoryLowId
-                        if (categoryLowId !== undefined) {
-                          const highCategoryName =
-                            categoryLowIdToHighNameMap[categoryLowId]
-                          handleRemoveItem(highCategoryName)
-                        } else {
-                          console.error('카테고리 ID가 유효하지 않습니다.')
-                        }
-                      }}
-                      className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
-                    >
-                      <FaMinus />
-                    </button>
+                    <div className="flex flex-row w-full justify-between">
+                      <div className="flex flex-col">
+                        <p className="mb-2">{item.categoryLow?.name}</p>
+                        <p className="text-md font-semibold">{item.name}</p>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="제거"
+                        onClick={() => {
+                          const categoryLowId = item.categoryLow?.categoryLowId
+                          if (categoryLowId !== undefined) {
+                            const highCategoryName =
+                              categoryLowIdToHighNameMap[categoryLowId]
+                            handleRemoveItem(highCategoryName)
+                          } else {
+                            console.error('카테고리 ID가 유효하지 않습니다.')
+                          }
+                        }}
+                        className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                      >
+                        <FaMinus />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                {/* <Link key={item.id} href={`/closet/modify/${item.id}`} passHref>
-              <div className="flex items-center mb-4 mt-4 cursor-pointer">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={50}
-                  height={50}
-                  className="mr-4"
-                />
-                <div>
-                  <div className="text-sm text-gray-500">
-                    {item.purchaseDate}
-                  </div>
-                  <div className="text-lg font-semibold">{item.name}</div>
-                </div>
-              </div>
-              <hr />
-            </Link>
-
-            */}
+                </Link>
               </li>
             ))}
           </ul>

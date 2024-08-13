@@ -7,8 +7,6 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 
 import {
-  ClothingData,
-  categoryMap,
   categoryNameToLowIdMap,
   categoryNameToHighIdMap,
 } from '@/types/clothing'
@@ -57,13 +55,11 @@ export default function ClosetSidebar({
 
   useEffect(() => {
     if (category) {
-      setSelectedCategory(category)
-      console.log('category ', category)
       const [categoryHighName, categoryLowName] = category.split(' > ')
       const categoryHighId = categoryNameToHighIdMap[categoryHighName]
       const categoryLowId = categoryNameToLowIdMap[categoryLowName] || ''
 
-      // setSelectedCategory(categoryLowName)
+      setSelectedCategory(category)
       setSelectedCategoryHighId(categoryHighId)
       setSelectedCategoryLowId(categoryLowId)
     }
@@ -80,13 +76,9 @@ export default function ClosetSidebar({
 
   const handleCategoryChange = (newCategory: string) => {
     // 카테고리 필터링
-    console.log('newCategory ', newCategory)
     const [categoryHighName, categoryLowName] = newCategory.split(' > ')
     const categoryHighId = categoryNameToHighIdMap[categoryHighName]
     const categoryLowId = categoryNameToLowIdMap[categoryLowName] || ''
-
-    console.log('categoryHighId ', categoryHighId)
-    console.log('categoryLowId ', categoryLowId)
 
     onCategoryChange(newCategory)
     setSelectedCategory(newCategory)
