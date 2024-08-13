@@ -28,6 +28,7 @@
 ### 아키텍쳐<hr>
 
 ### ERD<hr>
+![ERD](img/ERD.png)
 
 ### 주요 기술<hr>
 
