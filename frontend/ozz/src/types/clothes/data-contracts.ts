@@ -189,7 +189,7 @@ export interface ClothesUpdateRequest {
 /** 상위 카테고리 기본 정보 DTO */
 export interface CategoryHighBasicResponse {
   /** @format byte */
-  categoryHighId?: string
+  categoryHighId?: number
   name?: string
 }
 
