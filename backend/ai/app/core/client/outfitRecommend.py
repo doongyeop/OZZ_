@@ -3,59 +3,58 @@ import json
 from app.core.client.openAIClient import OpenAIClient
 from app.schemas.recommend import Recommend, RecommendedOutfit
 
+
 class OutfitRecommendation(OpenAIClient):
-    recommend:Recommend
+    recommend: Recommend
     system_prompt = """
 Role:
-You are a professional AI that recommends outfits based on the clothes in your closet.
-It provides recommendations through a comprehensive analysis of the current weather and the characteristics of the clothes.
+You are a professional AI that recommends outfit based on the clothes in my closet.
+It provides recommendations by comprehensively analyzing the current weather and the characteristics of the clothes.
 
-Things to consider:
-- Clothing features: <cloth_id> is the id of the corresponding clothing
-- weather: Weather and average temperature
-- pointColor: The point color of the clothing that must be included
-- essential: Clothing that must be included
-- style: Clothing styles that would like to recommend
+Considerations:
+- Clothing characteristics: <cloth_id> is the id of the corresponding clothes.
+- weather: weather and average temperature
+- pointColor: point color of the clothes that should be included
+- essential: clothes that should be included
+- style: desired outfit styles
+- category: <parentCategory> of items that make up the clothes should not overlap. In other words, the outfit do not select two clothes within the same <parentCategory>.
 
-Request example :
+Example request:
 {
-    "clothes":[{
-            "id": <clothe_id>,
-            <AttributeName>: <AttributeValues>,
-            "parentCategory": "상의"
-            "subCategory": "셔츠"
-        }]
-    },
-    "consider":{
-        "weather":{"temperature":25,"weather": "rain"}
-        "pointColor":["RED","WHITE"],
-        "essential":[<clothe_id>],
-        "style":"FORMAL"
-    }
+"clothes":{
+<parentCategory>:[{
+"id": <clothe_id>,
+<AttributeName>: <AttributeValues>,
+"subCategory": "Shirts"}]
+}
+},
+"consider":{
+"weather":{"temperature":25,"weather": "rain"}
+"pointColor":["RED","WHITE"],
+"essential":[<clothe_id>],
+"style": ["FORMAL","CASUAL"]
+}
 }
 
 Result:
-Before reporting the result, check if the clothes are properly composed.
-Report the recommended clothes in JSON format, including a brief title, the ids of the composed clothes, and <recommendation_reason> for the recommendation.
-Please choose the style of the recommended outfit from the <possibleValues>.
-<possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
-Recommend up to 6 outfits, and if you cannot make an outfit that meets the conditions, please write a reason why you cannot make it in "result".
+Reports recommended outfit in JSON format, including a simple title, the ID of the composed clothing, and a <recommendation_reason> for the recommendation. <possibleValues>Categorize the style of the recommended clothing
+<possibleValues>Romantic, Street, Sporty, Natural, Masculine, Casual, Elegant, Modern, Formal, Ethnic</possibleValues>
+Recommend up to 10 outfit, and if you can't make a outfit that meets the criteria, write the reason why you can't make it in "result".
 
-Important!!: The parent categories of each item in an outfit cannot overlap.
-
-Result example:
+Example result:
 {
 "result":"success"
 "outfit":[{
-"title": "가을 캐주얼 룩",
+"title": "Fall Casual Look",
 "items": ["12","54","23","56","2352"],
 "style": "FORMAL",
 "recommendation_reason": <recommendation_reason>}]
 }
 """
-    def __init__(self, recomend: Recommend):
+
+    def __init__(self, recommend: Recommend):
         super().__init__()
-        self.recommend = recomend
+        self.recommend = recommend
 
     def get_response(self):
         response = self.client.chat.completions.create(
@@ -77,16 +76,16 @@ Result example:
                 },
             ],
             temperature=1,
-            max_tokens=75 * len(self.recommend.clothes)+10,
+            max_tokens=4000,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
         )
         return json.loads(response.choices[0].message.content)
 
-    def parse_response(self, response:dict):
-        if response["result"]=="success":
-            return list(map(lambda a:RecommendedOutfit(**a),response["outfit"]))
+    def parse_response(self, response: dict):
+        if response["result"] == "success":
+            return list(map(lambda a: RecommendedOutfit(**a), response["outfit"]))
         else:
             return []
 
@@ -94,9 +93,17 @@ Result example:
         return self.parse_response(self.get_response())
 
     def make_user_content(self):
+        data_format = {key: [] for key in self.clothes_metadata.category_dict().keys()}
+        clothes = self.recommend.clothes
+        for clothe in clothes:
+            data_format[clothe.parentCategory].append(clothe.model_dump(exclude={"imgPath", "parentCategory"}))
+        content = {
+            "clothes": data_format,
+            "consider": self.recommend.consider.model_dump()
+        }
         return [
             {
                 "type": "text",
-                "text": self.recommend.model_dump_json(exclude=set("imgPath"))
+                "text": json.dumps(content)
             }
         ]
