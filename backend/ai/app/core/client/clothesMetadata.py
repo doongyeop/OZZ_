@@ -1,8 +1,11 @@
 import os
+from typing import Any
 
 import requests
 from pydantic import BaseModel
 import logging
+
+from app.schemas.attributes import HighCategoryResponse, LowCategoryResponse
 
 
 class LowCategory(BaseModel):
@@ -69,7 +72,7 @@ class Properties:
 
 
 class ClothesMetadata:
-    categories: list[HighCategory]
+    categories: list[dict[str, Any]]
     attributes: list[str]
     fit: Properties
     season: Properties
@@ -150,6 +153,15 @@ class ClothesMetadata:
                 if lowCategory['categoryLowId'] == lowcategoryId:
                     return category['name']
         return None
+
+    def low_categoryId_to_low_high_response(self, lowCategoryId:int):
+        for high_category in self.categories:
+            for lowCategory in high_category['categoryLowList']:
+                if lowCategory['categoryLowId'] == lowCategoryId:
+                    return (HighCategoryResponse(**high_category),LowCategoryResponse(**lowCategory)
+                            )
+        return None,None
+
 
 
 clothesMetadata = ClothesMetadata()

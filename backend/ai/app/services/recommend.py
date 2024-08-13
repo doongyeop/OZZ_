@@ -35,8 +35,10 @@ class RecommendService:
                 clothes.append(Clothes(**e))
         return clothes
 
-    def get_recommend_outfit(self, user_id, consider: Consider) -> list[RecommendationsResponse]:
+    def get_recommend_outfit(self, user_id, consider: Consider) -> list[RecommendationsResponse]|None:
         recommend_info: Recommend = Recommend(clothes=self.get_user_clothes(user_id), consider=consider)
+        if len(recommend_info.clothes)==0:
+            return None
         id_2_clothes: dict[int, Clothes] = {clothes.id: clothes for clothes in recommend_info.clothes}
         logging.info("코디 추천 요청 : "+str(recommend_info))
         outfitRecommendtaion = OutfitRecommendation(recommend_info)
@@ -50,6 +52,7 @@ class RecommendService:
                                                              img=make_snapshot(validated_data)))
             else:
                 logging.info("복장 불량 : "+str(outfit))
+
         return return_outfit
 
     def validate_outfit(self, items: list[int], id_2_clothes: dict[int, Clothes]):

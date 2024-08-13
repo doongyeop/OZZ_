@@ -8,6 +8,7 @@ class NormalizedClothes(BaseModel):
     category: str
     color: str | None
     imgUrl: str
+    isWorn: bool | None = None
 
 
 class AttributeBase(BaseModel):
@@ -22,8 +23,26 @@ class AttributeBase(BaseModel):
 
 class Attributes(AttributeBase):
     categoryLowId: int
+    isWorn:bool
 
 
 class GPTAttrResponse(AttributeBase):
     parentCategory: str
     subCategory: str
+    isWorn:bool
+
+
+class LowCategoryResponse(BaseModel):
+    categoryLowId: int
+    name: str
+
+
+class HighCategoryResponse(BaseModel):
+    categoryHighId: int
+    name: str
+
+
+class AttributeResponse(AttributeBase):
+    categoryHigh: HighCategoryResponse
+    categoryLow: LowCategoryResponse
+    image:str
