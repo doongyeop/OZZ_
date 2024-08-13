@@ -4,6 +4,7 @@
 
 import { useState, ReactNode, useCallback, useEffect } from 'react'
 import { UserUpdateRequest } from '@/types/user/data-contracts'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
@@ -14,6 +15,7 @@ import {
   updateUser,
   deleteUser,
   checkNickname,
+  deleteProfile,
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
@@ -53,6 +55,8 @@ function ProfileEdit() {
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
+  const router = useRouter()
+
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
@@ -68,19 +72,22 @@ function ProfileEdit() {
     }
   }
 
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await getUserInfo()
+      setUser(userInfo)
+      setResponseText('')
+      setErrorText('') // responseText 초기화
+      if (userInfo.profileFileId) {
+        await getProfilePic(userInfo.profileFileId)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+  }
+
   useEffect(() => {
     syncTokensWithCookies()
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getUserInfo()
-        setUser(userInfo)
-        if (userInfo.profileFileId) {
-          await getProfilePic(userInfo.profileFileId)
-        }
-      } catch (error) {
-        console.error('Failed to fetch user info:', error)
-      }
-    }
     fetchUserInfo()
   }, [])
 
@@ -121,6 +128,7 @@ function ProfileEdit() {
       }
 
       await updateUser(userData)
+      await fetchUserInfo() // 유저 정보 다시 불러오기
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -144,16 +152,30 @@ function ProfileEdit() {
   }, [])
 
   const resetProfilePic = useCallback(() => {
-    setUser((prev: any) => ({
-      ...prev,
-      profile_file_id: null,
-    }))
-  }, [])
+    if (user?.profileFileId) {
+      try {
+        deleteProfile()
+        fetchUserInfo() // 유저 정보 다시 불러오기
+      } catch (err) {
+        console.log('프로필 사진 삭제 실패:', err)
+      }
+    }
+  }, [user])
 
   const handleResetProfilePic = useCallback(() => {
     resetProfilePic()
     toggleProfileModal()
   }, [resetProfilePic, toggleProfileModal])
+
+  const handleUploadSuccess = useCallback(async () => {
+    await fetchUserInfo() // 유저 정보 다시 불러오기
+    toggleProfileModal()
+  }, [])
+
+  const deleteAccount = () => {
+    deleteUser()
+    router.push('/login')
+  }
 
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
@@ -164,6 +186,7 @@ function ProfileEdit() {
             <Image
               src={profileSrc}
               alt="프로필 이미지"
+              style={{ aspectRatio: '1 / 1' }}
               fill
               className="rounded-full"
             />
@@ -199,7 +222,12 @@ function ProfileEdit() {
               >
                 기본 이미지로 변경
               </button>
-              {uploadModal && <UploadModal onClose={toggleUploadModal} />}
+              {uploadModal && (
+                <UploadModal
+                  onClose={toggleUploadModal}
+                  onFileUploadSuccess={handleUploadSuccess}
+                />
+              )}
             </div>
           </Modal>
         )}
@@ -283,7 +311,7 @@ function ProfileEdit() {
               </button>
               <button
                 type="button"
-                onClick={deleteUser}
+                onClick={deleteAccount}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
                 확인

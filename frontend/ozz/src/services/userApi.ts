@@ -55,3 +55,37 @@ export const checkNickname = async (nickname: string) => {
   const response = await userApi.checkNickname({ nickname })
   return response.text()
 }
+
+export async function deleteProfile() {
+  const apiUrl = 'http://i11a804.p.ssafy.io/api/users/'
+
+  // 쿠키에서 AccessToken 가져오기
+  const accessToken = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('accessToken='))
+    ?.split('=')[1]
+
+  if (!accessToken) {
+    throw new Error('AccessToken이 존재하지 않습니다.')
+  }
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('프로필 삭제 실패')
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('프로필 삭제 중 오류 발생:', error)
+    throw error
+  }
+}
