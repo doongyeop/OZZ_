@@ -12,9 +12,9 @@ import {
 } from '@/types/clothing'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
 import { fetchImage, fetchUserClothes } from '@/services/clothingApi'
-import CategoryModal from '../Modal/CategoryModal'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
 import styles from '@/styles/ClosetSidebar.module.css'
+import CategoryModal from '../Modal/CategoryModal'
 
 type ClosetSidebarProps = {
   isSidebarOpen: boolean
@@ -65,15 +65,6 @@ export default function ClosetSidebar({
     }
   }, [category])
 
-  useEffect(() => {
-    if (selectedCategoryHighId !== undefined) {
-      const lowId =
-        selectedCategoryLowId !== undefined ? selectedCategoryLowId : ''
-      setSelectedCategoryLowId(lowId)
-      refetch() // 옷장을 다시 조회
-    }
-  }, [selectedCategoryHighId, selectedCategoryLowId])
-
   const handleCategoryChange = (newCategory: string) => {
     // 카테고리 필터링
     const [categoryHighName, categoryLowName] = newCategory.split(' > ')
@@ -109,6 +100,15 @@ export default function ClosetSidebar({
       initialPageParam: 0,
       enabled: !!selectedCategory,
     })
+
+  useEffect(() => {
+    if (selectedCategoryHighId !== undefined) {
+      const lowId =
+        selectedCategoryLowId !== undefined ? selectedCategoryLowId : ''
+      setSelectedCategoryLowId(lowId)
+      refetch() // 옷장을 다시 조회
+    }
+  }, [selectedCategoryHighId, selectedCategoryLowId])
 
   // Flatten the pages into a single list
   const clothingList = data?.pages.flatMap((page) => page.content) || []

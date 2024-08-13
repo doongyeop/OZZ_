@@ -52,7 +52,6 @@ export default function FittingContainer() {
   }
 
   const handleRemoveItem = (category: string) => {
-    console.log(category, ' 제거')
     // - 버튼을 눌렀을 때
     setFittingItems(
       fittingItems.map((item) =>
@@ -98,7 +97,7 @@ export default function FittingContainer() {
       return imageholder.category === categoryHighName
     })
 
-    console.log('placeholder ', placeholder)
+    // console.log('placeholder ', placeholder)
     if (!placeholder || placeholder.category !== selectedCategory) {
       // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
       console.error('잘못된 위치입니다.')
@@ -114,7 +113,7 @@ export default function FittingContainer() {
           }
         : fittingItem,
     )
-    console.log('현재 세팅 : ', updatedFittingItems)
+    // console.log('현재 세팅 : ', updatedFittingItems)
     setFittingItems(updatedFittingItems)
     setSelectedClothes([...selectedClothes, item])
     setIsSidebarOpen(false)
@@ -122,7 +121,7 @@ export default function FittingContainer() {
 
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category)
-    console.log('사이드바에서 선택 ', category)
+    // console.log('사이드바에서 선택 ', category)
   }
 
   return (
