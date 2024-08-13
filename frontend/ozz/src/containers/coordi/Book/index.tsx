@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { HiPencil, HiPlus } from 'react-icons/hi'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -13,7 +13,6 @@ import {
   getFavoritesGroupListOfUsers,
   deleteFavoriteGroup,
 } from '@/services/favoriteApi'
-import { useLongPress } from 'use-long-press'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
@@ -21,8 +20,9 @@ export default function CoordiBook() {
   const [newGroupName, setNewGroupName] = useState('')
   const [groups, setGroups] = useState<Coordibook[]>([])
   const [deleteModal, setDeleteModal] = useState(false)
-  const [deleteGroupId, setDeleteGroupId] = useState<number | null>(null) // 삭제할 그룹 ID 상태 추가
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const router = useRouter()
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const fetchFavoritesGroupList = async () => {
     try {
@@ -68,37 +68,49 @@ export default function CoordiBook() {
     }
   }
 
+  const handleMouseDown = (groupId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedGroupId(groupId)
+      setDeleteModal(true)
+    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+  }
+
+  const handleMouseUpOrLeave = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
+  }
+
   const deleteCoordiBook = async () => {
-    if (deleteGroupId !== null) {
-      try {
-        const res = await deleteFavoriteGroup(deleteGroupId)
-        setDeleteModal(false)
-        if (res.status === 204) {
-          console.log('삭제 완료')
-          fetchFavoritesGroupList()
-        } else {
-          console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
-          console.log('그룹삭제에 대한 response', res)
-          console.log('res.status는', res.status)
-        }
-      } catch (err) {
-        console.log(err)
+    if (selectedGroupId === null) return
+
+    try {
+      const res = await deleteFavoriteGroup(selectedGroupId)
+      setDeleteModal(false)
+      setSelectedGroupId(null)
+      if (res.status === 204) {
+        console.log('삭제 완료')
+        fetchFavoritesGroupList()
+      } else {
+        console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
+        console.log('그룹삭제에 대한 response', res)
+        console.log('res.status는', res.status)
       }
+    } catch (err) {
+      console.log(err)
     }
   }
 
   const getFavGrp = (group: Coordibook) => {
-    const bind = useLongPress(() => {
-      setDeleteGroupId(group.favoriteGroupId) // 삭제할 그룹 ID 설정
-      setDeleteModal(true)
-    })
-
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
           className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
-          {...bind} // Long press event에 그룹 ID 전달
+          onMouseDown={() => handleMouseDown(group.favoriteGroupId)}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
@@ -132,20 +144,6 @@ export default function CoordiBook() {
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
           {group.name}
         </CardTitle>
-        {deleteModal && (
-          <Modal
-            onClose={() => setDeleteModal(false)}
-            title="코디북을 삭제하시겠습니까?"
-          >
-            <button
-              onClick={() => setDeleteModal(false)}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              아니오
-            </button>
-            <button onClick={deleteCoordiBook}>네</button>
-          </Modal>
-        )}
       </div>
     )
   }
@@ -190,6 +188,29 @@ export default function CoordiBook() {
               className="px-3 py-1 mt-4 rounded-full text-sm text-primary-400 border border-primary-400 font-bold hover:text-secondary hover:bg-primary-400"
             >
               만들기
+            </button>
+          </div>
+        </Modal>
+      )}
+      {deleteModal && (
+        <Modal
+          onClose={() => setDeleteModal(false)}
+          title="코디북을 삭제하시겠습니까?"
+        >
+          <div className="flex justify-center space-x-4">
+            <button
+              type="button"
+              onClick={() => setDeleteModal(false)}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              아니오
+            </button>
+            <button
+              type="button"
+              onClick={deleteCoordiBook}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              네
             </button>
           </div>
         </Modal>
