@@ -58,7 +58,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
         UserInfo userInfo = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
         Notification notification = Notification.builder()
                 .board(board)
-                .userId(userId)
+                .userId(board.getUserId())
                 .read(false)
                 .content(userInfo.nickname() + "님이 내 게시글을 마음에 들어합니다.")
                 .build();
