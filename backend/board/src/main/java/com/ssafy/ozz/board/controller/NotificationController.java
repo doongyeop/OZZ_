@@ -46,9 +46,9 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/user")
     @Operation(summary = "모든 알림 삭제", description = "사용자에게 온 모든 알림을 삭제합니다.")
-    public ResponseEntity<Void> deleteAllNotifications(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteAllNotifications(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         notificationService.deleteAllNotifications(userId);
         return ResponseEntity.noContent().build();
     }
