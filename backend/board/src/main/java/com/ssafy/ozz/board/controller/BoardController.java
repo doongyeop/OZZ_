@@ -42,7 +42,7 @@ public class BoardController {
     }
 
     // O
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
     public ResponseEntity<Page<BoardResponse>> getBoardsByUserId(
             @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, Pageable pageable) {
@@ -52,6 +52,7 @@ public class BoardController {
         return ResponseEntity.ok(boardResponses);
     }
 
+    // O
     @GetMapping("/")
     @Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoards(Pageable pageable) {
@@ -65,7 +66,7 @@ public class BoardController {
         return ResponseEntity.ok(boardBasicResponses);
     }
 
-    // O
+    // X
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
@@ -74,7 +75,7 @@ public class BoardController {
 
         return ResponseEntity.ok(boardResponse);
     }
-
+    // O
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByAgeRange(
@@ -90,7 +91,7 @@ public class BoardController {
 
         return ResponseEntity.ok(boardBasicResponses);
     }
-
+    // O
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByStyle(
@@ -103,7 +104,7 @@ public class BoardController {
 
         return ResponseEntity.ok(boardBasicResponses);
     }
-
+    // O
     @GetMapping("/sort/likes")
     @Operation(summary = "좋아요 순으로 게시글 조회", description = "최근 하루 동안의 좋아요 순으로 게시글을 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {

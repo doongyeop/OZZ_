@@ -20,7 +20,6 @@ export default function MyPageIndex() {
   const [modal, setModal] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [profileSrc, setProfileSrc] = useState('')
-  // const [profilePic, setProfilePic] = useState()
   const [loading, setLoading] = useState(true)
 
   const deleteAllCookies = () => {
@@ -37,11 +36,12 @@ export default function MyPageIndex() {
       console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
       console.log('downloadFile 성공', picture)
-      // // 여기서 Blob URL을 만들어서 profileSrc에 저장
-      // const urlStr = URL.createObjectURL(picture)
-      // setProfileSrc(urlStr)
+      if (picture !== undefined) {
+        const pictureUrl = URL.createObjectURL(picture)
+        setProfileSrc(pictureUrl)
+      }
     } catch (error) {
-      console.log(error)
+      console.log('프로필사진 가져오는 중 오류 발생:', error)
     }
   }
 
@@ -98,9 +98,10 @@ export default function MyPageIndex() {
               <Image
                 src={profileSrc}
                 alt="프로필 사진"
-                className="rounded-full w-16 h-16"
+                className="rounded-full w-16 h-16 object-cover"
                 width={64} // w-16에 해당하는 픽셀 값
                 height={64} // h-16에 해당하는 픽셀 값
+                style={{ aspectRatio: '1 / 1' }}
                 priority // 페이지 로딩 시 우선적으로 로드할 경우
               />
             ) : (

@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 'use client'
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState, ReactNode, useCallback, useEffect } from 'react'
 import { UserUpdateRequest } from '@/types/user/data-contracts'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { HiPencil } from 'react-icons/hi'
 import { FaUser } from 'react-icons/fa6'
@@ -15,7 +16,7 @@ import {
   deleteUser,
   checkNickname,
 } from '@/services/userApi'
-// import { getFile, downloadFile } from '@/services/fileApi'
+import { getFile, downloadFile, deleteFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import UploadModal from './modal'
 
@@ -24,6 +25,7 @@ interface FieldProps {
   id: string
   children: ReactNode
 }
+
 interface User {
   email: string
   birth: Date
@@ -42,44 +44,90 @@ function Field({ label, id, children }: FieldProps) {
 }
 
 function ProfileEdit() {
-  // const [user, setUser] = useState<User | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
+  const [errorText, setErrorText] = useState('')
+  const [responseText, setResponseText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
+  const router = useRouter()
+  const getProfilePic = async (picId: number) => {
+    try {
+      const fileData = await getFile(picId)
+      console.log('getFile 성공', fileData)
+      const picture = await downloadFile(fileData.filePath)
+      console.log('downloadFile 성공', picture)
+      if (picture !== undefined) {
+        const pictureUrl = URL.createObjectURL(picture)
+        setProfileSrc(pictureUrl)
+      }
+    } catch (error) {
+      console.log('프로필사진 가져오는 중 오류 발생:', error)
+    }
+  }
+
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await getUserInfo()
+      setUser(userInfo)
+      if (userInfo.profileFileId) {
+        await getProfilePic(userInfo.profileFileId)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+  }
+
   useEffect(() => {
     syncTokensWithCookies()
-    const fetchUserInfo = async () => {
-      try {
-        await getUserInfo().then((userInfo) => {
-          setUser(userInfo)
-        })
-      } catch (error) {
-        console.error('Failed to fetch user info:', error)
-      }
-    }
     fetchUserInfo()
   }, [])
 
+  const checkNicknameDuplication = async (nick: string) => {
+    if (nick.length > 15 || nick.length <= 0) {
+      setErrorText('닉네임은 1-15자 이내여야 합니다')
+      setResponseText('')
+      return
+    }
+    if (nick.includes(' ')) {
+      setResponseText('')
+      setErrorText('공백은 사용 불가능합니다')
+      return
+    }
+
+    try {
+      const response = await checkNickname(nick)
+      setResponseText(response)
+      setErrorText('')
+      setNickname(nick)
+    } catch (error) {
+      setErrorText('이미 사용 중인 닉네임입니다')
+      setResponseText('')
+    }
+  }
+
   const saveUserInfo = async () => {
-    if ((await checkNickname(nickname)) === '사용 가능한 닉네임입니다.') {
-      try {
-        const userData: UserUpdateRequest = {
-          nickname,
-          birth: birthday?.toISOString() || '', // ISO 형식으로 변환
-        }
-        return true
-      } catch (error) {
-        console.log('회원정보 수정 안 됨', error)
+    try {
+      await checkNicknameDuplication(nickname)
+
+      if (errorText) {
         return false
       }
-    } else {
-      alert('닉네임사용불가')
-      console.log('닉네임 수정 필요쓰')
+
+      const userData: UserUpdateRequest = {
+        nickname,
+        birth: birthday?.toISOString() || '', // ISO 형식으로 변환
+      }
+
+      await updateUser(userData)
+      router.push('/mypage/edit')
+      return true
+    } catch (error) {
+      console.log('회원정보 수정 안 됨', error)
       return false
     }
   }
@@ -100,10 +148,14 @@ function ProfileEdit() {
   }, [])
 
   const resetProfilePic = useCallback(() => {
-    setUser((prev: any) => ({
-      ...prev,
-      profile_file_id: null,
-    }))
+    if (user?.profileFileId) {
+      try {
+        deleteFile(user.profileFileId)
+        router.push('/mypage/edit')
+      } catch (err) {
+        console.log('프로필 사진 삭제 실패:', err)
+      }
+    }
   }, [])
 
   const handleResetProfilePic = useCallback(() => {
@@ -111,6 +163,15 @@ function ProfileEdit() {
     toggleProfileModal()
   }, [resetProfilePic, toggleProfileModal])
 
+  const handleUploadSuccess = useCallback(async () => {
+    router.push('/mypage/edit')
+    toggleProfileModal()
+  }, [])
+
+  const deleteAccount = () => {
+    deleteUser()
+    router.push('/login')
+  }
   return (
     <div className="relative w-full max-w-[360px] mx-auto flex flex-col items-center">
       {/* Profile Image Section */}
@@ -155,7 +216,12 @@ function ProfileEdit() {
               >
                 기본 이미지로 변경
               </button>
-              {uploadModal && <UploadModal onClose={toggleUploadModal} />}
+              {uploadModal && (
+                <UploadModal
+                  onClose={toggleUploadModal}
+                  onFileUploadSuccess={handleUploadSuccess}
+                />
+              )}
             </div>
           </Modal>
         )}
@@ -185,6 +251,10 @@ function ProfileEdit() {
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
               <HiPencil className="fill-gray-300 w-3.5 h-3.5 group-hover:fill-primary-400" />
             </div>
+            {errorText && (
+              <span className="text-xs text-red-500">{errorText}</span>
+            )}
+            {responseText && <span className="text-xs">{responseText}</span>}
           </div>
         </Field>
 
@@ -235,7 +305,7 @@ function ProfileEdit() {
               </button>
               <button
                 type="button"
-                onClick={deleteUser}
+                onClick={deleteAccount}
                 className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
               >
                 확인

@@ -200,7 +200,7 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
 
     def process(self, raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
         self.invalid_subcategories = {}
-        invalid_data = []
+        invalid_data: GPTAttrResponse = []
 
         for key, datum in raw_data.items():
             if not self.validate_data(datum):
@@ -210,17 +210,20 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
                 if datum.subCategory not in self.invalid_subcategories[datum.parentCategory]:
                     self.invalid_subcategories[datum.parentCategory].append(datum.subCategory)
         is_clear=True
+
         if len(self.invalid_subcategories) != 0:
             is_clear=False
             valid_subcategories = self.get_response()
+
             for datum in invalid_data:
+                old_subcategory=datum.subCategory
                 datum.subCategory = valid_subcategories[datum.parentCategory][datum.subCategory]
+                logging.info(f"id : 기존 카테고리 : {old_subcategory} -> 새로운 카테고리 : {datum.subCategory}")
 
         valid_data = {}
         for key, datum in raw_data.items():
             if not is_clear and not self.validate_data(datum):
-                logging.error(f"id : {key} 카테고리 검증 및 정규화 실패")
-                del raw_data[key]
+                logging.error(f"id : {key} 카테고리 검증 및 정규화 실패 서브 카테고리 : {datum.subCategory}")
             else:
                 valid_data[key] = Attributes(
                     **datum.model_dump(exclude={"parentCategory", "subCategory"}),
