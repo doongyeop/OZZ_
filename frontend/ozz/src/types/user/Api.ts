@@ -86,10 +86,19 @@ export class Api<
    * @secure
    * @response `200` `UploadProfileImageData` OK
    */
-  uploadProfileImage = (
-    data: UploadProfileImagePayload,
-    params: RequestParams = {},
-  ) =>
+  // uploadProfileImage = (
+  //   data: UploadProfileImagePayload,
+  //   params: RequestParams = {},
+  // ) =>
+  //   this.request<UploadProfileImageData, any>({
+  //     path: `/api/users/profile`,
+  //     method: 'PATCH',
+  //     body: data,
+  //     secure: true,
+  //     type: ContentType.FormData,
+  //     ...params,
+  //   })
+  uploadProfileImage = (data: FormData, params: RequestParams = {}) =>
     this.request<UploadProfileImageData, any>({
       path: `/api/users/profile`,
       method: 'PATCH',
@@ -98,6 +107,7 @@ export class Api<
       type: ContentType.FormData,
       ...params,
     })
+
   /**
    * No description
    *
