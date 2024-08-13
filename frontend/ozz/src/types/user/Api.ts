@@ -131,4 +131,23 @@ export class Api<
       secure: true,
       ...params,
     })
+
+  /**
+   * No description
+   *
+   * @tags user-controller
+   * @name DeleteProfileImage
+   * @summary 프로필 이미지 삭제
+   * @request PATCH:/api/users/
+   * @secure
+   * @response `204` `void` Profile image has been deleted successfully
+   * @response `500` `void` Failed to delete profile image
+   */
+  deleteProfileImage = (params: RequestParams = {}) =>
+    this.request<void, void>({
+      path: `/api/users/`,
+      method: 'PATCH',
+      secure: true,
+      ...params,
+    })
 }
