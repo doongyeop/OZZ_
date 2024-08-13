@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 
 interface PreviewProps {
   title: '옷장' | '코디북'
-  items: { image: string }[]
+  items: { id: number; image: string }[]
 }
 
 export default function Preview({ title, items }: PreviewProps) {
@@ -45,12 +45,14 @@ export default function Preview({ title, items }: PreviewProps) {
           </span>
           {` 님의 ${title}`}
         </h2>
-        <Link href={content[title].link}>전체보기 &gt;</Link>
+        <Link href={content[title].link} prefetch className="hover:underline">
+          전체보기 &gt;
+        </Link>
       </div>
       {items.length > 0 ? (
         <div className="mx-3 h-32 flex justify-around">
           {items.map((item, index) => (
-            <div key={item.image}>
+            <Link href={`/closet/modify/${item.id}`} key={item.image}>
               <Image
                 src={item.image}
                 alt={`${content[title]}-${index}`}
@@ -59,7 +61,7 @@ export default function Preview({ title, items }: PreviewProps) {
                 sizes="100%"
                 className="aspect-square object-cover w-auto h-full shadow-md"
               />
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
