@@ -16,6 +16,7 @@ import {
   deleteUser,
   checkNickname,
   deleteProfile,
+  uploadProfileImage,
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
@@ -51,7 +52,6 @@ function ProfileEdit() {
   const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
   const [errorText, setErrorText] = useState('')
-  // const [responseText, setResponseText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
@@ -75,9 +75,8 @@ function ProfileEdit() {
   const fetchUserInfo = async () => {
     try {
       const userInfo = await getUserInfo()
-      // setResponseText('')
-      setErrorText('') // responseText 초기화
       setUser(userInfo)
+      setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
       }
@@ -94,23 +93,21 @@ function ProfileEdit() {
   const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15 || nick.length <= 0) {
       setErrorText('닉네임은 1-15자 이내여야 합니다')
-      // setResponseText('')
       return
     }
     if (nick.includes(' ')) {
-      // setResponseText('')
       setErrorText('공백은 사용 불가능합니다')
       return
     }
 
     try {
       const response = await checkNickname(nick)
-      // setResponseText(response)
-      setErrorText('')
-      setNickname(nick)
+      if (response === '사용 가능한 닉네임입니다.') {
+        setErrorText('')
+        setNickname(nick)
+      }
     } catch (error) {
       setErrorText('이미 사용 중인 닉네임입니다')
-      // setResponseText('')
     }
   }
 
@@ -170,6 +167,16 @@ function ProfileEdit() {
     toggleProfileModal()
   }, [resetProfilePic, toggleProfileModal])
 
+  const handleFileSelect = async (file: File) => {
+    try {
+      const response = await uploadProfileImage(file)
+      console.log('프로필 이미지 업로드 성공:', response)
+      await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
+    } catch (error) {
+      console.error('프로필 이미지 업로드 실패:', error)
+    }
+  }
+
   const handleUploadSuccess = useCallback(async () => {
     await fetchUserInfo() // 유저 정보 다시 불러오기
     toggleProfileModal()
@@ -228,7 +235,7 @@ function ProfileEdit() {
               {uploadModal && (
                 <UploadModal
                   onClose={toggleUploadModal}
-                  onFileUploadSuccess={handleUploadSuccess}
+                  onFileSelect={handleFileSelect} // 파일 선택 시 업로드 처리
                 />
               )}
             </div>
@@ -263,7 +270,6 @@ function ProfileEdit() {
             {errorText && (
               <span className="text-xs text-red-500">{errorText}</span>
             )}
-            {/* {responseText && <span className="text-xs">{responseText}</span>} */}
           </div>
         </Field>
 

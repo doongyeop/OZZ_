@@ -2,7 +2,7 @@
 
 import {
   UserUpdateRequest,
-  // UploadProfileImagePayload,
+  UploadProfileImagePayload,
 } from '@/types/user/data-contracts'
 import { getUserApi, removeTokens } from './authApi'
 
@@ -40,13 +40,13 @@ export const deleteUser = async () => {
 export const uploadProfileImage = async (file: File) => {
   const userApi = getUserApi()
   if (!userApi) throw new Error('User API not initialized')
-  const formData = new FormData()
-  formData.append('file', file)
-  // const payload: UploadProfileImagePayload = {
-  //   file,
-  // }
-  // const response = await userApi.uploadProfileImage(payload)
-  const response = await userApi.uploadProfileImage(formData)
+  // const formData = new FormData()
+  // formData.append('file', file)
+  const payload: UploadProfileImagePayload = {
+    file,
+  }
+  const response = await userApi.uploadProfileImage(payload)
+  // const response = await userApi.uploadProfileImage(formData)
   return response.data
 }
 
