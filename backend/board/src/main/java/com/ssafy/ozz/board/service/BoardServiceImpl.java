@@ -83,14 +83,14 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId) {
+    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
         UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
 
         board = board.toBuilder()
                 .content(request.content())
-                .imgFileId(imgFileId)
+                .imgFileId(boardImg)
                 .coordinateId(request.coordinateId())
                 .style(toBits(request.styleList()))
                 .build();
