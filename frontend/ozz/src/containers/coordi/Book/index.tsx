@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -8,7 +10,6 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
 import { Coordibook } from '@/types/coordibook'
 import { getUserInfo } from '@/services/userApi'
-import { syncTokensWithCookies } from '@/services/authApi'
 import {
   createFavoriteGroup,
   getFavoritesGroupListOfUsers,
