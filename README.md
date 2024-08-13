@@ -24,7 +24,7 @@
 ## 서비스 구조
 
 ### 아키텍쳐<hr>
-
+![Architecture](img/Architecture.png)
 ### ERD<hr>
 ![ERD](img/ERD.png)
 
