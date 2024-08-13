@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: #f2f2f2; /* 전체 페이지 배경 회색 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* 세로 가운데 정렬 */
+  margin: 0;
+  flex-direction: column; /* 세로 방향으로 정렬 */
+}
+
+#wrapper {
+  position: relative;
+  max-width: 600px; /* 최대 너비 600px */
+  width: 100%;
+  min-height: 100vh; /* 최소 높이 100vh로 설정 */
+  background-color: #ffffff; /* 콘텐츠 배경 흰색 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
