@@ -9,27 +9,11 @@ import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
-import { categoryLowIdToHighNameMap } from '@/types/clothing'
-
-type ClothingItem = {
-  id: string
-  name: string
-  createdDate: string
-  imageFile: {
-    fileId: number
-    filePath: string
-    fileName: string
-    fileType: string
-  }
-  categoryHigh: {
-    categoryHighId: number
-    name: string
-  }
-  categoryLow: {
-    categoryLowId: number
-    name: string
-  }
-}
+import {
+  categoryLowIdToHighNameMap,
+  categoryMap,
+  categoryNameToLowIdMap,
+} from '@/types/clothing'
 
 type FittingItem = {
   category: string
@@ -71,6 +55,7 @@ export default function FittingContainer() {
   }
 
   const handleRemoveItem = (category: string) => {
+    console.log(category, ' 제거')
     // - 버튼을 눌렀을 때
     setFittingItems(
       fittingItems.map((item) =>
@@ -151,17 +136,28 @@ export default function FittingContainer() {
             {fittingItems.map((item) => (
               <div
                 key={item.type}
-                className={`${styles.clothingItem} ${styles[item.type]}`}
+                className={`${styles.clothingItem} ${styles[item.type]} flex items-center justify-center`}
               >
                 {item.image ? (
                   <>
-                    <Image
-                      src={item.image}
-                      alt={item.category}
-                      width={100}
-                      height={100}
-                      layout="responsive"
-                    />
+                    <div
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        position: 'relative',
+                      }}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.category}
+                        layout="fill" // 이미지가 부모 div를 채우도록
+                        objectFit="contain" // 비율을 유지하며 최대 크기에 맞춤
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                        }}
+                      />
+                    </div>
                     <button
                       type="button"
                       aria-label="제거"
@@ -202,7 +198,7 @@ export default function FittingContainer() {
           <ul className="mt-2 px-6">
             {selectedClothes.map((item) => (
               <li key={item.clothesId} className="mb-2 p-3 border-b">
-                <div className="flex items-center">
+                <div className="flex items-center ">
                   <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
                     <Image
                       src={item.imageUrl}
@@ -218,35 +214,52 @@ export default function FittingContainer() {
                       }}
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <p className="mb-2">{item.categoryLow?.name}</p>
-                    <p className="text-md font-semibold">{item.name}</p>
+                  <div className="flex flex-row w-full justify-between">
+                    <div className="flex flex-col">
+                      <p className="mb-2">{item.categoryLow?.name}</p>
+                      <p className="text-md font-semibold">{item.name}</p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="제거"
+                      onClick={() => {
+                        const categoryLowId = item.categoryLow?.categoryLowId
+                        if (categoryLowId !== undefined) {
+                          const highCategoryName =
+                            categoryLowIdToHighNameMap[categoryLowId]
+                          handleRemoveItem(highCategoryName)
+                        } else {
+                          console.error('카테고리 ID가 유효하지 않습니다.')
+                        }
+                      }}
+                      className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                    >
+                      <FaMinus />
+                    </button>
                   </div>
                 </div>
+                {/* <Link key={item.id} href={`/closet/modify/${item.id}`} passHref>
+              <div className="flex items-center mb-4 mt-4 cursor-pointer">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  width={50}
+                  height={50}
+                  className="mr-4"
+                />
+                <div>
+                  <div className="text-sm text-gray-500">
+                    {item.purchaseDate}
+                  </div>
+                  <div className="text-lg font-semibold">{item.name}</div>
+                </div>
+              </div>
+              <hr />
+            </Link>
+
+            */}
               </li>
             ))}
-            {/* <Link
-key={item.id}
-href={`/closet/modify/${item.id}`}
-passHref
->
-<div className="flex items-center mb-4 mt-4 cursor-pointer">
-<Image
-    src={item.image}
-    alt={item.name}
-    width={50}
-    height={50}
-    className="mr-4"
-/>
-<div>
-    <div className="text-sm text-gray-500">
-    {item.purchaseDate}
-    </div>
-    <div className="text-lg font-semibold">{item.name}</div>
-</div>
-</div>
-<hr />
-</Link> */}
           </ul>
         ) : (
           <p className="text-gray-dark text-center mb-10">

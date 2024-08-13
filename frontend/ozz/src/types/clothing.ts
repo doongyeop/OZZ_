@@ -475,6 +475,16 @@ export const categoryNameToLowIdMap: { [key: string]: number } = {
   힙색: 29,
 }
 
+export const categoryNameToHighIdMap: { [key: string]: number } = {
+  상의: 1,
+  하의: 2,
+  아우터: 3,
+  원피스: 4,
+  신발: 5,
+  악세서리: 6,
+  가방: 7,
+}
+
 export const categoryLowIdToHighNameMap: { [key: number]: string } = {
   // 상의
   1: '상의',

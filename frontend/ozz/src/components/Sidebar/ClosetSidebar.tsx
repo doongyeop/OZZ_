@@ -10,6 +10,7 @@ import {
   ClothingData,
   categoryMap,
   categoryNameToLowIdMap,
+  categoryNameToHighIdMap,
 } from '@/types/clothing'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
 import { fetchImage, fetchUserClothes } from '@/services/clothingApi'
@@ -42,43 +43,71 @@ export default function ClosetSidebar({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     category,
   )
-  const [selectedSubcategory, setSelectedSubcategory] = useState<
-    string | undefined
+  const [selectedCategoryLowId, setSelectedCategoryLowId] = useState<
+    number | string | undefined
   >(undefined)
-  const [clothingItems, setClothingItems] = useState<ClothingData[]>([])
+  const [selectedCategoryHighId, setSelectedCategoryHighId] = useState<
+    number | undefined
+  >(undefined)
   const observerElem = useRef(null)
-
-  // 카테고리 이름을 ID로 변환
-  const categoryHighId =
-    selectedCategory && selectedCategory
-      ? categoryMap[selectedCategory]?.id
-      : ''
-  const categoryLowId =
-    selectedSubcategory && selectedSubcategory !== '전체'
-      ? categoryNameToLowIdMap[selectedSubcategory]
-      : ''
 
   useEffect(() => {
     setIsSidebarOpen(isSidebarOpen)
   }, [isSidebarOpen, setIsSidebarOpen])
 
+  useEffect(() => {
+    if (category) {
+      setSelectedCategory(category)
+      console.log('category ', category)
+      const [categoryHighName, categoryLowName] = category.split(' > ')
+      const categoryHighId = categoryNameToHighIdMap[categoryHighName]
+      const categoryLowId = categoryNameToLowIdMap[categoryLowName] || ''
+
+      // setSelectedCategory(categoryLowName)
+      setSelectedCategoryHighId(categoryHighId)
+      setSelectedCategoryLowId(categoryLowId)
+    }
+  }, [category])
+
+  useEffect(() => {
+    if (selectedCategoryHighId !== undefined) {
+      const lowId =
+        selectedCategoryLowId !== undefined ? selectedCategoryLowId : ''
+      setSelectedCategoryLowId(lowId)
+      refetch() // 옷장을 다시 조회
+    }
+  }, [selectedCategoryHighId, selectedCategoryLowId])
+
   const handleCategoryChange = (newCategory: string) => {
     // 카테고리 필터링
     console.log('newCategory ', newCategory)
+    const [categoryHighName, categoryLowName] = newCategory.split(' > ')
+    const categoryHighId = categoryNameToHighIdMap[categoryHighName]
+    const categoryLowId = categoryNameToLowIdMap[categoryLowName] || ''
+
+    console.log('categoryHighId ', categoryHighId)
+    console.log('categoryLowId ', categoryLowId)
+
     onCategoryChange(newCategory)
     setSelectedCategory(newCategory)
+    setSelectedCategoryHighId(categoryHighId)
+    setSelectedCategoryLowId(categoryLowId)
     setIsModalOpen(false)
   }
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useInfiniteQuery({
-      queryKey: [queryKeys.userClothes, selectedCategory, selectedSubcategory],
+      queryKey: [
+        queryKeys.userClothes,
+        selectedCategoryHighId,
+        selectedCategoryLowId,
+      ],
       queryFn: ({ pageParam = 0 }) => {
         return fetchUserClothes(
           { page: pageParam, size: 20, sort: ['createdDate,desc'] },
           {
-            categoryHighId,
-            categoryLowId,
+            categoryHighId: selectedCategoryHighId,
+            categoryLowId: selectedCategoryLowId,
             keyword: '',
           },
         )
@@ -86,6 +115,7 @@ export default function ClosetSidebar({
       getNextPageParam: (lastPage) =>
         lastPage.last ? undefined : lastPage.number + 1,
       initialPageParam: 0,
+      enabled: !!selectedCategory,
     })
 
   // Flatten the pages into a single list
@@ -129,8 +159,6 @@ export default function ClosetSidebar({
     ...item,
     imageUrl: imageResults[index]?.data || defaultImageUrl,
   }))
-
-  // TODO : 카테고리 필터링 기능 구현
 
   return (
     <>
