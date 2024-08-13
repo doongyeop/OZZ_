@@ -51,7 +51,7 @@ function ProfileEdit() {
   const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
   const [errorText, setErrorText] = useState('')
-  const [responseText, setResponseText] = useState('')
+  // const [responseText, setResponseText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
@@ -75,9 +75,9 @@ function ProfileEdit() {
   const fetchUserInfo = async () => {
     try {
       const userInfo = await getUserInfo()
-      setUser(userInfo)
-      setResponseText('')
+      // setResponseText('')
       setErrorText('') // responseText 초기화
+      setUser(userInfo)
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
       }
@@ -94,32 +94,35 @@ function ProfileEdit() {
   const checkNicknameDuplication = async (nick: string) => {
     if (nick.length > 15 || nick.length <= 0) {
       setErrorText('닉네임은 1-15자 이내여야 합니다')
-      setResponseText('')
+      // setResponseText('')
       return
     }
     if (nick.includes(' ')) {
-      setResponseText('')
+      // setResponseText('')
       setErrorText('공백은 사용 불가능합니다')
       return
     }
 
     try {
       const response = await checkNickname(nick)
-      setResponseText(response)
+      // setResponseText(response)
       setErrorText('')
       setNickname(nick)
     } catch (error) {
       setErrorText('이미 사용 중인 닉네임입니다')
-      setResponseText('')
+      // setResponseText('')
     }
   }
 
   const saveUserInfo = async () => {
     try {
-      await checkNicknameDuplication(nickname)
+      // 닉네임이 변경되지 않은 경우 중복 확인을 건너뜀
+      if (user?.nickname !== nickname) {
+        await checkNicknameDuplication(nickname)
 
-      if (errorText) {
-        return false
+        if (errorText) {
+          return false
+        }
       }
 
       const userData: UserUpdateRequest = {
@@ -260,7 +263,7 @@ function ProfileEdit() {
             {errorText && (
               <span className="text-xs text-red-500">{errorText}</span>
             )}
-            {responseText && <span className="text-xs">{responseText}</span>}
+            {/* {responseText && <span className="text-xs">{responseText}</span>} */}
           </div>
         </Field>
 
