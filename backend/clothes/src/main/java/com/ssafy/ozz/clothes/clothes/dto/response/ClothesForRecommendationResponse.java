@@ -3,6 +3,7 @@ package com.ssafy.ozz.clothes.clothes.dto.response;
 import com.ssafy.ozz.clothes.category.dto.CategoryLowResponse;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.library.clothes.properties.*;
+import com.ssafy.ozz.library.file.FileInfo;
 
 import java.util.List;
 
@@ -17,9 +18,10 @@ public record ClothesForRecommendationResponse (
         List<Style> styleList,
         List<Pattern> patternList,
         String extra,
+        FileInfo imageFile,
         CategoryLowResponse categoryLow
 ){
-    public ClothesForRecommendationResponse(Clothes clothes) {
+    public ClothesForRecommendationResponse(Clothes clothes, FileInfo fileInfo) {
         this(
                 clothes.getClothesId(),
                 clothes.getFit(),
@@ -29,6 +31,7 @@ public record ClothesForRecommendationResponse (
                 toEnums(Style.class, clothes.getStyle()),
                 toEnums(Pattern.class, clothes.getPattern()),
                 clothes.getExtra(),
+                fileInfo,
                 new CategoryLowResponse(clothes.getCategoryLow())
         );
     }

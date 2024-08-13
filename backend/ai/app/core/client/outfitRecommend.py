@@ -20,15 +20,10 @@ Things to consider:
 Request example :
 {
     "clothes":[{
-            "id": <clothe_id>
-            "fit": "REGULAR_FIT",
-            "colorList": ["GREEN"],
-            "patternList": ["LETTERING"],
-            "seasonList": ["SPRING","AUTUMN"],
-            "styleList": ["CASUAL"],
-            "textureList": ["COTTON"],
-            "extra": "customizable design, sweatshirt",
-            "category": "맨투맨"
+            "id": <clothe_id>,
+            <AttributeName>: <AttributeValues>,
+            "parentCategory": "상의"
+            "subCategory": "셔츠"
         }]
     },
     "consider":{
@@ -44,18 +39,18 @@ Before reporting the result, check if the clothes are properly composed.
 Report the recommended clothes in JSON format, including a brief title, the ids of the composed clothes, and <recommendation_reason> for the recommendation.
 Please choose the style of the recommended outfit from the <possibleValues>.
 <possibleValues>ROMANTIC, STREET, SPORTY, NATURAL, MANNISH, CASUAL, ELEGANT, MODERN, FORMAL, ETHNIC</possibleValues>
-Recommend up to 3 outfits, and if you cannot make an outfit that meets the conditions, please write a reason why you cannot make it in "result".
+Recommend up to 6 outfits, and if you cannot make an outfit that meets the conditions, please write a reason why you cannot make it in "result".
 
+Important!!: The parent categories of each item in an outfit cannot overlap.
 
 Result example:
 {
 "result":"success"
 "outfit":[{
-        "title": "가을 캐주얼 룩",
-        "items": ["12","54","23","56","2352"],
-        "style": "FORMAL",
-        "recommendation_reason": <recommendation_reason>
-    }]
+"title": "가을 캐주얼 룩",
+"items": ["12","54","23","56","2352"],
+"style": "FORMAL",
+"recommendation_reason": <recommendation_reason>}]
 }
 """
     def __init__(self, recomend: Recommend):
@@ -64,7 +59,7 @@ Result example:
 
     def get_response(self):
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             response_format={"type": "json_object"},
             messages=[
                 {
@@ -82,7 +77,7 @@ Result example:
                 },
             ],
             temperature=1,
-            max_tokens=75 * len(self.recommend.clothes),
+            max_tokens=75 * len(self.recommend.clothes)+10,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
@@ -90,7 +85,6 @@ Result example:
         return json.loads(response.choices[0].message.content)
 
     def parse_response(self, response:dict):
-        print(response)
         if response["result"]=="success":
             return list(map(lambda a:RecommendedOutfit(**a),response["outfit"]))
         else:
@@ -103,6 +97,6 @@ Result example:
         return [
             {
                 "type": "text",
-                "text": self.recommend.model_dump_json()
+                "text": self.recommend.model_dump_json(exclude=set("imgPath"))
             }
         ]
