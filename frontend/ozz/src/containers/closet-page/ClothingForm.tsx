@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
 
 import BrandModal from '@/components/Modal/BrandModal'
 import CategoryModal from '@/components/Modal/CategoryModal'
@@ -79,6 +80,7 @@ export default function ClothingForm({
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (initialData) {
@@ -105,29 +107,67 @@ export default function ClothingForm({
     }
   }, [initialData])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setImageFile(file)
+      let processedFile = file
+
+      // 2MB 초과하는 경우 파일 압축
+      if (file.size > 1 * 1024 * 1024) {
+        const options = {
+          maxSizeMB: 1, // 2MB로 압축
+          maxWidthOrHeight: 1920, // 너비 또는 높이를 1920px 이하로
+          useWebWorker: true, // Web Worker를 사용하여 성능 향상
+        }
+        try {
+          processedFile = await imageCompression(file, options)
+          // console.log('Original File Size:', file.size / 1024 / 1024, 'MB')
+          // console.log(
+          //   'Compressed File Size:',
+          //   processedFile.size / 1024 / 1024,
+          //   'MB',
+          // )
+        } catch (error) {
+          console.error('이미지 압축 중 오류 발생:', error)
+        }
+      }
+
+      setImageFile(processedFile)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(processedFile)
     }
   }
 
   const handleExtractImage = async () => {
     if (imageFile && categoryName) {
+      // // 이미지 크기 확인 및 리사이즈
+      // if (imageFile.size > 2 * 1024 * 1024) {
+      //   console.log('이미지 크기가 2MB를 초과하여 리사이즈 중입니다...')
+      //   try {
+      //     const resizedImage = await resizeImage(imageFile, 1) // 2MB 이하로 리사이즈
+      //     setImageFile(resizedImage)
+      //     const reader = new FileReader()
+      //     reader.onloadend = () => {
+      //       setImagePreview(reader.result as string)
+      //     }
+      //     reader.readAsDataURL(resizedImage)
+      //   } catch (error) {
+      //     console.error('이미지 리사이즈 실패:', error)
+      //     alert('이미지 리사이즈 중 오류가 발생했습니다.')
+      //     return
+      //   }
+      // }
+
       setLoading(true)
+      setIsSubmitting(true) // 중복 요청 방지
+
       const [categoryHighName, categoryLowName] = categoryName.split(' > ')
       try {
         const result = await extractClothing(imageFile, categoryHighName)
-        // console.log('response ', result)
 
-        // 로딩 띄우기
-
-        // 속성 추출 세팅
         setName(result.name || '')
         setBrandName(result.brand || '')
         setCategoryName(
@@ -183,8 +223,10 @@ export default function ClothingForm({
       } finally {
         // 로딩 상태 종료
         setLoading(false)
+        setIsSubmitting(false)
       }
     } else {
+      console.error('분석할 이미지가 없습니다.')
       alert('이미지와 카테고리를 설정해주세요.')
     }
   }
@@ -530,6 +572,7 @@ export default function ClothingForm({
                 <button
                   type="submit"
                   className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
+                  disabled={isSubmitting}
                 >
                   {submitButtonText}
                 </button>
