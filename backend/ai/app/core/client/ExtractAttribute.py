@@ -2,12 +2,9 @@ import json
 import logging
 from typing import Any
 
-from fastapi import UploadFile
-
 from app.core.client.openAIClient import OpenAIClient
 from app.core.client.validateAttribute import run_validate
 from app.schemas.attributes import NormalizedClothes, Attributes, GPTAttrResponse
-from app.utils.image_utils import remove_background_and_encode
 
 
 class ExtractAttribute(OpenAIClient):

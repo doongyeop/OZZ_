@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 import { createClothing } from '@/services/clothingApi'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 
 export default function Page() {
   const router = useRouter()
@@ -23,8 +24,9 @@ export default function Page() {
   }
 
   return (
-    <main>
+    <>
+      <HeaderWithBackward title="나의 옷짱" />
       <ClothingForm onSubmit={handleSubmit} submitButtonText="등록하기" />
-    </main>
+    </>
   )
 }

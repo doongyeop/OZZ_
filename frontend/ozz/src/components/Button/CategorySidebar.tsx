@@ -9,6 +9,7 @@ import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
 // }
 
 const categories = {
+  전체: [],
   상의: [
     '전체',
     '탑',
@@ -32,13 +33,17 @@ export default function CategorySidebar() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const toggleCategory = (category: string) => {
+    if (category === '전체') {
+      setCategory('', '')
+      return
+    }
     setExpandedCategory((prevCategory) =>
       prevCategory === category ? null : category,
     )
   }
 
   return (
-    <div className="z-50 absolute top-20 left-0 h-screen-minus-36 w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
+    <div className="z-50 sticky top-20 left-0 h-screen-minus-36 w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
       <div className="flex flex-col">
         <div className="mt-2 text-right">
           <button

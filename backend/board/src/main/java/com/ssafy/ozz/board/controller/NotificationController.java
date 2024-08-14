@@ -67,8 +67,8 @@ public class NotificationController {
             UserResponse userResponse = new UserResponse(
                     userInfo.userId(),
                     userInfo.nickname(),
-                    userInfo.Birth(),
                     userInfo.profileFileId(),
+                    userInfo.Birth(),
                     profileImg
             );
 

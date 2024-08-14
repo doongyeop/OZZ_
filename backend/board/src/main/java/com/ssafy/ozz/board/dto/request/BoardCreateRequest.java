@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.fromStrings;
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "게시글 생성 요청 DTO")
@@ -19,9 +20,11 @@ public record BoardCreateRequest(
         Long coordinateId, // 코디 불러오기 용 코디Id
         int age,
         List<TagDto> tagList,
-        List<Style> styleList
+        List<String> styleList
 ) {
     public Board toEntity() {
+        List<Style> styles = fromStrings(Style.class, styleList);
+
         Board board = Board.builder()
                 .content(content)
                 .userId(userId)
@@ -29,7 +32,7 @@ public record BoardCreateRequest(
                 .coordinateId(coordinateId)
                 .age(age)
                 .likes(0)
-                .style(toBits(styleList))
+                .style(toBits(styles))
                 .createdDate(new Date())
                 .build();
 

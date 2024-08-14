@@ -52,7 +52,12 @@ export const deleteFavorite1 = async (
 export const getFavoritesByGroup = async (favoriteGroupId: number) => {
   const favoriteApi = await getFavoriteApi()
   const response = await favoriteApi.getFavoritesByGroup(favoriteGroupId)
-  return response
+  const data = await response.json()
+  console.log(
+    '즐겨찾기 그룹 코디 조회(getFavoritesByGroup API) 결과 data는요:',
+    data,
+  )
+  return data
 }
 
 // 특정 즐겨찾기 그룹 삭제 함수

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getUserInfo } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
-import { syncTokensWithCookies } from '@/services/authApi'
+import { syncTokensWithCookies, logout } from '@/services/authApi'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
 import { FaUser } from 'react-icons/fa6'
@@ -33,9 +33,9 @@ export default function MyPageIndex() {
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
-      console.log('getFile 성공', fileData)
+      // console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
-      console.log('downloadFile 성공', picture)
+      // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
         setProfileSrc(pictureUrl)
@@ -75,8 +75,9 @@ export default function MyPageIndex() {
     router.push('/coordishot')
   }
 
-  const logOut = async () => {
+  const logOut = async (userId: number) => {
     try {
+      await logout(userId)
       deleteAllCookies()
       router.push('/login')
     } catch (error) {
@@ -178,7 +179,7 @@ export default function MyPageIndex() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => logOut()}
+                    onClick={() => logOut(user.id)}
                     className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
                   >
                     예

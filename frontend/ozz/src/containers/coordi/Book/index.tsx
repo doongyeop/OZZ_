@@ -2,37 +2,40 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-
 import { HiPencil, HiPlus } from 'react-icons/hi'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { Coordibook } from '@/types/coordibook'
-import { getUserInfo } from '@/services/userApi'
 import {
   createFavoriteGroup,
   getFavoritesGroupListOfUsers,
+  deleteFavoriteGroup,
 } from '@/services/favoriteApi'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
-  // const [user, setUser] = useState()
   const [groups, setGroups] = useState<Coordibook[]>([])
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const router = useRouter()
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  const fetchFavoritesGroupList = async () => {
+    try {
+      const response = await getFavoritesGroupListOfUsers()
+      console.log(response)
+      setGroups(response)
+    } catch (error) {
+      console.error('Error fetching favorites data:', error)
+    }
+  }
 
   useEffect(() => {
-    const fetchFavoritesGroupList = async () => {
-      try {
-        const response = await getFavoritesGroupListOfUsers()
-        console.log(response)
-        setGroups(response)
-      } catch (error) {
-        console.error('Error fetching favorites data:', error)
-      }
-    }
     fetchFavoritesGroupList()
   }, [])
 
@@ -45,8 +48,8 @@ export default function CoordiBook() {
   }
 
   async function createCoordiBook() {
-    if (!newGroupName) {
-      alert('그룹 이름을 입력하세요')
+    if (newGroupName.length > 10 || newGroupName.length <= 0) {
+      alert('코디북 이름은 1-10글자여야 합니다.')
       return
     }
 
@@ -66,12 +69,47 @@ export default function CoordiBook() {
     }
   }
 
+  const handleMouseDown = (groupId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedGroupId(groupId)
+      setDeleteModal(true)
+    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+  }
+
+  const handleMouseUpOrLeave = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
+  }
+
+  const deleteCoordiBook = async () => {
+    if (selectedGroupId === null) return
+
+    try {
+      const res = await deleteFavoriteGroup(selectedGroupId)
+      setDeleteModal(false)
+      setSelectedGroupId(null)
+      if (res.status === 204) {
+        console.log('삭제 완료')
+        fetchFavoritesGroupList()
+      } else {
+        console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   const getFavGrp = (group: Coordibook) => {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
           className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
+          onMouseDown={() => handleMouseDown(group.favoriteGroupId)}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
@@ -152,6 +190,13 @@ export default function CoordiBook() {
             </button>
           </div>
         </Modal>
+      )}
+      {deleteModal && (
+        <ConfirmModal
+          onClose={() => setDeleteModal(false)}
+          onConfirm={deleteCoordiBook}
+          message="코디북을 삭제하시겠습니까?"
+        />
       )}
     </div>
   )
