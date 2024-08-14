@@ -34,6 +34,12 @@ class Recommend(BaseModel):
     consider: Consider
 
 
+class RecommendedClothes(BaseModel):
+    id: int
+    imgPath: str
+    offset: int
+
+
 class RecommendedOutfit(BaseModel):
     title: str
     items: list[int]
@@ -43,6 +49,5 @@ class RecommendedOutfit(BaseModel):
 
 class RecommendationsResponse(BaseModel):
     title: str
-    items: list[int]
+    items: list[RecommendedClothes]
     style: str
-    img: str
