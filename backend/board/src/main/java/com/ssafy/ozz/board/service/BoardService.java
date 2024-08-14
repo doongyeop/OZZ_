@@ -27,4 +27,6 @@ public interface BoardService {
     Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable);
 
     BoardResponse mapToBoardResponse(Board board);
+
+    BoardResponse getBoardResponse(Long boardId);
 }
