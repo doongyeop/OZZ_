@@ -18,22 +18,22 @@ export default function HelpModal({ onClose }: HelpModalProps) {
     {
       title: '옷 가져오기',
       text: '옷짱에서는 쉽게 옷을\n 등록할 수 있어요. \n원하는 쇼핑몰을 클릭하세요.',
-      image: '/images/help/help1.png',
+      image: '/images/help/help1.PNG',
     },
     {
       title: '쇼핑몰 로그인',
       text: '평소 사용하는 쇼핑몰에 로그인을 하고 \n조금만 기다리면 구매내역을 통해 \n옷을 쉽게 가져올 수 있어요.',
-      image: '/images/help/help2.png',
+      image: '/images/help/help2.PNG',
     },
     {
       title: '직접 옷 등록하기',
       text: '직접 쇼핑몰 이미지를 \n캡쳐하여 등록하면 \n자동으로 속성을 추출해줘요.',
-      image: '/images/help/help3.png',
+      image: '/images/help/help3.PNG',
     },
     {
       title: '옷 수정 하기',
       text: '혹시 문제가 있다면 \n정보를 수정하거나 \n새로운 사진으로 등록해요.',
-      image: '/images/help/help4.png',
+      image: '/images/help/help4.PNG',
     },
   ]
 

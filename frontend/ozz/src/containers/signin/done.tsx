@@ -1,31 +1,31 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-
-function getCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return null
-  }
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) {
-    const lastPart = parts.pop()
-    if (lastPart) {
-      return decodeURIComponent(lastPart.split(';').shift() || '')
-    }
-  }
-  return null
-}
+import { useEffect, useState } from 'react'
+import { syncTokensWithCookies } from '@/services/authApi'
+import { getUserInfo } from '@/services/userApi'
 
 export default function SignUpDone() {
-  const router = useRouter()
-  // 쿠키 값을 가져오는 함수
+  const [nickname, setNickname] = useState<string>('')
 
+  useEffect(() => {
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          setNickname(userInfo.nickname)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
+  }, [])
+
+  const router = useRouter()
   const goCloset = () => {
     router.push('/closet')
   }
-
-  const nickname = getCookie('nickname')
 
   return (
     <div className="w-full max-w-xs mx-auto min-h-screen flex flex-col justify-center items-center">

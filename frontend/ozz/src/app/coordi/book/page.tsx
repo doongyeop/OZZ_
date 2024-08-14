@@ -1,10 +1,10 @@
-import Header from '@/components/Header'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import CoordiBook from '@/containers/coordi/Book'
 
 export default function CoordiBookPage() {
   return (
     <div>
-      <Header title="코디북" />
+      <HeaderWithBackward title="코디북" />
       <CoordiBook />
     </div>
   )

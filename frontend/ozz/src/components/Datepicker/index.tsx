@@ -1,4 +1,3 @@
-// DatePicker.tsx
 import * as React from 'react'
 import { format } from 'date-fns'
 import cn from '@/lib/utils'
@@ -8,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { HiPencil } from 'react-icons/hi'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 interface DatePickerProps {
@@ -17,18 +17,18 @@ interface DatePickerProps {
 }
 
 const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  { name: 'Jan', value: 0 },
+  { name: 'Feb', value: 1 },
+  { name: 'Mar', value: 2 },
+  { name: 'Apr', value: 3 },
+  { name: 'May', value: 4 },
+  { name: 'Jun', value: 5 },
+  { name: 'Jul', value: 6 },
+  { name: 'Aug', value: 7 },
+  { name: 'Sep', value: 8 },
+  { name: 'Oct', value: 9 },
+  { name: 'Nov', value: 10 },
+  { name: 'Dec', value: 11 },
 ]
 
 const daysOfWeek = [
@@ -53,6 +53,14 @@ export default function DatePicker({
   const [viewDate, setViewDate] = React.useState<Date>(
     defaultValue ? new Date(defaultValue) : new Date(),
   )
+
+  React.useEffect(() => {
+    if (defaultValue) {
+      const newDate = new Date(defaultValue)
+      setSelectedDate(newDate)
+      setViewDate(newDate)
+    }
+  }, [defaultValue])
 
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date)
@@ -143,7 +151,7 @@ export default function DatePicker({
           <Button
             variant="light"
             className={cn(
-              'w-[360px] justify-between text-left font-normal border-primary-400',
+              'w-[360px] justify-between text-left font-normal border-primary-400 group',
               buttonClassName,
             )}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
@@ -154,7 +162,7 @@ export default function DatePicker({
               <span>날짜를 선택하세요</span>
             )}
             <div className="absolute inset-y-0 end-0 flex items-center pr-3">
-              <FiChevronRight className="text-[#CCCED0]" />
+              <HiPencil className="text-gray-300 group-hover:text-primary-400" />
             </div>
           </Button>
         </PopoverTrigger>
@@ -177,8 +185,8 @@ export default function DatePicker({
               className="bg-primary-50 focus:outline-none"
             >
               {months.map((month) => (
-                <option key={month} value={month}>
-                  {month}
+                <option key={month.value} value={month.value}>
+                  {month.name}
                 </option>
               ))}
             </select>

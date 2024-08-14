@@ -155,7 +155,7 @@ export interface ClothesUpdateRequest {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -184,12 +184,14 @@ export interface ClothesUpdateRequest {
     | 'CHECK'
     | 'HOUNDSTOOTH'
   )[]
+  extra?: string
+  processing?: number
 }
 
 /** 상위 카테고리 기본 정보 DTO */
 export interface CategoryHighBasicResponse {
   /** @format byte */
-  categoryHighId?: string
+  categoryHighId?: number
   name?: string
 }
 
@@ -401,9 +403,22 @@ export interface ClothesCreateRequest {
     | 'CHECK'
     | 'HOUNDSTOOTH'
   )[]
+  extra?: string
   /** @format byte */
   categoryLowId?: number
 }
+
+export interface PurchaseHistory {
+  name: string
+  brand: string
+  /** @format date */
+  purchaseDate: string
+  purchaseSite: string
+  imgUrl: string
+  option: string
+}
+
+export type ServerSentEventString = object
 
 export interface CoordinateBasicResponse {
   /** @format int64 */
@@ -494,9 +509,9 @@ export interface SortObject {
 /** 옷 검색 DTO */
 export interface ClothesSearchCondition {
   /** @format byte */
-  categoryHighId?: number
+  categoryHighId?: number | string
   /** @format byte */
-  categoryLowId?: number
+  categoryLowId?: number | string
   keyword?: string
 }
 
@@ -504,12 +519,12 @@ export interface ClothesSearchCondition {
 export interface ClothesBasicWithFileResponse {
   /** @format int64 */
   clothesId: number
-  name?: string
+  name: string
   /** @format date-time */
   createdDate?: string
   /** 하위 카테고리 정보 DTO */
   categoryLow?: CategoryLowResponse
-  imageFile: FileInfo
+  imageFile: FileInfo | null
 }
 
 export interface SliceClothesBasicWithFileResponse {
@@ -589,6 +604,10 @@ export interface AddClothesPayload {
 
 /** @format int64 */
 export type AddClothesData = number
+
+export type StartBatchPayload = PurchaseHistory[]
+
+export type StartBatchData = ServerSentEventString[]
 
 export type GetCoordinateBasicResponseData = CoordinateBasicResponse
 

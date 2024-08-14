@@ -1,22 +1,13 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { useRouter } from 'next/navigation'
-import DatePicker from '@/components/Datepicker'
-import { Api as UserApi } from '@/types/user/Api'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
 import { FiChevronsRight, FiChevronsLeft } from 'react-icons/fi'
-
-const token = '토큰냅다박기'
-
-const api = new UserApi({
-  securityWorker: async () => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-})
+import { UserUpdateRequest } from '@/types/user/data-contracts'
+import DatePicker from '@/components/Datepicker'
+import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 
 function SignUp() {
   const router = useRouter()
@@ -25,46 +16,38 @@ function SignUp() {
   const [errorText, setErrorText] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
 
-  const getBirthday = async () => {
-    try {
-      const res = await api.getUserInfo()
-      const userData = await res.json()
-      // console.log('userData', userData)
-      const bday = new Date(userData.birth)
-      setBirthday(bday)
-      // console.log('생년월일 정보를 가져왔습니다:', bday)
-    } catch (error) {
-      // console.error('생년월일 정보를 가져오는 중 오류 발생:', error)
-    }
-  }
-
   useEffect(() => {
-    getBirthday()
+    syncTokensWithCookies()
+    const fetchUserInfo = async () => {
+      try {
+        await getUserInfo().then((userInfo) => {
+          const bday = new Date(userInfo.birth)
+          setBirthday(bday)
+        })
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+      }
+    }
+    fetchUserInfo()
   }, [])
-
-  const setCookie = (name: string, value: string, days: number) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
-  }
 
   const confirmSignUp = async () => {
     if (responseText) {
       try {
-        const userData = {
+        const userData: UserUpdateRequest = {
           nickname,
           birth: birthday?.toISOString() || '', // ISO 형식으로 변환
         }
-        const userUpdateResponse = await api.updateUser(userData)
-        const data = await userUpdateResponse.json()
-        // console.log(data)
-        // console.log('회원가입이 성공적으로 완료되었습니다.')
-
-        setCookie('nickname', userData.nickname, 7)
+        await updateUser(userData)
+        router.push('/login/signup/success')
+        return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
         console.log('회원가입 중 오류 발생:', error)
+        return false // 오류 발생 시 false 반환
       }
     } else {
       console.log('응답 텍스트가 없습니다.')
+      return false // 응답 텍스트가 없는 경우 false 반환
     }
   }
 
@@ -72,14 +55,19 @@ function SignUp() {
     router.back()
   }
 
-  const handleNext = () => {
-    confirmSignUp()
-    router.push('/login/signup/success')
+  const handleNext = async () => {
+    if (await confirmSignUp()) {
+      router.push('/login/signup/success')
+    } else {
+      // TODO: 회원가입 실패 처리
+      // ex) 다시 한 번 시도해주세요.
+      alert('회원가입 실패: 다시 한 번 시도해주세요.')
+    }
   }
 
-  async function checkNicknameDuplication(nick: string) {
-    if (nick.length > 15) {
-      setErrorText('닉네임은 15자 이내여야 합니다')
+  const checkNicknameDuplication = async (nick: string) => {
+    if (nick.length > 15 || nick.length <= 0) {
+      setErrorText('닉네임은 1-15자 이내여야 합니다')
       setResponseText('')
       return
     }
@@ -90,8 +78,8 @@ function SignUp() {
     }
 
     try {
-      const response = await api.checkNickname({ nickname: nick })
-      setResponseText(await response.text())
+      const response = await checkNickname(nick)
+      setResponseText(response)
       setErrorText('')
       setNickname(nick)
     } catch (error) {
@@ -132,15 +120,14 @@ function SignUp() {
           </div>
           <div className="mt-5 mb-10 mx-auto w-[360px]">
             <div className="font-bold my-4">생년월일</div>
-            {birthday && (
-              <DatePicker
-                defaultValue={birthday.toISOString()}
-                buttonClassName="w-[360px]"
-                onDateChange={(date) => {
-                  setBirthday(date)
-                }}
-              />
-            )}
+
+            <DatePicker
+              defaultValue={birthday ? birthday.toISOString() : undefined}
+              buttonClassName="w-[360px]"
+              onDateChange={(date) => {
+                setBirthday(date)
+              }}
+            />
           </div>
           <div className="flex justify-center space-x-3 w-full mt-5">
             <FiChevronsLeft

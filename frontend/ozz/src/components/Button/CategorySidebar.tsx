@@ -9,23 +9,23 @@ import { useCategorySidebar } from '@/contexts/CategorySidebarContext'
 // }
 
 const categories = {
+  전체: [],
   상의: [
-    '반팔',
-    '긴팔',
-    '셔츠',
-    '캐주얼',
-    '베스트',
-    '민소매',
-    '7부소매',
+    '전체',
+    '탑',
     '블라우스',
+    '티셔츠',
     '니트웨어',
+    '셔츠',
+    '브라탑',
+    '후드티',
   ],
-  하의: ['팬츠', '청바지', '스커트'],
-  신발: ['운동화', '구두', '샌들'],
-  가방: ['가방'],
-  아우터: ['자켓', '코트', '패딩', '점퍼'],
-  원피스: ['드레스', '점프수트', '수영복'],
-  액세서리: ['주얼리', '모자', '기타'],
+  하의: ['전체', '청바지', '팬츠', '스커트', '레깅스', '조거팬츠'],
+  신발: ['전체', '운동화', '구두', '샌들/슬리퍼'],
+  가방: ['전체', '백팩', '힙색'],
+  아우터: ['전체', '코트', '재킷', '점퍼', '패딩', '베스트', '가디건', '짚업'],
+  원피스: ['전체', '드레스', '점프수트'],
+  악세서리: ['전체', '주얼리', '기타', '모자'],
 }
 
 export default function CategorySidebar() {
@@ -33,13 +33,17 @@ export default function CategorySidebar() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const toggleCategory = (category: string) => {
+    if (category === '전체') {
+      setCategory('', '')
+      return
+    }
     setExpandedCategory((prevCategory) =>
       prevCategory === category ? null : category,
     )
   }
 
   return (
-    <div className="z-50 absolute left-0 h-full w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
+    <div className="z-50 sticky top-20 left-0 h-screen-minus-36 w-32 bg-secondary shadow-md transform translate-x-0 transition-transform flex flex-col">
       <div className="flex flex-col">
         <div className="mt-2 text-right">
           <button
