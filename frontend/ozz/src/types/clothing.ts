@@ -393,7 +393,7 @@ export const categoryMap: CategoryMap = {
     subcategories: {
       운동화: 22,
       구두: 23,
-      '샌들/슬리퍼': 24,
+      샌들: 24,
     },
   },
   악세서리: {
@@ -407,8 +407,9 @@ export const categoryMap: CategoryMap = {
   가방: {
     id: 7,
     subcategories: {
-      백팩: 28,
-      힙색: 29,
+      가방: 28,
+      백팩: 29,
+      힙색: 30,
     },
   },
 }
@@ -437,12 +438,13 @@ export const categoryLowIdToNameMap: { [key: number]: string } = {
   21: '점프수트',
   22: '운동화',
   23: '구두',
-  24: '샌들/슬리퍼',
+  24: '샌들',
   25: '주얼리',
   26: '기타',
   27: '모자',
-  28: '백팩',
-  29: '힙색',
+  28: '가방',
+  29: '백팩',
+  30: '힙색',
 }
 export const categoryNameToLowIdMap: { [key: string]: number } = {
   탑: 1,
@@ -468,12 +470,13 @@ export const categoryNameToLowIdMap: { [key: string]: number } = {
   점프수트: 21,
   운동화: 22,
   구두: 23,
-  '샌들/슬리퍼': 24,
+  샌들: 24,
   주얼리: 25,
   기타: 26,
   모자: 27,
-  백팩: 28,
-  힙색: 29,
+  가방: 28,
+  백팩: 29,
+  힙색: 30,
 }
 
 export const categoryNameToHighIdMap: { [key: string]: number } = {
