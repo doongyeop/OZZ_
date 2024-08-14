@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // import { Api as ClothesApi } from '@/types/clothes/Api'
 // import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData, colors, colorCodeMap, colorMap } from '@/types/clothing'
@@ -21,7 +23,8 @@ import {
 } from '@/services/authApi'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzUyMzg4MywiZXhwIjoxNzIzNTgzODgzfQ.rVASyfPidOADXu4lR7i3BZTgKVUf1_s6rz9nysfcwZI'
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM1OTMwNjIsImV4cCI6MTcyMzY1MzA2Mn0.ykmp8xdKBsdbcgQaCaEd0xKkJYXyMIKmPyOEu-xL6B4'
+
 // const clothesApi = new ClothesApi({
 //   securityWorker: async () => ({
 //     headers: {
@@ -29,7 +32,7 @@ import {
 //     },
 //   }),
 // })
-//
+
 // const fileApi = new FileApi({
 //   securityWorker: async () => ({
 //     headers: {
@@ -42,7 +45,7 @@ export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
-  const clothesApi = getClothesApi()
+  const clothesApi = await getClothesApi()
 
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -52,7 +55,7 @@ export async function fetchUserClothes(
 }
 
 export async function fetchImage(filePath: string): Promise<string> {
-  const fileApi = getFileApi()
+  const fileApi = await getFileApi()
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
@@ -112,6 +115,7 @@ export async function getClothingDetails(clothesId: number) {
     memo: data.memo || null,
     image: data.imageFile ? await fetchImage(data.imageFile.filePath) : null, // 이미지 파일을 변환
     imageFile: data.imageFile ? data.imageFile : null,
+    extra: data.extra || null,
   }
 
   return formattedData
@@ -250,4 +254,6 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   memo: '자주 입는 옷입니다.',
   image: null, // 실제 이미지 파일은 목업 데이터에서 제외
   imageFile: null,
+  extra: '',
+  // processing: 0,
 })

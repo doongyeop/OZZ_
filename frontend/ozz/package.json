@@ -22,6 +22,7 @@
     "@tanstack/react-query": "^5.51.11",
     "@types/react-select": "^5.0.1",
     "axios": "^1.7.2",
+    "browser-image-compression": "^2.0.2",
     "cheerio": "1.0.0-rc.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

@@ -15,6 +15,7 @@ export interface ClothingData {
   memo: string | null
   image: string | null
   imageFile: File | null
+  extra?: string | null
 }
 
 export interface Color {
