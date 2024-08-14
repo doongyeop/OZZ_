@@ -49,9 +49,9 @@ export const downloadFile = async (
   if (!fileApi) throw new Error('File API not initialized')
   try {
     const response = await fileApi.downloadFile(filePath)
-    console.log('downloadFile실행중 response:', response)
+    // console.log('downloadFile실행중 response:', response)
     const blob = await response.blob()
-    console.log('downloadFile실행중 blob: ', blob)
+    // console.log('downloadFile실행중 blob: ', blob)
     const fileName = filePath.split('/').pop() || 'downloaded_file'
     return new File([blob], fileName)
   } catch (error) {
