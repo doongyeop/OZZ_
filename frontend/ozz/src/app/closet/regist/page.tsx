@@ -15,8 +15,7 @@ export default function Page() {
     request: ClothesCreateRequest,
   ) => {
     try {
-      const response = await createClothing(imageFile, request)
-      console.log('Clothes added successfully', response)
+      await createClothing(imageFile, request)
       router.push('/closet')
     } catch (error) {
       console.error('Failed to add clothes', error)

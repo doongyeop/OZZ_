@@ -6,7 +6,7 @@ import {
 // import { Api as FavoriteApi } from '@/types/favorite/Api'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzUyMzg4MywiZXhwIjoxNzIzNTgzODgzfQ.rVASyfPidOADXu4lR7i3BZTgKVUf1_s6rz9nysfcwZI'
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM2MjA4NDcsImV4cCI6MTcyMzY4MDg0N30.aJDVsoH0rx7iw5ROFBtaq729db1OzqN3d0wQ0sVpARE'
 
 // const favoriteApi = new FavoriteApi({
 //   securityWorker: async () => ({
@@ -22,7 +22,8 @@ export const createFavoriteGroup = async (
 ) => {
   const favoriteApi = getFavoriteApi()
   const response = await favoriteApi.createFavoriteGroup(requestData)
-  return response
+  const data = await response.json()
+  return data
 }
 
 // 즐겨찾기 추가 함수
@@ -32,7 +33,9 @@ export const addFavorite = async (
 ) => {
   const favoriteApi = getFavoriteApi()
   const response = await favoriteApi.addFavorite(favoriteGroupId, coordinateId)
-  return response
+  const data = await response.json()
+  // console.log('addFavorite data ', data)
+  return data
 }
 
 // 즐겨찾기 그룹에서 특정 코디 삭제 함수
@@ -53,10 +56,10 @@ export const getFavoritesByGroup = async (favoriteGroupId: number) => {
   const favoriteApi = await getFavoriteApi()
   const response = await favoriteApi.getFavoritesByGroup(favoriteGroupId)
   const data = await response.json()
-  console.log(
-    '즐겨찾기 그룹 코디 조회(getFavoritesByGroup API) 결과 data는요:',
-    data,
-  )
+  // console.log(
+  //   '즐겨찾기 그룹 코디 조회(getFavoritesByGroup API) 결과 data는요:',
+  //   data,
+  // )
   return data
 }
 
@@ -72,6 +75,7 @@ export const getFavoritesGroupListOfUsers = async () => {
   const favoriteApi = getFavoriteApi()
   const response = await favoriteApi.getFavoritesGroupListOfUsers()
   const data = await response.json()
+  // console.log('data ', data)
   return data
 }
 
