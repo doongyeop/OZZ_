@@ -14,8 +14,6 @@ public interface BoardService {
 
     Page<Board> getBoards(Pageable pageable);
 
-    Board getBoard(Long boardId);
-
     void updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
 
     void deleteBoard(Long boardId);
@@ -26,7 +24,5 @@ public interface BoardService {
 
     Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable);
 
-    BoardResponse mapToBoardResponse(Board board);
-
-    BoardResponse getBoardResponse(Long boardId);
+    BoardResponse getBoard(Long boardId);
 }

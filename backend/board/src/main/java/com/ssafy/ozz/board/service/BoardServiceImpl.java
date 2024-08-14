@@ -81,8 +81,38 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+    public BoardResponse getBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
+                profileImg
+        );
+
+        List<String> styleStrings = EnumBitwiseConverter.toEnums(Style.class, board.getStyle()).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
+        return new BoardResponse(
+                board.getId(),
+                board.getUserId(),
+                board.getCoordinateId(),
+                board.getContent(),
+                board.getAge(),
+                board.getLikes(),
+                styleStrings,
+                board.getTags(),
+                boardImg,
+                userResponse,
+                board.getCreatedDate()
+        );
     }
 
     @Override
@@ -137,58 +167,6 @@ public class BoardServiceImpl implements BoardService {
     public Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable) {
         Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
-    }
-
-    @Override
-    public BoardResponse mapToBoardResponse(Board board) {
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-
-        UserResponse userResponse = new UserResponse(
-                userInfo.userId() == null ? null : userInfo.userId(),
-                userInfo.nickname() == null ? null : userInfo.nickname(),
-                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
-                userInfo.Birth() == null ? null : userInfo.Birth(),
-                profileImg
-        );
-
-        return new BoardResponse(board, boardImg, userResponse);
-    }
-
-    @Override
-    public BoardResponse getBoardResponse(Long boardId) {
-        Board board = getBoard(boardId);
-
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-
-        UserResponse userResponse = new UserResponse(
-                userInfo.userId() == null ? null : userInfo.userId(),
-                userInfo.nickname() == null ? null : userInfo.nickname(),
-                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
-                userInfo.Birth() == null ? null : userInfo.Birth(),
-                profileImg
-        );
-
-        List<String> styleStrings = EnumBitwiseConverter.toEnums(Style.class, board.getStyle()).stream()
-                .map(Enum::name)
-                .collect(Collectors.toList());
-
-        return new BoardResponse(
-                board.getId(),
-                board.getUserId(),
-                board.getCoordinateId(),
-                board.getContent(),
-                board.getAge(),
-                board.getLikes(),
-                styleStrings,
-                board.getTags(),
-                boardImg,
-                userResponse,
-                board.getCreatedDate()
-        );
     }
 }
 
