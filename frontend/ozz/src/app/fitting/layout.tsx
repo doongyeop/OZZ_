@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 
 export default function FittingLayout({
   children,
@@ -7,7 +7,7 @@ export default function FittingLayout({
 }) {
   return (
     <section>
-      <Header title="가상 피팅" />
+      <HeaderWithBackward title="가상 피팅" />
       {children}
     </section>
   )
