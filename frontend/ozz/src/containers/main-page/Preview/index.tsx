@@ -66,8 +66,13 @@ export default function Preview({ title, items }: PreviewProps) {
         </div>
       ) : (
         <div className="mx-3 h-32 bg-primary-50 flex flex-col justify-center items-center">
-          <p>{content[title].itemName} 등록하기</p>
-          <FaCirclePlus />
+          <Link
+            href={content[title].link}
+            className="flex flex-col items-center"
+          >
+            <p>{content[title].itemName} 등록하기</p>
+            <FaCirclePlus />
+          </Link>
         </div>
       )}
     </div>
