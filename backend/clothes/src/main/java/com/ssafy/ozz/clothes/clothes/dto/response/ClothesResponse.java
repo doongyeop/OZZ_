@@ -24,7 +24,8 @@ public record ClothesResponse(
         List<Season> seasonList,
         List<Style> styleList,
         List<Pattern> patternList,
-        CategoryLowResponse categoryLow
+        CategoryLowResponse categoryLow,
+        String extra
 ) {
     public ClothesResponse(Clothes clothes) {
         this(
@@ -40,7 +41,8 @@ public record ClothesResponse(
                 toEnums(Season.class, clothes.getSeason()),
                 toEnums(Style.class, clothes.getStyle()),
                 toEnums(Pattern.class, clothes.getPattern()),
-                new CategoryLowResponse(clothes.getCategoryLow())
+                new CategoryLowResponse(clothes.getCategoryLow()),
+                clothes.getExtra()
         );
     }
 }
