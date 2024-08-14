@@ -1,5 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.repository.elasticsearch;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
 import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -38,8 +40,13 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
     }
 
     public Page<ClothesDocument> findByCondition(ClothesSearchCondition condition, Pageable pageable) {
+        return findByCondition(null,condition, pageable);
+    }
+
+
+    public Page<ClothesDocument> findByCondition(Long userId, ClothesSearchCondition condition, Pageable pageable) {
 //        Query query = createConditionNativeQuery(condition,pageable);
-        Query query = createConditionNativeQuery(condition,pageable);
+        Query query = createConditionNativeQuery(userId,condition,pageable);
 
         SearchHits<ClothesDocument> searchHits = operations.search(query, ClothesDocument.class);
 
@@ -51,37 +58,15 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
         return new PageImpl<>(documents, pageable, searchHits.getTotalHits());
     }
 
-    private Query createConditionNativeQuery(ClothesSearchCondition condition, Pageable pageable) {
+    private Query createConditionNativeQuery(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         // Split search term into tokens
-        String[] tokens = condition.keyword().split("\\s+");
-
         return NativeQuery.builder()
                 .withQuery(q->q
-                    .bool(b->{b
-                        .must(m->m
-                            .match(mm->mm
-                                .field("name")
-                                .query(condition.keyword())
-                            )
-                        )
-                        // 무신사 검은 셔츠 검색시 '무신사' '검은' '셔츠'가 모두 들어있는 document는 점수를 높힘
-                        .should(s->s
-                            .matchPhrase(mm->mm
-                                .field("name")
-                                .query(condition.keyword())
-                            )
-                        );
-
-                        // 무신사 검은 셔츠 검색시 '무신사', '검은', '셔츠' 각 토큰이 정확히 검색되는 document는 점수를 높힘 (유사어 고려 X)
-                        for (String token : tokens) {
-                            b.should(s->s
-                                .term(mm->mm
-                                    .field("name")
-                                    .value(token)
-                                )
-                            );
-                        }
-
+                    .bool(b->{
+                        matchKeyword(b,condition.keyword());
+                        filterUser(b,userId);
+                        filterCategoryLow(b,condition.categoryLowId());
+                        filterCategoryHigh(b,condition.categoryHighId());
                         return b;
                     })
                 )
@@ -89,6 +74,63 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
                 .build();
     }
 
+    private BoolQuery.Builder matchKeyword(BoolQuery.Builder b, String keyword) {
+        if (keyword == null || keyword.isEmpty()) return b;
+        b.must(m -> m
+                .match(mm -> mm
+                        .field("name")
+                        .query(keyword)
+                )
+        )
+        .should(s -> s
+                .matchPhrase(mp -> mp
+                        .field("name")
+                        .query(keyword)
+                )
+        );
+
+        String[] tokens = keyword.split("\\s+");
+        for (String token : tokens) {
+            b.should(s -> s
+                    .term(t -> t
+                            .field("name")
+                            .value(token)
+                    )
+            );
+        }
+        return b;
+    }
+
+    private BoolQuery.Builder filterCategoryLow(BoolQuery.Builder b, Byte categoryLowId) {
+        if (categoryLowId == null) return b;
+        return b.filter(f -> f
+                .term(t -> t
+                        .field("category_low_id")
+                        .value(categoryLowId)
+                )
+        );
+    }
+
+    private BoolQuery.Builder filterCategoryHigh(BoolQuery.Builder b, Byte categoryHighId) {
+        if (categoryHighId == null) return b;
+        return b.filter(f -> f
+                .term(t -> t
+                        .field("category_high_id")
+                        .value(categoryHighId)
+                )
+        );
+    }
+
+
+    private BoolQuery.Builder filterUser(BoolQuery.Builder b, Long userId) {
+        if (userId == null) return b;
+        return b.filter(f -> f
+                .term(t -> t
+                        .field("user_id")
+                        .value(userId)
+                )
+        );
+    }
 
     private Query createSearchQuery(ClothesSearchCondition condition, Pageable pageable) {
         float[] vector = getVector(condition.keyword());

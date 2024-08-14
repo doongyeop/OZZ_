@@ -83,6 +83,8 @@ function ProfileEdit() {
       setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
+      } else {
+        setProfileSrc('') // 기본 이미지로 설정
       }
     } catch (error) {
       console.error('Failed to fetch user info:', error)
@@ -202,8 +204,8 @@ function ProfileEdit() {
             <Image
               src={profileSrc}
               alt="프로필 이미지"
-              style={{ aspectRatio: '1 / 1' }}
-              fill
+              layout="fill"
+              objectFit="cover"
               className="rounded-full"
             />
           ) : (
@@ -336,6 +338,9 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full">
+        <Toaster />
+      </div>
     </div>
   )
 }

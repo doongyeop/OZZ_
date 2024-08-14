@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toEnums;
 
@@ -21,7 +22,7 @@ public record BoardResponse(
         String content,
         int age,
         int likes,
-        List<Style> styleList,
+        List<String> styleList,
         List<Tag> tagList,
         FileInfo boardFileInfo, // = coordinateFileInfo
         UserResponse userInfo,
@@ -35,7 +36,9 @@ public record BoardResponse(
                 board.getContent(),
                 board.getAge(),
                 board.getLikes(),
-                toEnums(Style.class, board.getStyle()),
+                toEnums(Style.class, board.getStyle()).stream()
+                        .map(Enum::name)
+                        .collect(Collectors.toList()),
                 board.getTags(),
                 boardFileInfo,
                 userInfo,

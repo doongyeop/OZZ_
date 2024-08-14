@@ -11,11 +11,13 @@ import com.ssafy.ozz.board.global.feign.file.FileClient;
 import com.ssafy.ozz.board.global.feign.user.UserClient;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.TagRepository;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import com.ssafy.ozz.library.file.FileInfo;
 import com.ssafy.ozz.library.global.error.exception.BoardNotFoundException;
 import com.ssafy.ozz.library.global.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.global.error.exception.UserNotFoundException;
 import com.ssafy.ozz.library.user.UserInfo;
+import com.ssafy.ozz.library.util.EnumBitwiseConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-
-import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,13 +41,14 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
+        List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
 
         Board board = Board.builder()
                 .content(request.content())
                 .imgFileId(imgFileId)
                 .userId(userId)
                 .age(request.age())
-                .style(toBits(request.styleList()))
+                .style(EnumBitwiseConverter.toBits(styles))
                 .likes(0)
                 .coordinateId(request.coordinateId())
                 .createdDate(new Date())
@@ -78,21 +81,50 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+    public BoardResponse getBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
+                profileImg
+        );
+
+        List<String> styleStrings = EnumBitwiseConverter.toEnums(Style.class, board.getStyle()).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
+        return new BoardResponse(
+                board.getId(),
+                board.getUserId(),
+                board.getCoordinateId(),
+                board.getContent(),
+                board.getAge(),
+                board.getLikes(),
+                styleStrings,
+                board.getTags(),
+                boardImg,
+                userResponse,
+                board.getCreatedDate()
+        );
     }
 
     @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
+    public void updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
-        UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
 
         board = board.toBuilder()
                 .content(request.content())
                 .imgFileId(boardImg)
                 .coordinateId(request.coordinateId())
-                .style(toBits(request.styleList()))
+                .style(EnumBitwiseConverter.toBits(styles))
                 .build();
 
         boardRepository.save(board);
@@ -109,15 +141,6 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        UserResponse userResponse = new UserResponse(
-                user.userId(),
-                user.nickname(),
-                user.Birth(),
-                user.profileFileId(),
-                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
-        );
-
-        return new BoardResponse(board, file, userResponse);
     }
 
     @Override
@@ -128,8 +151,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<Board> getBoardsByStyle(Pageable pageable, Integer style) {
-        return boardRepository.findByStyle(style, pageable);
+    public Page<Board> getBoardsByStyle(Pageable pageable, String style) {
+        Style styleEnum = EnumBitwiseConverter.fromString(Style.class, style);
+        Integer styleBit = EnumBitwiseConverter.toBit(styleEnum);
+
+        return boardRepository.findByStyle(styleBit, pageable);
     }
 
     @Override
@@ -142,22 +168,5 @@ public class BoardServiceImpl implements BoardService {
         Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
-
-    @Override
-    public BoardResponse mapToBoardResponse(Board board) {
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-
-        UserResponse userResponse = new UserResponse(
-                userInfo.userId(),
-                userInfo.nickname(),
-                userInfo.Birth(),
-                userInfo.profileFileId(),
-                profileImg
-        );
-
-        return new BoardResponse(board, boardImg, userResponse);
-    }
-
 }
+

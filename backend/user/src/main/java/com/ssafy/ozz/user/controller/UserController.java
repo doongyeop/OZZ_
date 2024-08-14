@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,6 +37,18 @@ public class UserController {
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
     public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
+        Optional<User> userOptional = userService.getUserById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "ID로 유저정보를 조회", description = "보드에서 조회용")
+    public ResponseEntity<?> getUserInfoFromId(@PathVariable("userId") Long userId) {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

@@ -102,6 +102,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - CLOTHES_ENDPOINT=http://ozz-clothes:${CLOTHES_PORT}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FILE_HOST=http://ozz-file:${FILE_PORT}
     ports:
       - ${AI_PORT}:${AI_PORT}
     networks:

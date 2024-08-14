@@ -42,10 +42,10 @@ export class Api<
    * @secure
    * @response `200` `DeleteRefreshTokenOfUserData` OK
    */
-  deleteRefreshTokenOfUser = (userId: number, params: RequestParams = {}) =>
+  deleteRefreshTokenOfUser = (params: RequestParams = {}) =>
     this.request<DeleteRefreshTokenOfUserData, any>({
-      path: `/api/auth/users/${userId}/refresh`,
-      method: 'DELETE',
+      path: `/api/auth/logout`,
+      method: 'POST',
       secure: true,
       ...params,
     })

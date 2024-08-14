@@ -14,17 +14,15 @@ public interface BoardService {
 
     Page<Board> getBoards(Pageable pageable);
 
-    Board getBoard(Long boardId);
-
-    BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
+    void updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
 
     void deleteBoard(Long boardId);
 
-    Page<Board> getBoardsByStyle(Pageable pageable, Integer style);
+    Page<Board> getBoardsByStyle(Pageable pageable, String style);
 
     Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge);
 
     Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable);
 
-    BoardResponse mapToBoardResponse(Board board);
+    BoardResponse getBoard(Long boardId);
 }

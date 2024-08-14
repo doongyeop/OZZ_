@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
@@ -44,12 +45,14 @@ public class BoardController {
     // O
     @GetMapping("/user")
     @Operation(summary = "유저ID로 작성 글 조회", description = "특정 사용자가 작성한 글을 조회합니다.")
-    public ResponseEntity<Page<BoardResponse>> getBoardsByUserId(
+    public ResponseEntity<Page<BoardBasicResponse>> getBoardsByUserId(
             @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, Pageable pageable) {
         Page<Board> boards = boardService.getBoardsByUserId(userId, pageable);
-        Page<BoardResponse> boardResponses = boards.map(boardService::mapToBoardResponse);
-
-        return ResponseEntity.ok(boardResponses);
+        Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
+            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            return new BoardBasicResponse(board, boardImg);
+        });
+        return ResponseEntity.ok(boardBasicResponses);
     }
 
     // O
@@ -66,15 +69,13 @@ public class BoardController {
         return ResponseEntity.ok(boardBasicResponses);
     }
 
-    // X
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
-    public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
-        Board board = boardService.getBoard(boardId);
-        BoardResponse boardResponse = boardService.mapToBoardResponse(board);
-
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable("boardId") Long boardId) {
+        BoardResponse boardResponse = boardService.getBoard(boardId);
         return ResponseEntity.ok(boardResponse);
     }
+
     // O
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
@@ -95,7 +96,8 @@ public class BoardController {
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByStyle(
-            @RequestParam("style") Integer style, Pageable pageable) {
+            @RequestParam("style") String style, Pageable pageable) {
+
         Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
             FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
@@ -120,12 +122,12 @@ public class BoardController {
     // O
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
-    public ResponseEntity<BoardResponse> updateBoard(
+    public ResponseEntity<?> updateBoard(
             @PathVariable Long boardId,
             @RequestBody BoardUpdateRequest request) {
         Long imgFileId = request.imgFileId();
-        BoardResponse response = boardService.updateBoard(boardId, request, imgFileId);
-        return ResponseEntity.ok(response);
+        boardService.updateBoard(boardId, request, imgFileId);
+        return ResponseEntity.ok().build();
     }
 
     // O
@@ -148,3 +150,4 @@ public class BoardController {
 //    }
 
 }
+

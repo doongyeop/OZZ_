@@ -7,8 +7,8 @@ import java.util.Date;
 public record UserResponse(
         Long userId,
         String nickname,
-        Date birth,
         Long profileFileId,
+        Date birth,
         FileInfo profileImg
 ) {
 }

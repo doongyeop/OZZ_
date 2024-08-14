@@ -77,18 +77,26 @@ export default function CoordiBookDetailPage({
     fetchCoordiBook(params.id)
   }, [params.id])
 
-  const handleMouseDown = (coordiId: number) => {
+  const startLongPress = (coordiId: number) => {
     longPressTimeout.current = setTimeout(() => {
       setSelectedCoordiId(coordiId)
       setDeleteModal(true)
-    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+    }, 500)
   }
 
-  const handleMouseUpOrLeave = () => {
+  const clearLongPress = () => {
     if (longPressTimeout.current) {
       clearTimeout(longPressTimeout.current)
       longPressTimeout.current = null
     }
+  }
+
+  const handlePressStart = (coordiId: number) => {
+    startLongPress(coordiId)
+  }
+
+  const handlePressEnd = () => {
+    clearLongPress()
   }
 
   const deleteCoordi = async () => {
@@ -106,6 +114,49 @@ export default function CoordiBookDetailPage({
     } catch (err) {
       console.log('코디 삭제 중 문제 발생:', err)
     }
+  }
+
+  const renderFilteredItems = () => {
+    return filteredItems.length > 0 ? (
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        {filteredItems.map((item, index) => (
+          <div
+            key={item.favoriteId}
+            role="button"
+            tabIndex={0}
+            onMouseDown={() => handlePressStart(item.coordinate.coordinateId)}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onTouchStart={() => handlePressStart(item.coordinate.coordinateId)}
+            onTouchEnd={handlePressEnd}
+            onTouchCancel={handlePressEnd}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handlePressStart(item.coordinate.coordinateId)
+              }
+            }}
+          >
+            <Link href={`/coordi/detail/${item.coordinate.coordinateId}`}>
+              <Image
+                src={item.coordinate.imageFile.filePath}
+                alt={`item ${index + 1}`}
+                width={0}
+                height={0}
+                sizes="100%"
+                className="w-full h-auto"
+              />
+            </Link>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="mt-20 flex flex-col items-center">
+        <RxCross2 size="90" className="text-gray-dark" />
+        <div className="text-center font-semibold">
+          <p>스타일이 일치하는 코디가 없어요</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -148,47 +199,7 @@ export default function CoordiBookDetailPage({
             </TagButton>
           ))}
         </div>
-        <div>
-          {filteredItems.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              {filteredItems.map((item, index) => (
-                <div
-                  key={item.favoriteId}
-                  role="button" // 버튼 역할을 명시
-                  tabIndex={0} // 키보드 포커스를 받을 수 있게 설정
-                  onMouseDown={() =>
-                    handleMouseDown(item.coordinate.coordinateId)
-                  }
-                  onMouseUp={handleMouseUpOrLeave}
-                  onMouseLeave={handleMouseUpOrLeave}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleMouseDown(item.coordinate.coordinateId)
-                    }
-                  }}
-                >
-                  <Link href={`/coordi/detail/${item.coordinate.coordinateId}`}>
-                    <Image
-                      src={item.coordinate.imageFile.filePath}
-                      alt={`item ${index + 1}`}
-                      width={0}
-                      height={0}
-                      sizes="100%"
-                      className="w-full h-auto"
-                    />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-20 flex flex-col items-center">
-              <RxCross2 size="90" className="text-gray-dark" />
-              <div className="text-center font-semibold">
-                <p>스타일이 일치하는 코디가 없어요</p>
-              </div>
-            </div>
-          )}
-        </div>
+        {renderFilteredItems()}
       </div>
       {deleteModal && (
         <Modal
