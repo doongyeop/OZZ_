@@ -20,9 +20,9 @@ import {
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
-import UploadModal from './modal'
 import { Toaster } from '@/components/ui/toaster'
 import { useToast } from '@/components/ui/use-toast'
+import UploadModal from './modal'
 
 interface FieldProps {
   label: string
@@ -182,7 +182,7 @@ function ProfileEdit() {
       const response = await uploadProfileImage(file)
       // console.log('프로필 이미지 업로드 성공:', response)
       await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
-      toggleProfileModal() //모달닫기
+      toggleProfileModal()
     } catch (error) {
       console.error('프로필 이미지 업로드 실패:', error)
     }
