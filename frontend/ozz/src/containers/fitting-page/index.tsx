@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import html2canvas from 'html2canvas'
