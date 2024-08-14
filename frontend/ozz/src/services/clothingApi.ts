@@ -151,7 +151,7 @@ export const extractClothing = async (file: File, highCategory: string) => {
     throw new Error('Access token is missing')
   }
 
-  console.log('tokens : ', tokens)
+  // console.log('tokens : ', tokens)
 
   const formData = new FormData()
   formData.append('image', file)
@@ -160,14 +160,14 @@ export const extractClothing = async (file: File, highCategory: string) => {
   const requestOptions: RequestInit = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${tokens}`,
+      Authorization: `Bearer ${tokens.accessToken}`,
     },
     body: formData,
     redirect: 'follow',
   }
 
-  console.log('requestOptions ', requestOptions)
-  console.log('formData ', formData)
+  // console.log('requestOptions ', requestOptions)
+  // console.log('formData ', formData)
 
   try {
     const response = await fetch(url, requestOptions)
