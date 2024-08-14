@@ -15,6 +15,7 @@ import {
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
@@ -61,7 +62,8 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
   }
 
   return (
-    <main>
+    <>
+      <HeaderWithBackward title="나의 옷짱" />
       <ClothingForm
         initialData={clothingData}
         onSubmit={handleSubmit}
@@ -75,6 +77,6 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
           message="정말 삭제하시겠습니까?"
         />
       )}
-    </main>
+    </>
   )
 }
