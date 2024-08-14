@@ -165,8 +165,8 @@ function ProfileEdit() {
       try {
         await deleteProfileImage()
         // console.log('프로필 삭제지우는즁')
-        await fetchUserInfo()
         toggleProfileModal()
+        await fetchUserInfo()
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
@@ -202,8 +202,8 @@ function ProfileEdit() {
             <Image
               src={profileSrc}
               alt="프로필 이미지"
-              style={{ aspectRatio: '1 / 1' }}
-              fill
+              layout="fill"
+              objectFit="cover"
               className="rounded-full"
             />
           ) : (
@@ -336,6 +336,7 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
+      <Toaster />
     </div>
   )
 }

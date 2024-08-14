@@ -33,9 +33,9 @@ export default function MyPageIndex() {
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
-      console.log('getFile 성공', fileData)
+      // console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
-      console.log('downloadFile 성공', picture)
+      // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
         setProfileSrc(pictureUrl)
@@ -78,7 +78,7 @@ export default function MyPageIndex() {
   const logOut = async (userId: number) => {
     try {
       await logout(userId)
-      deleteAllCookies()
+      // deleteAllCookies()
       router.push('/login')
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error)
