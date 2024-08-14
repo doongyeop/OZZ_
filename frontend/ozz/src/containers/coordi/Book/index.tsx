@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { HiPencil, HiPlus } from 'react-icons/hi'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { Coordibook } from '@/types/coordibook'
 import {
   createFavoriteGroup,
@@ -94,8 +95,6 @@ export default function CoordiBook() {
         fetchFavoritesGroupList()
       } else {
         console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
-        console.log('그룹삭제에 대한 response', res)
-        console.log('res.status는', res.status)
       }
     } catch (err) {
       console.log(err)
@@ -193,27 +192,11 @@ export default function CoordiBook() {
         </Modal>
       )}
       {deleteModal && (
-        <Modal
+        <ConfirmModal
           onClose={() => setDeleteModal(false)}
-          title="코디북을 삭제하시겠습니까?"
-        >
-          <div className="flex justify-center space-x-4">
-            <button
-              type="button"
-              onClick={() => setDeleteModal(false)}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              아니오
-            </button>
-            <button
-              type="button"
-              onClick={deleteCoordiBook}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              네
-            </button>
-          </div>
-        </Modal>
+          onConfirm={deleteCoordiBook}
+          message="코디북을 삭제하시겠습니까?"
+        />
       )}
     </div>
   )

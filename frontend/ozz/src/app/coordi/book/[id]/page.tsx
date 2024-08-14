@@ -77,18 +77,26 @@ export default function CoordiBookDetailPage({
     fetchCoordiBook(params.id)
   }, [params.id])
 
-  const handleMouseDown = (coordiId: number) => {
+  const startLongPress = (coordiId: number) => {
     longPressTimeout.current = setTimeout(() => {
       setSelectedCoordiId(coordiId)
       setDeleteModal(true)
-    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+    }, 500)
   }
 
-  const handleMouseUpOrLeave = () => {
+  const clearLongPress = () => {
     if (longPressTimeout.current) {
       clearTimeout(longPressTimeout.current)
       longPressTimeout.current = null
     }
+  }
+
+  const handlePressStart = (coordiId: number) => {
+    startLongPress(coordiId)
+  }
+
+  const handlePressEnd = () => {
+    clearLongPress()
   }
 
   const deleteCoordi = async () => {
@@ -157,13 +165,18 @@ export default function CoordiBookDetailPage({
                   role="button" // 버튼 역할을 명시
                   tabIndex={0} // 키보드 포커스를 받을 수 있게 설정
                   onMouseDown={() =>
-                    handleMouseDown(item.coordinate.coordinateId)
+                    handlePressStart(item.coordinate.coordinateId)
                   }
-                  onMouseUp={handleMouseUpOrLeave}
-                  onMouseLeave={handleMouseUpOrLeave}
+                  onMouseUp={handlePressEnd}
+                  onMouseLeave={handlePressEnd}
+                  onTouchStart={() =>
+                    handlePressStart(item.coordinate.coordinateId)
+                  }
+                  onTouchEnd={handlePressEnd}
+                  onTouchCancel={handlePressEnd}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      handleMouseDown(item.coordinate.coordinateId)
+                      handlePressStart(item.coordinate.coordinateId)
                     }
                   }}
                 >
