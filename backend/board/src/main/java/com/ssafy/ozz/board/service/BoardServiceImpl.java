@@ -86,11 +86,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
+    public void updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
-        UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-
         List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
 
         board = board.toBuilder()
@@ -114,15 +111,6 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        UserResponse userResponse = new UserResponse(
-                user.userId() == null ? null : user.userId(),
-                user.nickname() == null ? null : user.nickname(),
-                user.profileFileId() == null ? null : user.profileFileId(),
-                user.Birth() == null ? null : user.Birth(),
-                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
-        );
-
-        return new BoardResponse(board, file, userResponse);
     }
 
     @Override

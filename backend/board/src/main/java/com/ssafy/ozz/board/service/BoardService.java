@@ -16,7 +16,7 @@ public interface BoardService {
 
     Board getBoard(Long boardId);
 
-    BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
+    void updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId);
 
     void deleteBoard(Long boardId);
 
