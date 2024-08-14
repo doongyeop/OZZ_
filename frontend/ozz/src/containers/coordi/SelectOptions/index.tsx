@@ -81,11 +81,11 @@ export default function SelectOptions() {
             {selectedItem ? (
               <div className="flex flex-col items-center">
                 <Image
-                  src={selectedItem.imageFile.filePath}
+                  src={selectedItem.imageUrl}
                   alt={selectedItem.name}
                   width={50}
                   height={50}
-                  className="rounded-full"
+                  className="rounded-full bg-white aspect-square object-contain"
                 />
                 <span className="text-xs mt-1">{selectedItem.name}</span>
               </div>

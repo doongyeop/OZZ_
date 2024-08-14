@@ -519,7 +519,7 @@ export interface ClothesSearchCondition {
 export interface ClothesBasicWithFileResponse {
   /** @format int64 */
   clothesId: number
-  name?: string
+  name: string
   /** @format date-time */
   createdDate?: string
   /** 하위 카테고리 정보 DTO */
