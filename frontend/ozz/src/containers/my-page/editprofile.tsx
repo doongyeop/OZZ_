@@ -20,8 +20,7 @@ import {
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
-import { Toaster } from '@/components/ui/toaster'
-import { useToast } from '@/components/ui/use-toast'
+import Toast from '@/components/Toast'
 import UploadModal from './modal'
 
 interface FieldProps {
@@ -56,9 +55,12 @@ function ProfileEdit() {
   const [errorText, setErrorText] = useState('')
   const [nickname, setNickname] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const router = useRouter()
-  const { toast } = useToast()
+  const showToast = (message: string) => {
+    setToastMessage(message)
+  }
 
   const getProfilePic = async (picId: number) => {
     try {
@@ -138,7 +140,7 @@ function ProfileEdit() {
 
       await updateUser(userData)
       await fetchUserInfo() // 유저 정보 다시 불러오기
-      toast({ description: '회원정보가 수정되었습니다.' })
+      showToast('회원정보가 수정되었습니다.')
 
       return true
     } catch (error) {
@@ -338,9 +340,9 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full">
-        <Toaster />
-      </div>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
     </div>
   )
 }
