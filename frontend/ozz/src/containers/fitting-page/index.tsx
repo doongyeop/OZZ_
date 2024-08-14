@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import html2canvas from 'html2canvas'
 
 import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
@@ -13,7 +14,11 @@ import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { FaPlus, FaMinus } from 'react-icons/fa'
-import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
+import {
+  ClothesBasicWithFileResponse,
+  CoordinateCreateRequest,
+  CreateCoordinatePayload,
+} from '@/types/clothes/data-contracts'
 import { categoryLowIdToHighNameMap, Style } from '@/types/clothing'
 
 type FittingItem = {
@@ -31,6 +36,15 @@ const placeholderImages: { [key: string]: string } = {
   하의: '/images/fitting/bottom.png',
   신발: '/images/fitting/shoes.png',
   가방: '/images/fitting/bag.png',
+}
+
+// 랜덤한 파스텔톤 색상을 생성하는 함수
+const generateRandomPastelColor = () => {
+  const randomValue = () => Math.floor(Math.random() * 128 + 127).toString(16) // 127~255 사이의 값으로 파스텔톤 생성
+  const r = randomValue()
+  const g = randomValue()
+  const b = randomValue()
+  return `#${r}${g}${b}`
 }
 
 export default function FittingContainer() {
@@ -55,6 +69,8 @@ export default function FittingContainer() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false) // 확인 모달
   const [coordiName, setCoordiName] = useState('') // 코디 이름
   const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
+  const fittingContainerRef = useRef<HTMLDivElement | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
@@ -136,11 +152,12 @@ export default function FittingContainer() {
   }
 
   const handleSaveCoordi = () => {
-    if (selectedClothes.length === 0) {
-      alert('적어도 한 가지 아이템을 선택해야 합니다.')
-      return
-    }
-    setIsCoordiModalOpen(true)
+    createFittingImage()
+    // if (selectedClothes.length === 0) {
+    //   alert('적어도 한 가지 아이템을 선택해야 합니다.')
+    //   return
+    // }
+    // setIsCoordiModalOpen(true)
   }
 
   const handleCoordiNameSubmit = (name: string) => {
@@ -178,10 +195,81 @@ export default function FittingContainer() {
     console.log('저장 완료!')
   }
 
+  const createFittingImage = async () => {
+    if (selectedClothes.length === 0) {
+      alert('선택된 옷이 없습니다.')
+      return
+    }
+
+    // 1. 랜덤 파스텔톤 배경색 생성
+    const randomBackgroundColor = generateRandomPastelColor()
+    const originalBackgroundColor =
+      fittingContainerRef.current!.style.backgroundColor
+
+    // 2. 이미지 생성 전에 배경색 적용
+    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
+
+    console.log('randomBackgroundColor', randomBackgroundColor)
+    try {
+      const width = 900 // 9:16 비율의 가로 크기
+      const height = 1600 // 9:16 비율의 세로 크기
+
+      // 1. HTML을 캔버스로 변환
+      const canvas = await html2canvas(fittingContainerRef.current!, {
+        width,
+        height,
+        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+      })
+
+      // 2. 캔버스를 Blob (이미지 파일)로 변환
+      canvas.toBlob(async (blob) => {
+        fittingContainerRef.current!.style.backgroundColor =
+          originalBackgroundColor
+        if (!blob) {
+          alert('이미지 생성에 실패했습니다.')
+          return
+        }
+
+        const imageFile = new File([blob], 'coordinate.png', {
+          type: 'image/png',
+        })
+
+        const imageUrl = URL.createObjectURL(blob)
+        setPreviewUrl(imageUrl)
+
+        // 3. 코디 정보를 생성
+        const coordinateRequest: CoordinateCreateRequest = {
+          name: 'My Coordination', // 코디 이름 (이름 설정 모달에서 받은 이름)
+          styleList: ['CASUAL', 'SPORTY'], // 스타일 (스타일 태그 모달에서 받은 스타일)
+          clothesList: selectedClothes.map((cloth) => ({
+            clothesId: cloth.clothesId,
+            offset: cloth.categoryLow?.categoryLowId, // 이 부분에서 categoryHighId를 사용하는 경우 적절히 수정
+          })),
+        }
+
+        // 4. API 요청 데이터 준비
+        const payload: CreateCoordinatePayload = {
+          imageFile,
+          request: coordinateRequest,
+        }
+
+        // 5. API 호출 (createCoordinate 메서드를 호출)
+        // exampleAPI.createCoordinate(payload);
+
+        alert('코디가 저장되었습니다.')
+      })
+    } catch (error) {
+      console.error('코디 저장 중 오류 발생:', error)
+      alert('코디 저장 중 오류가 발생했습니다.')
+      fittingContainerRef.current!.style.backgroundColor =
+        originalBackgroundColor
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col">
-        <div className="w-full p-4">
+        <div className="w-full p-4" ref={fittingContainerRef}>
           <div className={styles.clothingGrid}>
             {fittingItems.map((item) => (
               <div
@@ -248,8 +336,8 @@ export default function FittingContainer() {
           <ul className="mt-2 px-6">
             {selectedClothes.map((item) => (
               <li key={item.clothesId} className="mb-2 p-3 border-b">
-                <Link href={`/closet/modify/${item.clothesId}`} passHref>
-                  <div className="flex items-center cursor-pointer">
+                <div className="flex items-center cursor-pointer">
+                  <Link href={`/closet/modify/${item.clothesId}`} passHref>
                     <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
                       <Image
                         src={item.imageUrl}
@@ -265,31 +353,31 @@ export default function FittingContainer() {
                         }}
                       />
                     </div>
-                    <div className="flex flex-row w-full justify-between">
-                      <div className="flex flex-col">
-                        <p className="mb-2">{item.categoryLow?.name}</p>
-                        <p className="text-md font-semibold">{item.name}</p>
-                      </div>
-                      <button
-                        type="button"
-                        aria-label="제거"
-                        onClick={() => {
-                          const categoryLowId = item.categoryLow?.categoryLowId
-                          if (categoryLowId !== undefined) {
-                            const highCategoryName =
-                              categoryLowIdToHighNameMap[categoryLowId]
-                            handleRemoveItem(highCategoryName)
-                          } else {
-                            console.error('카테고리 ID가 유효하지 않습니다.')
-                          }
-                        }}
-                        className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
-                      >
-                        <FaMinus />
-                      </button>
+                  </Link>
+                  <div className="flex flex-row w-full justify-between">
+                    <div className="flex flex-col">
+                      <p className="mb-2">{item.categoryLow?.name}</p>
+                      <p className="text-md font-semibold">{item.name}</p>
                     </div>
+                    <button
+                      type="button"
+                      aria-label="제거"
+                      onClick={() => {
+                        const categoryLowId = item.categoryLow?.categoryLowId
+                        if (categoryLowId !== undefined) {
+                          const highCategoryName =
+                            categoryLowIdToHighNameMap[categoryLowId]
+                          handleRemoveItem(highCategoryName)
+                        } else {
+                          console.error('카테고리 ID가 유효하지 않습니다.')
+                        }
+                      }}
+                      className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                    >
+                      <FaMinus />
+                    </button>
                   </div>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
@@ -305,7 +393,18 @@ export default function FittingContainer() {
           />
           <ShareCommunityButton />
         </div>
-
+        {/* 미리보기 영역 */}
+        {previewUrl && (
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold">코디 미리보기</h2>
+            <Image
+              src={previewUrl}
+              alt="코디 미리보기"
+              width={300}
+              height={300}
+            />
+          </div>
+        )}
         {isCoordiModalOpen && (
           <Modal onClose={() => setIsCoordiModalOpen(false)}>
             <CoordiNameModal
