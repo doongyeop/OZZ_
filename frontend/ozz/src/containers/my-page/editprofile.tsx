@@ -338,7 +338,7 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2">
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 max-w-[360px]">
         <Toaster />
       </div>
     </div>
