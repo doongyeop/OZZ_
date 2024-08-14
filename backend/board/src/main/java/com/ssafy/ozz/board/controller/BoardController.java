@@ -71,7 +71,7 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
-    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable("boardId") Long boardId) {
         BoardResponse boardResponse = boardService.getBoard(boardId);
         return ResponseEntity.ok(boardResponse);
     }
