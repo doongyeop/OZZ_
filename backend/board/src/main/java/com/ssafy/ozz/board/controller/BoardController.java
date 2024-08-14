@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RestController
@@ -66,15 +67,13 @@ public class BoardController {
         return ResponseEntity.ok(boardBasicResponses);
     }
 
-    // X
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
-    public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
-        Board board = boardService.getBoard(boardId);
-        BoardResponse boardResponse = boardService.mapToBoardResponse(board);
-
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
+        BoardResponse boardResponse = boardService.getBoardResponse(boardId);
         return ResponseEntity.ok(boardResponse);
     }
+
     // O
     @GetMapping("/sort/age")
     @Operation(summary = "나이별 게시글 조회", description = "특정 나이대의 게시글을 필터링하여 조회합니다.")
@@ -97,7 +96,6 @@ public class BoardController {
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByStyle(
             @RequestParam("style") String style, Pageable pageable) {
 
-        // todo String으로 바꾸기
         Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
             FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
@@ -150,3 +148,4 @@ public class BoardController {
 //    }
 
 }
+
