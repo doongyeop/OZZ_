@@ -22,14 +22,6 @@ export default function MyPageIndex() {
   const [profileSrc, setProfileSrc] = useState('')
   const [loading, setLoading] = useState(true)
 
-  const deleteAllCookies = () => {
-    document.cookie.split(';').forEach((cookie) => {
-      const eqPos = cookie.indexOf('=')
-      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    })
-  }
-
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
@@ -75,10 +67,9 @@ export default function MyPageIndex() {
     router.push('/coordishot')
   }
 
-  const logOut = async (userId: number) => {
+  const logOut = async () => {
     try {
-      await logout(userId)
-      deleteAllCookies()
+      await logout()
       router.push('/login')
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error)
@@ -179,7 +170,7 @@ export default function MyPageIndex() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => logOut(user.id)}
+                    onClick={() => logOut()}
                     className="font-bold w-14 p-1 border border-primary-400 rounded-full text-xs text-primary-400 hover:bg-primary-400 hover:text-secondary"
                   >
                     예

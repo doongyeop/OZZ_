@@ -76,6 +76,9 @@ public class ClothesDocument {
     @Field(name = "category_low_id",type = FieldType.Byte)
     Byte categoryLowId;
 
+    @Field(name = "category_high_id",type = FieldType.Byte)
+    Byte categoryHighId;
+
     @Field(name = "user_id",type = FieldType.Long)
     Long userId;
 
@@ -94,7 +97,10 @@ public class ClothesDocument {
         this.season = clothes.getSeason();
         this.pattern = clothes.getPattern();
         this.imageFileId = clothes.getImageFileId();
-        this.categoryLowId = clothes.getCategoryLow().getCategoryLowId();
+        if (clothes.getCategoryLow() != null) {
+            this.categoryLowId = clothes.getCategoryLow().getCategoryLowId();
+            this.categoryHighId = clothes.getCategoryLow().getCategoryHigh().getCategoryHighId();
+        }
         this.userId = clothes.getUserId();
     }
 }

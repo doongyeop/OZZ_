@@ -26,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -82,16 +81,43 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+    public BoardResponse getBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
+                profileImg
+        );
+
+        List<String> styleStrings = EnumBitwiseConverter.toEnums(Style.class, board.getStyle()).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
+        return new BoardResponse(
+                board.getId(),
+                board.getUserId(),
+                board.getCoordinateId(),
+                board.getContent(),
+                board.getAge(),
+                board.getLikes(),
+                styleStrings,
+                board.getTags(),
+                boardImg,
+                userResponse,
+                board.getCreatedDate()
+        );
     }
 
     @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
+    public void updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
-        UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-
         List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
 
         board = board.toBuilder()
@@ -115,15 +141,6 @@ public class BoardServiceImpl implements BoardService {
             tagRepository.save(newTag);
         }
 
-        UserResponse userResponse = new UserResponse(
-                user.userId() == null ? null : user.userId(),
-                user.nickname() == null ? null : user.nickname(),
-                user.profileFileId() == null ? null : user.profileFileId(),
-                user.Birth() == null ? null : user.Birth(),
-                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
-        );
-
-        return new BoardResponse(board, file, userResponse);
     }
 
     @Override
@@ -151,22 +168,5 @@ public class BoardServiceImpl implements BoardService {
         Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
-
-    @Override
-    public BoardResponse mapToBoardResponse(Board board) {
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-
-        UserResponse userResponse = new UserResponse(
-                userInfo.userId() == null ? null : userInfo.userId(),
-                userInfo.nickname() == null ? null : userInfo.nickname(),
-                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
-                userInfo.Birth() == null ? null : userInfo.Birth(),
-                profileImg
-        );
-
-        return new BoardResponse(board, boardImg, userResponse);
-    }
-
 }
+
