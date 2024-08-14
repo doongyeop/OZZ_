@@ -5,8 +5,7 @@ import requests
 
 from app.core.client.clothesMetadata import ClothesMetadata, clothesMetadata
 from app.core.client.outfitRecommend import OutfitRecommendation
-from app.schemas.recommend import Clothes, Recommend, Consider, RecommendationsResponse
-from app.utils.image_utils import make_snapshot
+from app.schemas.recommend import Clothes, Recommend, Consider, RecommendationsResponse, RecommendedClothes
 
 
 class RecommendService:
@@ -48,8 +47,10 @@ class RecommendService:
         for outfit in recommendation_result:
             validated_data = self.validate_outfit(outfit.items, id_2_clothes)
             if validated_data:
-                return_outfit.append(RecommendationsResponse(title=outfit.title, items=outfit.items, style=outfit.style,
-                                                             img=make_snapshot(validated_data)))
+                outfit_items=[]
+                for clothes_id, high_category, imgPath in validated_data:
+                    outfit_items.append(RecommendedClothes(id=id, offset=high_category ,imgPath=imgPath))
+                return_outfit.append(RecommendationsResponse(title=outfit.title, items=outfit_items, style=outfit.style))
             else:
                 logging.info("복장 불량 : "+str(outfit))
 
