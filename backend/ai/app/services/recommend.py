@@ -58,6 +58,7 @@ class RecommendService:
     def validate_outfit(self, items: list[int], id_2_clothes: dict[int, Clothes]):
         outfit_set = []
         outfit_category=[]
+        print(str(items)+"검증 시작")
         for item in items:
             clothes = id_2_clothes[item]
             high_category = self.clothes_metadata.lowcategoryName_to_highcategoryId(clothes.subCategory)
@@ -65,6 +66,8 @@ class RecommendService:
                 outfit_category.append(high_category)
                 outfit_set.append((clothes.id, high_category, clothes.imgPath))
         if len(outfit_set) == len(items):
+            print(str(items)+str(outfit_set)+str(outfit_category)+"검증 성공")
             return outfit_set
         else:
+            print(str(items)+str(outfit_set)+str(outfit_category)+"검증 성공")
             return None
