@@ -8,9 +8,13 @@ import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
+import Modal from '@/components/Modal'
+import CoordiNameModal from '@/components/Modal/CoordiNameModal'
+import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
-import { categoryLowIdToHighNameMap } from '@/types/clothing'
+import { categoryLowIdToHighNameMap, Style } from '@/types/clothing'
 
 type FittingItem = {
   category: string
@@ -45,6 +49,13 @@ export default function FittingContainer() {
   const [selectedClothes, setSelectedClothes] = useState<
     (ClothesBasicWithFileResponse & { imageUrl: string })[]
   >([]) // 선택한 옷 리스트
+
+  const [isCoordiModalOpen, setIsCoordiModalOpen] = useState(false) // 코디 이름 설정 모달
+  const [isStyleModalOpen, setIsStyleModalOpen] = useState(false) // 스타일 태그 설정 모달
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false) // 확인 모달
+  const [coordiName, setCoordiName] = useState('') // 코디 이름
+  const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
+
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
     setSelectedCategory(category)
@@ -122,6 +133,47 @@ export default function FittingContainer() {
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category)
     // console.log('사이드바에서 선택 ', category)
+  }
+
+  const handleSaveCoordi = () => {
+    if (selectedClothes.length === 0) {
+      alert('적어도 한 가지 아이템을 선택해야 합니다.')
+      return
+    }
+    setIsCoordiModalOpen(true)
+  }
+
+  const handleCoordiNameSubmit = (name: string) => {
+    setCoordiName(name)
+    setIsCoordiModalOpen(false)
+    setIsStyleModalOpen(true)
+  }
+
+  const handleStyleSubmit = (selectedStyles: Style[]) => {
+    setStyleList(selectedStyles)
+    setIsStyleModalOpen(false)
+    setIsConfirmModalOpen(true)
+    // 코디북 저장 로직 호출
+  }
+
+  const handlePrevFromStyle = () => {
+    setIsStyleModalOpen(false)
+    setIsCoordiModalOpen(true)
+  }
+
+  const handlePrevFromConfirm = () => {
+    setIsConfirmModalOpen(false)
+    setIsStyleModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsCoordiModalOpen(false) // 코디 이름 설정 모달
+    setIsStyleModalOpen(false) // 스타일 태그 설정 모달
+    setIsConfirmModalOpen(false)
+  }
+
+  const handleConfirm = () => {
+    console.log('저장 완료!')
   }
 
   return (
@@ -245,9 +297,39 @@ export default function FittingContainer() {
           </p>
         )}
         <div className="mt-4 flex justify-around">
-          <SaveCoordiButton />
+          <SaveCoordiButton
+            onClick={handleSaveCoordi}
+            disabled={selectedClothes.length === 0}
+          />
           <ShareCommunityButton />
         </div>
+
+        {isCoordiModalOpen && (
+          <Modal onClose={() => setIsCoordiModalOpen(false)}>
+            <CoordiNameModal
+              setValue={handleCoordiNameSubmit}
+              onClose={closeModal}
+            />
+          </Modal>
+        )}
+        {isStyleModalOpen && (
+          <Modal onClose={() => setIsStyleModalOpen(false)}>
+            <CoordiStyleModal
+              setValue={handleStyleSubmit}
+              onPrev={handlePrevFromStyle}
+              onClose={closeModal}
+            />
+          </Modal>
+        )}
+        {isConfirmModalOpen && (
+          <Modal onClose={() => setIsConfirmModalOpen(false)}>
+            <ConfirmModal
+              onClose={() => setIsConfirmModalOpen(false)}
+              message="코디북에 저장되었습니다!"
+              onConfirm={handleConfirm}
+            />
+          </Modal>
+        )}
       </div>
 
       <ClosetSidebar
