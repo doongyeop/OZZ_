@@ -17,7 +17,7 @@ import {
 import { getTokens, getClothesApi, getFileApi } from '@/services/authApi'
 
 // const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM1MDcyMDcsImV4cCI6MTcyMzU2NzIwN30.NIvKi6qRb_dIw80ueA3kKw0LEcVP4gSY0s8C2RTmeoY'
+//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM1OTMwNjIsImV4cCI6MTcyMzY1MzA2Mn0.ykmp8xdKBsdbcgQaCaEd0xKkJYXyMIKmPyOEu-xL6B4'
 
 // const clothesApi = new ClothesApi({
 //   securityWorker: async () => ({
@@ -109,6 +109,7 @@ export async function getClothingDetails(clothesId: number) {
     memo: data.memo || null,
     image: data.imageFile ? await fetchImage(data.imageFile.filePath) : null, // 이미지 파일을 변환
     imageFile: data.imageFile ? data.imageFile : null,
+    extra: data.extra || null,
   }
 
   return formattedData
@@ -246,4 +247,6 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   memo: '자주 입는 옷입니다.',
   image: null, // 실제 이미지 파일은 목업 데이터에서 제외
   imageFile: null,
+  extra: '',
+  // processing: 0,
 })

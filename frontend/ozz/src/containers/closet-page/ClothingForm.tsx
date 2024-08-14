@@ -38,12 +38,12 @@ import {
   patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
-import CameraIcon from '../../../public/icons/camera.svg'
 import { extractClothing } from '@/services/clothingApi'
 import {
   ClothesCreateRequest,
   ClothesUpdateRequest,
 } from '@/types/clothes/data-contracts'
+import CameraIcon from '../../../public/icons/camera.svg'
 
 type OnSubmitFunction = (
   imageFile: File,
@@ -164,7 +164,7 @@ export default function ClothingForm({
       setLoading(true)
       setIsSubmitting(true) // 중복 요청 방지
 
-      const [categoryHighName, categoryLowName] = categoryName.split(' > ')
+      const [categoryHighName] = categoryName.split(' > ')
       try {
         const result = await extractClothing(imageFile, categoryHighName)
 
@@ -183,9 +183,7 @@ export default function ClothingForm({
           result.colorList
             ? result.colorList.map((colorCode: string) => {
                 // 색상 코드를 기반으로 Color 객체를 찾음
-                const colorObj = colors.find(
-                  (color) => color.code === colorCode,
-                )
+                const colorObj = colors.find((c) => c.code === colorCode)
 
                 if (colorObj) {
                   return colorObj
@@ -410,7 +408,7 @@ export default function ClothingForm({
             colorMap,
           )
         : '',
-      setValue: (colors: Color[]) => setColor(colors),
+      setValue: (c: Color[]) => setColor(c),
     },
     {
       label: '스타일',
@@ -434,199 +432,192 @@ export default function ClothingForm({
       setValue: (m: string) => setMemo(m),
     },
   ]
-  return (
-    <>
-      {loading ? (
-        <LoadingPage
-          messages={['AI 분석 중입니다...', '잠시만 기다려주세요.']}
-          footerMessage="분석 결과를 가져오는 중입니다."
-        />
-      ) : (
-        <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
-          <form onSubmit={handleSubmit}>
-            <div className="flex justify-center mb-3">
-              <input
-                type="file"
-                name="image"
-                id="image"
-                className="sr-only"
-                onChange={handleImageChange}
-              />
-              <label
-                htmlFor="image"
-                className={`relative flex min-h-[300px] min-w-[300px] max-h-[300px] max-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
-              >
-                {imagePreview ? (
-                  <>
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      width={300}
-                      height={300}
-                      className="p-6 object-cover"
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        objectFit: 'contain',
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleExtractImage}
-                      className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
-                    >
-                      AI 분석
-                    </button>
-                  </>
-                ) : (
-                  <div>
-                    <Image
-                      src={CameraIcon}
-                      alt="camera"
-                      width={100}
-                      className="opacity-50"
-                    />
-                    <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
-                      옷 이미지 등록
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleExtractImage}
-                      className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
-                    >
-                      AI 분석
-                    </button>
-                  </div>
-                )}
-              </label>
-            </div>
-            <div className="bg-secondary p-5 max-w-[300px] rounded-lg">
-              <div className="flex items-center mb-5 ">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={name}
-                  placeholder="이름 입력"
-                  autoComplete="off"
-                  onChange={(e) => setName(e.target.value)}
-                  className="flex-1 py-2 text-center bg-secondary font-extrabold text-lg
-                    text-primary-400 placeholder:text-gray-light outline-none truncate"
+  return loading ? (
+    <LoadingPage
+      messages={['AI 분석 중입니다...', '잠시만 기다려주세요.']}
+      footerMessage="분석 결과를 가져오는 중입니다."
+    />
+  ) : (
+    <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
+      <form onSubmit={handleSubmit}>
+        <div className="flex justify-center mb-3">
+          <input
+            type="file"
+            name="image"
+            id="image"
+            className="sr-only"
+            onChange={handleImageChange}
+          />
+          <label
+            htmlFor="image"
+            className={`relative flex min-h-[300px] min-w-[300px] max-h-[300px] max-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
+          >
+            {imagePreview ? (
+              <>
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  width={300}
+                  height={300}
+                  className="p-6 object-cover"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                  }}
                 />
-              </div>
-              {/* Form */}
-              <div className="w-full max-w-md text-gray-light rounded-lg shadow-md space-y-2 mb-4">
-                {modalItems.map((item) => (
-                  <div
-                    key={item.path}
-                    className="flex justify-between items-center border-b border-[#000000] border-opacity-30 py-2"
-                  >
-                    <span>{item.label}</span>
-
-                    <div className="flex justify-center items-center">
-                      {item.value &&
-                        (item.label === '색' && Array.isArray(color) ? (
-                          <>
-                            {color.slice(0, 3).map((c) => {
-                              return (
-                                <div key={c.code} className="flex">
-                                  <span
-                                    className="inline-block w-5 h-5 rounded-full mr-1.5"
-                                    style={{ backgroundColor: c.colorCode }}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="text-primary-400 mr-2"
-                                    onClick={() => setOpenModal(item.path)}
-                                  >
-                                    {c.name}
-                                  </button>
-                                </div>
-                              )
-                            })}
-                            {color.length > 3 && (
-                              <span className="text-primary-400 mr-2">...</span>
-                            )}
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            className="text-primary-400 mr-2"
-                            onClick={() => setOpenModal(item.path)}
-                          >
-                            {typeof item.value === 'string' ? item.value : ''}
-                          </button>
-                        ))}
-                      <button
-                        onClick={() => setOpenModal(item.path)}
-                        className=""
-                        type="button"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-center align-middle">
                 <button
-                  type="submit"
-                  className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
-                  disabled={isSubmitting}
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
                 >
-                  {submitButtonText}
+                  AI 분석
+                </button>
+              </>
+            ) : (
+              <div>
+                <Image
+                  src={CameraIcon}
+                  alt="camera"
+                  width={100}
+                  className="opacity-50"
+                />
+                <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
+                  옷 이미지 등록
+                </span>
+                <button
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
+                >
+                  AI 분석
                 </button>
               </div>
-              {/* Modals */}
-              {openModal === 'brand' && (
-                <BrandModal onClose={closeModal} setValue={setBrandName} />
-              )}
-              {openModal === 'category' && (
-                <CategoryModal
-                  onClose={closeModal}
-                  setValue={setCategoryName}
-                />
-              )}
-              {openModal === 'purchase-date' && (
-                <PurchaseDateModal
-                  onClose={closeModal}
-                  setValue={setPurchaseDate}
-                />
-              )}
-              {openModal === 'purchase-site' && (
-                <PurchaseSiteModal
-                  onClose={closeModal}
-                  setValue={setPurchaseSite}
-                />
-              )}
-              {openModal === 'season' && (
-                <SeasonModal onClose={closeModal} setValue={setSeason} />
-              )}
-              {openModal === 'size' && (
-                <SizeModal onClose={closeModal} setValue={setSize} />
-              )}
-              {openModal === 'fit' && (
-                <FitModal onClose={closeModal} setValue={setFit} />
-              )}
-              {openModal === 'texture' && (
-                <TextureModal onClose={closeModal} setValue={setTexture} />
-              )}
-              {openModal === 'color' && (
-                <ColorModal onClose={closeModal} setValue={setColor} />
-              )}
-              {openModal === 'style' && (
-                <StyleModal onClose={closeModal} setValue={setStyle} />
-              )}
-              {openModal === 'pattern' && (
-                <PatternModal onClose={closeModal} setValue={setPattern} />
-              )}
-              {openModal === 'memo' && (
-                <MemoModal onClose={closeModal} setValue={setMemo} />
-              )}
-            </div>
-          </form>
+            )}
+          </label>
         </div>
-      )}
-    </>
+        <div className="bg-secondary p-5 max-w-[300px] rounded-lg">
+          <div className="flex items-center mb-5 ">
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              placeholder="이름 입력"
+              autoComplete="off"
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 py-2 text-center bg-secondary font-extrabold text-lg
+                    text-primary-400 placeholder:text-gray-light outline-none truncate"
+            />
+          </div>
+          {/* Form */}
+          <div className="w-full max-w-md text-gray-light rounded-lg shadow-md space-y-2 mb-4">
+            {modalItems.map((item) => (
+              <div
+                key={item.path}
+                className="flex justify-between items-center border-b border-[#000000] border-opacity-30 py-2"
+              >
+                <span>{item.label}</span>
+
+                <div className="flex justify-center items-center">
+                  {item.value &&
+                    (item.label === '색' && Array.isArray(color) ? (
+                      <>
+                        {color.slice(0, 3).map((c) => {
+                          return (
+                            <div key={c.code} className="flex">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                style={{ backgroundColor: c.colorCode }}
+                              />
+                              <button
+                                type="button"
+                                className="text-primary-400 mr-2"
+                                onClick={() => setOpenModal(item.path)}
+                              >
+                                {c.name}
+                              </button>
+                            </div>
+                          )
+                        })}
+                        {color.length > 3 && (
+                          <span className="text-primary-400 mr-2">...</span>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-primary-400 mr-2"
+                        onClick={() => setOpenModal(item.path)}
+                      >
+                        {typeof item.value === 'string' ? item.value : ''}
+                      </button>
+                    ))}
+                  <button
+                    onClick={() => setOpenModal(item.path)}
+                    className=""
+                    type="button"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-center align-middle">
+            <button
+              type="submit"
+              className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
+              disabled={isSubmitting}
+            >
+              {submitButtonText}
+            </button>
+          </div>
+          {/* Modals */}
+          {openModal === 'brand' && (
+            <BrandModal onClose={closeModal} setValue={setBrandName} />
+          )}
+          {openModal === 'category' && (
+            <CategoryModal onClose={closeModal} setValue={setCategoryName} />
+          )}
+          {openModal === 'purchase-date' && (
+            <PurchaseDateModal
+              onClose={closeModal}
+              setValue={setPurchaseDate}
+            />
+          )}
+          {openModal === 'purchase-site' && (
+            <PurchaseSiteModal
+              onClose={closeModal}
+              setValue={setPurchaseSite}
+            />
+          )}
+          {openModal === 'season' && (
+            <SeasonModal onClose={closeModal} setValue={setSeason} />
+          )}
+          {openModal === 'size' && (
+            <SizeModal onClose={closeModal} setValue={setSize} />
+          )}
+          {openModal === 'fit' && (
+            <FitModal onClose={closeModal} setValue={setFit} />
+          )}
+          {openModal === 'texture' && (
+            <TextureModal onClose={closeModal} setValue={setTexture} />
+          )}
+          {openModal === 'color' && (
+            <ColorModal onClose={closeModal} setValue={setColor} />
+          )}
+          {openModal === 'style' && (
+            <StyleModal onClose={closeModal} setValue={setStyle} />
+          )}
+          {openModal === 'pattern' && (
+            <PatternModal onClose={closeModal} setValue={setPattern} />
+          )}
+          {openModal === 'memo' && (
+            <MemoModal onClose={closeModal} setValue={setMemo} />
+          )}
+        </div>
+      </form>
+    </div>
   )
 }
