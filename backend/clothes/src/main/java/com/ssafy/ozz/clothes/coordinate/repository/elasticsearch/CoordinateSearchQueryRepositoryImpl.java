@@ -64,12 +64,13 @@ public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQuer
                         }))
                         .script(ss->ss
                             .inline(si->si
-                                .source("'style' | params.style")
+                                .source("if ((doc['style'].value & params.style) != 0) return 1; else return 0;")
                                 .params(Collections.singletonMap("style", JsonData.of((condition.styleList() == null || condition.styleList().isEmpty())
                                         ? ((1<<Style.values().length)-1)
                                         : toBits(condition.styleList()))))
                             )
                         )
+                        .minScore(0.5f)
                     )
                 )
                 .withPageable(pageable) // Pagination
