@@ -299,7 +299,7 @@ export interface CoordinateCreateRequest {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
