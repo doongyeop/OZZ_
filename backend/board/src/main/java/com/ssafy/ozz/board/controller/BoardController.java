@@ -95,7 +95,7 @@ public class BoardController {
     @GetMapping("/sort/style")
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByStyle(
-            @RequestParam("style") Integer style, Pageable pageable) {
+            @RequestParam("style") String style, Pageable pageable) {
 
         // todo String으로 바꾸기
         Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
