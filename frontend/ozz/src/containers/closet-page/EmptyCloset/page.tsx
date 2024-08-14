@@ -1,6 +1,7 @@
 import { CgClose } from 'react-icons/cg'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 
 export default function EmptyCloset() {
   return (
@@ -12,6 +13,7 @@ export default function EmptyCloset() {
           옷 등록하기
         </Button>
       </Link>
+      <ClothesRegistButton />
     </div>
   )
 }
