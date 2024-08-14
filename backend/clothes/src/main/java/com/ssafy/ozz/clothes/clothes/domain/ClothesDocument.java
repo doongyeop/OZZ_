@@ -24,7 +24,7 @@ public class ClothesDocument {
     @Field(name = "clothes_id", type = FieldType.Long)
     private Long clothesId;
 
-    @Field(type = FieldType.Text, analyzer = "synonym_analyzer")
+    @Field(type = FieldType.Text, analyzer = "korean", searchAnalyzer = "korean_search")
     private String name;
 
     @Field(type = FieldType.Dense_Vector, dims = 768)
