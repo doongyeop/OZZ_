@@ -129,7 +129,8 @@ class ExtractAttributesURL(ExtractAttribute):
             content_list.extend([{
                 "type": "image_url",
                 "image_url": {
-                    "url": f"{data.imgUrl}"
+                    "url": f"{data.imgUrl}",
+                    "detail": "low"
                 }
             }, {
                 "type": "text",
@@ -154,7 +155,8 @@ class ExtractAttributesImage(ExtractAttribute):
         return [{
             "type": "image_url",
             "image_url": {
-                "url": f"data:image/jpeg;base64,{ self.image}"
+                "url": f"data:image/jpeg;base64,{ self.image}",
+                "detail": "low"
             }
         }, {
             "type": "text",
