@@ -1,4 +1,5 @@
 import io
+import os
 
 import requests
 from fastapi import UploadFile
@@ -6,8 +7,6 @@ from rembg import remove
 from io import BytesIO
 from PIL import Image
 import base64
-
-from starlette.responses import FileResponse
 
 
 def remove_background_and_encode(image_file: UploadFile) -> str:
@@ -55,21 +54,19 @@ def resize_and_convert_to_png(image: Image) -> Image:
     return image
 
 
-def make_snapshot(items:list[tuple[int, int, str]]) -> str:
+def make_snapshot(items: list[tuple[int, int, str]]) -> str:
     # 기본 하얀 배경 이미지 생성 (9:16 비율, 예: 900x1600)
     width, height = 900, 1600
     background = Image.new('RGB', (width, height), (255, 255, 255))
 
-    position=[(330, 200),(140,250), (350, 350),(340, 350), (350,450),(80, 750),(350, 600)]
-
+    position = [None, (330, 200), (140, 250), (350, 350), (340, 350), (350, 450), (80, 750), (350, 600)]
     # 삽입할 이미지 불러오기
     for item in items:
-        response = requests.get(f"http://localhost:9000/api/file/download/{item[2]}")
+        response = requests.get(f"{os.getenv('FILE_HOST')}/api/file/download/{item[2]}")
         image = Image.open(BytesIO(response.content))
         background.paste(image, position[item[1]])
 
     # 결과 이미지 저장
-    background.save('result_image.png')
     img_byte_arr = io.BytesIO()
     background.save(img_byte_arr, format='PNG')
     img_byte_arr = img_byte_arr.getvalue()

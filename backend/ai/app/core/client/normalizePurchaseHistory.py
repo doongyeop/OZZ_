@@ -39,10 +39,11 @@ Example results:
 {"category":"None", "name":"오데일리 접이식 속옷 정리함 12칸 손잡이형 2개"}} 
 }
 """
-    purchase_histories:list[PurchaseHistory]
+    purchase_histories: list[PurchaseHistory]
+
     def __init__(self, purchase_histories: list[PurchaseHistory]):
         super().__init__()
-        self.purchase_histories=purchase_histories
+        self.purchase_histories = purchase_histories
 
     def make_user_prompt(self):
         return {
@@ -71,7 +72,7 @@ Example results:
                 }
             ],
             temperature=0,
-            max_tokens=50*len(self.purchase_histories),
+            max_tokens=50 * len(self.purchase_histories),
             top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0,
@@ -95,9 +96,9 @@ Example results:
 
         # 값 검증
         for item in value_list:
-            for k,v in item.items():
-                if v=="None":
-                    item[k]=None
+            for k, v in item.items():
+                if v == "None":
+                    item[k] = None
 
         # 딕셔너리에 추가
         parsed_dict["index"] = int(key)

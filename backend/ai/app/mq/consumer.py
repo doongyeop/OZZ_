@@ -95,22 +95,24 @@ def IPcallback(ch, method, properties, body):
     except Exception as e:
         logging.error(traceback.format_exc())
 
+
 def connect_to_rabbitmq():
-    retry_count=12
+    retry_count = 12
     parameters = pika.ConnectionParameters(os.getenv("RABBITMQ_HOST"))  # RabbitMQ 서버의 주소
-    while retry_count>0:
+    while retry_count > 0:
         try:
             connection = pika.BlockingConnection(parameters)
             channel = connection.channel()
             return connection, channel
         except exceptions.AMQPConnectionError as e:
             logging.error(f"Connection failed, retrying in 5 seconds: {e}")
-            retry_count-=1
+            retry_count -= 1
             time.sleep(5)
         except Exception as e:
             logging.error(f"Connection failed, 알수없는 오류 {e}")
-            retry_count-=12
+            retry_count -= 12
     return None, None
+
 
 def consume_messages(channel):
     channel.queue_declare(queue='extract-attribute')
@@ -127,6 +129,7 @@ def consume_messages(channel):
         print("Stream lost, attempting to reconnect...")
         return False  # 연결이 끊겼음을 알림
 
+
 def main():
     while True:
         connection, channel = connect_to_rabbitmq()
@@ -135,6 +138,7 @@ def main():
             return
         if not consume_messages(channel):
             continue
+
 
 if __name__ == "__main__":
     main()

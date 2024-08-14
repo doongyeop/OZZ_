@@ -55,7 +55,7 @@ class Properties:
     def get_values(self):
         return ", ".join(self.properties)
 
-    def validate(self, input_value: str | list[str]|None):
+    def validate(self, input_value: str | list[str] | None):
         if input_value is None:
             if self.is_essential:
                 return False
@@ -161,14 +161,13 @@ class ClothesMetadata:
                     return category['name']
         return None
 
-    def low_categoryId_to_low_high_response(self, lowCategoryId:int):
+    def low_categoryId_to_low_high_response(self, lowCategoryId: int):
         for high_category in self.categories:
             for lowCategory in high_category['categoryLowList']:
                 if lowCategory['categoryLowId'] == lowCategoryId:
-                    return (HighCategoryResponse(**high_category),LowCategoryResponse(**lowCategory)
+                    return (HighCategoryResponse(**high_category), LowCategoryResponse(**lowCategory)
                             )
-        return None,None
-
+        return None, None
 
 
 clothesMetadata = ClothesMetadata()

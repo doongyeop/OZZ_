@@ -44,5 +44,5 @@ class RecommendedOutfit(BaseModel):
 class RecommendationsResponse(BaseModel):
     title: str
     items: list[int]
-    style: list[str]
+    style: str
     img: str

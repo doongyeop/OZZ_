@@ -23,13 +23,13 @@ class AttributeBase(BaseModel):
 
 class Attributes(AttributeBase):
     categoryLowId: int
-    isWorn:bool
+    isWorn: bool
 
 
 class GPTAttrResponse(AttributeBase):
     parentCategory: str
     subCategory: str
-    isWorn:bool
+    isWorn: bool
 
 
 class LowCategoryResponse(BaseModel):
@@ -45,4 +45,4 @@ class HighCategoryResponse(BaseModel):
 class AttributeResponse(AttributeBase):
     categoryHigh: HighCategoryResponse
     categoryLow: LowCategoryResponse
-    image:str
+    image: str

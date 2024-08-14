@@ -1,20 +1,14 @@
-import json
 import logging
-
-import os
 
 from rembg import remove
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
 from PIL import Image
-import matplotlib.pyplot as plt
 import torch.nn as nn
 import numpy as np
 import requests
 from io import BytesIO
 import torch
 from transformers import YolosFeatureExtractor, YolosForObjectDetection
-from torchvision.transforms import ToPILImage, ToTensor
-import matplotlib.pyplot as plt
 
 # Load the processor and model
 processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
@@ -24,12 +18,14 @@ segformer_model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/s
 feature_extractor = YolosFeatureExtractor.from_pretrained('hustvl/yolos-small')
 yolo_model = YolosForObjectDetection.from_pretrained("valentinafeve/yolos-fashionpedia")
 
-def download_img(image_url:str)->Image:
+
+def download_img(image_url: str) -> Image:
     # 이미지 다운로드
     response = requests.get(image_url)
     return Image.open(BytesIO(response.content))
 
-def leave_only_clothes(image:Image)-> tuple[Image, Image]:
+
+def leave_only_clothes(image: Image) -> tuple[Image, Image]:
     if image.mode != 'RGB':
         # Convert the image to RGB (3 channels)
         image = image.convert("RGB")
@@ -89,11 +85,12 @@ def leave_only_clothes(image:Image)-> tuple[Image, Image]:
     not_transparent_image = Image.merge("RGB", (r, g, b))
     return transparent_image, not_transparent_image
 
-def cropImg(category : str, trans_image:Image, image:Image) -> Image:
+
+def cropImg(category: str, trans_image: Image, image: Image) -> Image:
     # 잘라내기할 카테고리와 라벨 매핑
     if category == "accessory":
         return
-    category2label={
+    category2label = {
         "top": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
         "bottom": ["pants", "skirt", "tights", "stockings", 'shorts'],
         "outerwear": ["coat", "vest", "jacket", "cardigan"],
@@ -112,6 +109,7 @@ def cropImg(category : str, trans_image:Image, image:Image) -> Image:
     bboxes_scaled = rescale_bboxes(outputs.pred_boxes[0].cpu(), image.size)
     return crop_objects(trans_image, probas, bboxes_scaled, category2label[category], threshold=0.5)
 
+
 # Bounding box와 클래스 정보를 얻어오기
 def box_cxcywh_to_xyxy(x):
     x_c, y_c, w, h = x.unbind(1)
@@ -119,17 +117,24 @@ def box_cxcywh_to_xyxy(x):
          (x_c + 0.5 * w), (y_c + 0.5 * h)]
     return torch.stack(b, dim=1)
 
+
 def rescale_bboxes(out_bbox, size):
     img_w, img_h = size
     b = box_cxcywh_to_xyxy(out_bbox)
     b = b * torch.tensor([img_w, img_h, img_w, img_h], dtype=torch.float32)
     return b
 
+
 def idx_to_text(i):
-    cats = ['shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 'cardigan', 'jacket', 'vest', 'pants', 'shorts', 'skirt', 'coat', 'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 'headband, head covering, hair accessory', 'tie', 'glove', 'watch', 'belt', 'leg warmer', 'tights, stockings', 'sock', 'shoe', 'bag, wallet', 'scarf', 'umbrella', 'hood', 'collar', 'lapel', 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper', 'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 'ruffle', 'sequin', 'tassel']
+    cats = ['shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 'cardigan', 'jacket', 'vest', 'pants', 'shorts',
+            'skirt', 'coat', 'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 'headband, head covering, hair accessory',
+            'tie', 'glove', 'watch', 'belt', 'leg warmer', 'tights, stockings', 'sock', 'shoe', 'bag, wallet', 'scarf',
+            'umbrella', 'hood', 'collar', 'lapel', 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper',
+            'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 'ruffle', 'sequin', 'tassel']
     return cats[i]
 
-def crop_objects(pil_img, prob, boxes, labels, threshold=0.8)->Image:
+
+def crop_objects(pil_img, prob, boxes, labels, threshold=0.8) -> Image:
     keep = prob.max(-1).values > threshold
     for idx, (p, (xmin, ymin, xmax, ymax)) in enumerate(zip(prob[keep], boxes[keep].tolist())):
         cl = p.argmax()
@@ -137,13 +142,14 @@ def crop_objects(pil_img, prob, boxes, labels, threshold=0.8)->Image:
             cropped_img = pil_img.crop((xmin, ymin, xmax, ymax))
             return cropped_img
 
-def process(imgUrl, category)-> Image:
-    downloaded_img=download_img(imgUrl)
+
+def process(imgUrl, category) -> Image:
+    downloaded_img = download_img(imgUrl)
     logging.info("image download from " + imgUrl)
-    trans_img,not_trans_img = leave_only_clothes(downloaded_img)
+    trans_img, not_trans_img = leave_only_clothes(downloaded_img)
     logging.info("image leaved only clothes -> url : " + imgUrl)
     image = cropImg(category, trans_img, not_trans_img)
-    if(image is not None):
+    if (image is not None):
         logging.info("image croped category : " + category)
         return image
     else:
