@@ -12,7 +12,7 @@ export default function ClothesRegistButton() {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          className="fixed bottom-[88px] right-8 bg-secondary text-primary-400 border border-primary-400 rounded-full p-4 shadow-lg flex items-center justify-center hover:bg-primary-400 focus:bg-primary-400 hover:text-secondary focus:text-secondary"
+          className="sticky bottom-[88px] float-right me-8 bg-secondary text-primary-400 border border-primary-400 rounded-full p-4 shadow-lg flex items-center justify-center hover:bg-primary-400 focus:bg-primary-400 hover:text-secondary focus:text-secondary"
           style={{ width: '60px', height: '60px' }}
         >
           <FaPlus size={20} />
