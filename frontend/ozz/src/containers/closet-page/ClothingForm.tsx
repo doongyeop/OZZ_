@@ -18,6 +18,7 @@ import PatternModal from '@/components/Modal/PatternModal'
 import MemoModal from '@/components/Modal/MemoModal'
 import AlertModal from '@/components/Modal/AlertModal'
 import LoadingPage from '@/components/Loading/loading'
+import LoadingModal from '@/components/Modal/LoadingModal'
 
 import {
   ClothingData,
@@ -84,6 +85,7 @@ export default function ClothingForm({
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
+  const [isLoadingModal, setIsLoadingModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -128,7 +130,9 @@ export default function ClothingForm({
           useWebWorker: true, // Web Worker를 사용하여 성능 향상
         }
         try {
+          setIsLoadingModal(true)
           processedFile = await imageCompression(file, options)
+          setIsLoadingModal(false)
         } catch (error) {
           console.error('이미지 압축 중 오류 발생:', error)
           setAlertMessage(['이미지 압축 실패', ' 다시 시도해주세요'])
@@ -617,6 +621,7 @@ export default function ClothingForm({
           )}
         </div>
       </form>
+      {isLoadingModal && <LoadingModal />}
     </div>
   )
 }
