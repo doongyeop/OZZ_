@@ -26,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -169,4 +168,39 @@ public class BoardServiceImpl implements BoardService {
         return new BoardResponse(board, boardImg, userResponse);
     }
 
+    @Override
+    public BoardResponse getBoardResponse(Long boardId) {
+        Board board = getBoard(boardId);
+
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
+                profileImg
+        );
+
+        List<String> styleStrings = EnumBitwiseConverter.toEnums(Style.class, board.getStyle()).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
+        return new BoardResponse(
+                board.getId(),
+                board.getUserId(),
+                board.getCoordinateId(),
+                board.getContent(),
+                board.getAge(),
+                board.getLikes(),
+                styleStrings,
+                board.getTags(),
+                boardImg,
+                userResponse,
+                board.getCreatedDate()
+        );
+    }
 }
+
