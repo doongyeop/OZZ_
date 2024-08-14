@@ -36,7 +36,7 @@ export default function ClothesList({
           <div
             role="presentation"
             key={item.clothesId}
-            className={`px-5 w-full hover:bg-primary-100 active:bg-primary-100 cursor-pointer ${
+            className={`px-5 w-full hover:bg-primary-100 active:bg-primary-100 cursor-pointer transition duration-150 ${
               selectedItem && selectedItem.clothesId === item.clothesId
                 ? 'bg-primary-100'
                 : ''
@@ -70,7 +70,7 @@ export default function ClothesList({
             key={item.clothesId}
             href={`/closet/modify/${item.clothesId}`}
             passHref
-            className="px-5 w-full hover:bg-primary-100 active:bg-primary-100"
+            className="px-5 w-full hover:bg-primary-100 active:bg-primary-100  transition duration-150"
           >
             <div className="flex items-center mb-4 mt-4 cursor-pointer">
               <Image

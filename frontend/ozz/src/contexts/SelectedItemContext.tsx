@@ -1,10 +1,13 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
+import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
+
+type ClothingItem = ClothesBasicWithFileResponse & { imageUrl: string }
 
 interface SelectedItemContextType {
-  selectedItem: any
-  setSelectedItem: (item: any) => void
+  selectedItem: ClothingItem | null
+  setSelectedItem: (item: ClothingItem | null) => void
 }
 
 const SelectedItemContext = createContext<SelectedItemContextType | undefined>(
@@ -16,7 +19,7 @@ interface SelectedItemProviderProps {
 }
 
 export function SelectedItemProvider({ children }: SelectedItemProviderProps) {
-  const [selectedItem, setSelectedItem] = useState<any>(null)
+  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null)
 
   const value = useMemo(
     () => ({ selectedItem, setSelectedItem }),
