@@ -113,7 +113,7 @@ export default function SavedCoordiPage({
       </div>
       <div>
         <div
-          className="fixed bottom-20 right-4 flex items-center justify-center bg-secondary rounded-full w-[60px] h-[60px] border border-primary-400 hover:bg-primary-400 group"
+          className="sticky bottom-[88px] float-right me-8 flex items-center justify-center bg-secondary rounded-full w-[60px] h-[60px] border border-primary-400 hover:bg-primary-400 group"
           onClick={toggleModal}
           role="presentation"
           aria-hidden="true"

@@ -5,12 +5,15 @@ import com.ssafy.ozz.auth.global.service.RefreshService;
 import com.ssafy.ozz.auth.global.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RequiredArgsConstructor
 @RestController
@@ -65,28 +68,12 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // @PostMapping("/logout")
-    // @Operation(summary = "로그아웃")
-    // public ResponseEntity<?> logout(HttpServletRequest request) {
-    //     String refresh = request.getHeader("refresh");
+     @PostMapping("/logout")
+     @Operation(summary = "로그아웃")
+     public ResponseEntity<?> logout(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
+         // 리프레시 토큰 삭제
+         refreshService.deleteExistingRefreshToken(userId);
 
-    //     if (refresh == null) {
-    //         return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
-    //     }
-
-    //     // 리프레시 토큰 삭제
-    //     refreshService.deleteRefreshToken(refresh);
-
-    //     return new ResponseEntity<>("성공적으로 로그아웃 되었습니다.", HttpStatus.OK);
-    // }
-
-    @DeleteMapping("/users/{userId}/refresh")
-    @Operation(summary = "로그아웃")
-    public ResponseEntity<Void> deleteRefreshTokenOfUser(@PathVariable Long userId) {
-        // 리프레시 토큰 삭제
-        refreshService.deleteExistingRefreshToken(userId);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
+         return new ResponseEntity<>("성공적으로 로그아웃 되었습니다.", HttpStatus.OK);
+     }
 }
