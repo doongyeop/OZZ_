@@ -16,7 +16,9 @@ import ColorModal from '@/components/Modal/ColorModal'
 import StyleModal from '@/components/Modal/StyleModal'
 import PatternModal from '@/components/Modal/PatternModal'
 import MemoModal from '@/components/Modal/MemoModal'
+import AlertModal from '@/components/Modal/AlertModal'
 import LoadingPage from '@/components/Loading/loading'
+import LoadingModal from '@/components/Modal/LoadingModal'
 
 import {
   ClothingData,
@@ -62,6 +64,9 @@ export default function ClothingForm({
   submitButtonText,
 }: ClothingFormProps) {
   const [openModal, setOpenModal] = useState<string | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
+
   const [name, setName] = useState('')
   const [brandName, setBrandName] = useState('')
   const [categoryName, setCategoryName] = useState<string | null>(null)
@@ -80,6 +85,7 @@ export default function ClothingForm({
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
+  const [isLoadingModal, setIsLoadingModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -107,6 +113,10 @@ export default function ClothingForm({
     }
   }, [initialData])
 
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
+  }
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -115,20 +125,18 @@ export default function ClothingForm({
       // 2MB 초과하는 경우 파일 압축
       if (file.size > 1 * 1024 * 1024) {
         const options = {
-          maxSizeMB: 1, // 2MB로 압축
+          maxSizeMB: 1, // 1MB로 압축
           maxWidthOrHeight: 1920, // 너비 또는 높이를 1920px 이하로
           useWebWorker: true, // Web Worker를 사용하여 성능 향상
         }
         try {
+          setIsLoadingModal(true)
           processedFile = await imageCompression(file, options)
-          // console.log('Original File Size:', file.size / 1024 / 1024, 'MB')
-          // console.log(
-          //   'Compressed File Size:',
-          //   processedFile.size / 1024 / 1024,
-          //   'MB',
-          // )
+          setIsLoadingModal(false)
         } catch (error) {
           console.error('이미지 압축 중 오류 발생:', error)
+          setAlertMessage(['이미지 압축 실패', ' 다시 시도해주세요'])
+          setIsAlertOpen(true)
         }
       }
 
@@ -143,24 +151,6 @@ export default function ClothingForm({
 
   const handleExtractImage = async () => {
     if (imageFile && categoryName) {
-      // // 이미지 크기 확인 및 리사이즈
-      // if (imageFile.size > 2 * 1024 * 1024) {
-      //   console.log('이미지 크기가 2MB를 초과하여 리사이즈 중입니다...')
-      //   try {
-      //     const resizedImage = await resizeImage(imageFile, 1) // 2MB 이하로 리사이즈
-      //     setImageFile(resizedImage)
-      //     const reader = new FileReader()
-      //     reader.onloadend = () => {
-      //       setImagePreview(reader.result as string)
-      //     }
-      //     reader.readAsDataURL(resizedImage)
-      //   } catch (error) {
-      //     console.error('이미지 리사이즈 실패:', error)
-      //     alert('이미지 리사이즈 중 오류가 발생했습니다.')
-      //     return
-      //   }
-      // }
-
       setLoading(true)
       setIsSubmitting(true) // 중복 요청 방지
 
@@ -218,6 +208,8 @@ export default function ClothingForm({
         setImagePreview(URL.createObjectURL(imageFileObj))
       } catch (error: any) {
         console.error('AI 분석 실패 : ', error)
+        setAlertMessage(['AI 분석 실패', ' 다시 시도해주세요'])
+        setIsAlertOpen(true)
       } finally {
         // 로딩 상태 종료
         setLoading(false)
@@ -225,7 +217,9 @@ export default function ClothingForm({
       }
     } else {
       console.error('분석할 이미지가 없습니다.')
-      alert('이미지와 카테고리를 설정해주세요.')
+      // alert('이미지와 카테고리를 설정해주세요.')
+      setAlertMessage(['이미지와 카테고리를', ' 설정해주세요'])
+      setIsAlertOpen(true)
     }
   }
 
@@ -234,7 +228,13 @@ export default function ClothingForm({
 
     // 필수 입력 필드 확인
     if (!name || !categoryName || !imageFile || color.length === 0) {
-      alert('이름, 카테고리, 색상 및 이미지는 필수 입력 사항입니다.')
+      // alert('이름, 카테고리, 색상 및 이미지는 필수 입력 사항입니다.')
+      setAlertMessage([
+        '이름, 카테고리,',
+        '색상 및 이미지는',
+        '필수 입력 사항입니다',
+      ])
+      setIsAlertOpen(true)
       return
     }
 
@@ -616,8 +616,12 @@ export default function ClothingForm({
           {openModal === 'memo' && (
             <MemoModal onClose={closeModal} setValue={setMemo} />
           )}
+          {isAlertOpen && (
+            <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+          )}
         </div>
       </form>
+      {isLoadingModal && <LoadingModal />}
     </div>
   )
 }
