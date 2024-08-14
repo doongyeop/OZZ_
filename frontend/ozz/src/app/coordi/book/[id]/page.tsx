@@ -2,24 +2,23 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-
-import Header from '@/components/Header'
-import HeaderButton from '@/components/Button/HeaderButton'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 import TagButton from '@/components/Button/TagButton'
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from '@radix-ui/react-popover'
-import { FaBars } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
-import { mockFavoriteDetails } from '@/types/coordibook'
+import { FavoriteDetail } from '@/types/coordibook'
 import { styleMap, styleInvMap, Style } from '@/types/clothing'
+import { getFavoritesByGroup, deleteFavorite1 } from '@/services/favoriteApi'
+import Modal from '@/components/Modal'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
@@ -46,6 +45,10 @@ export default function CoordiBookDetailPage({
   ]
 
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
+  const [favGrpDetails, setFavGrpDetails] = useState<FavoriteDetail[]>([])
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedCoordiId, setSelectedCoordiId] = useState<number | null>(null)
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags) =>
@@ -55,15 +58,9 @@ export default function CoordiBookDetailPage({
     )
   }
 
-  const toggleSidebar = () => {
-    // 사이드바 토글 기능 추가 필요
-  }
-
-  const leftButton = <HeaderButton icon={<FaBars />} onClick={toggleSidebar} />
-
   const filteredItems = selectedTags.includes('전체')
-    ? mockFavoriteDetails
-    : mockFavoriteDetails.filter((item) =>
+    ? favGrpDetails
+    : favGrpDetails.filter((item) =>
         item.coordinate.styleList.some((style: Style) =>
           selectedTags.some(
             (tag) => styleInvMap[style] === tag || style === styleMap[tag],
@@ -71,9 +68,49 @@ export default function CoordiBookDetailPage({
         ),
       )
 
+  const fetchCoordiBook = async (groupId: number) => {
+    const response = await getFavoritesByGroup(groupId)
+    setFavGrpDetails(response)
+  }
+
+  useEffect(() => {
+    fetchCoordiBook(params.id)
+  }, [params.id])
+
+  const handleMouseDown = (coordiId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedCoordiId(coordiId)
+      setDeleteModal(true)
+    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+  }
+
+  const handleMouseUpOrLeave = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
+  }
+
+  const deleteCoordi = async () => {
+    if (selectedCoordiId === null) return
+
+    try {
+      const response = await deleteFavorite1(params.id, selectedCoordiId)
+      console.log('코디 삭제 결과:', response)
+      if (response.status === 204) {
+        console.log('코디 삭제 성공')
+        setDeleteModal(false)
+        setSelectedCoordiId(null)
+        fetchCoordiBook(params.id)
+      }
+    } catch (err) {
+      console.log('코디 삭제 중 문제 발생:', err)
+    }
+  }
+
   return (
     <div>
-      <Header title="코디북" leftButton={leftButton} />
+      <HeaderWithBackward title="코디북" />
       <div className="m-4">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl">{name}</h1>
@@ -115,19 +152,32 @@ export default function CoordiBookDetailPage({
           {filteredItems.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 mt-4">
               {filteredItems.map((item, index) => (
-                <Link
+                <div
                   key={item.favoriteId}
-                  href={`/coordi/detail/${item.coordinate.coordinateId}`}
+                  role="button" // 버튼 역할을 명시
+                  tabIndex={0} // 키보드 포커스를 받을 수 있게 설정
+                  onMouseDown={() =>
+                    handleMouseDown(item.coordinate.coordinateId)
+                  }
+                  onMouseUp={handleMouseUpOrLeave}
+                  onMouseLeave={handleMouseUpOrLeave}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleMouseDown(item.coordinate.coordinateId)
+                    }
+                  }}
                 >
-                  <Image
-                    src={item.coordinate.imageFile.filePath}
-                    alt={`item ${index + 1}`}
-                    width={0}
-                    height={0}
-                    sizes="100%"
-                    className="w-full h-auto"
-                  />
-                </Link>
+                  <Link href={`/coordi/detail/${item.coordinate.coordinateId}`}>
+                    <Image
+                      src={item.coordinate.imageFile.filePath}
+                      alt={`item ${index + 1}`}
+                      width={0}
+                      height={0}
+                      sizes="100%"
+                      className="w-full h-auto"
+                    />
+                  </Link>
+                </div>
               ))}
             </div>
           ) : (
@@ -140,6 +190,29 @@ export default function CoordiBookDetailPage({
           )}
         </div>
       </div>
+      {deleteModal && (
+        <Modal
+          onClose={() => setDeleteModal(false)}
+          title="이 코디를 삭제하시겠습니까?"
+        >
+          <div className="flex justify-center space-x-4">
+            <button
+              type="button"
+              onClick={() => setDeleteModal(false)}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              아니오
+            </button>
+            <button
+              type="button"
+              onClick={deleteCoordi}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              네
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
