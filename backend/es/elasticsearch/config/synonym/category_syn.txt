@@ -6,6 +6,7 @@
 셔츠,샤쓰,shirt,shirts
 브라탑,크롭탑,브라,브라렛,bralet,bralette
 후드티,후드,후드탑,hoodie
+슈트, suit
 
 하의,bottom
 하의=>하의,청바지,팬츠,스커트,레깅스,조거팬츠
