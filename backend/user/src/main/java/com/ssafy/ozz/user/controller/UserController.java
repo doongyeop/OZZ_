@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RequiredArgsConstructor
 @RestController

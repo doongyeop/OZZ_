@@ -1,11 +1,13 @@
 package com.ssafy.ozz.clothes.coordinate.repository.elasticsearch;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
 import com.ssafy.ozz.clothes.clothes.dto.request.VectorRequest;
 import com.ssafy.ozz.clothes.clothes.dto.response.VectorResponse;
 import com.ssafy.ozz.clothes.coordinate.domain.CoordinateDocument;
 import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
+import com.ssafy.ozz.library.clothes.properties.Style;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @RequiredArgsConstructor
 public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQueryRepository {
@@ -51,44 +55,54 @@ public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQuer
     }
 
     private Query createConditionNativeQuery(CoordinateSearchCondition condition, Pageable pageable) {
-        // Split search term into tokens
-        String[] tokens = condition.keyword().split("\\s+");
-
         return NativeQuery.builder()
                 .withQuery(q->q
-                    .bool(b->{
-                        b
-//                        .must(m->m
-//                            .match(mm->mm
-//                                .field("name")
-//                                .query(condition.keyword())
-//                            )
-//                        )
-                        // 무신사 검은 셔츠 검색시 '무신사' '검은' '셔츠'가 모두 들어있는 document는 점수를 높힘
-                        .should(s->s
-                            .matchPhrase(mm->mm
-                                .field("name")
-                                .query(condition.keyword())
+                    .scriptScore(s->s
+                        .query(sq->sq.bool(sb->{
+                            matchKeyword(sb, condition.keyword());
+                            return sb;
+                        }))
+                        .script(ss->ss
+                            .inline(si->si
+                                .source("if ((doc['style'].value & params.style) != 0) return 1; else return 0;")
+                                .params(Collections.singletonMap("style", JsonData.of((condition.styleList() == null || condition.styleList().isEmpty())
+                                        ? ((1<<Style.values().length)-1)
+                                        : toBits(condition.styleList()))))
                             )
-                        );
-
-                        // 무신사 검은 셔츠 검색시 '무신사', '검은', '셔츠' 각 토큰이 정확히 검색되는 document는 점수를 높힘 (유사어 고려 X)
-                        for (String token : tokens) {
-                            b.should(s->s
-                                .term(mm->mm
-                                    .field("name")
-                                    .value(token)
-                                )
-                            );
-                        }
-
-                        return b;
-                    })
+                        )
+                        .minScore(0.5f)
+                    )
                 )
                 .withPageable(pageable) // Pagination
                 .build();
     }
 
+    private BoolQuery.Builder matchKeyword(BoolQuery.Builder b, String keyword) {
+        if (keyword == null || keyword.isEmpty()) return b;
+        b.must(m -> m
+                .match(mm -> mm
+                        .field("name")
+                        .query(keyword)
+                )
+        )
+        .should(s -> s
+                .matchPhrase(mp -> mp
+                        .field("name")
+                        .query(keyword)
+                )
+        );
+
+        String[] tokens = keyword.split("\\s+");
+        for (String token : tokens) {
+            b.should(s -> s
+                    .term(t -> t
+                            .field("name")
+                            .value(token)
+                    )
+            );
+        }
+        return b;
+    }
 
     private Query createSearchQuery(CoordinateSearchCondition condition, Pageable pageable) {
         float[] vector = getVector(condition.keyword());

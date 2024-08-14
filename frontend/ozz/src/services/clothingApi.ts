@@ -13,6 +13,7 @@ import {
   AddClothesPayload,
   ClothesUpdateRequest,
   UpdateClothesPayload,
+  CreateCoordinatePayload,
 } from '@/types/clothes/data-contracts'
 import {
   getTokens,
@@ -151,7 +152,7 @@ export const extractClothing = async (file: File, highCategory: string) => {
     throw new Error('Access token is missing')
   }
 
-  // console.log('tokens : ', tokens)
+  console.log('tokens : ', tokens)
 
   const formData = new FormData()
   formData.append('image', file)
@@ -180,6 +181,13 @@ export const extractClothing = async (file: File, highCategory: string) => {
     console.error('Error extracting clothing attributes:', error)
     throw error
   }
+}
+
+export const createCoordinate = async (payload: CreateCoordinatePayload) => {
+  const clothesApi = await getClothesApi()
+  const response = await clothesApi.createCoordinate(payload)
+  const data = await response.json()
+  return data
 }
 
 export const fetchMockClothingList = () => [

@@ -393,7 +393,7 @@ export const categoryMap: CategoryMap = {
     subcategories: {
       운동화: 22,
       구두: 23,
-      '샌들/슬리퍼': 24,
+      샌들: 24,
     },
   },
   악세서리: {
@@ -407,8 +407,9 @@ export const categoryMap: CategoryMap = {
   가방: {
     id: 7,
     subcategories: {
-      백팩: 28,
-      힙색: 29,
+      가방: 28,
+      백팩: 29,
+      힙색: 30,
     },
   },
 }
@@ -437,12 +438,13 @@ export const categoryLowIdToNameMap: { [key: number]: string } = {
   21: '점프수트',
   22: '운동화',
   23: '구두',
-  24: '샌들/슬리퍼',
+  24: '샌들',
   25: '주얼리',
   26: '기타',
   27: '모자',
-  28: '백팩',
-  29: '힙색',
+  28: '가방',
+  29: '백팩',
+  30: '힙색',
 }
 export const categoryNameToLowIdMap: { [key: string]: number } = {
   탑: 1,
@@ -468,12 +470,13 @@ export const categoryNameToLowIdMap: { [key: string]: number } = {
   점프수트: 21,
   운동화: 22,
   구두: 23,
-  '샌들/슬리퍼': 24,
+  샌들: 24,
   주얼리: 25,
   기타: 26,
   모자: 27,
-  백팩: 28,
-  힙색: 29,
+  가방: 28,
+  백팩: 29,
+  힙색: 30,
 }
 
 export const categoryNameToHighIdMap: { [key: string]: number } = {
@@ -530,6 +533,40 @@ export const categoryLowIdToHighNameMap: { [key: number]: string } = {
   28: '가방',
   29: '가방',
   30: '가방',
+}
+
+// 상위 카테고리 ID에서 하위 카테고리 ID로의 맵핑
+export const categoryIdMap: { [key: number]: number } = {
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 1,
+  5: 1,
+  6: 1,
+  7: 1,
+  8: 2,
+  9: 2,
+  10: 2,
+  11: 2,
+  12: 2,
+  13: 3,
+  14: 3,
+  15: 3,
+  16: 3,
+  17: 3,
+  18: 3,
+  19: 3,
+  20: 4,
+  21: 4,
+  22: 5,
+  23: 5,
+  24: 5,
+  25: 6,
+  26: 6,
+  27: 6,
+  28: 7,
+  29: 7,
+  30: 7,
 }
 
 export const colorMap: { [key: string]: string } = {

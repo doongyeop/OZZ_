@@ -81,96 +81,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-    }
-
-    @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
+    public BoardResponse getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
-        UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-
-        List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
-
-        board = board.toBuilder()
-                .content(request.content())
-                .imgFileId(boardImg)
-                .coordinateId(request.coordinateId())
-                .style(EnumBitwiseConverter.toBits(styles))
-                .build();
-
-        boardRepository.save(board);
-
-        // 기존 태그 삭제 후 새로운 태그 저장
-        tagRepository.deleteAllByBoard(board);
-        for (TagDto tag : request.tagList()) {
-            Tag newTag = Tag.builder()
-                    .board(board)
-                    .clothesId(tag.clothesId())
-                    .xPosition(tag.xPosition())
-                    .yPosition(tag.yPosition())
-                    .build();
-            tagRepository.save(newTag);
-        }
-
-        UserResponse userResponse = new UserResponse(
-                user.userId() == null ? null : user.userId(),
-                user.nickname() == null ? null : user.nickname(),
-                user.profileFileId() == null ? null : user.profileFileId(),
-                user.Birth() == null ? null : user.Birth(),
-                fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
-        );
-
-        return new BoardResponse(board, file, userResponse);
-    }
-
-    @Override
-    public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        tagRepository.deleteAllByBoard(board);
-        boardRepository.deleteById(boardId);
-    }
-
-    @Override
-    public Page<Board> getBoardsByStyle(Pageable pageable, String style) {
-        Style styleEnum = EnumBitwiseConverter.fromString(Style.class, style);
-        Integer styleBit = EnumBitwiseConverter.toBit(styleEnum);
-
-        return boardRepository.findByStyle(styleBit, pageable);
-    }
-
-    @Override
-    public Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge) {
-        return boardRepository.findByAgeBetween(startAge, endAge, pageable);
-    }
-
-    @Override
-    public Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable) {
-        Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
-        return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
-    }
-
-    @Override
-    public BoardResponse mapToBoardResponse(Board board) {
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-
-        UserResponse userResponse = new UserResponse(
-                userInfo.userId() == null ? null : userInfo.userId(),
-                userInfo.nickname() == null ? null : userInfo.nickname(),
-                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
-                userInfo.Birth() == null ? null : userInfo.Birth(),
-                profileImg
-        );
-
-        return new BoardResponse(board, boardImg, userResponse);
-    }
-
-    @Override
-    public BoardResponse getBoardResponse(Long boardId) {
-        Board board = getBoard(boardId);
 
         FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
         UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -201,6 +113,60 @@ public class BoardServiceImpl implements BoardService {
                 userResponse,
                 board.getCreatedDate()
         );
+    }
+
+    @Override
+    public void updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        List<Style> styles = EnumBitwiseConverter.fromStrings(Style.class, request.styleList());
+
+        board = board.toBuilder()
+                .content(request.content())
+                .imgFileId(boardImg)
+                .coordinateId(request.coordinateId())
+                .style(EnumBitwiseConverter.toBits(styles))
+                .build();
+
+        boardRepository.save(board);
+
+        // 기존 태그 삭제 후 새로운 태그 저장
+        tagRepository.deleteAllByBoard(board);
+        for (TagDto tag : request.tagList()) {
+            Tag newTag = Tag.builder()
+                    .board(board)
+                    .clothesId(tag.clothesId())
+                    .xPosition(tag.xPosition())
+                    .yPosition(tag.yPosition())
+                    .build();
+            tagRepository.save(newTag);
+        }
+
+    }
+
+    @Override
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        tagRepository.deleteAllByBoard(board);
+        boardRepository.deleteById(boardId);
+    }
+
+    @Override
+    public Page<Board> getBoardsByStyle(Pageable pageable, String style) {
+        Style styleEnum = EnumBitwiseConverter.fromString(Style.class, style);
+        Integer styleBit = EnumBitwiseConverter.toBit(styleEnum);
+
+        return boardRepository.findByStyle(styleBit, pageable);
+    }
+
+    @Override
+    public Page<Board> getBoardsByAgeRange(Pageable pageable, int startAge, int endAge) {
+        return boardRepository.findByAgeBetween(startAge, endAge, pageable);
+    }
+
+    @Override
+    public Page<Board> getBoardsSortedByLikesInOneDay(Pageable pageable) {
+        Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
+        return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
 }
 
