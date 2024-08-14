@@ -5,6 +5,7 @@ import com.ssafy.ozz.auth.global.service.RefreshService;
 import com.ssafy.ozz.auth.global.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,7 @@ public class AuthController {
 
      @PostMapping("/logout")
      @Operation(summary = "로그아웃")
-     public ResponseEntity<?> logout(@RequestHeader(X_USER_ID) Long userId) {
+     public ResponseEntity<?> logout(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
          // 리프레시 토큰 삭제
          refreshService.deleteExistingRefreshToken(userId);
 
