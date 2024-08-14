@@ -150,6 +150,8 @@ export default function FittingContainer() {
   }
 
   const handleStyleSubmit = (selectedStyles: Style[]) => {
+    console.log('코디이름 : ', coordiName)
+    console.log('selectedStyles : ', selectedStyles)
     setStyleList(selectedStyles)
     setIsStyleModalOpen(false)
     setIsConfirmModalOpen(true)

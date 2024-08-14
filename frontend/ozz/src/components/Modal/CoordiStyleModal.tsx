@@ -51,7 +51,6 @@ export default function CoordiStyleModal({
       .filter((s) => selectedStyles[s])
       .map((s) => styleMap[s])
     setValue(selected)
-    onClose()
   }
 
   return (
