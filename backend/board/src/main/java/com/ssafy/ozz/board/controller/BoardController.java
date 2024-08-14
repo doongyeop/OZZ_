@@ -96,6 +96,8 @@ public class BoardController {
     @Operation(summary = "스타일별 게시글 조회", description = "특정 스타일의 게시글을 필터링하여 조회합니다.")
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsByStyle(
             @RequestParam("style") Integer style, Pageable pageable) {
+
+        // todo String으로 바꾸기
         Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
             FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
