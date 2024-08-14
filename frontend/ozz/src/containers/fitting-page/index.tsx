@@ -2,31 +2,15 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+
 import styles from '@/styles/FittingPage.module.css'
 import SaveCoordiButton from '@/components/Button/SaveCoordiButton'
 import ShareCommunityButton from '@/components/Button/ShareCommunityButton'
 import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import { FaPlus, FaMinus } from 'react-icons/fa'
-
-type ClothingItem = {
-  id: string
-  name: string
-  createdDate: string
-  imageFile: {
-    fileId: number
-    filePath: string
-    fileName: string
-    fileType: string
-  }
-  categoryHigh: {
-    categoryHighId: number
-    name: string
-  }
-  categoryLow: {
-    categoryLowId: number
-    name: string
-  }
-}
+import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
+import { categoryLowIdToHighNameMap } from '@/types/clothing'
 
 type FittingItem = {
   category: string
@@ -36,7 +20,7 @@ type FittingItem = {
 }
 
 const placeholderImages: { [key: string]: string } = {
-  액세서리: '/images/fitting/accessory.png',
+  악세서리: '/images/fitting/accessory.png',
   원피스: '/images/fitting/onepiece.png',
   상의: '/images/fitting/top.png',
   아우터: '/images/fitting/outer.png',
@@ -50,7 +34,7 @@ export default function FittingContainer() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
   const [fittingItems, setFittingItems] = useState<FittingItem[]>([
     // 가상피팅 배경의 컴포넌트
-    { category: '액세서리', type: 'accessory', image: null, isSelected: false },
+    { category: '악세서리', type: 'accessory', image: null, isSelected: false },
     { category: '원피스', type: 'onepiece', image: null, isSelected: false },
     { category: '상의', type: 'top', image: null, isSelected: false },
     { category: '아우터', type: 'outer', image: null, isSelected: false },
@@ -58,8 +42,9 @@ export default function FittingContainer() {
     { category: '신발', type: 'shoes', image: null, isSelected: false },
     { category: '가방', type: 'bag', image: null, isSelected: false },
   ])
-  const [selectedClothes, setSelectedClothes] = useState<ClothingItem[]>([]) // 선택한 옷 리스트
-
+  const [selectedClothes, setSelectedClothes] = useState<
+    (ClothesBasicWithFileResponse & { imageUrl: string })[]
+  >([]) // 선택한 옷 리스트
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
     setSelectedCategory(category)
@@ -76,23 +61,43 @@ export default function FittingContainer() {
       ),
     )
     setSelectedClothes(
-      selectedClothes.filter((cloth) => cloth.categoryHigh.name !== category),
+      selectedClothes.filter((cloth) => {
+        const categoryLowId = cloth.categoryLow?.categoryLowId
+        if (categoryLowId === undefined) {
+          return true // `undefined`인 경우 필터링하지 않음 (필요에 따라 다르게 처리할 수 있음)
+        }
+        return categoryLowIdToHighNameMap[categoryLowId] !== category
+      }),
     )
   }
 
-  const handleSelectClothingItem = (item: ClothingItem) => {
+  const handleSelectClothingItem = (
+    item: ClothesBasicWithFileResponse & { imageUrl: string },
+  ) => {
     // 사이드바에서 아이템을 선택하면
     const existingItem = selectedClothes.find(
-      (clothingItem) => clothingItem.id === item.id,
+      (clothingItem) => clothingItem.clothesId === item.clothesId,
     )
     if (existingItem) {
       console.error('이미 선택한 아이템입니다.')
       return
     }
 
-    const placeholder = fittingItems.find(
-      (imageholder) => imageholder.category === item.categoryHigh.name,
-    )
+    const categoryLowId = item.categoryLow?.categoryLowId
+    const categoryHighName = categoryLowId
+      ? categoryLowIdToHighNameMap[categoryLowId]
+      : undefined
+
+    if (!categoryHighName) {
+      console.error('잘못된 카테고리 ID입니다.')
+      return
+    }
+
+    const placeholder = fittingItems.find((imageholder) => {
+      return imageholder.category === categoryHighName
+    })
+
+    // console.log('placeholder ', placeholder)
     if (!placeholder || placeholder.category !== selectedCategory) {
       // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
       console.error('잘못된 위치입니다.')
@@ -100,11 +105,15 @@ export default function FittingContainer() {
     }
 
     const updatedFittingItems = fittingItems.map((fittingItem) =>
-      fittingItem.category === item.categoryHigh.name
-        ? { ...fittingItem, image: item.imageFile.filePath, isSelected: true }
+      fittingItem.category === categoryHighName
+        ? {
+            ...fittingItem,
+            image: item.imageUrl ? item.imageUrl : '',
+            isSelected: true,
+          }
         : fittingItem,
     )
-    console.log('현재 세팅 : ', updatedFittingItems)
+    // console.log('현재 세팅 : ', updatedFittingItems)
     setFittingItems(updatedFittingItems)
     setSelectedClothes([...selectedClothes, item])
     setIsSidebarOpen(false)
@@ -112,7 +121,7 @@ export default function FittingContainer() {
 
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category)
-    console.log('사이드바에서 선택 ', category)
+    // console.log('사이드바에서 선택 ', category)
   }
 
   return (
@@ -123,17 +132,28 @@ export default function FittingContainer() {
             {fittingItems.map((item) => (
               <div
                 key={item.type}
-                className={`${styles.clothingItem} ${styles[item.type]}`}
+                className={`${styles.clothingItem} ${styles[item.type]} flex items-center justify-center`}
               >
                 {item.image ? (
                   <>
-                    <Image
-                      src={item.image}
-                      alt={item.category}
-                      width={100}
-                      height={100}
-                      layout="responsive"
-                    />
+                    <div
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        position: 'relative',
+                      }}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.category}
+                        layout="fill" // 이미지가 부모 div를 채우도록
+                        objectFit="contain" // 비율을 유지하며 최대 크기에 맞춤
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                        }}
+                      />
+                    </div>
                     <button
                       type="button"
                       aria-label="제거"
@@ -173,52 +193,51 @@ export default function FittingContainer() {
         {selectedClothes.length > 0 ? (
           <ul className="mt-2 px-6">
             {selectedClothes.map((item) => (
-              <li key={item.id} className="mb-2 p-3 border-b">
-                <div className="flex items-center">
-                  <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
-                    <Image
-                      src={item.imageFile.filePath}
-                      alt={item.name}
-                      width={75}
-                      height={75}
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        width: 'auto',
-                        height: 'auto',
-                        objectFit: 'contain',
-                      }}
-                    />
+              <li key={item.clothesId} className="mb-2 p-3 border-b">
+                <Link href={`/closet/modify/${item.clothesId}`} passHref>
+                  <div className="flex items-center cursor-pointer">
+                    <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name ?? 'No name'}
+                        width={75}
+                        height={75}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          width: 'auto',
+                          height: 'auto',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-row w-full justify-between">
+                      <div className="flex flex-col">
+                        <p className="mb-2">{item.categoryLow?.name}</p>
+                        <p className="text-md font-semibold">{item.name}</p>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="제거"
+                        onClick={() => {
+                          const categoryLowId = item.categoryLow?.categoryLowId
+                          if (categoryLowId !== undefined) {
+                            const highCategoryName =
+                              categoryLowIdToHighNameMap[categoryLowId]
+                            handleRemoveItem(highCategoryName)
+                          } else {
+                            console.error('카테고리 ID가 유효하지 않습니다.')
+                          }
+                        }}
+                        className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                      >
+                        <FaMinus />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <p className="mb-2">{item.categoryLow.name}</p>
-                    <p className="text-md font-semibold">{item.name}</p>
-                  </div>
-                </div>
+                </Link>
               </li>
             ))}
-            {/* <Link
-key={item.id}
-href={`/closet/modify/${item.id}`}
-passHref
->
-<div className="flex items-center mb-4 mt-4 cursor-pointer">
-<Image
-    src={item.image}
-    alt={item.name}
-    width={50}
-    height={50}
-    className="mr-4"
-/>
-<div>
-    <div className="text-sm text-gray-500">
-    {item.purchaseDate}
-    </div>
-    <div className="text-lg font-semibold">{item.name}</div>
-</div>
-</div>
-<hr />
-</Link> */}
           </ul>
         ) : (
           <p className="text-gray-dark text-center mb-10">
@@ -230,14 +249,14 @@ passHref
           <ShareCommunityButton />
         </div>
       </div>
-      {isSidebarOpen && (
-        <ClosetSidebar
-          isSidebarOpen={isSidebarOpen}
-          category={selectedCategory}
-          onSelectItem={handleSelectClothingItem}
-          onCategoryChange={handleCategoryChange}
-        />
-      )}
+
+      <ClosetSidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        category={selectedCategory}
+        onSelectItem={handleSelectClothingItem}
+        onCategoryChange={handleCategoryChange}
+      />
     </>
   )
 }

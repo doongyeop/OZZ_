@@ -1,6 +1,15 @@
 server:
   port: ${API_GATEWAY_PORT:8000}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 spring:
   application:
     name: ozz-gateway
@@ -20,6 +29,8 @@ spring:
               - http://localhost:8080
               - http://i11a804.p.ssafy.io:8000
               - http://localhost:8000
+              - http://i11a804.p.ssafy.io
+              - https://i11a804.p.ssafy.io
             allow-credentials: true
             allowedHeaders: '*'
             exposedHeaders:
@@ -33,6 +44,7 @@ spring:
               - PUT
               - GET
               - POST
+              - PATCH
               - DELETE
               - OPTIONS
       routes:

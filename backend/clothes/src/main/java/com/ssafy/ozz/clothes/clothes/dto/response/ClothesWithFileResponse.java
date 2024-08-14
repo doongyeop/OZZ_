@@ -44,8 +44,8 @@ public record ClothesWithFileResponse(
                 toEnums(Season.class, clothes.getSeason()),
                 toEnums(Style.class, clothes.getStyle()),
                 toEnums(Pattern.class, clothes.getPattern()),
-                new CategoryHighBasicResponse(clothes.getCategoryLow().getCategoryHigh()),
-                new CategoryLowResponse(clothes.getCategoryLow()),
+                CategoryHighBasicResponse.of(clothes.getCategoryLow()),
+                CategoryLowResponse.of(clothes.getCategoryLow()),
                 fileInfo
         );
     }

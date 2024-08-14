@@ -30,6 +30,8 @@ import {
   Pageable,
   SearchClothesData,
   SearchCoordinateListData,
+  StartBatchData,
+  StartBatchPayload,
   UpdateClothesData,
   UpdateClothesPayload,
   UpdateCoordinateData,
@@ -193,6 +195,25 @@ export class Api<
       body: data,
       secure: true,
       type: ContentType.FormData,
+      ...params,
+    })
+  /**
+   * @description 온라인 마켓의 구매내역을 통해 옷장을 채웁니다
+   *
+   * @tags Clothes API
+   * @name StartBatch
+   * @summary 불러오기로 새 옷 추가
+   * @request POST:/api/clothes/batch
+   * @secure
+   * @response `200` `StartBatchData` OK
+   */
+  startBatch = (data: StartBatchPayload, params: RequestParams = {}) =>
+    this.request<StartBatchData, any>({
+      path: `/api/clothes/batch`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       ...params,
     })
 

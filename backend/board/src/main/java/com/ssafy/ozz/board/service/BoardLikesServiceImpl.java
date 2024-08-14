@@ -29,17 +29,16 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     @Override
     @Transactional
     public boolean toggleLike(Long boardId, Long userId) {
-        Optional<BoardLikes> existingLike = boardLikesRepository.findByBoard_IdAndUser_Id(boardId, userId);
 
+        // 좋아요 취소
+        Optional<BoardLikes> existingLike = boardLikesRepository.findByBoard_IdAndUserId(boardId, userId);
         if (existingLike.isPresent()) {
             boardLikesRepository.delete(existingLike.get());
 
             // 좋아요 취소 시 해당 알림을 찾아 삭제
             Optional<Notification> existingNotification = notificationRepository.findByBoardIdAndUserId(boardId, userId);
             existingNotification.ifPresent(notification -> {
-                if (!notification.isRead()) {
-                    notificationService.deleteNotificationById(notification.getId());
-                }
+                notificationService.deleteNotificationById(notification.getId());
             });
 
             // 좋아요 수 업데이트
@@ -59,7 +58,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
         UserInfo userInfo = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
         Notification notification = Notification.builder()
                 .board(board)
-                .userId(userId)
+                .userId(board.getUserId())
                 .read(false)
                 .content(userInfo.nickname() + "님이 내 게시글을 마음에 들어합니다.")
                 .build();

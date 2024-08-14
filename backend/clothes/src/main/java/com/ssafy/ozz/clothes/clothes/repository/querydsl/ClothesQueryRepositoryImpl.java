@@ -23,7 +23,8 @@ public class ClothesQueryRepositoryImpl extends Querydsl4RepositorySupport<Cloth
                 .where(
                         userIdEq(userId),
                         categoryLowEq(condition.categoryLowId()),
-                        categoryHighEq(condition.categoryHighId())
+                        categoryHighEq(condition.categoryHighId()),
+                        nameContainKeyword(condition.keyword())
                 )
         );
     }
@@ -36,5 +37,8 @@ public class ClothesQueryRepositoryImpl extends Querydsl4RepositorySupport<Cloth
     }
     public BooleanExpression categoryHighEq(Byte categoryHighId){
         return categoryHighId != null ? clothes.categoryLow.categoryHigh.categoryHighId.eq(categoryHighId) : null;
+    }
+    public BooleanExpression nameContainKeyword(String keyword){
+        return keyword != null ? clothes.name.contains(keyword) : null;
     }
 }

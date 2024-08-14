@@ -23,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
@@ -38,6 +36,7 @@ public class BoardServiceImpl implements BoardService {
     private final UserClient userClient;
     private final FileClient fileClient;
 
+
     @Override
     public Board createBoard(Long userId, Long imgFileId, BoardCreateRequest request) {
 
@@ -46,9 +45,9 @@ public class BoardServiceImpl implements BoardService {
                 .imgFileId(imgFileId)
                 .userId(userId)
                 .age(request.age())
-                .coordinateId(request.coordinateId())
                 .style(toBits(request.styleList()))
                 .likes(0)
+                .coordinateId(request.coordinateId())
                 .createdDate(new Date())
                 .build();
 
@@ -84,47 +83,47 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long imgFileId) {
+    public BoardResponse updateBoard(Long boardId, BoardUpdateRequest request, Long boardImg) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
-        FileInfo file = fileClient.getFile(imgFileId).orElseThrow(FileNotFoundException::new);
+        FileInfo file = fileClient.getFile(boardImg).orElseThrow(FileNotFoundException::new); // 코디이미지
         UserInfo user = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
 
-        Board updatedBoard = board.toBuilder()
+        board = board.toBuilder()
                 .content(request.content())
-                .imgFileId(imgFileId)
+                .imgFileId(boardImg)
                 .coordinateId(request.coordinateId())
                 .style(toBits(request.styleList()))
                 .build();
 
-        boardRepository.save(updatedBoard);
+        boardRepository.save(board);
 
-        if (request.tagList() != null) {
-            List<Tag> tags = request.tagList().stream()
-                    .map(tagRequest -> Tag.builder()
-                            .clothesId(tagRequest.clothesId())
-                            .xPosition(tagRequest.xPosition())
-                            .yPosition(tagRequest.yPosition())
-                            .board(updatedBoard)
-                            .build())
-                    .collect(Collectors.toList());
-            tagRepository.deleteAllByBoardId(boardId);
-            tagRepository.saveAll(tags);
+        // 기존 태그 삭제 후 새로운 태그 저장
+        tagRepository.deleteAllByBoard(board);
+        for (TagDto tag : request.tagList()) {
+            Tag newTag = Tag.builder()
+                    .board(board)
+                    .clothesId(tag.clothesId())
+                    .xPosition(tag.xPosition())
+                    .yPosition(tag.yPosition())
+                    .build();
+            tagRepository.save(newTag);
         }
 
         UserResponse userResponse = new UserResponse(
-                user.userId(),
-                user.nickname(),
-                user.Birth(),
-                user.profileFileId(),
+                user.userId() == null ? null : user.userId(),
+                user.nickname() == null ? null : user.nickname(),
+                user.profileFileId() == null ? null : user.profileFileId(),
+                user.Birth() == null ? null : user.Birth(),
                 fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
         );
 
-        return new BoardResponse(updatedBoard, file, userResponse);
+        return new BoardResponse(board, file, userResponse);
     }
 
     @Override
     public void deleteBoard(Long boardId) {
-        tagRepository.deleteAllByBoardId(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        tagRepository.deleteAllByBoard(board);
         boardRepository.deleteById(boardId);
     }
 
@@ -143,5 +142,22 @@ public class BoardServiceImpl implements BoardService {
         Date oneDayAgo = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
-}
 
+    @Override
+    public BoardResponse mapToBoardResponse(Board board) {
+        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userClient.getUserInfo(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+
+        UserResponse userResponse = new UserResponse(
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
+                profileImg
+        );
+
+        return new BoardResponse(board, boardImg, userResponse);
+    }
+
+}

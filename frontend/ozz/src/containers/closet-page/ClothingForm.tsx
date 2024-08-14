@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
+
 import BrandModal from '@/components/Modal/BrandModal'
 import CategoryModal from '@/components/Modal/CategoryModal'
 import PurchaseDateModal from '@/components/Modal/PurchaseDateModal'
@@ -14,6 +16,8 @@ import ColorModal from '@/components/Modal/ColorModal'
 import StyleModal from '@/components/Modal/StyleModal'
 import PatternModal from '@/components/Modal/PatternModal'
 import MemoModal from '@/components/Modal/MemoModal'
+import LoadingPage from '@/components/Loading/loading'
+
 import {
   ClothingData,
   Size,
@@ -22,21 +26,33 @@ import {
   Style,
   Texture,
   Color,
+  colors,
+  colorCodeMap,
   Pattern,
   fitInvMap,
   seasonInvMap,
   styleInvMap,
   textureInvMap,
+  colorMap,
   colorInvMap,
   patternInvMap,
   categoryNameToLowIdMap,
 } from '@/types/clothing'
-import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
+import { extractClothing } from '@/services/clothingApi'
+import {
+  ClothesCreateRequest,
+  ClothesUpdateRequest,
+} from '@/types/clothes/data-contracts'
 import CameraIcon from '../../../public/icons/camera.svg'
+
+type OnSubmitFunction = (
+  imageFile: File,
+  request: ClothesCreateRequest | ClothesUpdateRequest,
+) => void
 
 type ClothingFormProps = {
   initialData?: ClothingData
-  onSubmit: (imageFile: File, request: ClothesCreateRequest) => void
+  onSubmit: OnSubmitFunction
   submitButtonText: string
 }
 
@@ -46,7 +62,6 @@ export default function ClothingForm({
   submitButtonText,
 }: ClothingFormProps) {
   const [openModal, setOpenModal] = useState<string | null>(null)
-
   const [name, setName] = useState('')
   const [brandName, setBrandName] = useState('')
   const [categoryName, setCategoryName] = useState<string | null>(null)
@@ -56,13 +71,16 @@ export default function ClothingForm({
   const [size, setSize] = useState<Size>('FREE')
   const [fit, setFit] = useState<Fit | null>(null)
   const [texture, setTexture] = useState<Texture[]>([])
-  const [color, setColor] = useState<Color[] | null>([])
+  const [color, setColor] = useState<Color[]>([])
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
-
+  const [extra, setExtra] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  const [loading, setLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (initialData) {
@@ -79,23 +97,135 @@ export default function ClothingForm({
       setStyle(initialData.style || [])
       setPattern(initialData.pattern || [])
       setMemo(initialData.memo || null)
+      setExtra(initialData.extra || null)
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
       if (initialData.image) {
-        setImagePreview(URL.createObjectURL(initialData.image))
+        setImageFile(initialData.imageFile)
+        setImagePreview(initialData.image)
       }
     }
   }, [initialData])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setImageFile(file)
+      let processedFile = file
+
+      // 2MB 초과하는 경우 파일 압축
+      if (file.size > 1 * 1024 * 1024) {
+        const options = {
+          maxSizeMB: 1, // 2MB로 압축
+          maxWidthOrHeight: 1920, // 너비 또는 높이를 1920px 이하로
+          useWebWorker: true, // Web Worker를 사용하여 성능 향상
+        }
+        try {
+          processedFile = await imageCompression(file, options)
+          // console.log('Original File Size:', file.size / 1024 / 1024, 'MB')
+          // console.log(
+          //   'Compressed File Size:',
+          //   processedFile.size / 1024 / 1024,
+          //   'MB',
+          // )
+        } catch (error) {
+          console.error('이미지 압축 중 오류 발생:', error)
+        }
+      }
+
+      setImageFile(processedFile)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(processedFile)
+    }
+  }
+
+  const handleExtractImage = async () => {
+    if (imageFile && categoryName) {
+      // // 이미지 크기 확인 및 리사이즈
+      // if (imageFile.size > 2 * 1024 * 1024) {
+      //   console.log('이미지 크기가 2MB를 초과하여 리사이즈 중입니다...')
+      //   try {
+      //     const resizedImage = await resizeImage(imageFile, 1) // 2MB 이하로 리사이즈
+      //     setImageFile(resizedImage)
+      //     const reader = new FileReader()
+      //     reader.onloadend = () => {
+      //       setImagePreview(reader.result as string)
+      //     }
+      //     reader.readAsDataURL(resizedImage)
+      //   } catch (error) {
+      //     console.error('이미지 리사이즈 실패:', error)
+      //     alert('이미지 리사이즈 중 오류가 발생했습니다.')
+      //     return
+      //   }
+      // }
+
+      setLoading(true)
+      setIsSubmitting(true) // 중복 요청 방지
+
+      const [categoryHighName] = categoryName.split(' > ')
+      try {
+        const result = await extractClothing(imageFile, categoryHighName)
+
+        setName(result.name || '')
+        setBrandName(result.brand || '')
+        setCategoryName(
+          `${result.categoryHigh.name} > ${result.categoryLow.name}`,
+        )
+        setPurchaseDate(result.purchaseDate || null)
+        setPurchaseSite(result.purchaseSite || null)
+        setSeason(result.seasonList || [])
+        setSize(result.size || 'FREE')
+        setFit(result.fit || null)
+        setTexture(result.textureList || [])
+        setColor(
+          result.colorList
+            ? result.colorList.map((colorCode: string) => {
+                // 색상 코드를 기반으로 Color 객체를 찾음
+                const colorObj = colors.find((c) => c.code === colorCode)
+
+                if (colorObj) {
+                  return colorObj
+                }
+                console.warn(`No match found for color code: ${colorCode}`)
+                // colorObj가 없으면 기본값으로 빈 Color 객체를 반환하거나 다른 적절한 처리
+                return {
+                  code: colorCode,
+                  name: colorMap[colorCode] || 'Unknown', // colorMap에서 이름을 찾거나 기본값 설정
+                  colorCode: colorCodeMap[colorCode] || '#000000', // 기본 색상 코드
+                }
+              })
+            : [],
+        )
+        setStyle(result.styleList || [])
+        setPattern(result.patternList || [])
+        setMemo(result.memo || null)
+        setExtra(result.extra || '')
+
+        // 이미지 데이터 처리 (Base64 디코딩 후 파일로 변환)
+        const byteCharacters = atob(result.image)
+        const byteNumbers = new Array(byteCharacters.length)
+          .fill(0)
+          .map((_, i) => byteCharacters.charCodeAt(i))
+        const byteArray = new Uint8Array(byteNumbers)
+        const img = new Blob([byteArray], { type: 'image/png' })
+
+        const imageFileObj = new File([img], 'extracted-image.png', {
+          type: 'image/png',
+        })
+        setImageFile(imageFileObj)
+        setImagePreview(URL.createObjectURL(imageFileObj))
+      } catch (error: any) {
+        console.error('AI 분석 실패 : ', error)
+      } finally {
+        // 로딩 상태 종료
+        setLoading(false)
+        setIsSubmitting(false)
+      }
+    } else {
+      console.error('분석할 이미지가 없습니다.')
+      alert('이미지와 카테고리를 설정해주세요.')
     }
   }
 
@@ -103,24 +233,24 @@ export default function ClothingForm({
     e.preventDefault()
 
     // 필수 입력 필드 확인
-    if (!name || !categoryName || !imageFile) {
-      alert('이름, 카테고리 및 이미지는 필수 입력 사항입니다.')
+    if (!name || !categoryName || !imageFile || color.length === 0) {
+      alert('이름, 카테고리, 색상 및 이미지는 필수 입력 사항입니다.')
       return
     }
 
     const categoryLowName = categoryName.split(' > ').pop() || ''
     const categoryLowId = categoryNameToLowIdMap[categoryLowName] || undefined
 
-    const request: ClothesCreateRequest = {
-      name,
-      size: size || 'FREE',
-      fit: fit || undefined,
-      memo: memo || '',
-      brand: brandName || '',
-      purchaseDate: purchaseDate || '',
-      purchaseSite: purchaseSite || '',
-      colorList: color
-        ? color.map(
+    const request = initialData
+      ? ({
+          name,
+          size: size || 'FREE',
+          fit: fit || undefined,
+          memo: memo || '',
+          brand: brandName || '',
+          purchaseDate: purchaseDate || '',
+          purchaseSite: purchaseSite || '',
+          colorList: color.map(
             (c) =>
               colorInvMap[c.name] as
                 | 'WHITE'
@@ -143,21 +273,56 @@ export default function ClothingForm({
                 | 'WINE'
                 | 'NEON'
                 | 'GOLD',
-          )
-        : [],
-      textureList: texture || [],
-      seasonList: season || [],
-      styleList: style || [],
-      patternList: pattern || [],
-      categoryLowId,
-    }
+          ),
+          textureList: texture || [],
+          seasonList: season || [],
+          styleList: style || [],
+          patternList: pattern || [],
+          categoryLowId,
+          extra: extra || '',
+          processing: 0,
+          // 수정모드의 경우 processing이 추가되거나 수정되는 경우 처리 필요
+        } as ClothesUpdateRequest)
+      : ({
+          name,
+          size: size || 'FREE',
+          fit: fit || undefined,
+          memo: memo || '',
+          brand: brandName || '',
+          purchaseDate: purchaseDate || '',
+          purchaseSite: purchaseSite || '',
+          colorList: color.map(
+            (c) =>
+              colorInvMap[c.name] as
+                | 'WHITE'
+                | 'BLACK'
+                | 'GRAY'
+                | 'RED'
+                | 'PINK'
+                | 'ORANGE'
+                | 'BEIGE'
+                | 'YELLOW'
+                | 'BROWN'
+                | 'GREEN'
+                | 'KHAKI'
+                | 'MINT'
+                | 'BLUE'
+                | 'NAVY'
+                | 'SKY'
+                | 'PURPLE'
+                | 'LAVENDER'
+                | 'WINE'
+                | 'NEON'
+                | 'GOLD',
+          ),
+          textureList: texture || [],
+          seasonList: season || [],
+          styleList: style || [],
+          patternList: pattern || [],
+          categoryLowId,
+          extra: extra || '',
+        } as ClothesCreateRequest)
 
-    console.log('옷 등록할게요 ><')
-    console.log(imageFile.type)
-    console.log(request)
-    Object.entries(request).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`)
-    })
     onSubmit(imageFile, request)
   }
 
@@ -240,10 +405,10 @@ export default function ClothingForm({
       value: color
         ? formatValue(
             color.map((c) => c.code),
-            colorInvMap,
+            colorMap,
           )
         : '',
-      setValue: (colors: Color[]) => setColor(colors),
+      setValue: (c: Color[]) => setColor(c),
     },
     {
       label: '스타일',
@@ -267,8 +432,12 @@ export default function ClothingForm({
       setValue: (m: string) => setMemo(m),
     },
   ]
-
-  return (
+  return loading ? (
+    <LoadingPage
+      messages={['AI 분석 중입니다...', '잠시만 기다려주세요.']}
+      footerMessage="분석 결과를 가져오는 중입니다."
+    />
+  ) : (
     <div className="py-12 px-10 min-h-screen flex flex-col justify-center items-center">
       <form onSubmit={handleSubmit}>
         <div className="flex justify-center mb-3">
@@ -284,18 +453,27 @@ export default function ClothingForm({
             className={`relative flex min-h-[300px] min-w-[300px] max-h-[300px] max-w-[300px] items-center justify-center text-center rounded-lg ${imagePreview ? 'border-none' : 'border border-secondary'} `}
           >
             {imagePreview ? (
-              <Image
-                src={imagePreview}
-                alt="Preview"
-                width={300}
-                height={300}
-                className="p-6 object-cover"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                }}
-              />
+              <>
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  width={300}
+                  height={300}
+                  className="p-6 object-cover"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
+                >
+                  AI 분석
+                </button>
+              </>
             ) : (
               <div>
                 <Image
@@ -307,6 +485,13 @@ export default function ClothingForm({
                 <span className="mb-2 block text-sm font-semibold text-[#000000] opacity-20">
                   옷 이미지 등록
                 </span>
+                <button
+                  type="button"
+                  onClick={handleExtractImage}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary-400 text-secondary px-4 py-2 rounded-full font-bold text-xs"
+                >
+                  AI 분석
+                </button>
               </div>
             )}
           </label>
@@ -338,21 +523,23 @@ export default function ClothingForm({
                   {item.value &&
                     (item.label === '색' && Array.isArray(color) ? (
                       <>
-                        {color.slice(0, 3).map((c) => (
-                          <div key={c.code} className="flex">
-                            <span
-                              className="inline-block w-5 h-5 rounded-full mr-1.5"
-                              style={{ backgroundColor: c.colorCode }}
-                            />
-                            <button
-                              type="button"
-                              className="text-primary-400 mr-2"
-                              onClick={() => setOpenModal(item.path)}
-                            >
-                              {c.name}
-                            </button>
-                          </div>
-                        ))}
+                        {color.slice(0, 3).map((c) => {
+                          return (
+                            <div key={c.code} className="flex">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full mr-1.5"
+                                style={{ backgroundColor: c.colorCode }}
+                              />
+                              <button
+                                type="button"
+                                className="text-primary-400 mr-2"
+                                onClick={() => setOpenModal(item.path)}
+                              >
+                                {c.name}
+                              </button>
+                            </div>
+                          )
+                        })}
                         {color.length > 3 && (
                           <span className="text-primary-400 mr-2">...</span>
                         )}
@@ -381,6 +568,7 @@ export default function ClothingForm({
             <button
               type="submit"
               className="px-8 w-[180px] h-[40px] bg-primary-400 align-middle rounded-3xl text-secondary text-md font-bold"
+              disabled={isSubmitting}
             >
               {submitButtonText}
             </button>

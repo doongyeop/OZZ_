@@ -11,6 +11,7 @@ import ColorModal from '@/components/Modal/ColorModal'
 import OutlineButton from '@/components/Button/OutlineButton'
 import { useSelectedItem } from '@/contexts/SelectedItemContext'
 import { useSelectedColor } from '@/contexts/SelectedColorContext'
+import { Color } from '@/types/clothing'
 
 export default function SelectOptions() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function SelectOptions() {
 
   const [isColorModalOpen, setIsColorModalOpen] = useState(false)
 
-  const handleColorSelect = (colors: { name: string; code: string }[]) => {
+  const handleColorSelect = (colors: Color[]) => {
     if (colors.length <= 2) {
       setSelectedColor(colors)
     } else {
@@ -52,7 +53,7 @@ export default function SelectOptions() {
                   <div
                     key={color.name}
                     className={`flex flex-col items-center ${
-                      isLightColor(color.code)
+                      isLightColor(color.colorCode)
                         ? 'bg-secondary'
                         : 'bg-gray-light'
                     } p-3 rounded-lg`}
@@ -60,12 +61,12 @@ export default function SelectOptions() {
                     <div
                       className="w-6 h-6 rounded-full"
                       style={{
-                        backgroundColor: color.code,
+                        backgroundColor: color.colorCode,
                       }}
                     />
                     <span
                       className="text-xs mt-1"
-                      style={{ color: color.code }}
+                      style={{ color: color.colorCode }}
                     >
                       {color.name}
                     </span>
@@ -80,11 +81,11 @@ export default function SelectOptions() {
             {selectedItem ? (
               <div className="flex flex-col items-center">
                 <Image
-                  src={selectedItem.imageFile.filePath}
+                  src={selectedItem.imageUrl}
                   alt={selectedItem.name}
                   width={50}
                   height={50}
-                  className="rounded-full"
+                  className="rounded-full bg-white aspect-square object-contain"
                 />
                 <span className="text-xs mt-1">{selectedItem.name}</span>
               </div>

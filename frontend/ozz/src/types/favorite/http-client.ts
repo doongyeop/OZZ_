@@ -68,7 +68,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = 'http://i11a804.p.ssafy.io:8000'
+  public baseUrl: string = 'https://i11a804.p.ssafy.io'
   private securityData: SecurityDataType | null = null
   private securityWorker?: ApiConfig<SecurityDataType>['securityWorker']
   private abortControllers = new Map<CancelToken, AbortController>()

@@ -4,16 +4,18 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
+import { ClothesUpdateRequest } from '@/types/clothes/data-contracts'
 import { ClothingData } from '@/types/clothing'
 import {
-  fetchMockClothing,
+  getClothingDetails,
   updateClothing,
   deleteClothing,
 } from '@/services/clothingApi'
 import ClothingForm from '@/containers/closet-page/ClothingForm'
 import ClothesDeleteButton from '@/components/Button/ClothesDeleteButton'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
-import { ClothesCreateRequest } from '@/types/clothes/data-contracts'
+import HeaderWithBackward from '@/components/HeaderWithBackward'
 
 export default function ModifyPage({ params }: { params: { id: number } }) {
   const [clothingData, setClothingData] = useState<ClothingData | undefined>(
@@ -24,35 +26,44 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
 
   useEffect(() => {
     if (params.id) {
-      const fetchedData = fetchMockClothing(params.id as number)
-      setClothingData(fetchedData)
+      const fetchClothingData = async () => {
+        try {
+          const formattedData = await getClothingDetails(params.id)
+          setClothingData(formattedData)
+        } catch (error) {
+          console.error('Error fetching clothing data:', error)
+        }
+      }
+
+      fetchClothingData()
     }
   }, [params.id])
 
   const handleSubmit = async (
     imageFile: File,
-    request: ClothesCreateRequest,
+    request: ClothesUpdateRequest,
   ) => {
-    // try {
-    //   await updateClothing(params.id, data)
-    //   // 성공 처리
-    // } catch (error) {
-    //   // 에러 처리
-    // }
+    try {
+      const response = await updateClothing(params.id, imageFile, request)
+      console.log('Clothes added successfully', response)
+      router.push('/closet')
+    } catch (error) {
+      console.error('Failed to add clothes', error)
+    }
   }
 
   const handleDelete = async () => {
     try {
-      // await deleteClothing(params.id)
-      // 성공 처리 (예: 알림 표시, 페이지 이동 등)
-      router.push('/closet') // 목록 페이지로 이동
+      await deleteClothing(params.id)
+      router.push('/closet')
     } catch (error) {
-      // 에러 처리
+      console.error('Failed to delete clothes', error)
     }
   }
 
   return (
-    <main>
+    <>
+      <HeaderWithBackward title="나의 옷짱" />
       <ClothingForm
         initialData={clothingData}
         onSubmit={handleSubmit}
@@ -66,6 +77,6 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
           message="정말 삭제하시겠습니까?"
         />
       )}
-    </main>
+    </>
   )
 }

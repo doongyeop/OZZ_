@@ -11,6 +11,6 @@ public interface BoardLikesRepository extends JpaRepository<BoardLikes, BoardLik
 
     int countByBoard_Id(Long boardId);
 
-    Optional<BoardLikes> findByBoard_IdAndUser_Id(Long boardId, Long userId);
+    Optional<BoardLikes> findByBoard_IdAndUserId(Long boardId, Long userId);
 
 }

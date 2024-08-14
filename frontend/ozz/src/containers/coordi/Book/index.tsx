@@ -1,65 +1,144 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { HiPencil, HiPlus } from 'react-icons/hi'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
+import { Coordibook } from '@/types/coordibook'
 import {
-  Coordibook,
-  mockCoordibooks,
-  mockFavoriteDetails,
-} from '@/types/coordibook'
+  createFavoriteGroup,
+  getFavoritesGroupListOfUsers,
+  deleteFavoriteGroup,
+} from '@/services/favoriteApi'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
+  const [newGroupName, setNewGroupName] = useState('')
+  const [groups, setGroups] = useState<Coordibook[]>([])
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const router = useRouter()
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  const fetchFavoritesGroupList = async () => {
+    try {
+      const response = await getFavoritesGroupListOfUsers()
+      console.log(response)
+      setGroups(response)
+    } catch (error) {
+      console.error('Error fetching favorites data:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchFavoritesGroupList()
+  }, [])
 
   const goToCoordiBook = (id: number, name: string) => {
     router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
-  }
-
-  const createCoordiBook = () => {
-    setCreateModal(true)
-    // 코디북 생성 ~~
   }
 
   const closeModal = () => {
     setCreateModal(false)
   }
 
-  const getFavGrp = (group: Coordibook) => {
-    // const groupFavorites = mockFavoriteDetails.filter(
-    //   (fav) => fav.favoriteGroupId === group.favoriteGroupId,
-    // )
+  async function createCoordiBook() {
+    if (newGroupName.length > 10 || newGroupName.length <= 0) {
+      alert('코디북 이름은 1-10글자여야 합니다.')
+      return
+    }
 
+    closeModal()
+
+    const requestData = { name: newGroupName }
+    try {
+      const response = await createFavoriteGroup(requestData)
+      console.log(response)
+      setNewGroupName('')
+      // 코디북 생성 후 즐겨찾기 목록 다시 불러오기
+      const updatedGroups = await getFavoritesGroupListOfUsers()
+      setGroups(updatedGroups)
+      closeModal()
+    } catch (error) {
+      console.error('코디북 생성 중 오류 발생:', error)
+    }
+  }
+
+  const handleMouseDown = (groupId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedGroupId(groupId)
+      setDeleteModal(true)
+    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+  }
+
+  const handleMouseUpOrLeave = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
+  }
+
+  const deleteCoordiBook = async () => {
+    if (selectedGroupId === null) return
+
+    try {
+      const res = await deleteFavoriteGroup(selectedGroupId)
+      setDeleteModal(false)
+      setSelectedGroupId(null)
+      if (res.status === 204) {
+        console.log('삭제 완료')
+        fetchFavoritesGroupList()
+      } else {
+        console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
+        console.log('그룹삭제에 대한 response', res)
+        console.log('res.status는', res.status)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const getFavGrp = (group: Coordibook) => {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
-          className="flex items-center h-full overflow-hidden"
+          className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
+          onMouseDown={() => handleMouseDown(group.favoriteGroupId)}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
-              mockFavoriteDetails.length >= 4 ? 'w-full h-full' : ''
+              group.imageFileList && group.imageFileList.length >= 4
+                ? 'w-full h-full'
+                : ''
             }`}
           >
-            {mockFavoriteDetails.slice(0, 4).map((fav) => (
-              <div
-                key={fav.favoriteId}
-                className={`${
-                  mockFavoriteDetails.length >= 4
-                    ? 'w-1/2 h-1/2 overflow-hidden'
-                    : 'h-full w-full'
-                }`}
-              >
-                <img
-                  src={fav.coordinate.imageFile.filePath}
-                  alt={fav.coordinate.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+            {group.imageFileList && group.imageFileList.length > 0 ? (
+              group.imageFileList.slice(0, 4).map((image) => (
+                <div
+                  key={image.fileId}
+                  className={`${
+                    group.imageFileList.length >= 4
+                      ? 'w-1/2 h-1/2 overflow-hidden'
+                      : 'h-full w-full'
+                  }`}
+                >
+                  <img
+                    src={image.filePath}
+                    alt={image.fileName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="hidden">암것도 없어요</div>
+            )}
           </CardContent>
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
@@ -73,36 +152,20 @@ export default function CoordiBook() {
     <div className="grid grid-cols-2 gap-4 m-4">
       <div className="aspect-square">
         <Card
-          onClick={createCoordiBook}
-          className="h-full bg-secondary flex items-center justify-center"
+          onClick={() => setCreateModal(true)}
+          className="h-full bg-secondary flex items-center justify-center shadow-md"
         >
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="max-w-[32px] max-h-[32px]"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"
-              className="fill-primary-400"
-            />
-          </svg>
+          <HiPlus className="w-8 h-8 fill-primary-400" />
         </Card>
         <CardTitle className="text-left text-black font-medium text-sm mt-2">
-          <button type="button" onClick={createCoordiBook}>
-            새 코디북 생성
-          </button>
+          <button type="button">새 코디북 생성</button>
         </CardTitle>
       </div>
-      {mockCoordibooks.map((group) => (
+      {groups.map((group) => (
         <div key={group.favoriteGroupId}>{getFavGrp(group)}</div>
       ))}
       {createModal && (
-        <Modal title="코디북 이름" onClose={closeModal}>
+        <Modal title="코디북 이름" onClose={() => closeModal()}>
           <div className="flex flex-col items-center">
             <div className="relative w-full">
               <input
@@ -115,31 +178,39 @@ export default function CoordiBook() {
                 }`}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
+                onChange={(e) => setNewGroupName(e.target.value)}
               />
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-2 top-1/2 transform -translate-y-1/2"
-              >
-                <path
-                  d="M13.5858 3.58579C14.3668 2.80474 15.6332 2.80474 16.4142 3.58579C17.1953 4.36683 17.1953 5.63316 16.4142 6.41421L15.6213 7.20711L12.7929 4.37868L13.5858 3.58579Z"
-                  className="fill-primary-400"
-                />
-                <path
-                  d="M11.3787 5.79289L3 14.1716V17H5.82842L14.2071 8.62132L11.3787 5.79289Z"
-                  className="fill-primary-400"
-                />
-              </svg>
+              <HiPencil className="w-5 h-5 fill-primary-400 absolute left-2 top-1/2 transform -translate-y-1/2" />
             </div>
             <button
               type="button"
-              onClick={closeModal}
+              onClick={createCoordiBook}
               className="px-3 py-1 mt-4 rounded-full text-sm text-primary-400 border border-primary-400 font-bold hover:text-secondary hover:bg-primary-400"
             >
               만들기
+            </button>
+          </div>
+        </Modal>
+      )}
+      {deleteModal && (
+        <Modal
+          onClose={() => setDeleteModal(false)}
+          title="코디북을 삭제하시겠습니까?"
+        >
+          <div className="flex justify-center space-x-4">
+            <button
+              type="button"
+              onClick={() => setDeleteModal(false)}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              아니오
+            </button>
+            <button
+              type="button"
+              onClick={deleteCoordiBook}
+              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
+            >
+              네
             </button>
           </div>
         </Modal>

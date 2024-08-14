@@ -1,19 +1,21 @@
 export interface ClothingData {
   id: number
   name: string
-  brandName: string
-  categoryName: string | null
+  categoryName: string
+  brandName: string | null
   purchaseDate: string | null
   purchaseSite: string | null
   season: Season[] | null
   size: Size | null
   fit: Fit | null
-  texture: Texture[]
+  texture: Texture[] | null
   color: Color[] | null
   style: Style[] | null
   pattern: Pattern[] | null
   memo: string | null
-  image: File | null
+  image: string | null
+  imageFile: File | null
+  extra?: string | null
 }
 
 export interface Color {
@@ -474,6 +476,62 @@ export const categoryNameToLowIdMap: { [key: string]: number } = {
   힙색: 29,
 }
 
+export const categoryNameToHighIdMap: { [key: string]: number } = {
+  상의: 1,
+  하의: 2,
+  아우터: 3,
+  원피스: 4,
+  신발: 5,
+  악세서리: 6,
+  가방: 7,
+}
+
+export const categoryLowIdToHighNameMap: { [key: number]: string } = {
+  // 상의
+  1: '상의',
+  2: '상의',
+  3: '상의',
+  4: '상의',
+  5: '상의',
+  6: '상의',
+  7: '상의',
+
+  // 하의
+  8: '하의',
+  9: '하의',
+  10: '하의',
+  11: '하의',
+  12: '하의',
+
+  // 아우터
+  13: '아우터',
+  14: '아우터',
+  15: '아우터',
+  16: '아우터',
+  17: '아우터',
+  18: '아우터',
+  19: '아우터',
+
+  // 원피스
+  20: '원피스',
+  21: '원피스',
+
+  // 신발
+  22: '신발',
+  23: '신발',
+  24: '신발',
+
+  // 악세서리
+  25: '악세서리',
+  26: '악세서리',
+  27: '악세서리',
+
+  // 가방
+  28: '가방',
+  29: '가방',
+  30: '가방',
+}
+
 export const colorMap: { [key: string]: string } = {
   WHITE: '흰색',
   BLACK: '검정',
@@ -518,4 +576,27 @@ export const colorInvMap: { [key: string]: string } = {
   와인: 'WINE',
   네온: 'NEON',
   골드: 'GOLD',
+}
+
+export const colorCodeMap: { [key: string]: string } = {
+  WHITE: '#FFFFFF',
+  BLACK: '#000000',
+  GRAY: '#E7E7E7',
+  RED: '#FF0000',
+  PINK: '#FEE0DE',
+  ORANGE: '#FF820E',
+  BEIGE: '#E2C79C',
+  YELLOW: '#FEE600',
+  BROWN: '#844F1D',
+  GREEN: '#1A9268',
+  KHAKI: '#666B17',
+  MINT: '#6BF1D8',
+  BLUE: '#1F4CE3',
+  NAVY: '#060350',
+  SKY: '#C5E3FF',
+  PURPLE: '#9C53BE',
+  LAVENDER: '#D7BEF5',
+  WINE: '#9E213F',
+  NEON: '#2FF40A',
+  GOLD: '#E6C345',
 }

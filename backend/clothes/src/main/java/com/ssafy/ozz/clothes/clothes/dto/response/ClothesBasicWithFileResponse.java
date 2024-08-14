@@ -22,7 +22,7 @@ public record ClothesBasicWithFileResponse(
                 clothes.getClothesId(),
                 clothes.getName(),
                 clothes.getCreatedDate(),
-                new CategoryLowResponse(clothes.getCategoryLow()),
+                CategoryLowResponse.of(clothes.getCategoryLow()),
                 fileInfo
         );
     }
@@ -31,7 +31,7 @@ public record ClothesBasicWithFileResponse(
                 clothes.getClothesId(),
                 clothes.getName(),
                 clothes.getCreatedDate(),
-                new CategoryLowResponse(categoryLow),
+                CategoryLowResponse.of(categoryLow),
                 fileInfo
         );
     }
