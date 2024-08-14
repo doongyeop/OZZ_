@@ -151,6 +151,8 @@ export const extractClothing = async (file: File, highCategory: string) => {
     throw new Error('Access token is missing')
   }
 
+  console.log('tokens : ', tokens)
+
   const formData = new FormData()
   formData.append('image', file)
   formData.append('highCategory', highCategory)
@@ -163,6 +165,9 @@ export const extractClothing = async (file: File, highCategory: string) => {
     body: formData,
     redirect: 'follow',
   }
+
+  console.log('requestOptions ', requestOptions)
+  console.log('formData ', formData)
 
   try {
     const response = await fetch(url, requestOptions)
