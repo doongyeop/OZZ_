@@ -155,7 +155,7 @@ export interface ClothesUpdateRequest {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -184,6 +184,8 @@ export interface ClothesUpdateRequest {
     | 'CHECK'
     | 'HOUNDSTOOTH'
   )[]
+  extra?: string
+  processing?: number
 }
 
 /** 상위 카테고리 기본 정보 DTO */
@@ -401,6 +403,7 @@ export interface ClothesCreateRequest {
     | 'CHECK'
     | 'HOUNDSTOOTH'
   )[]
+  extra?: string
   /** @format byte */
   categoryLowId?: number
 }
