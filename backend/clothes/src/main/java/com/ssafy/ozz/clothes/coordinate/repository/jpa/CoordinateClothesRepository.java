@@ -16,4 +16,6 @@ public interface CoordinateClothesRepository extends JpaRepository<CoordinateClo
 
     @Query("select cc from CoordinateClothes cc where cc.coordinate.coordinateId = :coordinateId")
     List<CoordinateClothes> findByCoordinateId(@Param("coordinateId") Long coordinateId);
+
+    void deleteAllByClothes_ClothesId(Long clothesId);
 }
