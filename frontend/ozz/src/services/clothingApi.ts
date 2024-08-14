@@ -12,9 +12,13 @@ import {
   ClothesUpdateRequest,
   UpdateClothesPayload,
 } from '@/types/clothes/data-contracts'
-import { getClothesApi, getFileApi } from '@/services/authApi'
-// import { Api as ClothesApi } from '@/types/clothes/Api'
-// import { Api as FileApi } from '@/types/file/Api'
+import {
+  getTokens,
+  syncTokensWithCookies,
+  validateAndRefreshToken,
+  getClothesApi,
+  getFileApi,
+} from '@/services/authApi'
 
 // const token =
 //   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzUyMzg4MywiZXhwIjoxNzIzNTgzODgzfQ.rVASyfPidOADXu4lR7i3BZTgKVUf1_s6rz9nysfcwZI'
@@ -132,6 +136,41 @@ export const deleteClothing = async (id: number) => {
   const clothesApi = await getClothesApi()
   const response = await clothesApi.deleteClothes(id)
   return response.data
+}
+
+export const extractClothing = async (file: File, highCategory: string) => {
+  const url = 'https://i11a804.p.ssafy.io/api/ai/attributes/extract'
+  syncTokensWithCookies()
+  validateAndRefreshToken()
+  const tokens = getTokens()
+  if (!tokens || !tokens.accessToken) {
+    throw new Error('Access token is missing')
+  }
+
+  const formData = new FormData()
+  formData.append('image', file)
+  formData.append('highCategory', highCategory)
+
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${tokens}`,
+    },
+    body: formData,
+    redirect: 'follow',
+  }
+
+  try {
+    const response = await fetch(url, requestOptions)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const result = await response.json() // Assuming the API returns JSON
+    return result
+  } catch (error) {
+    console.error('Error extracting clothing attributes:', error)
+    throw error
+  }
 }
 
 export const fetchMockClothingList = () => [
