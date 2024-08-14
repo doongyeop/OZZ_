@@ -23,6 +23,8 @@ import {
   Style,
   Texture,
   Color,
+  colors,
+  colorCodeMap,
   Pattern,
   fitInvMap,
   seasonInvMap,
@@ -35,10 +37,19 @@ import {
 } from '@/types/clothing'
 import CameraIcon from '../../../public/icons/camera.svg'
 import { extractClothing } from '@/services/clothingApi'
+import {
+  ClothesCreateRequest,
+  ClothesUpdateRequest,
+} from '@/types/clothes/data-contracts'
+
+type OnSubmitFunction = (
+  imageFile: File,
+  request: ClothesCreateRequest | ClothesUpdateRequest,
+) => void
 
 type ClothingFormProps = {
   initialData?: ClothingData
-  onSubmit: (imageFile: File, request: object) => void
+  onSubmit: OnSubmitFunction
   submitButtonText: string
 }
 
@@ -61,7 +72,7 @@ export default function ClothingForm({
   const [style, setStyle] = useState<Style[]>([])
   const [pattern, setPattern] = useState<Pattern[]>([])
   const [memo, setMemo] = useState<string | null>(null)
-  const [extra, setExtra] = useState<string[]>([])
+  const [extra, setExtra] = useState<string | null>(null)
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -81,6 +92,7 @@ export default function ClothingForm({
       setStyle(initialData.style || [])
       setPattern(initialData.pattern || [])
       setMemo(initialData.memo || null)
+      setExtra(initialData.extra || null)
 
       // 이미지 미리보기 설정 (실제 환경에서는 이미지 URL을 사용해야 합니다)
       if (initialData.image) {
@@ -110,7 +122,7 @@ export default function ClothingForm({
         const result = await extractClothing(imageFile, categoryHighName)
         // console.log('response ', result)
 
-        // 로딩 띄우기?
+        // 로딩 띄우기
 
         // 속성 추출 세팅
         setName(result.name || '')
@@ -124,7 +136,27 @@ export default function ClothingForm({
         setSize(result.size || 'FREE')
         setFit(result.fit || null)
         setTexture(result.textureList || [])
-        setColor(result.colorList)
+        setColor(
+          result.colorList
+            ? result.colorList.map((colorCode: string) => {
+                // 색상 코드를 기반으로 Color 객체를 찾음
+                const colorObj = colors.find(
+                  (color) => color.code === colorCode,
+                )
+
+                if (colorObj) {
+                  return colorObj
+                }
+                console.warn(`No match found for color code: ${colorCode}`)
+                // colorObj가 없으면 기본값으로 빈 Color 객체를 반환하거나 다른 적절한 처리
+                return {
+                  code: colorCode,
+                  name: colorMap[colorCode] || 'Unknown', // colorMap에서 이름을 찾거나 기본값 설정
+                  colorCode: colorCodeMap[colorCode] || '#000000', // 기본 색상 코드
+                }
+              })
+            : [],
+        )
         setStyle(result.styleList || [])
         setPattern(result.patternList || [])
         setMemo(result.memo || null)
@@ -143,9 +175,6 @@ export default function ClothingForm({
         })
         setImageFile(imageFileObj)
         setImagePreview(URL.createObjectURL(imageFileObj))
-        console.log('img ', img)
-        console.log('imageFile ', imageFile)
-        console.log('imagePreview ', imagePreview)
       } catch (error: any) {
         console.error('AI 분석 실패 : ', error)
       }
@@ -167,16 +196,16 @@ export default function ClothingForm({
     const categoryLowName = categoryName.split(' > ').pop() || ''
     const categoryLowId = categoryNameToLowIdMap[categoryLowName] || undefined
 
-    const request = {
-      name,
-      size: size || 'FREE',
-      fit: fit || undefined,
-      memo: memo || '',
-      brand: brandName || '',
-      purchaseDate: purchaseDate || '',
-      purchaseSite: purchaseSite || '',
-      colorList: color
-        ? color.map(
+    const request = initialData
+      ? ({
+          name,
+          size: size || 'FREE',
+          fit: fit || undefined,
+          memo: memo || '',
+          brand: brandName || '',
+          purchaseDate: purchaseDate || '',
+          purchaseSite: purchaseSite || '',
+          colorList: color.map(
             (c) =>
               colorInvMap[c.name] as
                 | 'WHITE'
@@ -199,14 +228,55 @@ export default function ClothingForm({
                 | 'WINE'
                 | 'NEON'
                 | 'GOLD',
-          )
-        : [],
-      textureList: texture || [],
-      seasonList: season || [],
-      styleList: style || [],
-      patternList: pattern || [],
-      categoryLowId,
-    }
+          ),
+          textureList: texture || [],
+          seasonList: season || [],
+          styleList: style || [],
+          patternList: pattern || [],
+          categoryLowId,
+          extra: extra || '',
+          processing: 0,
+          // 수정모드의 경우 processing이 추가되거나 수정되는 경우 처리 필요
+        } as ClothesUpdateRequest)
+      : ({
+          name,
+          size: size || 'FREE',
+          fit: fit || undefined,
+          memo: memo || '',
+          brand: brandName || '',
+          purchaseDate: purchaseDate || '',
+          purchaseSite: purchaseSite || '',
+          colorList: color.map(
+            (c) =>
+              colorInvMap[c.name] as
+                | 'WHITE'
+                | 'BLACK'
+                | 'GRAY'
+                | 'RED'
+                | 'PINK'
+                | 'ORANGE'
+                | 'BEIGE'
+                | 'YELLOW'
+                | 'BROWN'
+                | 'GREEN'
+                | 'KHAKI'
+                | 'MINT'
+                | 'BLUE'
+                | 'NAVY'
+                | 'SKY'
+                | 'PURPLE'
+                | 'LAVENDER'
+                | 'WINE'
+                | 'NEON'
+                | 'GOLD',
+          ),
+          textureList: texture || [],
+          seasonList: season || [],
+          styleList: style || [],
+          patternList: pattern || [],
+          categoryLowId,
+          extra: extra || '',
+        } as ClothesCreateRequest)
 
     onSubmit(imageFile, request)
   }
