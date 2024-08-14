@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.ozz.library.util.EnumBitwiseConverter.fromStrings;
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Schema(description = "게시글 수정 요청 DTO")
@@ -15,15 +16,17 @@ public record BoardUpdateRequest(
         String content,
         Long imgFileId,
         Long coordinateId,
-        List<Style> styleList,
+        List<String> styleList,
         List<TagDto> tagList
 ) {
     public Board toEntity(Board existingBoard) {
+        List<Style> styles = fromStrings(Style.class, styleList);
+
         final Board updatedBoard = existingBoard.toBuilder()
                 .content(content)
                 .imgFileId(imgFileId)
                 .coordinateId(coordinateId)
-                .style(toBits(styleList))
+                .style(toBits(styles))
                 .build();
 
         if (tagList != null) {
