@@ -28,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryLow getCategoryLow(Byte categoryLowId) {
+        if(categoryLowId == null) return null;
         return categoryLowRepository.findById(categoryLowId).orElseThrow(CategoryNotFoundException::new);
     }
 }

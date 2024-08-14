@@ -3,9 +3,12 @@ package com.ssafy.ozz.clothes.clothes.service;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
+import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
 import com.ssafy.ozz.clothes.clothes.dto.request.*;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
+import com.ssafy.ozz.clothes.clothes.repository.elasticsearch.ClothesSearchRepository;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
+import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
 import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
 import com.ssafy.ozz.library.error.exception.FileNotFoundException;
@@ -22,7 +25,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +37,12 @@ import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 @Slf4j
 public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
+    private final ClothesSearchRepository clothesSearchRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
     private final WebClient webClient;
     private final MqService mqService;
+    private final CoordinateClothesRepository coordinateClothesRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,10 +59,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
-        return clothesRepository.findByUserId(userId, condition, pageable).map(clothes -> {
-            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
-            return new ClothesBasicWithFileResponse(clothes, fileInfo);
-        });
+        return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
-        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
         Long imageFileId = fileInfo.fileId();
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
     }
@@ -133,6 +134,8 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     public void deleteClothes(Long clothesId) {
+        clothesSearchRepository.deleteById(clothesId);
+        coordinateClothesRepository.deleteAllByClothes_ClothesId(clothesId);
         clothesRepository.deleteById(clothesId);
     }
 
@@ -190,10 +193,18 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
-        return clothesRepository.findByCondition(condition, pageable).map(clothes -> {
-            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
-                CategoryLow categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
-            return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
-        });
+        return clothesRepository.findByCondition(condition, pageable).map(this::toClothesBasicWithFileResponse);
+    }
+
+    private ClothesBasicWithFileResponse toClothesBasicWithFileResponse(ClothesDocument clothes) {
+        FileInfo fileInfo = null;
+        if (clothes.getImageFileId() != null) {
+            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+        }
+        CategoryLow categoryLow = null;
+        if (clothes.getCategoryLowId() != null) {
+            categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
+        }
+        return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
     }
 }
