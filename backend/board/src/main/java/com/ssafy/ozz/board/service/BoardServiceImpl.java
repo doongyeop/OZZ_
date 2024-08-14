@@ -110,10 +110,10 @@ public class BoardServiceImpl implements BoardService {
         }
 
         UserResponse userResponse = new UserResponse(
-                user.userId(),
-                user.nickname(),
-                user.Birth(),
-                user.profileFileId(),
+                user.userId() == null ? null : user.userId(),
+                user.nickname() == null ? null : user.nickname(),
+                user.profileFileId() == null ? null : user.profileFileId(),
+                user.Birth() == null ? null : user.Birth(),
                 fileClient.getFile(user.profileFileId()).orElseThrow(FileNotFoundException::new)
         );
 
@@ -150,10 +150,10 @@ public class BoardServiceImpl implements BoardService {
         FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
 
         UserResponse userResponse = new UserResponse(
-                userInfo.userId(),
-                userInfo.nickname(),
-                userInfo.Birth(),
-                userInfo.profileFileId(),
+                userInfo.userId() == null ? null : userInfo.userId(),
+                userInfo.nickname() == null ? null : userInfo.nickname(),
+                userInfo.profileFileId() == null ? null : userInfo.profileFileId(),
+                userInfo.Birth() == null ? null : userInfo.Birth(),
                 profileImg
         );
 
