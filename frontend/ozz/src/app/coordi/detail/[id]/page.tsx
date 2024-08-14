@@ -10,6 +10,11 @@ import { IoPencil } from 'react-icons/io5'
 import { HiTrash } from 'react-icons/hi2'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { useState } from 'react'
+import {
+  fetchUserClothes,
+  createClothing,
+  deleteClothing,
+} from '@/services/clothingApi'
 
 export default function SavedCoordiPage({
   params,
