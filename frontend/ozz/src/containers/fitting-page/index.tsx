@@ -19,7 +19,18 @@ import {
   CoordinateCreateRequest,
   CreateCoordinatePayload,
 } from '@/types/clothes/data-contracts'
-import { categoryLowIdToHighNameMap, Style } from '@/types/clothing'
+import {
+  categoryLowIdToHighNameMap,
+  Style,
+  categoryIdMap,
+} from '@/types/clothing'
+import { FavoriteGroupCreateRequest } from '@/types/favorite/data-contracts'
+import { createCoordinate } from '@/services/clothingApi'
+import {
+  getFavoritesGroupListOfUsers,
+  createFavoriteGroup,
+  addFavorite,
+} from '@/services/favoriteApi'
 
 type FittingItem = {
   category: string
@@ -152,12 +163,11 @@ export default function FittingContainer() {
   }
 
   const handleSaveCoordi = () => {
-    createFittingImage()
-    // if (selectedClothes.length === 0) {
-    //   alert('적어도 한 가지 아이템을 선택해야 합니다.')
-    //   return
-    // }
-    // setIsCoordiModalOpen(true)
+    if (selectedClothes.length === 0) {
+      alert('적어도 한 가지 아이템을 선택해야 합니다.')
+      return
+    }
+    setIsCoordiModalOpen(true)
   }
 
   const handleCoordiNameSubmit = (name: string) => {
@@ -166,13 +176,115 @@ export default function FittingContainer() {
     setIsStyleModalOpen(true)
   }
 
-  const handleStyleSubmit = (selectedStyles: Style[]) => {
+  const handleStyleSubmit = async (selectedStyles: Style[]) => {
     console.log('코디이름 : ', coordiName)
     console.log('selectedStyles : ', selectedStyles)
     setStyleList(selectedStyles)
     setIsStyleModalOpen(false)
-    setIsConfirmModalOpen(true)
-    // 코디북 저장 로직 호출
+
+    // 로딩 화면?
+
+    // 코디 생성하기 START
+    const clothesList = selectedClothes.map((item) => {
+      const categoryLowId = item.categoryLow?.categoryLowId
+      const offset =
+        categoryLowId !== undefined ? categoryIdMap[categoryLowId] : null // 기본값으로 null 사용
+
+      return {
+        clothesId: item.clothesId,
+        offset: offset || 0, // null이거나 정의되지 않은 경우 기본값 0 사용 (필요에 따라 조정 가능)
+      }
+    })
+
+    const coordinateRequest: CoordinateCreateRequest = {
+      name: coordiName,
+      styleList,
+      clothesList,
+    }
+
+    // 1. 랜덤 파스텔톤 배경색 생성
+    const randomBackgroundColor = generateRandomPastelColor()
+    const originalBackgroundColor =
+      fittingContainerRef.current!.style.backgroundColor
+
+    // 2. 이미지 생성 전에 배경색 적용
+    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
+
+    try {
+      const width = 900 // 9:16 비율의 가로 크기
+      const height = 1600 // 9:16 비율의 세로 크기
+
+      // 3. HTML을 캔버스로 변환
+      const canvas = await html2canvas(fittingContainerRef.current!, {
+        width,
+        height,
+        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+      })
+
+      // 4. 캔버스를 Blob (이미지 파일)로 변환
+      canvas.toBlob(async (blob) => {
+        fittingContainerRef.current!.style.backgroundColor =
+          originalBackgroundColor
+        if (!blob) {
+          alert('이미지 생성에 실패했습니다.')
+          return
+        }
+
+        const imageFile = new File([blob], 'coordinate.png', {
+          type: 'image/png',
+        })
+
+        // 5. 코디 정보를 생성
+        // 6. API 요청 데이터 준비
+        const payload: CreateCoordinatePayload = {
+          imageFile,
+          request: coordinateRequest,
+        }
+
+        console.log('payload ', payload)
+
+        try {
+          const coordinateId = await createCoordinate(payload)
+          // 성공 처리 (예: 확인 모달 띄우기, 페이지 이동 등)
+
+          // 코디북 조회
+          const favoriteGroups = await getFavoritesGroupListOfUsers()
+
+          let targetFavoriteGroupId: number
+
+          // 코디북이 없으면 기본 코디북 생성
+          if (favoriteGroups.length === 0) {
+            const requestData: FavoriteGroupCreateRequest = {
+              name: '기본 코디북',
+            }
+            const createdGroup = await createFavoriteGroup(requestData)
+            console.log('createdGroup', createdGroup)
+            targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+          } else {
+            // 코디북이 존재하면 첫 번째 코디북의 ID를 사용
+            targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
+
+            // 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
+            // 선택된 targetFavoriteGroupId를 사용합니다.
+          }
+
+          const response = await addFavorite(
+            targetFavoriteGroupId,
+            coordinateId,
+          )
+          console.log('response ', response)
+          setIsConfirmModalOpen(true)
+        } catch (error) {
+          console.error('코디 생성 실패:', error)
+          // 실패 처리 (예: 에러 메시지 표시)
+        }
+      })
+    } catch (error) {
+      console.error('코디 저장 중 오류 발생:', error)
+      alert('코디 저장 중 오류가 발생했습니다.')
+      fittingContainerRef.current!.style.backgroundColor =
+        originalBackgroundColor
+    }
   }
 
   const handlePrevFromStyle = () => {
@@ -192,78 +304,8 @@ export default function FittingContainer() {
   }
 
   const handleConfirm = () => {
+    // 코디북 페이지로 이동?
     console.log('저장 완료!')
-  }
-
-  const createFittingImage = async () => {
-    if (selectedClothes.length === 0) {
-      alert('선택된 옷이 없습니다.')
-      return
-    }
-
-    // 1. 랜덤 파스텔톤 배경색 생성
-    const randomBackgroundColor = generateRandomPastelColor()
-    const originalBackgroundColor =
-      fittingContainerRef.current!.style.backgroundColor
-
-    // 2. 이미지 생성 전에 배경색 적용
-    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
-
-    console.log('randomBackgroundColor', randomBackgroundColor)
-    try {
-      const width = 900 // 9:16 비율의 가로 크기
-      const height = 1600 // 9:16 비율의 세로 크기
-
-      // 1. HTML을 캔버스로 변환
-      const canvas = await html2canvas(fittingContainerRef.current!, {
-        width,
-        height,
-        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
-      })
-
-      // 2. 캔버스를 Blob (이미지 파일)로 변환
-      canvas.toBlob(async (blob) => {
-        fittingContainerRef.current!.style.backgroundColor =
-          originalBackgroundColor
-        if (!blob) {
-          alert('이미지 생성에 실패했습니다.')
-          return
-        }
-
-        const imageFile = new File([blob], 'coordinate.png', {
-          type: 'image/png',
-        })
-
-        const imageUrl = URL.createObjectURL(blob)
-        setPreviewUrl(imageUrl)
-
-        // 3. 코디 정보를 생성
-        const coordinateRequest: CoordinateCreateRequest = {
-          name: 'My Coordination', // 코디 이름 (이름 설정 모달에서 받은 이름)
-          styleList: ['CASUAL', 'SPORTY'], // 스타일 (스타일 태그 모달에서 받은 스타일)
-          clothesList: selectedClothes.map((cloth) => ({
-            clothesId: cloth.clothesId,
-            offset: cloth.categoryLow?.categoryLowId, // 이 부분에서 categoryHighId를 사용하는 경우 적절히 수정
-          })),
-        }
-
-        // 4. API 요청 데이터 준비
-        const payload: CreateCoordinatePayload = {
-          imageFile,
-          request: coordinateRequest,
-        }
-
-        // 5. API 호출 (createCoordinate 메서드를 호출)
-        // exampleAPI.createCoordinate(payload);
-
-        alert('코디가 저장되었습니다.')
-      })
-    } catch (error) {
-      console.error('코디 저장 중 오류 발생:', error)
-      alert('코디 저장 중 오류가 발생했습니다.')
-      fittingContainerRef.current!.style.backgroundColor =
-        originalBackgroundColor
-    }
   }
 
   return (
@@ -427,7 +469,7 @@ export default function FittingContainer() {
             <ConfirmModal
               onClose={() => setIsConfirmModalOpen(false)}
               message="코디북에 저장되었습니다!"
-              onConfirm={handleConfirm}
+              onConfirm={closeModal}
             />
           </Modal>
         )}
