@@ -60,7 +60,6 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
 
     private Query createConditionNativeQuery(Long userId, ClothesSearchCondition condition, Pageable pageable) {
         // Split search term into tokens
-        System.out.println(condition);
         return NativeQuery.builder()
                 .withQuery(q->q
                     .bool(b->{

@@ -80,7 +80,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
-        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
         Long imageFileId = fileInfo.fileId();
         return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
     }
