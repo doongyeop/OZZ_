@@ -186,9 +186,11 @@ export const login = async (provider: 'kakao' | 'naver') => {
   window.location.href = `${API_URL}/oauth2/authorization/${provider}`
 }
 
-export const logout = async (userId: number) => {
+export const logout = async () => {
   if (!authApi) throw new Error('API not initialized')
-  await authApi.deleteRefreshTokenOfUser(userId)
+  const response = await authApi.deleteRefreshTokenOfUser()
+  const data = await response.text()
+  console.log('로그아웃api에 대한 응답', data)
   removeTokens()
 }
 
