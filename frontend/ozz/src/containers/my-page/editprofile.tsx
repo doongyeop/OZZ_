@@ -20,8 +20,9 @@ import {
 } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
-import LoadingIcon from '@/components/Loading/loadingicon'
 import UploadModal from './modal'
+import { Toaster } from '@/components/ui/toaster'
+import { useToast } from '@/components/ui/use-toast'
 
 interface FieldProps {
   label: string
@@ -54,10 +55,10 @@ function ProfileEdit() {
   const [profileSrc, setProfileSrc] = useState('')
   const [errorText, setErrorText] = useState('')
   const [nickname, setNickname] = useState('')
-  const [loadingicon, setLoadingicon] = useState(false)
   const [birthday, setBirthday] = useState<Date | null>(null)
 
   const router = useRouter()
+  const { toast } = useToast()
 
   const getProfilePic = async (picId: number) => {
     try {
@@ -67,9 +68,7 @@ function ProfileEdit() {
       // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
-        setLoadingicon(true)
         setProfileSrc(pictureUrl)
-        setLoadingicon(false)
       }
     } catch (error) {
       console.log('프로필사진 가져오는 중 오류 발생:', error)
@@ -80,6 +79,7 @@ function ProfileEdit() {
     try {
       const userInfo = await getUserInfo()
       setUser(userInfo)
+      setNickname(userInfo.nickname)
       setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
@@ -133,10 +133,11 @@ function ProfileEdit() {
         nickname,
         birth: birthday?.toISOString() || '', // ISO 형식으로 변환
       }
-      setLoadingicon(true)
+
       await updateUser(userData)
       await fetchUserInfo() // 유저 정보 다시 불러오기
-      setLoadingicon(false)
+      toast({ description: '회원정보가 수정되었습니다.' })
+
       return true
     } catch (error) {
       console.log('회원정보 수정 안 됨', error)
@@ -164,8 +165,8 @@ function ProfileEdit() {
       try {
         await deleteProfileImage()
         // console.log('프로필 삭제지우는즁')
-        toggleProfileModal()
         await fetchUserInfo()
+        toggleProfileModal()
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
@@ -174,24 +175,18 @@ function ProfileEdit() {
 
   const handleResetProfilePic = useCallback(async () => {
     await resetProfilePic()
-    setProfileModal(false)
   }, [resetProfilePic])
 
   const handleFileSelect = async (file: File) => {
     try {
       const response = await uploadProfileImage(file)
       // console.log('프로필 이미지 업로드 성공:', response)
-      toggleProfileModal()
       await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
+      toggleProfileModal() //모달닫기
     } catch (error) {
       console.error('프로필 이미지 업로드 실패:', error)
     }
   }
-
-  const handleUploadSuccess = useCallback(async () => {
-    await fetchUserInfo() // 유저 정보 다시 불러오기
-    toggleProfileModal()
-  }, [])
 
   const deleteAccount = () => {
     deleteUser()
@@ -341,7 +336,6 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
-      {loadingicon && <LoadingIcon />}
     </div>
   )
 }
