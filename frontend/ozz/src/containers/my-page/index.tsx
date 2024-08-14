@@ -78,7 +78,7 @@ export default function MyPageIndex() {
   const logOut = async (userId: number) => {
     try {
       await logout(userId)
-      // deleteAllCookies()
+      deleteAllCookies()
       router.push('/login')
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error)

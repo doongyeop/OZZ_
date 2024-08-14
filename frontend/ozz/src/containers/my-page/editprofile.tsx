@@ -83,6 +83,8 @@ function ProfileEdit() {
       setErrorText('') // responseText 초기화
       if (userInfo.profileFileId) {
         await getProfilePic(userInfo.profileFileId)
+      } else {
+        setProfileSrc('') // 기본 이미지로 설정
       }
     } catch (error) {
       console.error('Failed to fetch user info:', error)
@@ -165,8 +167,8 @@ function ProfileEdit() {
       try {
         await deleteProfileImage()
         // console.log('프로필 삭제지우는즁')
-        toggleProfileModal()
         await fetchUserInfo()
+        toggleProfileModal()
       } catch (err) {
         console.log('프로필 사진 삭제 실패:', err)
       }
@@ -336,7 +338,9 @@ function ProfileEdit() {
           </div>
         </Modal>
       )}
-      <Toaster />
+      <div className="left-1/2 transform -translate-x-1/2">
+        <Toaster />
+      </div>
     </div>
   )
 }
