@@ -110,6 +110,7 @@ export default function CoordiBook() {
           onMouseDown={() => handleMouseDown(group.favoriteGroupId)}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
+          draggable={false}
         >
           <CardContent
             className={`object-cover p-0 flex flex-wrap ${
@@ -136,11 +137,14 @@ export default function CoordiBook() {
                 </div>
               ))
             ) : (
-              <div className="hidden">암것도 없어요</div>
+              <div className="hidden"> </div>
             )}
           </CardContent>
         </Card>
-        <CardTitle className="text-left text-black font-medium text-sm mt-2">
+        <CardTitle
+          className="text-left text-black font-medium text-sm mt-2"
+          draggable={false}
+        >
           {group.name}
         </CardTitle>
       </div>
