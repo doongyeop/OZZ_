@@ -65,8 +65,9 @@ public class SecurityConfig {
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
         //JWTFilter
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+        // API Gateway에서 인가 작업을 하므로 auth controller에서는 skip
+//        http
+//                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
         //oauth2
         http.oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
@@ -79,15 +80,15 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/api/**"))
         );
         // 경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll() // 루트경로
-                        // Swagger 관련 경로 허용
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-resources/**").permitAll()
-                        .requestMatchers("/webjars/**").permitAll()
-                        .anyRequest().authenticated()); // 로그인한 사용자가 접근 가능
+//        http
+//                .authorizeHttpRequests((auth) -> auth
+//                        .requestMatchers("/").permitAll() // 루트경로
+//                        // Swagger 관련 경로 허용
+//                        .requestMatchers("/swagger-ui/**").permitAll()
+//                        .requestMatchers("/v3/api-docs/**").permitAll()
+//                        .requestMatchers("/swagger-resources/**").permitAll()
+//                        .requestMatchers("/webjars/**").permitAll()
+//                        .anyRequest().authenticated()); // 로그인한 사용자가 접근 가능
 
         //세션 설정 : STATELESS
         http
