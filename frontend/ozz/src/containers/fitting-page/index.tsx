@@ -430,6 +430,7 @@ export default function FittingContainer() {
               name: '기본 코디북',
             }
             const createdGroup = await createFavoriteGroup(requestData)
+            console.log('coordiId', coordiId)
             console.log('createdGroup', createdGroup)
             handleFavoriteGroupSelect(createdGroup.favoriteGroupId)
           } else {
