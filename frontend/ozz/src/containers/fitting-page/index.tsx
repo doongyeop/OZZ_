@@ -369,7 +369,7 @@ export default function FittingContainer() {
         } catch (error) {
           console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
-          setAlertMessage(['코디 생성에 실패했습니다', ' 다시 시도해주세요'])
+          setAlertMessage(['코디 생성에 실패했습니다', '다시 시도해주세요'])
           setIsAlertOpen(true)
         }
       })
@@ -404,13 +404,13 @@ export default function FittingContainer() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center mb-5">
         {/* <div
           className="relative w-full max-w-[360px] h-auto aspect-w-9 aspect-h-16"
           ref={fittingContainerRef}
         > */}
         <div
-          className="relative w-full max-w-[360px] h-auto"
+          className="relative w-full max-w-[360px] h-auto mb-20"
           ref={fittingContainerRef} // gridRef를 설정합니다.
           style={{
             aspectRatio: '9 / 16', // 9:16 비율을 적용
@@ -475,121 +475,122 @@ export default function FittingContainer() {
             ))}
           </div>
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="w-full max-w-md mt-4">
-          <h2 className="text-xl font-semibold pl-10 m-2">선택한 옷</h2>
-          {selectedClothes.length > 0 ? (
-            <ul className="mt-2 px-6">
-              {selectedClothes.map((item) => (
-                <li key={item.clothesId} className="mb-2 p-3 border-b">
-                  <div className="flex items-center cursor-pointer">
-                    <Link href={`/closet/modify/${item.clothesId}`} passHref>
-                      <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.name ?? 'No name'}
-                          width={75}
-                          height={75}
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                            width: 'auto',
-                            height: 'auto',
-                            objectFit: 'contain',
+        <div className="flex justify-center">
+          <div className="w-full max-w-md mt-4">
+            <h2 className="text-xl font-semibold pl-10 m-2">선택한 옷</h2>
+            {selectedClothes.length > 0 ? (
+              <ul className="mt-2 px-6">
+                {selectedClothes.map((item) => (
+                  <li key={item.clothesId} className="mb-2 p-3 border-b">
+                    <div className="flex items-center cursor-pointer">
+                      <Link href={`/closet/modify/${item.clothesId}`} passHref>
+                        <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.name ?? 'No name'}
+                            width={75}
+                            height={75}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                              width: 'auto',
+                              height: 'auto',
+                              objectFit: 'contain',
+                            }}
+                          />
+                        </div>
+                      </Link>
+                      <div className="flex flex-row w-full justify-between">
+                        <div className="flex flex-col">
+                          <p className="mb-2">{item.categoryLow?.name}</p>
+                          <p className="text-md font-semibold">{item.name}</p>
+                        </div>
+                        <button
+                          type="button"
+                          aria-label="제거"
+                          onClick={() => {
+                            const categoryLowId =
+                              item.categoryLow?.categoryLowId
+                            if (categoryLowId !== undefined) {
+                              const highCategoryName =
+                                categoryLowIdToHighNameMap[categoryLowId]
+                              handleRemoveItem(highCategoryName)
+                            } else {
+                              console.error('카테고리 ID가 유효하지 않습니다.')
+                              setAlertMessage([
+                                '카테고리 ID가',
+                                '유효하지 않습니다',
+                              ])
+                              setIsAlertOpen(true)
+                            }
                           }}
-                        />
+                          className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                        >
+                          <FaMinus />
+                        </button>
                       </div>
-                    </Link>
-                    <div className="flex flex-row w-full justify-between">
-                      <div className="flex flex-col">
-                        <p className="mb-2">{item.categoryLow?.name}</p>
-                        <p className="text-md font-semibold">{item.name}</p>
-                      </div>
-                      <button
-                        type="button"
-                        aria-label="제거"
-                        onClick={() => {
-                          const categoryLowId = item.categoryLow?.categoryLowId
-                          if (categoryLowId !== undefined) {
-                            const highCategoryName =
-                              categoryLowIdToHighNameMap[categoryLowId]
-                            handleRemoveItem(highCategoryName)
-                          } else {
-                            console.error('카테고리 ID가 유효하지 않습니다.')
-                            setAlertMessage([
-                              '카테고리 ID가',
-                              '유효하지 않습니다',
-                            ])
-                            setIsAlertOpen(true)
-                          }
-                        }}
-                        className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
-                      >
-                        <FaMinus />
-                      </button>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-dark text-center mb-10">
-              아직 추가된 옷이 없어요
-            </p>
-          )}
-          <div className="mt-4 flex justify-around">
-            <SaveCoordiButton
-              onClick={handleSaveCoordi}
-              disabled={selectedClothes.length === 0}
-            />
-            <ShareCommunityButton onClick={closeModal} disabled />
-          </div>
-          {/* 미리보기 영역 */}
-          {previewUrl && (
-            <div className="mt-4">
-              <h2 className="text-xl font-semibold">코디 미리보기</h2>
-              <Image
-                src={previewUrl}
-                alt="코디 미리보기"
-                width={300}
-                height={300}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-dark text-center mb-10">
+                아직 추가된 옷이 없어요
+              </p>
+            )}
+            <div className="my-6 flex justify-around">
+              <SaveCoordiButton
+                onClick={handleSaveCoordi}
+                disabled={selectedClothes.length === 0}
               />
+              <ShareCommunityButton onClick={closeModal} disabled />
             </div>
-          )}
-          {isCoordiModalOpen && (
-            <Modal onClose={() => setIsCoordiModalOpen(false)}>
-              <CoordiNameModal
-                setValue={handleCoordiNameSubmit}
-                onClose={closeModal}
+            {/* 미리보기 영역 */}
+            {previewUrl && (
+              <div className="mt-4">
+                <h2 className="text-xl font-semibold">코디 미리보기</h2>
+                <Image
+                  src={previewUrl}
+                  alt="코디 미리보기"
+                  width={300}
+                  height={300}
+                />
+              </div>
+            )}
+            {isCoordiModalOpen && (
+              <Modal onClose={() => setIsCoordiModalOpen(false)}>
+                <CoordiNameModal
+                  setValue={handleCoordiNameSubmit}
+                  onClose={closeModal}
+                />
+              </Modal>
+            )}
+            {isStyleModalOpen && (
+              <Modal onClose={() => setIsStyleModalOpen(false)}>
+                <CoordiStyleModal
+                  setValue={handleStyleSubmit}
+                  onPrev={handlePrevFromStyle}
+                  onClose={closeModal}
+                />
+              </Modal>
+            )}
+            {isCoordiBookModalOpen && (
+              <CoordiBookSelectModal
+                favoriteGroups={favoriteGroups}
+                onSelect={handleFavoriteGroupSelect}
+                onClose={() => setIsCoordiBookModalOpen(false)}
               />
-            </Modal>
-          )}
-          {isStyleModalOpen && (
-            <Modal onClose={() => setIsStyleModalOpen(false)}>
-              <CoordiStyleModal
-                setValue={handleStyleSubmit}
-                onPrev={handlePrevFromStyle}
-                onClose={closeModal}
+            )}
+            {isToastOpen && (
+              <Toast
+                onClose={() => handleConfirm()}
+                message="코디북에 저장되었습니다!"
               />
-            </Modal>
-          )}
-          {isCoordiBookModalOpen && (
-            <CoordiBookSelectModal
-              favoriteGroups={favoriteGroups}
-              onSelect={handleFavoriteGroupSelect}
-              onClose={() => setIsCoordiBookModalOpen(false)}
-            />
-          )}
-          {isToastOpen && (
-            <Toast
-              onClose={() => handleConfirm()}
-              message="코디북에 저장되었습니다!"
-            />
-          )}
-          {isAlertOpen && (
-            <AlertModal onClose={handleAlertClose} messages={alertMessage} />
-          )}
+            )}
+            {isAlertOpen && (
+              <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+            )}
+          </div>
         </div>
       </div>
 
