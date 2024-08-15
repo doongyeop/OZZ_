@@ -61,7 +61,11 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
-        return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
+        if(condition.keyword() != null){
+            return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
+        }else{
+            return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
+        }
     }
 
     @Override
@@ -142,6 +146,13 @@ public class ClothesServiceImpl implements ClothesService {
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
         clothes.updateImageFile(fileInfo.fileId());
         clothes.updateProcessing(-1);
+
+        Optional<ClothesDocument> optionalDocument = clothesSearchRepository.findById(clothesId);
+        if (optionalDocument.isPresent()) {
+            ClothesDocument document = optionalDocument.get();
+            document.update(clothes);
+            clothesRepository.update(document);
+        }
         return clothesId;
     }
 
@@ -219,5 +230,13 @@ public class ClothesServiceImpl implements ClothesService {
             categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
         }
         return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
+    }
+
+    private ClothesBasicWithFileResponse toClothesBasicWithFileResponse(Clothes clothes) {
+        FileInfo fileInfo = null;
+        if (clothes.getImageFileId() != null) {
+            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+        }
+        return new ClothesBasicWithFileResponse(clothes, fileInfo);
     }
 }
