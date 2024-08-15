@@ -137,7 +137,7 @@ export async function saveCoordi(
         name: '기본 코디북',
       }
       const createdGroup = await createFavoriteGroup(requestData)
-      targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+      targetFavoriteGroupId = createdGroup.favoriteGroupId
     } else {
       // If a favorite group exists, use the ID of the first one
       targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
@@ -430,8 +430,8 @@ export default function FittingContainer() {
               name: '기본 코디북',
             }
             const createdGroup = await createFavoriteGroup(requestData)
-            // console.log('createdGroup', createdGroup)
-            handleFavoriteGroupSelect(createdGroup[0].favoriteGroupId)
+            console.log('createdGroup', createdGroup)
+            handleFavoriteGroupSelect(createdGroup.favoriteGroupId)
           } else {
             // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
             // 코디북이 여러 개 있으면 선택 모달을 띄움
