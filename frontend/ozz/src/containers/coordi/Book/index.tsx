@@ -142,7 +142,7 @@ export default function CoordiBook() {
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent className="object-cover p-0 flex flex-wrap w-full h-full">
+          <CardContent className="relative w-full h-full">
             {(() => {
               switch (true) {
                 case images.length === 0:
@@ -150,29 +150,24 @@ export default function CoordiBook() {
 
                 case images.length < 4:
                   return (
-                    <div className="w-full h-full">
-                      <Image
-                        src={images[0].src}
-                        alt={group.name}
-                        layout="fill"
-                        objectFit="cover"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    <Image
+                      src={images[0].src}
+                      alt={group.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="absolute w-full h-full"
+                    />
                   )
 
                 default:
                   return images.slice(0, 4).map((image) => (
-                    <div
-                      key={image.fileId}
-                      className="w-1/2 h-1/2 overflow-hidden"
-                    >
+                    <div key={image.fileId} className="relative w-1/2 h-1/2">
                       <Image
                         src={image.src}
                         alt={group.name}
                         layout="fill"
                         objectFit="cover"
-                        className="w-full h-full object-cover"
+                        className="absolute w-full h-full"
                       />
                     </div>
                   ))
