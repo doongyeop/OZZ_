@@ -66,28 +66,28 @@
 - backend/.env
 
 ```jsx
-DB_USER={데이터베이스 유저}
-DB_PW={데이터베이스 비밀번호}
+DB_USER=root
+DB_PW=ssafy
 
 // 엘라스틱 서치 유저는 현재 비활성화 해놔서 필요 없음
-SPRING_ELASTICSEARCH_USERNAME={엘라스틱 서치 유저 이름}
-SPRING_ELASTICSEARCH_PASSWORD={엘라스틱 서치 비밀번호}
+SPRING_ELASTICSEARCH_USERNAME=elastic
+SPRING_ELASTICSEARCH_PASSWORD=ssafy
 
-JWT_SECRET={JWT 시크릿 키}
+JWT_SECRET={JWT SECRET KEY}
 
-AI_PORT={AI 서버 포트}
+AI_PORT=5000
 
-API_GATEWAY_PORT={API GATEWAY 서버 포트}
-AUTH_PORT={인증 서버 포트}
-CLOTHES_PORT={옷 서버 포트}
-USER_PORT={유저 서버 포트}
-FAVORITE_PORT={즐겨찾기 서버 포트}
-BOARD_PORT={게시글 서버 포트}
-FILE_PORT={파일 서버 포트}
+API_GATEWAY_PORT=8000
+AUTH_PORT=8080
+CLOTHES_PORT=8081
+USER_PORT=8082
+FAVORITE_PORT=8083
+BOARD_PORT=8084
+FILE_PORT=9000
 
-WEB_SERVER_PORT={웹 서버 포트}
+WEB_SERVER_PORT=3000
 
-SERVER_HOST={현재 서버 도메인 또는 ip} // ex) i11a804.p.ssafy.io
+SERVER_HOST=i11a804.p.ssafy.io
 OPENAI_API_KEY={OPEN AI API KEY}
 ```
 <br>
