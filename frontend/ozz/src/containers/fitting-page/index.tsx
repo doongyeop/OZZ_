@@ -61,6 +61,88 @@ const generateRandomPastelColor = () => {
   return `#${r}${g}${b}`
 }
 
+export async function generateCoordiImage(
+  fittingContainerRef: React.RefObject<HTMLDivElement>,
+): Promise<File | null> {
+  try {
+    const width = 900 // 9:16 비율의 가로 크기
+    const height = 1600 // 9:16 비율의 세로 크기
+
+    const fittingContainerElement = fittingContainerRef.current
+    if (!fittingContainerElement) {
+      throw new Error('Fitting container element not found')
+    }
+
+    // HTML을 캔버스로 변환
+    const canvas = await html2canvas(fittingContainerElement, {
+      width,
+      height,
+      ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+    })
+
+    // Blob 생성 및 반환
+    return await new Promise<File | null>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert('이미지 생성에 실패했습니다.')
+          resolve(null)
+          return
+        }
+
+        const imageFile = new File([blob], 'coordinate.png', {
+          type: 'image/png',
+        })
+        resolve(imageFile)
+      })
+    })
+  } catch (error) {
+    console.error('이미지 생성 중 오류 발생:', error)
+    return null
+  }
+}
+
+export async function saveCoordi(
+  imageFile: File,
+  coordinateRequest: CoordinateCreateRequest,
+) {
+  try {
+    // Prepare the API request payload with coordinate information
+    const payload: CreateCoordinatePayload = {
+      imageFile,
+      request: coordinateRequest,
+    }
+
+    // Call the API to create the coordinate
+    const coordinateId = await createCoordinate(payload)
+
+    // Retrieve favorite groups (i.e., coordinate books)
+    const favoriteGroups = await getFavoritesGroupListOfUsers()
+
+    let targetFavoriteGroupId: number
+
+    // If no favorite group exists, create a default one
+    if (favoriteGroups.length === 0) {
+      const requestData: FavoriteGroupCreateRequest = {
+        name: '기본 코디북',
+      }
+      const createdGroup = await createFavoriteGroup(requestData)
+      targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+    } else {
+      // If a favorite group exists, use the ID of the first one
+      targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
+    }
+
+    // Add the coordinate to the favorite group
+    await addFavorite(targetFavoriteGroupId, coordinateId)
+
+    // Handle success (e.g., update the UI outside this function)
+    return coordinateId
+  } catch (error) {
+    console.error('Failed to create coordinate:', error)
+    throw error // Re-throw error for handling outside the function
+  }
+}
+
 export default function FittingContainer() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false) // 사이드바 열고 닫는 변수
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
@@ -207,86 +289,35 @@ export default function FittingContainer() {
 
     // 1. 랜덤 파스텔톤 배경색 생성
     const randomBackgroundColor = generateRandomPastelColor()
-    const originalBackgroundColor =
-      fittingContainerRef.current!.style.backgroundColor
+    const fittingContainerElement = fittingContainerRef.current
 
-    // 2. 이미지 생성 전에 배경색 적용
-    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
+    if (!fittingContainerElement) {
+      alert('피팅 컨테이너를 찾을 수 없습니다.')
+      return
+    }
+
+    const originalBackgroundColor =
+      fittingContainerElement.style.backgroundColor
+
+    // 2. 배경색 적용
+    fittingContainerElement.style.backgroundColor = randomBackgroundColor
 
     try {
-      const width = 900 // 9:16 비율의 가로 크기
-      const height = 1600 // 9:16 비율의 세로 크기
+      const imageFile = await generateCoordiImage(fittingContainerRef)
 
-      // 3. HTML을 캔버스로 변환
-      const canvas = await html2canvas(fittingContainerRef.current!, {
-        width,
-        height,
-        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
-      })
+      // 3. 이미지가 성공적으로 생성되었는지 확인 후 저장
+      if (imageFile) {
+        await saveCoordi(imageFile, coordinateRequest)
 
-      // 4. 캔버스를 Blob (이미지 파일)로 변환
-      canvas.toBlob(async (blob) => {
-        fittingContainerRef.current!.style.backgroundColor =
-          originalBackgroundColor
-        if (!blob) {
-          alert('이미지 생성에 실패했습니다.')
-          return
-        }
-
-        const imageFile = new File([blob], 'coordinate.png', {
-          type: 'image/png',
-        })
-
-        // 5. 코디 정보를 생성
-        // 6. API 요청 데이터 준비
-        const payload: CreateCoordinatePayload = {
-          imageFile,
-          request: coordinateRequest,
-        }
-
-        console.log('payload ', payload)
-
-        try {
-          const coordinateId = await createCoordinate(payload)
-          // 성공 처리 (예: 확인 모달 띄우기, 페이지 이동 등)
-
-          // 코디북 조회
-          const favoriteGroups = await getFavoritesGroupListOfUsers()
-
-          let targetFavoriteGroupId: number
-
-          // 코디북이 없으면 기본 코디북 생성
-          if (favoriteGroups.length === 0) {
-            const requestData: FavoriteGroupCreateRequest = {
-              name: '기본 코디북',
-            }
-            const createdGroup = await createFavoriteGroup(requestData)
-            console.log('createdGroup', createdGroup)
-            targetFavoriteGroupId = createdGroup[0].favoriteGroupId
-          } else {
-            // 코디북이 존재하면 첫 번째 코디북의 ID를 사용
-            targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
-
-            // 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
-            // 선택된 targetFavoriteGroupId를 사용합니다.
-          }
-
-          const response = await addFavorite(
-            targetFavoriteGroupId,
-            coordinateId,
-          )
-          console.log('response ', response)
-          setIsToastOpen(true)
-        } catch (error) {
-          console.error('코디 생성 실패:', error)
-          // 실패 처리 (예: 에러 메시지 표시)
-        }
-      })
+        // 코디 저장 성공 시 토스트 메시지 표시
+        setIsToastOpen(true)
+      }
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
       alert('코디 저장 중 오류가 발생했습니다.')
-      fittingContainerRef.current!.style.backgroundColor =
-        originalBackgroundColor
+    } finally {
+      // 배경색 원래대로 복원
+      fittingContainerElement.style.backgroundColor = originalBackgroundColor
     }
   }
 
