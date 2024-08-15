@@ -12,7 +12,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'image.msscdn.net',
         port: '',
-        pathname: '**',
+        pathname: '/**',
       },
     ],
   },
