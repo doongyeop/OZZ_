@@ -301,7 +301,7 @@ export default function FittingContainer() {
   const handleConfirm = () => {
     closeModal()
     setIsToastOpen(false)
-    router.push('/coordi/book')
+    router.push('/book')
   }
 
   const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
