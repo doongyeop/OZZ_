@@ -16,6 +16,7 @@ import Modal from '@/components/Modal'
 import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
+import AlertModal from '@/components/Modal/AlertModal'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import {
   ClothesBasicWithFileResponse,
@@ -78,6 +79,7 @@ export default function FittingContainer() {
     (ClothesBasicWithFileResponse & { imageUrl: string })[]
   >([]) // 선택한 옷 리스트
 
+  const router = useRouter()
   const [isCoordiModalOpen, setIsCoordiModalOpen] = useState(false) // 코디 이름 설정 모달
   const [isStyleModalOpen, setIsStyleModalOpen] = useState(false) // 스타일 태그 설정 모달
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false) // 확인 모달
@@ -85,7 +87,8 @@ export default function FittingContainer() {
   const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
   const fittingContainerRef = useRef<HTMLDivElement | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const router = useRouter()
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
@@ -121,7 +124,8 @@ export default function FittingContainer() {
       (clothingItem) => clothingItem.clothesId === item.clothesId,
     )
     if (existingItem) {
-      console.error('이미 선택한 아이템입니다.')
+      setAlertMessage(['이미 선택한 아이템입니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
       return
     }
 
@@ -131,7 +135,8 @@ export default function FittingContainer() {
       : undefined
 
     if (!categoryHighName) {
-      console.error('잘못된 카테고리 ID입니다.')
+      setAlertMessage(['잘못된 카테고리 ID입니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
       return
     }
 
@@ -141,8 +146,8 @@ export default function FittingContainer() {
 
     // console.log('placeholder ', placeholder)
     if (!placeholder || placeholder.category !== selectedCategory) {
-      // console.log('선택 : ', selectedCategory, ' <- ', placeholder)
-      console.error('잘못된 위치입니다.')
+      setAlertMessage(['잘못된 위치입니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
       return
     }
 
@@ -155,7 +160,6 @@ export default function FittingContainer() {
           }
         : fittingItem,
     )
-    // console.log('현재 세팅 : ', updatedFittingItems)
     setFittingItems(updatedFittingItems)
     setSelectedClothes([...selectedClothes, item])
     setIsSidebarOpen(false)
@@ -168,7 +172,12 @@ export default function FittingContainer() {
 
   const handleSaveCoordi = () => {
     if (selectedClothes.length === 0) {
-      alert('적어도 한 가지 아이템을 선택해야 합니다.')
+      setAlertMessage([
+        '적어도 한 가지 아이템을',
+        '선택해야 합니다',
+        ' 다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
       return
     }
     setIsCoordiModalOpen(true)
@@ -181,8 +190,8 @@ export default function FittingContainer() {
   }
 
   const handleStyleSubmit = async (selectedStyles: Style[]) => {
-    console.log('코디이름 : ', coordiName)
-    console.log('selectedStyles : ', selectedStyles)
+    // console.log('코디이름 : ', coordiName)
+    // console.log('selectedStyles : ', selectedStyles)
     setStyleList(selectedStyles)
     setIsStyleModalOpen(false)
 
@@ -219,7 +228,7 @@ export default function FittingContainer() {
     fittingItems.forEach((item, index) => {
       if (item.image === null) {
         const element = fittingContainerRef.current!.querySelectorAll(
-          '.' + styles.clothingItem,
+          `.${styles.clothingItem}`,
         )[index] as HTMLElement
 
         const imageElement = element.querySelector('img') as HTMLImageElement
@@ -245,9 +254,11 @@ export default function FittingContainer() {
       // setPreviewUrl(dataUrl)
 
       // 5. 숨겨진 요소 다시 표시
+      /* eslint-disable no-param-reassign */
       hiddenElements.forEach((element) => {
         element.style.opacity = '0.1'
       })
+      /* eslint-disable no-param-reassign */
 
       // 6. 캔버스를 Blob (이미지 파일)로 변환
       canvas.toBlob(async (blob) => {
@@ -255,6 +266,12 @@ export default function FittingContainer() {
           originalBackgroundColor
         if (!blob) {
           alert('이미지 생성에 실패했습니다.')
+          setAlertMessage([
+            '이미지 생성에',
+            '실패했습니다',
+            ' 다시 시도해주세요',
+          ])
+          setIsAlertOpen(true)
           return
         }
 
@@ -290,31 +307,37 @@ export default function FittingContainer() {
             // 코디북이 존재하면 첫 번째 코디북의 ID를 사용
             targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
 
-            // 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
+            // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
             // 선택된 targetFavoriteGroupId를 사용합니다.
           }
 
-          const response = await addFavorite(
-            targetFavoriteGroupId,
-            coordinateId,
-          )
+          await addFavorite(targetFavoriteGroupId, coordinateId)
           // console.log('response ', response)
           setIsConfirmModalOpen(true)
         } catch (error) {
           console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
+          setAlertMessage(['코디 생성에 실패했습니다', ' 다시 시도해주세요'])
+          setIsAlertOpen(true)
         }
       })
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
-      alert('코디 저장 중 오류가 발생했습니다.')
+      setAlertMessage([
+        '코디 저장 중 오류가',
+        '발생했습니다',
+        ' 다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
       fittingContainerRef.current!.style.backgroundColor =
         originalBackgroundColor
 
       // 5. 숨겨진 요소 다시 표l (오류 발생 시에도 복원)
+      /* eslint-disable no-param-reassign */
       hiddenElements.forEach((element) => {
         element.style.opacity = '0.1'
       })
+      /* eslint-disable no-param-reassign */
     }
   }
 
@@ -335,10 +358,12 @@ export default function FittingContainer() {
   }
 
   const handleConfirm = () => {
-    // 코디북 페이지로 이동?
-    console.log('저장 완료!')
     closeModal()
     router.push('/coordi/book')
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -450,6 +475,11 @@ export default function FittingContainer() {
                             handleRemoveItem(highCategoryName)
                           } else {
                             console.error('카테고리 ID가 유효하지 않습니다.')
+                            setAlertMessage([
+                              '카테고리 ID가',
+                              '유효하지 않습니다',
+                            ])
+                            setIsAlertOpen(true)
                           }
                         }}
                         className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
@@ -471,7 +501,7 @@ export default function FittingContainer() {
               onClick={handleSaveCoordi}
               disabled={selectedClothes.length === 0}
             />
-            <ShareCommunityButton onClick={closeModal} disabled={true} />
+            <ShareCommunityButton onClick={closeModal} disabled />
           </div>
           {/* 미리보기 영역 */}
           {previewUrl && (
@@ -510,6 +540,9 @@ export default function FittingContainer() {
                 onConfirm={handleConfirm}
               />
             </Modal>
+          )}
+          {isAlertOpen && (
+            <AlertModal onClose={handleAlertClose} messages={alertMessage} />
           )}
         </div>
       </div>

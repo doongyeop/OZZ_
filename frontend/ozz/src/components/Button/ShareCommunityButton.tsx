@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { FaShareAlt } from 'react-icons/fa'
 import { Button } from '../ui/button'
 
