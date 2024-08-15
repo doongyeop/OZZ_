@@ -305,18 +305,19 @@ export default function FittingContainer() {
   }
 
   const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
+    console.log('coordiId', coordinateId)
+    console.log('favoriteGroupId', favoriteGroupId)
     try {
       if (!coordinateId) return
       const res = await addFavorite(favoriteGroupId, coordinateId)
       console.log('res', res)
       setIsToastOpen(true)
+      setIsCoordiBookModalOpen(false)
+      handleConfirm()
     } catch (error) {
       console.error('코디 추가 실패:', error)
       setAlertMessage(['코디 추가에 실패했습니다', ' 다시 시도해주세요'])
       setIsAlertOpen(true)
-    } finally {
-      setIsCoordiBookModalOpen(false)
-      handleConfirm()
     }
   }
 
@@ -431,8 +432,6 @@ export default function FittingContainer() {
               name: '기본 코디북',
             }
             const createdGroup = await createFavoriteGroup(requestData)
-            console.log('coordiId', coordiId)
-            console.log('createdGroup', createdGroup)
             handleFavoriteGroupSelect(createdGroup.favoriteGroupId)
           } else {
             // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
