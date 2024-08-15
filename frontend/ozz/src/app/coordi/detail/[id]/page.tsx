@@ -9,71 +9,103 @@ import Image from 'next/image'
 import { IoPencil } from 'react-icons/io5'
 import { HiTrash } from 'react-icons/hi2'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { deleteCoordinate, getCoordinate } from '@/services/clothingApi'
+import Toast from '@/components/Toast'
+import { useRouter } from 'next/navigation'
+import { downloadFile } from '@/services/fileApi'
 
-// import {
-//   fetchUserClothes,
-//   createClothing,
-//   deleteClothing,
-// } from '@/services/clothingApi'
+interface Coordinate {
+  coordinateId: number
+  name: string
+  styleList: string[]
+  createdDate: string
+  clothesList: {
+    clothes: {
+      clothesId: number
+      name: string
+      createdDate: string
+      imageFileId: number
+      categoryLow: {
+        categoryLowId: string
+        name: string
+      }
+    }
+    offset: number
+  }[]
+  imageFile: {
+    fileId: number
+    filePath: string
+    fileName: string
+    fileType: string
+  }
+}
 
 export default function SavedCoordiPage({
   params,
 }: {
   params: { id: string }
 }) {
-  const coordinate = {
-    id: '0',
-    name: '홍대 씹어먹는 룩',
-    image:
-      'https://image.msscdn.net/thumbnails/images/codimap/detail/36996/detail_36996_66a197b67daad_500.jpg?w=1000',
-    styles: ['스트릿', '캐주얼'],
-    items: [
-      {
-        id: 0,
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/36996/detail_36996_66a197b67daad_500.jpg?w=1000',
-      },
-      {
-        id: 1,
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/36971/detail_36971_66a19761aa51f_500.jpg?w=1000',
-      },
-      {
-        id: 2,
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/37027/detail_37027_66a2ee8fb080e_500.jpg?w=1000',
-      },
-      {
-        id: 3,
-        image:
-          'https://image.msscdn.net/thumbnails/images/codimap/detail/37026/detail_37026_66a2ee8c7c5fa_500.jpg?w=1000',
-      },
-    ],
-  }
+  const [coordinate, setCoordinate] = useState<Coordinate | null>(null)
   const [deleteModal, setDeleteModal] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const router = useRouter()
 
   const toggleModal = () => {
     setDeleteModal((prev) => !prev)
   }
 
-  const deleteCoordi = () => {
-    // 삭제 기능 추가 필요
+  // 코디 데이터 및 이미지 가져오기
+  useEffect(() => {
+    const fetchCoordinateData = async () => {
+      try {
+        const data = await getCoordinate(Number(params.id))
+        setCoordinate(data)
+
+        // 이미지 다운로드
+        if (data.imageFile?.filePath) {
+          const file = await downloadFile(data.imageFile.filePath)
+          if (file) {
+            setImageUrl(URL.createObjectURL(file))
+          }
+        }
+      } catch (error) {
+        console.error('코디 데이터를 가져오는 중 오류 발생:', error)
+      }
+    }
+
+    fetchCoordinateData()
+  }, [params.id])
+
+  const deleteCoordi = async () => {
+    try {
+      const res = await deleteCoordinate(Number(params.id))
+      if (res.status === 200) {
+        console.log('삭제 완료')
+        setToastMessage('삭제 완료')
+        router.push('/coordi/book')
+      }
+    } catch (error) {
+      console.error('코디 삭제 중 오류 발생:', error)
+    }
   }
 
   return (
     <>
       <HeaderWithBackward title="코디북" />
-      <Image
-        src={coordinate.image}
-        alt={params.id}
-        width={0}
-        height={0}
-        sizes="100vw"
-        className="w-full h-auto"
-      />
+      {imageUrl && (
+        <Image
+          src={imageUrl}
+          alt={coordinate?.name || '코디 이미지'}
+          width={720} // 적절한 너비 설정
+          height={1280} // 적절한 높이 설정 (9:16 비율)
+          sizes="100vw"
+          className="w-full h-auto"
+        />
+      )}
       <div className="m-4">
-        <h1 className="text-xl font-semibold">{coordinate.name}</h1>
+        <h1 className="text-xl font-semibold">{coordinate?.name}</h1>
         <div className="my-4 flex gap-4">
           <OutlineButton>
             <IoPencil className="text-primary-400" />
@@ -87,7 +119,7 @@ export default function SavedCoordiPage({
         <div className="my-10">
           <h4 className="font-semibold">스타일 태그</h4>
           <div className="my-2 flex flex-wrap gap-2">
-            {coordinate.styles.map((style) => (
+            {coordinate?.styleList.map((style) => (
               <TagButton key={style} isSelected>
                 # {style}
               </TagButton>
@@ -97,13 +129,20 @@ export default function SavedCoordiPage({
         <div>
           <h4 className="font-semibold">코디에 사용된 아이템</h4>
           <div className="h-32 flex gap-4 my-2">
-            {coordinate.items.map((item, index) => (
-              <Link href={`/closet/modify/${item.id}`} key={item.id}>
+            {coordinate?.clothesList.map((clothesItem, index) => (
+              <Link
+                href={`/closet/modify/${clothesItem.clothes.clothesId}`}
+                key={clothesItem.clothes.clothesId}
+              >
                 <Image
-                  src={item.image}
+                  src={
+                    clothesItem.clothes.imageFileId
+                      ? `/api/files/${clothesItem.clothes.imageFileId}` // 실제 이미지 경로로 수정
+                      : '/placeholder.png'
+                  }
                   alt={`Item-${index}`}
-                  width={0}
-                  height={0}
+                  width={100} // 적절한 너비 설정
+                  height={160} // 적절한 높이 설정 (9:16 비율)
                   sizes="100%"
                   className="w-auto h-full object-cover"
                 />
@@ -134,8 +173,11 @@ export default function SavedCoordiPage({
             }
             messageClassName="text-base"
             onClose={toggleModal}
-            onConfirm={deleteCoordi}
+            onConfirm={deleteCoordi} // 함수 실행
           />
+        )}
+        {toastMessage && (
+          <Toast onClose={() => setToastMessage(null)} message={toastMessage} />
         )}
       </div>
     </>

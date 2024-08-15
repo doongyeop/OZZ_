@@ -1,11 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { HiChevronLeft, HiChevronRight, HiX } from 'react-icons/hi'
 import Image from 'next/image'
 import { getCoordinateList } from '@/services/clothingApi'
 import { downloadFile } from '@/services/fileApi'
-import { addFavorite } from '@/services/favoriteApi'
+import { addFavorite, deleteFavorite1 } from '@/services/favoriteApi'
+import Toast from '../Toast'
+import ConfirmModal from './ConfirmModal'
 
 interface CoordiViewModalProps {
   onClose: () => void
@@ -22,6 +24,10 @@ export default function CoordiViewModal({
   const [selectedCoordinateId, setSelectedCoordinateId] = useState<
     number | null
   >(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+
   const itemsPerPage = 10
 
   const fetchCoordinates = async (page: number) => {
@@ -50,6 +56,24 @@ export default function CoordiViewModal({
     }
   }
 
+  const deleteCoordi = async () => {
+    if (selectedCoordinateId === null) return
+
+    try {
+      const response = await deleteFavorite1(
+        favoriteGroupId,
+        selectedCoordinateId,
+      )
+      if (response.status === 204) {
+        fetchCoordinates(currentPage) // 삭제 후 목록 갱신
+        setShowConfirmModal(false)
+        setToastMessage('코디가 삭제되었습니다.')
+      }
+    } catch (err) {
+      console.log('코디 삭제 중 문제 발생:', err)
+    }
+  }
+
   useEffect(() => {
     fetchCoordinates(currentPage)
   }, [currentPage])
@@ -59,6 +83,7 @@ export default function CoordiViewModal({
 
     try {
       await addFavorite(favoriteGroupId, selectedCoordinateId)
+      setToastMessage('코디북에 코디가 추가되었습니다.')
     } catch (error) {
       console.error('즐겨찾기 추가 중 오류 발생:', error)
     }
@@ -72,6 +97,21 @@ export default function CoordiViewModal({
     setCurrentPage((prev) =>
       Math.min(prev + 1, Math.ceil(coordinates.length / itemsPerPage)),
     )
+  }
+
+  // long press 이벤트 처리
+  const startLongPress = (coordiId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedCoordinateId(coordiId)
+      setShowConfirmModal(true)
+    }, 500) // 500ms 이상 클릭 시 실행
+  }
+
+  const clearLongPress = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
   }
 
   return (
@@ -103,7 +143,9 @@ export default function CoordiViewModal({
                     ? 'border border-primary-400'
                     : ''
                 }`}
-                onClick={() => setSelectedCoordinateId(coordinate.coordinateId)}
+                onPointerDown={() => startLongPress(coordinate.coordinateId)}
+                onPointerUp={clearLongPress}
+                onPointerLeave={clearLongPress}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     setSelectedCoordinateId(coordinate.coordinateId)
@@ -112,14 +154,14 @@ export default function CoordiViewModal({
                 role="button"
                 tabIndex={0}
                 style={{
-                  aspectRatio: '9 / 16', // 9:16 비율 유지
+                  aspectRatio: '9 / 16',
                 }}
               >
                 <Image
                   src={coordinate.imageUrl || '/placeholder.png'}
                   alt="coordinate"
                   layout="fill"
-                  style={{ objectFit: 'cover' }} // 이미지를 부모 요소에 맞게 채우되 비율 유지
+                  style={{ objectFit: 'cover' }}
                 />
               </div>
             ))}
@@ -162,6 +204,16 @@ export default function CoordiViewModal({
           </button>
         </div>
       </div>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
+      {showConfirmModal && (
+        <ConfirmModal
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={deleteCoordi}
+          message="이 코디를 삭제하시겠습니까?"
+        />
+      )}
     </div>
   )
 }
