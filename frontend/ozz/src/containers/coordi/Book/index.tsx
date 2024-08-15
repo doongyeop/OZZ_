@@ -142,40 +142,32 @@ export default function CoordiBook() {
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent className="relative w-full h-full overflow-hidden">
-            {(() => {
-              switch (true) {
-                case images.length === 0:
-                  return <div className="hidden"> </div>
-
-                case images.length < 4:
-                  return (
+          <CardContent className="relative w-full h-full">
+            {images.length >= 4 ? (
+              <div className="grid grid-cols-2 grid-rows-2 w-full h-full">
+                {images.slice(0, 4).map((image) => (
+                  <div key={image.fileId} className="relative w-full h-full">
                     <Image
-                      src={images[0].src}
+                      src={image.src}
                       alt={group.name}
                       fill
-                      style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
-                      className="absolute w-full h-full"
+                      style={{ objectFit: 'cover' }}
+                      className="w-full h-full"
                     />
-                  )
-
-                default:
-                  return images.slice(0, 4).map((image) => (
-                    <div
-                      key={image.fileId}
-                      className="relative grid grid-cols-2 overflow-hidden"
-                    >
-                      <Image
-                        src={image.src}
-                        alt={group.name}
-                        fill
-                        style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
-                        className="w-full h-full"
-                      />
-                    </div>
-                  ))
-              }
-            })()}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              images.length > 0 && (
+                <Image
+                  src={images[0].src}
+                  alt={group.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="absolute w-full h-full"
+                />
+              )
+            )}
           </CardContent>
         </Card>
         <CardTitle

@@ -299,9 +299,10 @@ export async function updateCoordinate(
 
 export async function deleteCoordinate(coordinateId: number) {
   const clothesApi = await getClothesApi()
-
+  console.log('삭제 요청 보낼게요')
   const response = await clothesApi.deleteCoordinate(coordinateId)
-  return response.json()
+  console.log('삭제 완료 response는', response)
+  return response
 }
 
 export async function getCoordinateBasicResponse(coordinateId: number) {
