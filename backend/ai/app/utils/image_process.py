@@ -37,7 +37,7 @@ category_name_to_label = {
     "상의": [1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
     "하의": [7, 8, 9, 11, 20, 21, 22, 33],
     "아우터": [4, 5, 6, 10, 1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
-    "원피스": [11, 12, 13],
+    "원피스": [11, 12, 13, 29, 30, 31, 32, 34],
     "신발": [23, 24],
     "가방": [25],
     "악세서리": accessory_to_label
@@ -45,7 +45,9 @@ category_name_to_label = {
 
 clothes_category_name_to_label = {
     "신발": [9, 10],
+    "가방": [16],
 }
+
 
 class MultiClassSegmentObjectExtractor:
     def __init__(self, processor, model, category_to_labels: dict[str, list[int] | dict[str, list[int]]]):
@@ -125,7 +127,8 @@ class MultiClassSegmentObjectExtractor:
 
 
 fashion_extractor = MultiClassSegmentObjectExtractor(processor, segformer_model, category_name_to_label)
-clothes_extractor = MultiClassSegmentObjectExtractor(clothes_processor, clothes_segformer_model, clothes_category_name_to_label)
+clothes_extractor = MultiClassSegmentObjectExtractor(clothes_processor, clothes_segformer_model,
+                                                     clothes_category_name_to_label)
 
 
 def process(image: Image, high_category: str, low_category: str = None, basic_remove_bg: bool = False) -> Image:
@@ -133,12 +136,12 @@ def process(image: Image, high_category: str, low_category: str = None, basic_re
         logging.info("단순 배경 제거")
         return remove(image)
 
-    if high_category in ["accessory", "악세서리"]:
+    if high_category in ["악세서리"]:
         print("패션 인식기")
         processing_image = fashion_extractor.extract_objects(image, "악세서리", low_category)
-    elif high_category in ["신발"]:
+    elif high_category in ["신발", "가방"]:
         print("옷 인식기")
-        processing_image = clothes_extractor.extract_objects(image, "신발")
+        processing_image = clothes_extractor.extract_objects(image, high_category)
     else:
         print("패션 인식기")
         processing_image = fashion_extractor.extract_objects(image, high_category)

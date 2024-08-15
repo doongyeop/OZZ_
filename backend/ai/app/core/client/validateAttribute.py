@@ -123,7 +123,7 @@ Response format should also be the same JSON:
                 k = int(k)
             raw_data[k] = raw_data[k].model_copy(update={**datum}, deep=True)
             if not self.validate_data(raw_data[k]):
-                logging.error(f"id : {k} 속성 검증 및 정규화 실패"+str(raw_data[k]))
+                logging.error(f"id : {k} 속성 검증 및 정규화 실패" + str(raw_data[k]))
                 del raw_data[k]
 
         return raw_data
@@ -309,14 +309,15 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
         self.invalid_items: dict[int, dict[str, str]] = {}
 
         for key, datum in raw_data.items():
-            self.invalid_items[key] = datum.model_dump(include={"extra", "parentCategory", "subCategory"})
+            if datum.subCategory in ["기타"] or not self.validate_data(datum):
+                self.invalid_items[key] = datum.model_dump(include={"extra", "parentCategory", "subCategory"})
 
         is_clear = True
 
         if len(self.invalid_items) != 0:
             is_clear = False
             valid_items = self.get_response()
-            for k , v in valid_items.items():
+            for k, v in valid_items.items():
                 if isinstance(k, str):
                     k = int(k)
                 raw_data[k].subCategory = v["subCategory"]
