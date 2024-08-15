@@ -17,7 +17,6 @@ import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
 // import Toast from '@/components/Modal/Toast'
 import Toast from '@/components/Toast'
-import ConfirmModal from '@/components/Modal/ConfirmModal'
 import AlertModal from '@/components/Modal/AlertModal'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import {
@@ -242,18 +241,37 @@ export default function FittingContainer() {
     })
 
     try {
-      const width = 900 // 9:16 비율의 가로 크기
-      const height = 1600 // 9:16 비율의 세로 크기
+      // const width = 900 // 9:16 비율의 가로 크기
+      // const height = 1600 // 9:16 비율의 세로 크기
 
-      // 4. HTML을 캔버스로 변환
-      const canvas = await html2canvas(fittingContainerRef.current!, {
-        width,
-        height,
+      // // 4. HTML을 캔버스로 변환
+      // const canvas = await html2canvas(fittingContainerRef.current!, {
+      //   width,
+      //   height,
+      //   ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+      // })
+
+      const gridElement = fittingContainerRef.current!
+      // const gridRect = gridElement.getBoundingClientRect()
+      const { width, height } = gridElement.getBoundingClientRect()
+
+      // const canvas = await html2canvas(gridElement, {
+      //   x: gridRect.left,
+      //   y: gridRect.top,
+      //   width: gridRect.width,
+      //   height: gridRect.height,
+      //   ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+      // })
+      const canvas = await html2canvas(gridElement, {
+        width: Math.round(width),
+        height: Math.round(height),
+        backgroundColor: null, // 배경 투명으로 설정
+        logging: true,
         ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
       })
 
-      // const dataUrl = canvas.toDataURL('image/png')
-      // setPreviewUrl(dataUrl)
+      const dataUrl = canvas.toDataURL('image/png')
+      setPreviewUrl(dataUrl)
 
       // 5. 숨겨진 요소 다시 표시
       /* eslint-disable no-param-reassign */
@@ -303,7 +321,7 @@ export default function FittingContainer() {
               name: '기본 코디북',
             }
             const createdGroup = await createFavoriteGroup(requestData)
-            console.log('createdGroup', createdGroup)
+            // console.log('createdGroup', createdGroup)
             targetFavoriteGroupId = createdGroup[0].favoriteGroupId
           } else {
             // 코디북이 존재하면 첫 번째 코디북의 ID를 사용
@@ -317,7 +335,7 @@ export default function FittingContainer() {
             targetFavoriteGroupId,
             coordinateId,
           )
-          console.log('response ', response)
+          // console.log('response ', response)
           setIsToastOpen(true)
         } catch (error) {
           console.error('코디 생성 실패:', error)
@@ -364,7 +382,8 @@ export default function FittingContainer() {
 
   const handleConfirm = () => {
     closeModal()
-    router.push('/coordi/book')
+    setIsToastOpen(false)
+    // router.push('/coordi/book')
   }
 
   const handleAlertClose = () => {
@@ -374,9 +393,16 @@ export default function FittingContainer() {
   return (
     <>
       <div className="flex flex-col items-center justify-center">
-        <div
+        {/* <div
           className="relative w-full max-w-[360px] h-auto aspect-w-9 aspect-h-16"
           ref={fittingContainerRef}
+        > */}
+        <div
+          className="relative w-full max-w-[360px] h-auto"
+          ref={fittingContainerRef} // gridRef를 설정합니다.
+          style={{
+            aspectRatio: '9 / 16', // 9:16 비율을 적용
+          }}
         >
           <div className={styles.clothingGrid}>
             {fittingItems.map((item) => (
@@ -537,12 +563,10 @@ export default function FittingContainer() {
             </Modal>
           )}
           {isToastOpen && (
-            <Modal onClose={() => setIsToastOpen(false)}>
-              <Toast
-                onClose={() => setIsToastOpen(false)}
-                message="코디북에 저장되었습니다!"
-              />
-            </Modal>
+            <Toast
+              onClose={() => handleConfirm()}
+              message="코디북에 저장되었습니다!"
+            />
           )}
           {isAlertOpen && (
             <AlertModal onClose={handleAlertClose} messages={alertMessage} />
