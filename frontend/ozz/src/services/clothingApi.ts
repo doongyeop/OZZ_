@@ -14,6 +14,8 @@ import {
   ClothesUpdateRequest,
   UpdateClothesPayload,
   CreateCoordinatePayload,
+  UpdateCoordinatePayload,
+  CoordinateSearchCondition,
 } from '@/types/clothes/data-contracts'
 import {
   getTokens,
@@ -22,25 +24,6 @@ import {
   getClothesApi,
   getFileApi,
 } from '@/services/authApi'
-
-// const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM1OTMwNjIsImV4cCI6MTcyMzY1MzA2Mn0.ykmp8xdKBsdbcgQaCaEd0xKkJYXyMIKmPyOEu-xL6B4'
-
-// const clothesApi = new ClothesApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
-
-// const fileApi = new FileApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
 
 export async function fetchUserClothes(
   pageable: Pageable,
@@ -60,7 +43,18 @@ export async function fetchImage(filePath: string): Promise<string> {
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
+
   return URL.createObjectURL(blob)
+}
+
+export async function fetchImageFile(filePath: string): Promise<File> {
+  const fileApi = await getFileApi()
+
+  const response = await fileApi.downloadFile(filePath)
+  const blob = await response.blob()
+
+  const fileName = filePath.split('/').pop() || 'downloaded-image.png'
+  return new File([blob], fileName, { type: blob.type })
 }
 
 export const createClothing = async (
@@ -143,19 +137,30 @@ export const deleteClothing = async (id: number) => {
   return response.data
 }
 
-export const extractClothing = async (file: File, highCategory: string) => {
+export const extractClothing = async (
+  file: File | { filePath: string },
+  highCategory: string,
+) => {
   const url = 'https://i11a804.p.ssafy.io/api/ai/attributes/extract'
   syncTokensWithCookies()
   validateAndRefreshToken()
+
   const tokens = getTokens()
   if (!tokens || !tokens.accessToken) {
     throw new Error('Access token is missing')
   }
 
-  console.log('tokens : ', tokens)
+  let imageFile: File
+
+  // 파일이 객체 형태로 전달되었을 경우, 파일로 변환
+  if (!(file instanceof File)) {
+    imageFile = await fetchImageFile(file.filePath)
+  } else {
+    imageFile = file
+  }
 
   const formData = new FormData()
-  formData.append('image', file)
+  formData.append('image', imageFile)
   formData.append('highCategory', highCategory)
 
   const requestOptions: RequestInit = {
@@ -167,8 +172,11 @@ export const extractClothing = async (file: File, highCategory: string) => {
     redirect: 'follow',
   }
 
-  // console.log('requestOptions ', requestOptions)
-  // console.log('formData ', formData)
+  console.log('requestOptions ', requestOptions)
+  console.log('image : ', file)
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value)
+  })
 
   try {
     const response = await fetch(url, requestOptions)
@@ -270,3 +278,62 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   extra: '',
   // processing: 0,
 })
+
+export async function getCoordinate(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinate(coordinateId)
+  const data = await response.json()
+  return data
+}
+
+export async function updateCoordinate(
+  coordinateId: number,
+  data: UpdateCoordinatePayload,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.updateCoordinate(coordinateId, data)
+  return response.json()
+}
+
+export async function deleteCoordinate(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.deleteCoordinate(coordinateId)
+  return response.json()
+}
+
+export async function getCoordinateBasicResponse(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinateBasicResponse(coordinateId)
+  const data = await response.json()
+  return data
+}
+
+export async function getCoordinateList(
+  condition: CoordinateSearchCondition,
+  pageable: Pageable,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinateList({
+    condition,
+    pageable,
+  })
+  return response.json()
+}
+
+export async function searchCoordinateList(
+  condition: CoordinateSearchCondition,
+  pageable: Pageable,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.searchCoordinateList({
+    condition,
+    pageable,
+  })
+  return response.json()
+}

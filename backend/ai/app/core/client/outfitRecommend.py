@@ -1,4 +1,5 @@
 import json
+import logging
 
 from app.core.client.openAIClient import OpenAIClient
 from app.schemas.recommend import Recommend, RecommendedOutfit
@@ -39,7 +40,8 @@ Example request:
 Result:
 Reports recommended outfit in JSON format, including a simple title, the ID of the composed clothing, and a <recommendation_reason> for the recommendation. <possibleValues>Categorize the style of the recommended clothing
 <possibleValues>Romantic, Street, Sporty, Natural, Masculine, Casual, Elegant, Modern, Formal, Ethnic</possibleValues>
-Recommend up to 10 outfit, and if you can't make a outfit that meets the criteria, write the reason why you can't make it in "result".
+Recommend up to 10 outfit, and if you can't make a outfit that meets the criteria, write the reason why you can't make it in `result`.
+If you created an outfit, `result` is "success" and write the outfit information you created in `outfit` as in the Example result.
 
 Example result:
 {
@@ -87,6 +89,7 @@ Example result:
         if response["result"] == "success":
             return list(map(lambda a: RecommendedOutfit(**a), response["outfit"]))
         else:
+            logging.info("추천 복장 없음, 이유: "+response["result"])
             return []
 
     def get_result(self):

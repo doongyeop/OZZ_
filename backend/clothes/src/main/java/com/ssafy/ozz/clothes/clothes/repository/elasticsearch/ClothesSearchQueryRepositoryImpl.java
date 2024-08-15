@@ -3,10 +3,12 @@ package com.ssafy.ozz.clothes.clothes.repository.elasticsearch;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
+import com.ssafy.ozz.clothes.clothes.domain.Clothes;
 import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
 import com.ssafy.ozz.clothes.clothes.dto.request.ClothesSearchCondition;
 import com.ssafy.ozz.clothes.clothes.dto.request.VectorRequest;
 import com.ssafy.ozz.clothes.clothes.dto.response.VectorResponse;
+import com.ssafy.ozz.clothes.global.es.Indices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,9 +16,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.document.Document;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -25,11 +31,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepository {
 
     private final ElasticsearchOperations operations;
     private final WebClient webClient;
+
+    public ClothesSearchQueryRepositoryImpl(ElasticsearchOperations operations, WebClient webClient) {
+        operations.withRefreshPolicy(RefreshPolicy.WAIT_UNTIL);
+        this.operations = operations;
+        this.webClient = webClient;
+    }
 
     public float[] getVector(String text) {
         return Objects.requireNonNull(webClient.post()
@@ -39,11 +50,13 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
                 .bodyToMono(VectorResponse.class).block()).vector();
     }
 
+    @Override
     public Page<ClothesDocument> findByCondition(ClothesSearchCondition condition, Pageable pageable) {
         return findByCondition(null,condition, pageable);
     }
 
 
+    @Override
     public Page<ClothesDocument> findByCondition(Long userId, ClothesSearchCondition condition, Pageable pageable) {
 //        Query query = createConditionNativeQuery(condition,pageable);
         Query query = createConditionNativeQuery(userId,condition,pageable);
@@ -56,6 +69,16 @@ public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepos
                 .collect(Collectors.toList());
 
         return new PageImpl<>(documents, pageable, searchHits.getTotalHits());
+    }
+
+    @Override
+    public void update(ClothesDocument document) {
+        Document updateDocument  = operations.getElasticsearchConverter().mapObject(document);
+
+        operations.update(UpdateQuery.builder(document.getId())
+            .withDocument(updateDocument)
+            .withDocAsUpsert(true)
+            .build(), IndexCoordinates.of(Indices.CLOTHES_INDEX));
     }
 
     private Query createConditionNativeQuery(Long userId, ClothesSearchCondition condition, Pageable pageable) {

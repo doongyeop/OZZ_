@@ -19,7 +19,9 @@ import { RxCross2 } from 'react-icons/rx'
 import { FavoriteDetail } from '@/types/coordibook'
 import { styleMap, styleInvMap, Style } from '@/types/clothing'
 import { getFavoritesByGroup, deleteFavorite1 } from '@/services/favoriteApi'
-import Modal from '@/components/Modal'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
+import PlusButton from '@/components/Button/PlusButton'
+import CoordiViewModal from '@/components/Modal/CoordiViewModal'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
@@ -51,6 +53,7 @@ export default function CoordiBookDetailPage({
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedCoordiId, setSelectedCoordiId] = useState<number | null>(null)
   const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags) =>
@@ -227,27 +230,20 @@ export default function CoordiBookDetailPage({
         {renderFilteredItems()}
       </div>
       {deleteModal && (
-        <Modal
+        <ConfirmModal
           onClose={() => setDeleteModal(false)}
-          title="이 코디를 삭제하시겠습니까?"
-        >
-          <div className="flex justify-center space-x-4">
-            <button
-              type="button"
-              onClick={() => setDeleteModal(false)}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              아니오
-            </button>
-            <button
-              type="button"
-              onClick={deleteCoordi}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              네
-            </button>
-          </div>
-        </Modal>
+          onConfirm={deleteCoordi}
+          message="코디북을 삭제하시겠습니까?"
+        />
+      )}
+
+      <PlusButton onClick={() => setShowModal(true)} />
+
+      {showModal && (
+        <CoordiViewModal
+          onClose={() => setShowModal(false)}
+          favoriteGroupId={params.id}
+        />
       )}
     </div>
   )
