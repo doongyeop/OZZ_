@@ -49,11 +49,11 @@ public class ClothesDocument {
     @Field(name = "purchase_site",type = FieldType.Text, analyzer = "nori")
     private String purchaseSite;
 
-    @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd||yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+    @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd['T'HH:mm:ss.SSSSSS'Z']")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime createdDate;
 
-    @Field(name = "updated_date",type = FieldType.Date, pattern = "yyyy-MM-dd||yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+    @Field(name = "updated_date",type = FieldType.Date, pattern = "yyyy-MM-dd['T'HH:mm:ss.SSSSSS'Z']")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime updatedDate;
 
