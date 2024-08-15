@@ -15,6 +15,7 @@ import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import Modal from '@/components/Modal'
 import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
+import CoordiBookSelectModal from '@/components/Modal/CoordiBookSelectModal'
 // import Toast from '@/components/Modal/Toast'
 import Toast from '@/components/Toast'
 import AlertModal from '@/components/Modal/AlertModal'
@@ -29,7 +30,10 @@ import {
   Style,
   categoryIdMap,
 } from '@/types/clothing'
-import { FavoriteGroupCreateRequest } from '@/types/favorite/data-contracts'
+import {
+  FavoriteGroupCreateRequest,
+  FavoriteGroupImageResponse,
+} from '@/types/favorite/data-contracts'
 import { createCoordinate } from '@/services/clothingApi'
 import {
   getFavoritesGroupListOfUsers,
@@ -90,6 +94,17 @@ export default function FittingContainer() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState<string[]>([])
+  const [isCoordiBookModalOpen, setIsCoordiBookModalOpen] = useState(false)
+  const [favoriteGroups, setFavoriteGroups] = useState<
+    FavoriteGroupImageResponse[]
+  >([])
+  const [selectedFavoriteGroupId, setSelectedFavoriteGroupId] = useState<
+    number | null
+  >(null)
+  const [coordinateId, setCoordinateId] = useState<number | null>(null) // 코디 ID 저장용
+  const [targetFavoriteGroupId, setTargetFavoriteGroupId] = useState<
+    number | null
+  >(null)
 
   const handleAddItem = (category: string) => {
     // + 버튼을 눌렀을 때
@@ -241,27 +256,9 @@ export default function FittingContainer() {
     })
 
     try {
-      // const width = 900 // 9:16 비율의 가로 크기
-      // const height = 1600 // 9:16 비율의 세로 크기
-
-      // // 4. HTML을 캔버스로 변환
-      // const canvas = await html2canvas(fittingContainerRef.current!, {
-      //   width,
-      //   height,
-      //   ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
-      // })
-
       const gridElement = fittingContainerRef.current!
-      // const gridRect = gridElement.getBoundingClientRect()
       const { width, height } = gridElement.getBoundingClientRect()
 
-      // const canvas = await html2canvas(gridElement, {
-      //   x: gridRect.left,
-      //   y: gridRect.top,
-      //   width: gridRect.width,
-      //   height: gridRect.height,
-      //   ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
-      // })
       const canvas = await html2canvas(gridElement, {
         width: Math.round(width),
         height: Math.round(height),
@@ -309,12 +306,10 @@ export default function FittingContainer() {
 
         try {
           const coordinateId = await createCoordinate(payload)
+          setCoordinateId(coordinateId)
 
           // 코디북 조회
           const favoriteGroups = await getFavoritesGroupListOfUsers()
-
-          let targetFavoriteGroupId: number
-
           // 코디북이 없으면 기본 코디북 생성
           if (favoriteGroups.length === 0) {
             const requestData: FavoriteGroupCreateRequest = {
@@ -322,21 +317,23 @@ export default function FittingContainer() {
             }
             const createdGroup = await createFavoriteGroup(requestData)
             // console.log('createdGroup', createdGroup)
-            targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+            handleFavoriteGroupSelect(createdGroup[0].favoriteGroupId)
+          } else if (favoriteGroups.length === 1) {
+            // 코디북이 하나만 있으면 바로 사용
+            handleFavoriteGroupSelect(favoriteGroups[0].favoriteGroupId)
           } else {
-            // 코디북이 존재하면 첫 번째 코디북의 ID를 사용
-            targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
-
             // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
-            // 선택된 targetFavoriteGroupId를 사용합니다.
+            // 코디북이 여러 개 있으면 선택 모달을 띄움
+            setFavoriteGroups(favoriteGroups)
+            setIsCoordiBookModalOpen(true)
           }
 
-          const response = await addFavorite(
-            targetFavoriteGroupId,
-            coordinateId,
-          )
-          // console.log('response ', response)
-          setIsToastOpen(true)
+          // const response = await addFavorite(
+          //   targetFavoriteGroupId,
+          //   coordinateId,
+          // )
+          // // console.log('response ', response)
+          // setIsToastOpen(true)
         } catch (error) {
           console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
@@ -364,6 +361,22 @@ export default function FittingContainer() {
     }
   }
 
+  const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
+    try {
+      if (!coordinateId) return
+
+      await addFavorite(favoriteGroupId, coordinateId)
+      setIsToastOpen(true)
+    } catch (error) {
+      console.error('코디 추가 실패:', error)
+      setAlertMessage(['코디 추가에 실패했습니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
+    } finally {
+      setIsCoordiBookModalOpen(false)
+      handleConfirm()
+    }
+  }
+
   const handlePrevFromStyle = () => {
     setIsStyleModalOpen(false)
     setIsCoordiModalOpen(true)
@@ -383,7 +396,7 @@ export default function FittingContainer() {
   const handleConfirm = () => {
     closeModal()
     setIsToastOpen(false)
-    // router.push('/coordi/book')
+    router.push('/coordi/book')
   }
 
   const handleAlertClose = () => {
@@ -561,6 +574,13 @@ export default function FittingContainer() {
                 onClose={closeModal}
               />
             </Modal>
+          )}
+          {isCoordiBookModalOpen && (
+            <CoordiBookSelectModal
+              favoriteGroups={favoriteGroups}
+              onSelect={handleFavoriteGroupSelect}
+              onClose={() => setIsCoordiBookModalOpen(false)}
+            />
           )}
           {isToastOpen && (
             <Toast
