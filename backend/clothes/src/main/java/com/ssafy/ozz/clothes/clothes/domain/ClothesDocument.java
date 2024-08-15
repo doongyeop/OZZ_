@@ -6,6 +6,7 @@ import com.ssafy.ozz.library.clothes.properties.Size;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,10 +49,12 @@ public class ClothesDocument {
     @Field(name = "purchase_site",type = FieldType.Text, analyzer = "nori")
     private String purchaseSite;
 
-    @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+    @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd['T'HH:mm:ss.SSSSSS'Z']")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime createdDate;
 
-    @Field(name = "updated_date",type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+    @Field(name = "updated_date",type = FieldType.Date, pattern = "yyyy-MM-dd['T'HH:mm:ss.SSSSSS'Z']")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime updatedDate;
 
     @Field(type = FieldType.Integer)
@@ -83,6 +86,7 @@ public class ClothesDocument {
     Long userId;
 
     public ClothesDocument(Clothes clothes) {
+        this.id = String.valueOf(clothes.getClothesId());
         this.clothesId = clothes.getClothesId();
         this.name = clothes.getName();
         this.size = clothes.getSize().ordinal();
@@ -90,6 +94,26 @@ public class ClothesDocument {
         this.memo = clothes.getMemo();
         this.brand = clothes.getBrand();
         this.createdDate = clothes.getCreatedDate();
+        this.updatedDate = clothes.getUpdatedDate();
+        this.color = clothes.getColor();
+        this.texture = clothes.getTexture();
+        this.style = clothes.getStyle();
+        this.season = clothes.getSeason();
+        this.pattern = clothes.getPattern();
+        this.imageFileId = clothes.getImageFileId();
+        if (clothes.getCategoryLow() != null) {
+            this.categoryLowId = clothes.getCategoryLow().getCategoryLowId();
+            this.categoryHighId = clothes.getCategoryLow().getCategoryHigh().getCategoryHighId();
+        }
+        this.userId = clothes.getUserId();
+    }
+
+    public void update(Clothes clothes) {
+        this.name = clothes.getName();
+        this.size = clothes.getSize().ordinal();
+        this.fit = clothes.getFit().ordinal();
+        this.memo = clothes.getMemo();
+        this.brand = clothes.getBrand();
         this.updatedDate = clothes.getUpdatedDate();
         this.color = clothes.getColor();
         this.texture = clothes.getTexture();

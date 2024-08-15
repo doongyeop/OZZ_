@@ -165,8 +165,7 @@ class ClothesMetadata:
         for high_category in self.categories:
             for lowCategory in high_category['categoryLowList']:
                 if lowCategory['categoryLowId'] == lowCategoryId:
-                    return (HighCategoryResponse(**high_category), LowCategoryResponse(**lowCategory)
-                            )
+                    return HighCategoryResponse(**high_category), LowCategoryResponse(**lowCategory)
         return None, None
 
 

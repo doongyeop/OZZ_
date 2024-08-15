@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -18,7 +18,8 @@ import { downloadFile } from '@/services/fileApi'
 import { RxCross2 } from 'react-icons/rx'
 import { FavoriteDetail } from '@/types/coordibook'
 import { styleMap, styleInvMap, Style } from '@/types/clothing'
-import { getFavoritesByGroup, addFavorite } from '@/services/favoriteApi'
+import { getFavoritesByGroup, deleteFavorite1 } from '@/services/favoriteApi'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
 import PlusButton from '@/components/Button/PlusButton'
 import CoordiViewModal from '@/components/Modal/CoordiViewModal'
 
@@ -49,7 +50,10 @@ export default function CoordiBookDetailPage({
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
   const [favGrpDetails, setFavGrpDetails] = useState<FavoriteDetail[]>([])
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({})
-  const [showModal, setShowModal] = useState(false) // 모달 상태 추가
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedCoordiId, setSelectedCoordiId] = useState<number | null>(null)
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags) =>
@@ -101,11 +105,63 @@ export default function CoordiBookDetailPage({
     fetchCoordiBook(params.id)
   }, [params.id])
 
+  const startLongPress = (coordiId: number) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedCoordiId(coordiId)
+      setDeleteModal(true)
+    }, 500)
+  }
+
+  const clearLongPress = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current)
+      longPressTimeout.current = null
+    }
+  }
+
+  const handlePointerDown = (coordiId: number) => {
+    startLongPress(coordiId)
+  }
+
+  const handlePointerUpOrLeave = () => {
+    clearLongPress()
+  }
+
+  const deleteCoordi = async () => {
+    if (selectedCoordiId === null) return
+
+    try {
+      const response = await deleteFavorite1(params.id, selectedCoordiId)
+      if (response.status === 204) {
+        setDeleteModal(false)
+        setSelectedCoordiId(null)
+        fetchCoordiBook(params.id)
+      }
+    } catch (err) {
+      console.log('코디 삭제 중 문제 발생:', err)
+    }
+  }
+
   const renderFilteredItems = () => {
     return filteredItems.length > 0 ? (
       <div className="grid grid-cols-2 gap-4 mt-4">
         {filteredItems.map((item, index) => (
-          <div key={item.favoriteId}>
+          <div
+            key={item.favoriteId}
+            role="button"
+            tabIndex={0}
+            onPointerDown={() =>
+              handlePointerDown(item.coordinate.coordinateId)
+            }
+            onPointerUp={handlePointerUpOrLeave}
+            onPointerLeave={handlePointerUpOrLeave}
+            onPointerCancel={handlePointerUpOrLeave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handlePointerDown(item.coordinate.coordinateId)
+              }
+            }}
+          >
             <Link href={`/coordi/detail/${item.coordinate.coordinateId}`}>
               <Image
                 src={
@@ -173,12 +229,22 @@ export default function CoordiBookDetailPage({
         </div>
         {renderFilteredItems()}
       </div>
+      {deleteModal && (
+        <ConfirmModal
+          onClose={() => setDeleteModal(false)}
+          onConfirm={deleteCoordi}
+          message="코디북을 삭제하시겠습니까?"
+        />
+      )}
 
-      {/* PlusButton */}
       <PlusButton onClick={() => setShowModal(true)} />
 
-      {/* CoordiViewModal 모달 */}
-      {showModal && <CoordiViewModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <CoordiViewModal
+          onClose={() => setShowModal(false)}
+          favoriteGroupId={params.id}
+        />
+      )}
     </div>
   )
 }
