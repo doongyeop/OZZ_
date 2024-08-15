@@ -9,6 +9,8 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { persistQueryClient } from '@tanstack/react-query-persist-client'
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
 function makeQueryClient() {
   return new QueryClient({
@@ -45,6 +47,17 @@ export default function Providers({ children }) {
   //       suspend because React will throw away the client on the initial
   //       render if it suspends and there is no boundary
   const queryClient = getQueryClient()
+
+  const localStoragePersister = createSyncStoragePersister({
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  })
+
+  if (typeof window !== 'undefined') {
+    persistQueryClient({
+      queryClient,
+      persister: localStoragePersister,
+    })
+  }
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
