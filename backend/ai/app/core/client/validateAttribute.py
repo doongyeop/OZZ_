@@ -123,8 +123,9 @@ Response format should also be the same JSON:
                 k = int(k)
             raw_data[k] = raw_data[k].model_copy(update={**datum}, deep=True)
             if not self.validate_data(raw_data[k]):
+                logging.error(f"id : {k} 속성 검증 및 정규화 실패"+str(raw_data[k]))
                 del raw_data[k]
-                logging.error(f"id : {k} 속성 검증 및 정규화 실패")
+
         return raw_data
 
 
@@ -232,13 +233,114 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
         return valid_data
 
 
+class ValidateCategoryV2(OpenAIClient):
+    system_prompt: str = """
+Here are the parent categories and subcategories that have already been defined.
+Refer to <extra> and change it to a subcategory with similar values and appearance or purpose. Change it to the most similar subcategory within the same parent category.
+
+Send a request in the format {<integer ID>:<item information to be changed>}, such as {1:{extra="baseball cap with logo", parentCategory="악세서리", subCategory="기타"}}.
+
+Expect a response in the format {<integer ID>:<item information to be changed>}, such as {1:{parentCategory="악세서리", subCategory="모자"}}, in JSON format.
+"""
+    invalid_items = {}
+
+    def get_response(self) -> dict[str, dict[str, str]]:
+        response = self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": ValidateCategory.system_prompt
+                        }
+                    ]
+                },
+                {
+                    "role": "assistant",
+                    "content": self.make_assistant_content()
+                },
+                {
+                    "role": "user",
+                    "content": self.make_user_content()
+                },
+
+            ],
+            temperature=0,
+            max_tokens=100 * 20,
+            top_p=0.9,
+            frequency_penalty=0,
+            presence_penalty=0,
+        )
+        return json.loads(response.choices[0].message.content)
+
+    def make_assistant_content(self):
+        assistant_content = []
+        for k, v in self.clothes_metadata.category_dict().items():
+            assistant_content.append({
+                "parent": k,
+                "subcategories": v
+            })
+        print(json.dumps(assistant_content, ensure_ascii=False))
+        return [{
+            "type": "text",
+            "text": json.dumps(assistant_content, ensure_ascii=False),
+        }]
+
+    def make_user_content(self):
+        print(json.dumps(self.invalid_items, ensure_ascii=False))
+        return [{
+            "type": "text",
+            "text": json.dumps(self.invalid_items, ensure_ascii=False),
+        }]
+
+    def validate_data(self, raw_GPTAttrResponse: GPTAttrResponse):
+        if raw_GPTAttrResponse.parentCategory in self.clothes_metadata.category_dict():
+            if raw_GPTAttrResponse.subCategory in self.clothes_metadata.low_category_2_code():
+                return True
+            else:
+                return False
+        else:
+            raise Exception("존재하지 않는 상위 카테고리 :" + raw_GPTAttrResponse.parentCategory)
+
+    def process(self, raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
+        self.invalid_items: dict[int, dict[str, str]] = {}
+
+        for key, datum in raw_data.items():
+            self.invalid_items[key] = datum.model_dump(include={"extra", "parentCategory", "subCategory"})
+
+        is_clear = True
+
+        if len(self.invalid_items) != 0:
+            is_clear = False
+            valid_items = self.get_response()
+            for k , v in valid_items.items():
+                if isinstance(k, str):
+                    k = int(k)
+                raw_data[k].subCategory = v["subCategory"]
+
+        valid_data = {}
+        for key, datum in raw_data.items():
+            if not is_clear and not self.validate_data(datum):
+                logging.error(f"id : {key} 카테고리 검증 및 정규화 실패 서브 카테고리 : {datum.subCategory}")
+            else:
+                valid_data[key] = Attributes(
+                    **datum.model_dump(exclude={"parentCategory", "subCategory"}),
+                    categoryLowId=self.clothes_metadata.low_category_2_code()[datum.subCategory]
+                )
+        return valid_data
+
+
 validateCategory = ValidateCategory()
 validateProperty = ValidateProperty()
+validateCategoryV2 = ValidateCategoryV2()
 
 
 def run_validate(raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
     init_keys = list(raw_data.keys())
-    category_validated_data = validateCategory.process(raw_data)
+    category_validated_data = validateCategoryV2.process(raw_data)
     valid_data = validateProperty.process(category_validated_data)
     valid_keys = list(valid_data.keys())
     removed_data = []

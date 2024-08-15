@@ -54,6 +54,10 @@ class MultiClassSegmentObjectExtractor:
         self.category_to_labels = category_to_labels
 
     def segment_image(self, image, target_classes: list[int]):
+        # 이미지가 RGB가 아닌 경우 변환합니다.
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+
         # 이미지를 모델에 넣고 세그먼테이션 결과 얻기
         inputs = self.processor(images=image, return_tensors="pt")
         outputs = self.model(**inputs)
