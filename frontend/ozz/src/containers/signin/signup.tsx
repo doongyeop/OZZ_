@@ -8,6 +8,7 @@ import { UserUpdateRequest } from '@/types/user/data-contracts'
 import DatePicker from '@/components/Datepicker'
 import { getUserInfo, updateUser, checkNickname } from '@/services/userApi'
 import { syncTokensWithCookies } from '@/services/authApi'
+import AlertModal from '@/components/Modal/AlertModal'
 
 function SignUp() {
   const router = useRouter()
@@ -15,6 +16,8 @@ function SignUp() {
   const [responseText, setResponseText] = useState('')
   const [errorText, setErrorText] = useState('')
   const [birthday, setBirthday] = useState<Date | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   useEffect(() => {
     syncTokensWithCookies()
@@ -26,6 +29,8 @@ function SignUp() {
         })
       } catch (error) {
         console.error('Failed to fetch user info:', error)
+        setAlertMessage(['회원가입에 실패했습니다', ' 다시 시도해주세요'])
+        setIsAlertOpen(true)
       }
     }
     fetchUserInfo()
@@ -42,11 +47,15 @@ function SignUp() {
         router.push('/login/signup/success')
         return true // 성공적으로 처리된 경우 true 반환
       } catch (error) {
-        console.log('회원가입 중 오류 발생:', error)
+        // console.log('회원가입 중 오류 발생:', error)
+        setAlertMessage(['회원가입에 실패했습니다', ' 다시 시도해주세요'])
+        setIsAlertOpen(true)
         return false // 오류 발생 시 false 반환
       }
     } else {
-      console.log('응답 텍스트가 없습니다.')
+      // console.log('응답 텍스트가 없습니다.')
+      setAlertMessage(['회원가입에 실패했습니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
       return false // 응답 텍스트가 없는 경우 false 반환
     }
   }
@@ -59,9 +68,9 @@ function SignUp() {
     if (await confirmSignUp()) {
       router.push('/login/signup/success')
     } else {
-      // TODO: 회원가입 실패 처리
-      // ex) 다시 한 번 시도해주세요.
-      alert('회원가입 실패: 다시 한 번 시도해주세요.')
+      // alert('회원가입 실패: 다시 한 번 시도해주세요.')
+      setAlertMessage(['회원가입에 실패했습니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
     }
   }
 
@@ -86,6 +95,10 @@ function SignUp() {
       setErrorText('이미 사용 중인 닉네임입니다')
       setResponseText('')
     }
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -141,6 +154,9 @@ function SignUp() {
           </div>
         </div>
       </div>
+      {isAlertOpen && (
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </div>
   )
 }
