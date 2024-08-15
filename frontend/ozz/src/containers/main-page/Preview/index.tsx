@@ -50,7 +50,7 @@ export default function Preview({ title, items }: PreviewProps) {
         </Link>
       </div>
       {items.length > 0 ? (
-        <div className="mx-3 h-32 flex space-x-3">
+        <div className="mx-3 h-32 flex justify-around">
           {items.map((item, index) => (
             <Link href={`/closet/modify/${item.id}`} key={item.image}>
               <Image
