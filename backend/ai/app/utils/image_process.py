@@ -6,8 +6,10 @@ from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentati
 from PIL import Image
 import torch.nn as nn
 import numpy as np
-import requests
-from io import BytesIO
+
+from app.core.client.clothesMetadata import clothesMetadata
+from app.schemas.attributes import ImageMetadata
+from app.utils.image_utils import download_img
 
 # Load the processor and model
 processor = SegformerImageProcessor.from_pretrained("sayeed99/segformer-b2-fashion")
@@ -31,7 +33,7 @@ category2label = {
 accessory_to_label = {"모자": [15], "주얼리": [], "기타": [14, 19, 20, 23]}
 category_name_to_label = {
     "상의": [1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
-    "하의": [7, 8, 9, 11, 21, 22, 33],
+    "하의": [7, 8, 9, 11, 20, 21, 22, 33],
     "아우터": [4, 5, 6, 10, 1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
     "원피스": [11, 12, 13],
     "신발": [23, 24],
@@ -46,7 +48,7 @@ class MultiClassSegmentObjectExtractor:
         self.model = model
         self.category_to_labels = category_to_labels
 
-    def segment_image(self, image, target_classes:list[int]):
+    def segment_image(self, image, target_classes: list[int]):
         # 이미지를 모델에 넣고 세그먼테이션 결과 얻기
         inputs = self.processor(images=image, return_tensors="pt")
         outputs = self.model(**inputs)
@@ -126,3 +128,10 @@ def process(image: Image, high_category: str, low_category: str = None, basic_re
         return remove(image)
 
     return processing_image
+
+
+def process_url(image_metadata: ImageMetadata) -> Image:
+    high_category, low_category = clothesMetadata.low_categoryId_to_low_high_response(image_metadata.categoryLowId)
+
+    return process(download_img(image_metadata.imgUrl), high_category.name, low_category.name,
+                   not image_metadata.isWorn)

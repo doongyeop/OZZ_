@@ -8,7 +8,13 @@ class NormalizedClothes(BaseModel):
     category: str
     color: str | None
     imgUrl: str
-    isWorn: bool | None = None
+
+
+class ImageMetadata(BaseModel):
+    clothId: int
+    categoryLowId: int
+    imgUrl: str
+    isWorn: bool
 
 
 class AttributeBase(BaseModel):
