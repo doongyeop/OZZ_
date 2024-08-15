@@ -24,7 +24,7 @@ public class CoordinateDocument {
     @Field(type = FieldType.Integer)
     private Integer style;
 
-    @Field(type = FieldType.Text, analyzer = "synonym_analyzer")
+    @Field(type = FieldType.Text, searchAnalyzer = "korean_search", analyzer = "korean")
     private String name;
 
     @Field(name = "created_date",type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")

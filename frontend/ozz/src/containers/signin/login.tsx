@@ -8,7 +8,7 @@ export default function SignIn() {
   const onNaverLogin = () => login('naver')
 
   return (
-    <div className="flex font-bold flex-col items-center justify-center w-full h-screen max-w-xs mx-auto">
+    <div className="flex font-bold flex-col items-center justify-center mt-32 max-w-xs mx-auto">
       <Image
         src="/images/logo_3e3e3e.png"
         alt="OZZ LOGO"

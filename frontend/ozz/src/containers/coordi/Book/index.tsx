@@ -14,12 +14,17 @@ import {
   getFavoritesGroupListOfUsers,
   deleteFavoriteGroup,
 } from '@/services/favoriteApi'
+import { downloadFile } from '@/services/fileApi'
+import Image from 'next/image' // next/image 컴포넌트 import
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
   const [groups, setGroups] = useState<Coordibook[]>([])
+  const [groupImages, setGroupImages] = useState<{
+    [key: number]: { src: string; fileId: number }[]
+  }>({})
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const router = useRouter()
@@ -27,9 +32,37 @@ export default function CoordiBook() {
 
   const fetchFavoritesGroupList = async () => {
     try {
-      const response = await getFavoritesGroupListOfUsers()
-      console.log(response)
+      const response: Coordibook[] = await getFavoritesGroupListOfUsers() // 타입 명시
       setGroups(response)
+
+      // 각 그룹의 이미지를 다운로드하는 작업을 수행
+      const groupImagePromises = response.map(async (group: Coordibook) => {
+        if (group.imageFileList && group.imageFileList.length > 0) {
+          const imagePromises = group.imageFileList
+            .slice(0, 4) // 최대 4개의 이미지
+            .map(async (image) => {
+              const file = await downloadFile(image.filePath)
+              if (file) {
+                return { src: URL.createObjectURL(file), fileId: image.fileId } // Blob URL 생성 및 fileId 저장
+              }
+              return { src: '', fileId: image.fileId }
+            })
+          const images = await Promise.all(imagePromises)
+          return { groupId: group.favoriteGroupId, images }
+        }
+        return { groupId: group.favoriteGroupId, images: [] }
+      })
+
+      const groupImagesArray = await Promise.all(groupImagePromises)
+
+      // 각 그룹의 이미지 데이터를 상태로 저장
+      const imagesByGroup: {
+        [key: number]: { src: string; fileId: number }[]
+      } = {}
+      groupImagesArray.forEach(({ groupId, images }) => {
+        imagesByGroup[groupId] = images
+      })
+      setGroupImages(imagesByGroup)
     } catch (error) {
       console.error('Error fetching favorites data:', error)
     }
@@ -58,25 +91,22 @@ export default function CoordiBook() {
     const requestData = { name: newGroupName }
     try {
       const response = await createFavoriteGroup(requestData)
-      console.log(response)
       setNewGroupName('')
       // 코디북 생성 후 즐겨찾기 목록 다시 불러오기
-      const updatedGroups = await getFavoritesGroupListOfUsers()
-      setGroups(updatedGroups)
-      closeModal()
+      fetchFavoritesGroupList()
     } catch (error) {
       console.error('코디북 생성 중 오류 발생:', error)
     }
   }
 
-  const handleMouseDown = (groupId: number) => {
+  const handlePointerDown = (groupId: number) => {
     longPressTimeout.current = setTimeout(() => {
       setSelectedGroupId(groupId)
       setDeleteModal(true)
     }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
   }
 
-  const handleMouseUpOrLeave = () => {
+  const handlePointerUpOrLeave = () => {
     if (longPressTimeout.current) {
       clearTimeout(longPressTimeout.current)
       longPressTimeout.current = null
@@ -91,10 +121,9 @@ export default function CoordiBook() {
       setDeleteModal(false)
       setSelectedGroupId(null)
       if (res.status === 204) {
-        console.log('삭제 완료')
         fetchFavoritesGroupList()
       } else {
-        console.log('아니 삭제 요청은 갔는데 뭔가 이상하다니까요')
+        console.log('삭제 요청은 갔지만 문제가 발생했습니다.')
       }
     } catch (err) {
       console.log(err)
@@ -102,43 +131,51 @@ export default function CoordiBook() {
   }
 
   const getFavGrp = (group: Coordibook) => {
+    const images = groupImages[group.favoriteGroupId] || []
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
           className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
-          onMouseDown={() => handleMouseDown(group.favoriteGroupId)}
-          onMouseUp={handleMouseUpOrLeave}
-          onMouseLeave={handleMouseUpOrLeave}
+          onPointerDown={() => handlePointerDown(group.favoriteGroupId)}
+          onPointerUp={handlePointerUpOrLeave}
+          onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent
-            className={`object-cover p-0 flex flex-wrap ${
-              group.imageFileList && group.imageFileList.length >= 4
-                ? 'w-full h-full'
-                : ''
-            }`}
-          >
-            {group.imageFileList && group.imageFileList.length > 0 ? (
-              group.imageFileList.slice(0, 4).map((image) => (
-                <div
-                  key={image.fileId}
-                  className={`${
-                    group.imageFileList.length >= 4
-                      ? 'w-1/2 h-1/2 overflow-hidden'
-                      : 'h-full w-full'
-                  }`}
-                >
-                  <img
-                    src={image.filePath}
-                    alt={image.fileName}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="hidden"> </div>
-            )}
+          <CardContent className="relative w-full h-full overflow-hidden">
+            {(() => {
+              switch (true) {
+                case images.length === 0:
+                  return <div className="hidden"> </div>
+
+                case images.length < 4:
+                  return (
+                    <Image
+                      src={images[0].src}
+                      alt={group.name}
+                      fill
+                      style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
+                      className="absolute w-full h-full"
+                    />
+                  )
+
+                default:
+                  return images.slice(0, 4).map((image) => (
+                    <div
+                      key={image.fileId}
+                      className="relative w-1/2 h-1/2 overflow-hidden"
+                    >
+                      <Image
+                        src={image.src}
+                        alt={group.name}
+                        fill
+                        style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
+                        className="absolute w-full h-full"
+                      />
+                    </div>
+                  ))
+              }
+            })()}
           </CardContent>
         </Card>
         <CardTitle
