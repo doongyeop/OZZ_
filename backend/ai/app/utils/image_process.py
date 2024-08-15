@@ -14,8 +14,8 @@ from app.utils.image_utils import download_img
 processor = SegformerImageProcessor.from_pretrained("sayeed99/segformer-b2-fashion")
 segformer_model = AutoModelForSemanticSegmentation.from_pretrained("sayeed99/segformer-b2-fashion")
 
-clothes_processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
-clothes_segformer_model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/segformer_b2_clothes")
+clothes_processor = SegformerImageProcessor.from_pretrained("sayeed99/segformer_b3_clothes")
+clothes_segformer_model = AutoModelForSemanticSegmentation.from_pretrained("sayeed99/segformer_b3_clothes")
 
 category2label = {
     "top": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
