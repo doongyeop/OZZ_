@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 from rembg import remove
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
@@ -7,249 +8,121 @@ import torch.nn as nn
 import numpy as np
 import requests
 from io import BytesIO
-import torch
-from transformers import YolosFeatureExtractor, YolosForObjectDetection
 
 # Load the processor and model
-processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
-segformer_model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/segformer_b2_clothes")
+processor = SegformerImageProcessor.from_pretrained("sayeed99/segformer-b2-fashion")
+segformer_model = AutoModelForSemanticSegmentation.from_pretrained("sayeed99/segformer-b2-fashion")
 
-# YOLOs 모델 불러오기
-feature_extractor = YolosFeatureExtractor.from_pretrained('hustvl/yolos-small')
-yolo_model = YolosForObjectDetection.from_pretrained("valentinafeve/yolos-fashionpedia")
+category2label = {
+    "top": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
+    "bottom": ["pants", "skirt", "tights", "stockings", 'shorts'],
+    "outerwear": ["coat", "vest", "jacket", "cardigan"],
+    "dress": ["dress", "jumpsuit"],
+    "shoes": ["shoe"],
+    "bag": ['bag, wallet'],
+    "상의": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
+    "하의": ["pants", "skirt", "tights", "stockings", 'shorts'],
+    "아우터": ["coat", "vest", "jacket", "cardigan"],
+    "원피스": ["dress", "jumpsuit"],
+    "신발": ["shoe"],
+    "가방": ['bag, wallet']
+}
+
+accessory_to_label = {"모자": [15], "주얼리": [], "기타": [14, 19, 20, 23]}
+category_name_to_label = {
+    "상의": [1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
+    "하의": [7, 8, 9, 11, 21, 22, 33],
+    "아우터": [4, 5, 6, 10, 1, 2, 3, 28, 29, 30, 31, 32, 34, 36],
+    "원피스": [11, 12, 13],
+    "신발": [23, 24],
+    "가방": [25],
+    "악세서리": accessory_to_label
+}
 
 
-class ProcessingImage():
-    mask_array = None
-    # Define the segments you want to remove
-    # Background, Hair, Face, Left-leg, Right-leg, Left-arm, Right-arm
-    segments_to_remove = [0, 2, 11, 12, 13, 14, 15]
+class MultiClassSegmentObjectExtractor:
+    def __init__(self, processor, model, category_to_labels: dict[str, list[int] | dict[str, list[int]]]):
+        self.processor = processor
+        self.model = model
+        self.category_to_labels = category_to_labels
 
-
-    def __init__(self, baseImage:Image):
-        if baseImage.mode != 'RGB':
-            baseImage = baseImage.convert('RGB')
-        self.baseImage=baseImage
-        self.make_mask_array()
-
-
-    def make_mask_array(self):
-        inputs = processor(images=self.baseImage, return_tensors="pt")
-        outputs = segformer_model(**inputs)
+    def segment_image(self, image, target_classes:list[int]):
+        # 이미지를 모델에 넣고 세그먼테이션 결과 얻기
+        inputs = self.processor(images=image, return_tensors="pt")
+        outputs = self.model(**inputs)
         logits = outputs.logits.cpu()
+
+        # 업샘플링하여 원본 이미지 크기에 맞추기
         upsampled_logits = nn.functional.interpolate(
             logits,
-            size=self.baseImage.size[::-1],
+            size=image.size[::-1],
             mode="bilinear",
             align_corners=False,
         )
 
-        # Get the segmentation mask
-        pred_seg = upsampled_logits.argmax(dim=1)[0]
+        # 여러 클래스에 대한 마스크 결합
+        pred_seg = upsampled_logits.argmax(dim=1)[0].numpy()
+        mask = np.isin(pred_seg, target_classes).astype(np.uint8)  # 여러 클래스의 마스크 생성
 
-        # Convert the mask to a numpy array
-        self.mask_array = pred_seg.numpy()
+        return mask
 
-    def get_not_transparent_only_human_image(self)->Image:
-        r,g,b,_=self.__get_rgba__([0])
-        return self.__merge_images__(r,g,b)
+    def category_name_to_label(self, high_category_name: str, low_category_name: str = None) -> list[int]:
+        if high_category_name not in self.category_to_labels:
+            raise ValueError(f"High Category {high_category_name} not in high category name to label")
+        target_classes = self.category_to_labels[high_category_name]
+        if isinstance(target_classes, dict) and low_category_name is not None:
+            target_classes = target_classes[low_category_name]
 
-    def get_transparent_only_item_image(self)->Image:
-        r,g,b,a=self.__get_rgba__(self.segments_to_remove)
-        return self.__merge_images__(r,g,b,a)
+        return target_classes
 
+    def apply_mask(self, image, mask):
+        # 마스크를 이용하여 투명한 배경으로 이미지 만들기
+        image_np = np.array(image)
+        alpha_channel = mask * 255  # 마스크를 알파 채널로 변환 (0 또는 255)
+        image_rgba = np.dstack((image_np, alpha_channel))  # RGBA 이미지 생성
 
-    def __get_rgba__(self,segments_to_remove):
-        # Create a mask where the segments to remove are set to 1, others to 0
-        mask = np.isin(self.mask_array, segments_to_remove).astype(np.uint8)
+        return Image.fromarray(image_rgba)
 
-        # Split the original image into channels
-        r, g, b = self.baseImage.split()
+    def crop_to_object(self, image, mask):
+        # 마스크의 경계에 따라 이미지를 크롭
+        coords = np.column_stack(np.where(mask > 0))
+        if coords.size == 0:
+            return image  # 객체가 없는 경우 원본 이미지 반환
+        top_left = coords.min(axis=0)
+        bottom_right = coords.max(axis=0)
+        cropped_image = image.crop((*top_left[::-1], *bottom_right[::-1]))  # 크롭
 
-        # If the original image had an alpha channel, re-add it
-        a = Image.fromarray(np.ones_like(np.array(r)) * 255).convert("L")
-
-        # Update the RGB channels to white based on the mask
-        r_np = np.array(r)
-        g_np = np.array(g)
-        b_np = np.array(b)
-        r_np[mask == 1] = 255
-        g_np[mask == 1] = 255
-        b_np[mask == 1] = 255
-
-        # Update the alpha channel based on the mask
-        a_np = np.array(a)
-        a_np[mask == 1] = 0
-
-        # Convert the updated channels back to images
-        r = Image.fromarray(r_np)
-        g = Image.fromarray(g_np)
-        b = Image.fromarray(b_np)
-        a = Image.fromarray(a_np)
-        return r, g, b, a
-
-    def __merge_images__(self,r,g,b,a=None)->Image:
-        if a is None:
-            return Image.merge("RGB", (r, g, b))
-        else:
-            return Image.merge("RGBA", (r, g, b, a))
-
-
-def download_img(image_url: str) -> Image:
-    # 이미지 다운로드
-    response = requests.get(image_url)
-    return Image.open(BytesIO(response.content))
-
-
-def leave_only_clothes(image: Image) -> tuple[Image, Image]:
-    if image.mode != 'RGB':
-        # Convert the image to RGB (3 channels)
-        image = image.convert("RGB")
-
-    # Process the image and get model outputs
-    inputs = processor(images=image, return_tensors="pt")
-    outputs = segformer_model(**inputs)
-    logits = outputs.logits.cpu()
-
-    # Upsample the logits to the original image size
-    upsampled_logits = nn.functional.interpolate(
-        logits,
-        size=image.size[::-1],
-        mode="bilinear",
-        align_corners=False,
-    )
-
-    # Get the segmentation mask
-    pred_seg = upsampled_logits.argmax(dim=1)[0]
-
-    # Convert the mask to a numpy array
-    pred_seg_np = pred_seg.numpy()
-
-    # Define the segments you want to remove
-    # Background, Hair, Face, Left-leg, Right-leg, Left-arm, Right-arm
-    segments_to_remove = [0, 2, 11, 12, 13, 14, 15]
-
-    # Create a mask where the segments to remove are set to 1, others to 0
-    mask = np.isin(pred_seg_np, segments_to_remove).astype(np.uint8)
-
-    # Split the original image into channels
-    r, g, b = image.split()
-
-    # If the original image had an alpha channel, re-add it
-    a = Image.fromarray(np.ones_like(np.array(r)) * 255).convert("L")
-
-    # Update the RGB channels to white based on the mask
-    r_np = np.array(r)
-    g_np = np.array(g)
-    b_np = np.array(b)
-    r_np[mask == 1] = 255
-    g_np[mask == 1] = 255
-    b_np[mask == 1] = 255
-
-    # Update the alpha channel based on the mask
-    a_np = np.array(a)
-    a_np[mask == 1] = 0
-
-    # Convert the updated channels back to images
-    r = Image.fromarray(r_np)
-    g = Image.fromarray(g_np)
-    b = Image.fromarray(b_np)
-    a = Image.fromarray(a_np)
-
-    # Merge the channels back
-    transparent_image = Image.merge("RGBA", (r, g, b, a))
-    not_transparent_image = Image.merge("RGB", (r, g, b))
-    return transparent_image, not_transparent_image
-
-
-def cropImg(category: str, trans_image: Image, image: Image) -> Image:
-    # 잘라내기할 카테고리와 라벨 매핑
-    if category == "accessory":
-        return
-    category2label = {
-        "top": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
-        "bottom": ["pants", "skirt", "tights", "stockings", 'shorts'],
-        "outerwear": ["coat", "vest", "jacket", "cardigan"],
-        "dress": ["dress", "jumpsuit"],
-        "shoes": ["shoe"],
-        "bag": ['bag, wallet'],
-        "상의": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
-        "하의": ["pants", "skirt", "tights", "stockings", 'shorts'],
-        "아우터": ["coat", "vest", "jacket", "cardigan"],
-        "원피스": ["dress", "jumpsuit"],
-        "신발": ["shoe"],
-        "가방": ['bag, wallet']
-    }
-    # 이미지 입력 준비
-    inputs = feature_extractor(images=image, return_tensors="pt")
-
-    # 객체 탐지
-    outputs = yolo_model(**inputs)
-
-    # 결과 시각화 및 객체 저장
-    probas = outputs.logits.softmax(-1)[0, :, :-1]
-    bboxes_scaled = rescale_bboxes(outputs.pred_boxes[0].cpu(), image.size)
-    return crop_objects(trans_image, probas, bboxes_scaled, category2label[category], threshold=0.5)
-
-
-# Bounding box와 클래스 정보를 얻어오기
-def box_cxcywh_to_xyxy(x):
-    x_c, y_c, w, h = x.unbind(1)
-    b = [(x_c - 0.5 * w), (y_c - 0.5 * h),
-         (x_c + 0.5 * w), (y_c + 0.5 * h)]
-    return torch.stack(b, dim=1)
-
-
-def rescale_bboxes(out_bbox, size):
-    img_w, img_h = size
-    b = box_cxcywh_to_xyxy(out_bbox)
-    b = b * torch.tensor([img_w, img_h, img_w, img_h], dtype=torch.float32)
-    return b
-
-
-def idx_to_text(i):
-    cats = ['shirt, blouse', 'top, t-shirt, sweatshirt', 'sweater', 'cardigan', 'jacket', 'vest', 'pants', 'shorts',
-            'skirt', 'coat', 'dress', 'jumpsuit', 'cape', 'glasses', 'hat', 'headband, head covering, hair accessory',
-            'tie', 'glove', 'watch', 'belt', 'leg warmer', 'tights, stockings', 'sock', 'shoe', 'bag, wallet', 'scarf',
-            'umbrella', 'hood', 'collar', 'lapel', 'epaulette', 'sleeve', 'pocket', 'neckline', 'buckle', 'zipper',
-            'applique', 'bead', 'bow', 'flower', 'fringe', 'ribbon', 'rivet', 'ruffle', 'sequin', 'tassel']
-    return cats[i]
-
-
-def crop_objects(pil_img, prob, boxes, labels, threshold=0.8) -> Image:
-    keep = prob.max(-1).values > threshold
-    for idx, (p, (xmin, ymin, xmax, ymax)) in enumerate(zip(prob[keep], boxes[keep].tolist())):
-        cl = p.argmax()
-        if idx_to_text(cl) in labels:
-            cropped_img = pil_img.crop((xmin, ymin, xmax, ymax))
-            return cropped_img
-
-
-def process(imgUrl, category) -> Image:
-    downloaded_img = download_img(imgUrl)
-    logging.info("image download from " + imgUrl)
-    trans_img, not_trans_img = leave_only_clothes(downloaded_img)
-    logging.info("image leaved only clothes -> url : " + imgUrl)
-    image = cropImg(category, trans_img, not_trans_img)
-    if image is not None:
-        logging.info("image croped category : " + category)
-        return image
-    else:
-        logging.info("image not croped category : " + category)
-        return remove(downloaded_img)
-
-
-def process_image(image: Image, category: str) -> str:
-    if category == "악세서리":
-        trans_img, not_trans_img = leave_only_clothes(image)
-    else:
-        image=remove(image)
-    logging.info("image leaved only clothes")
-    cropped_image = cropImg(category, trans_img, not_trans_img)
-    if cropped_image is not None:
-        logging.info("image croped category : " + category)
         return cropped_image
-    else:
-        logging.info("image not croped category : " + category)
-        return trans_img
 
+    def extract_objects(self, image, high_category_name: str, low_category_name: str = None) -> Union[None, Image]:
+        # 전체 파이프라인 실행 (여러 클래스 대상)
+        target_classes = self.category_name_to_label(high_category_name, low_category_name)
+        mask = self.segment_image(image, target_classes)
+
+        # 마스크가 모두 0인 경우 (즉, 원하는 클래스가 없는 경우) 원본 이미지 반환
+        if mask.sum() == 0:
+            return None
+
+        transparent_image = self.apply_mask(image, mask)
+        cropped_image = self.crop_to_object(transparent_image, mask)
+
+        return cropped_image
+
+
+extractor = MultiClassSegmentObjectExtractor(processor, segformer_model, category_name_to_label)
+
+
+def process(image: Image, high_category: str, low_category: str = None, basic_remove_bg: bool = False) -> Image:
+    if basic_remove_bg:
+        return remove(image)
+
+    if high_category in ["accessory", "악세서리"]:
+        processing_image = extractor.extract_objects(image, "악세서리", low_category)
+    else:
+        processing_image = extractor.extract_objects(image, high_category)
+
+    # 인식된 객체가 없다면 단순 배경 제거후 리턴
+    if processing_image is None:
+        return remove(image)
+
+    return processing_image
