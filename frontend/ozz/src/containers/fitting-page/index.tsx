@@ -295,27 +295,24 @@ export default function FittingContainer() {
   const closeModal = () => {
     setIsCoordiModalOpen(false) // 코디 이름 설정 모달
     setIsStyleModalOpen(false) // 스타일 태그 설정 모달
-    setIsToastOpen(false)
   }
 
   const handleConfirm = () => {
     closeModal()
-    setIsToastOpen(false)
     router.push('/book')
   }
 
   const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
-    console.log('coordiId', coordinateId)
-    console.log('favoriteGroupId', favoriteGroupId)
+    // console.log('coordiId', coordinateId)
+    // console.log('favoriteGroupId', favoriteGroupId)
     try {
       if (!coordinateId) return
       const res = await addFavorite(favoriteGroupId, coordinateId)
-      console.log('res', res)
       setIsToastOpen(true)
       setIsCoordiBookModalOpen(false)
       handleConfirm()
     } catch (error) {
-      console.error('코디 추가 실패:', error)
+      // console.error('코디 추가 실패:', error)
       setAlertMessage(['코디 추가에 실패했습니다', ' 다시 시도해주세요'])
       setIsAlertOpen(true)
     }
@@ -437,9 +434,9 @@ export default function FittingContainer() {
               createdGroup.favoriteGroupId,
               coordiId,
             )
-            console.log('res', res)
-            setIsToastOpen(true)
+            // console.log('res', res)
             setIsCoordiBookModalOpen(false)
+            setIsToastOpen(true)
             handleConfirm()
           } else {
             // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
@@ -455,14 +452,14 @@ export default function FittingContainer() {
           // // console.log('response ', response)
           // setIsToastOpen(true)
         } catch (error) {
-          console.error('코디 생성 실패:', error)
+          // console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
           setAlertMessage(['코디 생성에 실패했습니다', ' 다시 시도해주세요'])
           setIsAlertOpen(true)
         }
       })
     } catch (error) {
-      console.error('코디 저장 중 오류 발생:', error)
+      // console.error('코디 저장 중 오류 발생:', error)
       setAlertMessage([
         '코디 저장 중 오류가',
         '발생했습니다',
@@ -604,7 +601,7 @@ export default function FittingContainer() {
                                 categoryLowIdToHighNameMap[categoryLowId]
                               handleRemoveItem(highCategoryName)
                             } else {
-                              console.error('카테고리 ID가 유효하지 않습니다.')
+                              // console.error('카테고리 ID가 유효하지 않습니다.')
                               setAlertMessage([
                                 '카테고리 ID가',
                                 '유효하지 않습니다',
