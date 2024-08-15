@@ -83,7 +83,7 @@ export default function CoordiDetailPage({
     <>
       <HeaderWithBackward />
 
-      <div className="aspect-[9/16]" ref={fittingContainerRef}>
+      <div className="aspect-[9/16] w-full" ref={fittingContainerRef}>
         <CoordiImage coordi={coordi} />
       </div>
 
