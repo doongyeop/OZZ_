@@ -14,6 +14,8 @@ import {
   ClothesUpdateRequest,
   UpdateClothesPayload,
   CreateCoordinatePayload,
+  UpdateCoordinatePayload,
+  CoordinateSearchCondition,
 } from '@/types/clothes/data-contracts'
 import {
   getTokens,
@@ -22,25 +24,6 @@ import {
   getClothesApi,
   getFileApi,
 } from '@/services/authApi'
-
-// const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM2MzkwMDcsImV4cCI6MTcyMzY5OTAwN30.RVICCpjhszWunJteGQGK2Q47qilyeqOSVWcC75R0ni8'
-
-// const clothesApi = new ClothesApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
-
-// const fileApi = new FileApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
 
 export async function fetchUserClothes(
   pageable: Pageable,
@@ -295,3 +278,62 @@ export const fetchMockClothing = (id: number): ClothingData => ({
   extra: '',
   // processing: 0,
 })
+
+export async function getCoordinate(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinate(coordinateId)
+  const data = await response.json()
+  return data
+}
+
+export async function updateCoordinate(
+  coordinateId: number,
+  data: UpdateCoordinatePayload,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.updateCoordinate(coordinateId, data)
+  return response.json()
+}
+
+export async function deleteCoordinate(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.deleteCoordinate(coordinateId)
+  return response.json()
+}
+
+export async function getCoordinateBasicResponse(coordinateId: number) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinateBasicResponse(coordinateId)
+  const data = await response.json()
+  return data
+}
+
+export async function getCoordinateList(
+  condition: CoordinateSearchCondition,
+  pageable: Pageable,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.getCoordinateList({
+    condition,
+    pageable,
+  })
+  return response.json()
+}
+
+export async function searchCoordinateList(
+  condition: CoordinateSearchCondition,
+  pageable: Pageable,
+) {
+  const clothesApi = await getClothesApi()
+
+  const response = await clothesApi.searchCoordinateList({
+    condition,
+    pageable,
+  })
+  return response.json()
+}

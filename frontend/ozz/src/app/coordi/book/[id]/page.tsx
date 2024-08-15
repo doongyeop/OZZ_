@@ -14,11 +14,13 @@ import {
   PopoverContent,
 } from '@radix-ui/react-popover'
 import { IoIosArrowDown } from 'react-icons/io'
+import { downloadFile } from '@/services/fileApi'
 import { RxCross2 } from 'react-icons/rx'
 import { FavoriteDetail } from '@/types/coordibook'
 import { styleMap, styleInvMap, Style } from '@/types/clothing'
 import { getFavoritesByGroup, deleteFavorite1 } from '@/services/favoriteApi'
-import Modal from '@/components/Modal'
+import ConfirmModal from '@/components/Modal/ConfirmModal'
+import ClothesRegistButton from '@/components/Button/ClothesRegistButton'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
@@ -46,6 +48,7 @@ export default function CoordiBookDetailPage({
 
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
   const [favGrpDetails, setFavGrpDetails] = useState<FavoriteDetail[]>([])
+  const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({})
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedCoordiId, setSelectedCoordiId] = useState<number | null>(null)
   const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -71,6 +74,29 @@ export default function CoordiBookDetailPage({
   const fetchCoordiBook = async (groupId: number) => {
     const response = await getFavoritesByGroup(groupId)
     setFavGrpDetails(response)
+
+    // 이미지 다운로드
+    const imagePromises = response.map(async (item: FavoriteDetail) => {
+      const file = await downloadFile(item.coordinate.imageFile.filePath)
+      if (file) {
+        return {
+          coordinateId: item.coordinate.coordinateId,
+          url: URL.createObjectURL(file),
+        }
+      }
+      return null
+    })
+
+    const downloadedImages = await Promise.all(imagePromises)
+    const imageMap: { [key: number]: string } = {}
+
+    downloadedImages.forEach((img) => {
+      if (img) {
+        imageMap[img.coordinateId] = img.url
+      }
+    })
+
+    setImageUrls(imageMap)
   }
 
   useEffect(() => {
@@ -91,11 +117,11 @@ export default function CoordiBookDetailPage({
     }
   }
 
-  const handlePressStart = (coordiId: number) => {
+  const handlePointerDown = (coordiId: number) => {
     startLongPress(coordiId)
   }
 
-  const handlePressEnd = () => {
+  const handlePointerUpOrLeave = () => {
     clearLongPress()
   }
 
@@ -104,9 +130,7 @@ export default function CoordiBookDetailPage({
 
     try {
       const response = await deleteFavorite1(params.id, selectedCoordiId)
-      console.log('코디 삭제 결과:', response)
       if (response.status === 204) {
-        console.log('코디 삭제 성공')
         setDeleteModal(false)
         setSelectedCoordiId(null)
         fetchCoordiBook(params.id)
@@ -124,21 +148,23 @@ export default function CoordiBookDetailPage({
             key={item.favoriteId}
             role="button"
             tabIndex={0}
-            onMouseDown={() => handlePressStart(item.coordinate.coordinateId)}
-            onMouseUp={handlePressEnd}
-            onMouseLeave={handlePressEnd}
-            onTouchStart={() => handlePressStart(item.coordinate.coordinateId)}
-            onTouchEnd={handlePressEnd}
-            onTouchCancel={handlePressEnd}
+            onPointerDown={() =>
+              handlePointerDown(item.coordinate.coordinateId)
+            }
+            onPointerUp={handlePointerUpOrLeave}
+            onPointerLeave={handlePointerUpOrLeave}
+            onPointerCancel={handlePointerUpOrLeave}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                handlePressStart(item.coordinate.coordinateId)
+                handlePointerDown(item.coordinate.coordinateId)
               }
             }}
           >
             <Link href={`/coordi/detail/${item.coordinate.coordinateId}`}>
               <Image
-                src={item.coordinate.imageFile.filePath}
+                src={
+                  imageUrls[item.coordinate.coordinateId] || '/placeholder.png'
+                }
                 alt={`item ${index + 1}`}
                 width={0}
                 height={0}
@@ -202,28 +228,13 @@ export default function CoordiBookDetailPage({
         {renderFilteredItems()}
       </div>
       {deleteModal && (
-        <Modal
+        <ConfirmModal
           onClose={() => setDeleteModal(false)}
-          title="이 코디를 삭제하시겠습니까?"
-        >
-          <div className="flex justify-center space-x-4">
-            <button
-              type="button"
-              onClick={() => setDeleteModal(false)}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              아니오
-            </button>
-            <button
-              type="button"
-              onClick={deleteCoordi}
-              className="border border-primary-400 rounded-full hover:bg-primary-400 hover:text-secondary px-4 py-1"
-            >
-              네
-            </button>
-          </div>
-        </Modal>
+          onConfirm={deleteCoordi}
+          message="코디를 삭제하시겠습니까?"
+        />
       )}
+      <ClothesRegistButton />
     </div>
   )
 }

@@ -15,6 +15,8 @@ import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import Modal from '@/components/Modal'
 import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
+// import Toast from '@/components/Modal/Toast'
+import Toast from '@/components/Toast'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import AlertModal from '@/components/Modal/AlertModal'
 import { FaPlus, FaMinus } from 'react-icons/fa'
@@ -82,7 +84,7 @@ export default function FittingContainer() {
   const router = useRouter()
   const [isCoordiModalOpen, setIsCoordiModalOpen] = useState(false) // 코디 이름 설정 모달
   const [isStyleModalOpen, setIsStyleModalOpen] = useState(false) // 스타일 태그 설정 모달
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false) // 확인 모달
+  const [isToastOpen, setIsToastOpen] = useState(false) // 확인 모달
   const [coordiName, setCoordiName] = useState('') // 코디 이름
   const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
   const fittingContainerRef = useRef<HTMLDivElement | null>(null)
@@ -311,9 +313,12 @@ export default function FittingContainer() {
             // 선택된 targetFavoriteGroupId를 사용합니다.
           }
 
-          await addFavorite(targetFavoriteGroupId, coordinateId)
-          // console.log('response ', response)
-          setIsConfirmModalOpen(true)
+          const response = await addFavorite(
+            targetFavoriteGroupId,
+            coordinateId,
+          )
+          console.log('response ', response)
+          setIsToastOpen(true)
         } catch (error) {
           console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
@@ -347,14 +352,14 @@ export default function FittingContainer() {
   }
 
   const handlePrevFromConfirm = () => {
-    setIsConfirmModalOpen(false)
+    setIsToastOpen(false)
     setIsStyleModalOpen(true)
   }
 
   const closeModal = () => {
     setIsCoordiModalOpen(false) // 코디 이름 설정 모달
     setIsStyleModalOpen(false) // 스타일 태그 설정 모달
-    setIsConfirmModalOpen(false)
+    setIsToastOpen(false)
   }
 
   const handleConfirm = () => {
@@ -369,7 +374,6 @@ export default function FittingContainer() {
   return (
     <>
       <div className="flex flex-col items-center justify-center">
-        {/* <div className="w-full p-4" ref={fittingContainerRef}> */}
         <div
           className="relative w-full max-w-[360px] h-auto aspect-w-9 aspect-h-16"
           ref={fittingContainerRef}
@@ -532,12 +536,11 @@ export default function FittingContainer() {
               />
             </Modal>
           )}
-          {isConfirmModalOpen && (
-            <Modal onClose={() => setIsConfirmModalOpen(false)}>
-              <ConfirmModal
-                onClose={() => setIsConfirmModalOpen(false)}
+          {isToastOpen && (
+            <Modal onClose={() => setIsToastOpen(false)}>
+              <Toast
+                onClose={() => setIsToastOpen(false)}
                 message="코디북에 저장되었습니다!"
-                onConfirm={handleConfirm}
               />
             </Modal>
           )}
