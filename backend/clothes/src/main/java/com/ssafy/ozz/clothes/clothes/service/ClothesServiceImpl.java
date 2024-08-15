@@ -15,9 +15,9 @@ import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
 import org.springframework.data.elasticsearch.core.RefreshPolicy;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,9 @@ import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
@@ -64,7 +66,44 @@ public class ClothesServiceImpl implements ClothesService {
         if(condition.keyword() != null){
             return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }else{
-            return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
+            // 여기에 findByCondition과 findByUserId의 결과를 합쳐서 보여주게
+            // Elasticsearch 쿼리 생성 및 실행
+            Page<ClothesDocument> esPage = clothesRepository.findByCondition(userId, condition, pageable);
+            List<ClothesDocument> esDocuments = esPage.getContent();
+
+            // MySQL 검색 결과
+            Slice<Clothes> mysqlSlice = clothesRepository.findByUserId(userId, condition, pageable);
+            List<Clothes> mysqlDocuments = mysqlSlice.getContent();
+
+            // Elasticsearch 결과를 Map으로 변환
+            Map<Long, ClothesDocument> mergedResults = esDocuments.stream()
+                    .collect(Collectors.toMap(ClothesDocument::getClothesId, doc -> doc));
+
+            // MySQL 결과를 Elasticsearch Document로 변환하여 Map에 추가
+            for (Clothes mysqlDoc : mysqlDocuments) {
+                mergedResults.putIfAbsent(mysqlDoc.getClothesId(), new ClothesDocument(mysqlDoc));
+            }
+
+            // 통합된 결과 리스트 생성
+            List<ClothesBasicWithFileResponse> responseList = mergedResults.values().stream()
+                    .map(this::toClothesBasicWithFileResponse)
+                    .collect(Collectors.toList());
+
+            // 총 결과 수 계산
+            long totalHits = esPage.getTotalElements(); // Elasticsearch의 총 결과 수 사용
+            if (mysqlSlice.hasNext()) {
+                totalHits += mysqlSlice.getNumberOfElements(); // MySQL에서 다음 페이지가 있으면 추가
+            }
+
+            // Pageable로 반환할 페이지와 총 결과 수 설정
+            int pageNumber = pageable.getPageNumber();
+            int pageSize = pageable.getPageSize();
+            int fromIndex = pageNumber * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, responseList.size());
+
+            List<ClothesBasicWithFileResponse> pagedList = responseList.subList(fromIndex, toIndex);
+            return new PageImpl<>(pagedList, pageable, totalHits);
+//            return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }
     }
 
