@@ -29,7 +29,7 @@ Response format should also be the same JSON:
                     "content": [
                         {
                             "type": "text",
-                            "text": ValidateProperty.system_prompt
+                            "text": self.system_prompt
                         }
                     ]
                 },
@@ -150,7 +150,7 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
                     "content": [
                         {
                             "type": "text",
-                            "text": ValidateCategory.system_prompt
+                            "text": self.system_prompt
                         }
                     ]
                 },
@@ -238,9 +238,9 @@ class ValidateCategoryV2(OpenAIClient):
 Here are the parent categories and subcategories that have already been defined.
 Refer to <extra> and change it to a subcategory with similar values and appearance or purpose. Change it to the most similar subcategory within the same parent category.
 
-Send a request in the format {<integer ID>:<item information to be changed>}, such as {1:{extra="baseball cap with logo", parentCategory="악세서리", subCategory="기타"}}.
+Send a request in the format {<integer ID>:<item information to be changed>}, such as {1:{"extra":"baseball cap with logo", "parentCategory":"악세서리", "subCategory":"기타"}}.
 
-Expect a response in the format {<integer ID>:<item information to be changed>}, such as {1:{parentCategory="악세서리", subCategory="모자"}}, in JSON format.
+Expect a response in the format {<integer ID>:<item information to be changed>}, such as {1:{"parentCategory":"악세서리", "subCategory":"모자"}}, in JSON format.
 """
     invalid_items = {}
 
@@ -254,7 +254,7 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
                     "content": [
                         {
                             "type": "text",
-                            "text": ValidateCategory.system_prompt
+                            "text": self.system_prompt
                         }
                     ]
                 },
