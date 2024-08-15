@@ -21,7 +21,7 @@ export interface CoordinateUpdateRequest {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -67,7 +67,7 @@ export interface CoordinateResponse {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -258,7 +258,7 @@ export interface ClothesWithFileResponse {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -427,7 +427,7 @@ export interface CoordinateBasicResponse {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
@@ -445,7 +445,7 @@ export interface CoordinateSearchCondition {
   styleList?: (
     | 'FORMAL'
     | 'MANNISH'
-    | 'ELEGANCE'
+    | 'ELEGANT'
     | 'ETHNIC'
     | 'MODERN'
     | 'NATURAL'
