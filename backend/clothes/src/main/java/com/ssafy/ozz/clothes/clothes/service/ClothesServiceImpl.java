@@ -63,7 +63,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
-        if(condition.keyword() != null){
+        if(condition.keyword() == null){
             return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }else{
             // 여기에 findByCondition과 findByUserId의 결과를 합쳐서 보여주게
