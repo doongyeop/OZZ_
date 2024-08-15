@@ -73,6 +73,88 @@ const generateRandomPastelColor = () => {
   return pastelColors[randomIndex].hex
 }
 
+export async function generateCoordiImage(
+  fittingContainerRef: React.RefObject<HTMLDivElement>,
+): Promise<File | null> {
+  try {
+    const width = 900 // 9:16 비율의 가로 크기
+    const height = 1600 // 9:16 비율의 세로 크기
+
+    const fittingContainerElement = fittingContainerRef.current
+    if (!fittingContainerElement) {
+      throw new Error('Fitting container element not found')
+    }
+
+    // HTML을 캔버스로 변환
+    const canvas = await html2canvas(fittingContainerElement, {
+      width,
+      height,
+      ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+    })
+
+    // Blob 생성 및 반환
+    return await new Promise<File | null>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert('이미지 생성에 실패했습니다.')
+          resolve(null)
+          return
+        }
+
+        const imageFile = new File([blob], 'coordinate.png', {
+          type: 'image/png',
+        })
+        resolve(imageFile)
+      })
+    })
+  } catch (error) {
+    console.error('이미지 생성 중 오류 발생:', error)
+    return null
+  }
+}
+
+export async function saveCoordi(
+  imageFile: File,
+  coordinateRequest: CoordinateCreateRequest,
+) {
+  try {
+    // Prepare the API request payload with coordinate information
+    const payload: CreateCoordinatePayload = {
+      imageFile,
+      request: coordinateRequest,
+    }
+
+    // Call the API to create the coordinate
+    const coordinateId = await createCoordinate(payload)
+
+    // Retrieve favorite groups (i.e., coordinate books)
+    const favoriteGroups = await getFavoritesGroupListOfUsers()
+
+    let targetFavoriteGroupId: number
+
+    // If no favorite group exists, create a default one
+    if (favoriteGroups.length === 0) {
+      const requestData: FavoriteGroupCreateRequest = {
+        name: '기본 코디북',
+      }
+      const createdGroup = await createFavoriteGroup(requestData)
+      targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+    } else {
+      // If a favorite group exists, use the ID of the first one
+      targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
+    }
+
+    // Add the coordinate to the favorite group
+    await addFavorite(targetFavoriteGroupId, coordinateId)
+
+    // Handle success (e.g., update the UI outside this function)
+    return coordinateId
+  } catch (error) {
+    console.error('Failed to create coordinate:', error)
+    throw error // Re-throw error for handling outside the function
+  }
+}
+
 export default function FittingContainer() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false) // 사이드바 열고 닫는 변수
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
@@ -265,131 +347,35 @@ export default function FittingContainer() {
 
     // 1. 랜덤 파스텔톤 배경색 생성
     const randomBackgroundColor = generateRandomPastelColor()
+    const fittingContainerElement = fittingContainerRef.current
+
+    if (!fittingContainerElement) {
+      alert('피팅 컨테이너를 찾을 수 없습니다.')
+      return
+    }
+
     const originalBackgroundColor =
-      fittingContainerRef.current!.style.backgroundColor
+      fittingContainerElement.style.backgroundColor
 
-    // 2. 이미지 생성 전에 배경색 적용
-    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
-
-    // 3. null 이미지를 가진 요소 숨기기
-    const hiddenElements: HTMLElement[] = []
-    fittingItems.forEach((item, index) => {
-      if (item.image === null) {
-        const element = fittingContainerRef.current!.querySelectorAll(
-          `.${styles.clothingItem}`,
-        )[index] as HTMLElement
-
-        const imageElement = element.querySelector('img') as HTMLImageElement
-        if (imageElement) {
-          imageElement.style.opacity = '0' // 이미지가 투명해지도록 설정
-        }
-        hiddenElements.push(imageElement)
-      }
-    })
+    // 2. 배경색 적용
+    fittingContainerElement.style.backgroundColor = randomBackgroundColor
 
     try {
-      const gridElement = fittingContainerRef.current!
-      const { width, height } = gridElement.getBoundingClientRect()
+      const imageFile = await generateCoordiImage(fittingContainerRef)
 
-      const canvas = await html2canvas(gridElement, {
-        width: Math.round(width),
-        height: Math.round(height),
-        backgroundColor: null, // 배경 투명으로 설정
-        logging: true,
-        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
-      })
+      // 3. 이미지가 성공적으로 생성되었는지 확인 후 저장
+      if (imageFile) {
+        await saveCoordi(imageFile, coordinateRequest)
 
-      // const dataUrl = canvas.toDataURL('image/png')
-      // setPreviewUrl(dataUrl)
-
-      // 5. 숨겨진 요소 다시 표시
-      /* eslint-disable no-param-reassign */
-      hiddenElements.forEach((element) => {
-        element.style.opacity = '0.1'
-      })
-      /* eslint-disable no-param-reassign */
-
-      // 6. 캔버스를 Blob (이미지 파일)로 변환
-      canvas.toBlob(async (blob) => {
-        fittingContainerRef.current!.style.backgroundColor =
-          originalBackgroundColor
-        if (!blob) {
-          alert('이미지 생성에 실패했습니다.')
-          setAlertMessage([
-            '이미지 생성에',
-            '실패했습니다',
-            ' 다시 시도해주세요',
-          ])
-          setIsAlertOpen(true)
-          return
-        }
-
-        const imageFile = new File([blob], 'coordinate.png', {
-          type: 'image/png',
-        })
-
-        // 7. 코디 정보 생성 후 API 요청 데이터 준비
-        const payload: CreateCoordinatePayload = {
-          imageFile,
-          request: coordinateRequest,
-        }
-
-        // console.log('payload ', payload)
-
-        try {
-          const coordiId = await createCoordinate(payload)
-          setCoordinateId(coordiId)
-
-          // 코디북 조회
-          const favGroups = await getFavoritesGroupListOfUsers()
-          // 코디북이 없으면 기본 코디북 생성
-          if (favGroups.length === 0) {
-            const requestData: FavoriteGroupCreateRequest = {
-              name: '기본 코디북',
-            }
-            const createdGroup = await createFavoriteGroup(requestData)
-            // console.log('createdGroup', createdGroup)
-            handleFavoriteGroupSelect(createdGroup[0].favoriteGroupId)
-          } else if (favGroups.length === 1) {
-            // 코디북이 하나만 있으면 바로 사용
-            handleFavoriteGroupSelect(favGroups[0].favoriteGroupId)
-          } else {
-            // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
-            // 코디북이 여러 개 있으면 선택 모달을 띄움
-            setFavoriteGroups(favGroups)
-            setIsCoordiBookModalOpen(true)
-          }
-
-          // const response = await addFavorite(
-          //   targetFavoriteGroupId,
-          //   coordinateId,
-          // )
-          // // console.log('response ', response)
-          // setIsToastOpen(true)
-        } catch (error) {
-          console.error('코디 생성 실패:', error)
-          // 실패 처리 (예: 에러 메시지 표시)
-          setAlertMessage(['코디 생성에 실패했습니다', ' 다시 시도해주세요'])
-          setIsAlertOpen(true)
-        }
-      })
+        // 코디 저장 성공 시 토스트 메시지 표시
+        setIsToastOpen(true)
+      }
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
-      setAlertMessage([
-        '코디 저장 중 오류가',
-        '발생했습니다',
-        ' 다시 시도해주세요',
-      ])
-      setIsAlertOpen(true)
-      fittingContainerRef.current!.style.backgroundColor =
-        originalBackgroundColor
-
-      // 5. 숨겨진 요소 다시 표l (오류 발생 시에도 복원)
-      /* eslint-disable no-param-reassign */
-      hiddenElements.forEach((element) => {
-        element.style.opacity = '0.1'
-      })
-      /* eslint-disable no-param-reassign */
+      alert('코디 저장 중 오류가 발생했습니다.')
+    } finally {
+      // 배경색 원래대로 복원
+      fittingContainerElement.style.backgroundColor = originalBackgroundColor
     }
   }
 
