@@ -1,9 +1,11 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { HiPencil, HiPlus } from 'react-icons/hi'
-import { Card, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { Coordibook } from '@/types/coordibook'
@@ -13,7 +15,7 @@ import {
   deleteFavoriteGroup,
 } from '@/services/favoriteApi'
 import { downloadFile } from '@/services/fileApi'
-import Image from 'next/image'
+import Image from 'next/image' // next/image 컴포넌트 import
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
@@ -30,7 +32,7 @@ export default function CoordiBook() {
 
   const fetchFavoritesGroupList = async () => {
     try {
-      const response: Coordibook[] = await getFavoritesGroupListOfUsers()
+      const response: Coordibook[] = await getFavoritesGroupListOfUsers() // 타입 명시
       setGroups(response)
 
       // 각 그룹의 이미지를 다운로드하는 작업을 수행
@@ -41,7 +43,7 @@ export default function CoordiBook() {
             .map(async (image) => {
               const file = await downloadFile(image.filePath)
               if (file) {
-                return { src: URL.createObjectURL(file), fileId: image.fileId }
+                return { src: URL.createObjectURL(file), fileId: image.fileId } // Blob URL 생성 및 fileId 저장
               }
               return { src: '', fileId: image.fileId }
             })
@@ -88,8 +90,9 @@ export default function CoordiBook() {
 
     const requestData = { name: newGroupName }
     try {
-      await createFavoriteGroup(requestData)
+      const response = await createFavoriteGroup(requestData)
       setNewGroupName('')
+      // 코디북 생성 후 즐겨찾기 목록 다시 불러오기
       fetchFavoritesGroupList()
     } catch (error) {
       console.error('코디북 생성 중 오류 발생:', error)
@@ -100,7 +103,7 @@ export default function CoordiBook() {
     longPressTimeout.current = setTimeout(() => {
       setSelectedGroupId(groupId)
       setDeleteModal(true)
-    }, 500)
+    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
   }
 
   const handlePointerUpOrLeave = () => {
@@ -132,50 +135,48 @@ export default function CoordiBook() {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
-          className="grid grid-cols-1 grid-rows-1 h-full w-full overflow-hidden shadow-md"
+          className="flex items-center h-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
           onPointerDown={() => handlePointerDown(group.favoriteGroupId)}
           onPointerUp={handlePointerUpOrLeave}
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          {(() => {
-            switch (true) {
-              case images.length === 0:
-                return <div className="hidden"> </div>
+          <CardContent className="relative w-full h-full overflow-hidden">
+            {(() => {
+              switch (true) {
+                case images.length === 0:
+                  return <div className="hidden"> </div>
 
-              case images.length < 4:
-                return (
-                  <Image
-                    src={images[0].src}
-                    alt={group.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    className="col-start-1 row-start-1 w-full h-full"
-                  />
-                )
+                case images.length < 4:
+                  return (
+                    <Image
+                      src={images[0].src}
+                      alt={group.name}
+                      fill
+                      style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
+                      className="absolute w-full h-full"
+                    />
+                  )
 
-              default:
-                return (
-                  <div className="grid grid-cols-2 grid-rows-2 w-full h-full col-start-1 row-start-1">
-                    {images.slice(0, 4).map((image) => (
-                      <div
-                        key={image.fileId}
-                        className="relative w-full h-full"
-                      >
-                        <Image
-                          src={image.src}
-                          alt={group.name}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          className="absolute w-full h-full"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )
-            }
-          })()}
+                default:
+                  return images.slice(0, 4).map((image) => (
+                    <div
+                      key={image.fileId}
+                      className="relative w-1/2 h-1/2 overflow-hidden"
+                    >
+                      <Image
+                        src={image.src}
+                        alt={group.name}
+                        fill
+                        style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
+                        className="absolute w-full h-full"
+                      />
+                    </div>
+                  ))
+              }
+            })()}
+          </CardContent>
         </Card>
         <CardTitle
           className="text-left text-black font-medium text-sm mt-2"
