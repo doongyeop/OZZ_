@@ -142,7 +142,7 @@ export default function CoordiBook() {
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent className="relative w-full h-full">
+          <CardContent className="relative w-full h-full overflow-hidden">
             {(() => {
               switch (true) {
                 case images.length === 0:
@@ -153,20 +153,23 @@ export default function CoordiBook() {
                     <Image
                       src={images[0].src}
                       alt={group.name}
-                      layout="fill"
-                      objectFit="cover"
+                      fill
+                      style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
                       className="absolute w-full h-full"
                     />
                   )
 
                 default:
                   return images.slice(0, 4).map((image) => (
-                    <div key={image.fileId} className="relative w-1/2 h-1/2">
+                    <div
+                      key={image.fileId}
+                      className="relative w-1/2 h-1/2 overflow-hidden"
+                    >
                       <Image
                         src={image.src}
                         alt={group.name}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
                         className="absolute w-full h-full"
                       />
                     </div>

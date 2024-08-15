@@ -14,7 +14,8 @@ import ClosetSidebar from '@/components/Sidebar/ClosetSidebar'
 import Modal from '@/components/Modal'
 import CoordiNameModal from '@/components/Modal/CoordiNameModal'
 import CoordiStyleModal from '@/components/Modal/CoordiStyleModal'
-import ConfirmModal from '@/components/Modal/ConfirmModal'
+// import Toast from '@/components/Modal/Toast'
+import Toast from '@/components/Toast'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import {
   ClothesBasicWithFileResponse,
@@ -79,7 +80,7 @@ export default function FittingContainer() {
 
   const [isCoordiModalOpen, setIsCoordiModalOpen] = useState(false) // 코디 이름 설정 모달
   const [isStyleModalOpen, setIsStyleModalOpen] = useState(false) // 스타일 태그 설정 모달
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false) // 확인 모달
+  const [isToastOpen, setIsToastOpen] = useState(false) // 확인 모달
   const [coordiName, setCoordiName] = useState('') // 코디 이름
   const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
   const fittingContainerRef = useRef<HTMLDivElement | null>(null)
@@ -275,7 +276,7 @@ export default function FittingContainer() {
             coordinateId,
           )
           console.log('response ', response)
-          setIsConfirmModalOpen(true)
+          setIsToastOpen(true)
         } catch (error) {
           console.error('코디 생성 실패:', error)
           // 실패 처리 (예: 에러 메시지 표시)
@@ -295,14 +296,14 @@ export default function FittingContainer() {
   }
 
   const handlePrevFromConfirm = () => {
-    setIsConfirmModalOpen(false)
+    setIsToastOpen(false)
     setIsStyleModalOpen(true)
   }
 
   const closeModal = () => {
     setIsCoordiModalOpen(false) // 코디 이름 설정 모달
     setIsStyleModalOpen(false) // 스타일 태그 설정 모달
-    setIsConfirmModalOpen(false)
+    setIsToastOpen(false)
   }
 
   const handleConfirm = () => {
@@ -466,12 +467,11 @@ export default function FittingContainer() {
             />
           </Modal>
         )}
-        {isConfirmModalOpen && (
-          <Modal onClose={() => setIsConfirmModalOpen(false)}>
-            <ConfirmModal
-              onClose={() => setIsConfirmModalOpen(false)}
+        {isToastOpen && (
+          <Modal onClose={() => setIsToastOpen(false)}>
+            <Toast
+              onClose={() => setIsToastOpen(false)}
               message="코디북에 저장되었습니다!"
-              onConfirm={closeModal}
             />
           </Modal>
         )}
