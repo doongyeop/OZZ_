@@ -14,9 +14,45 @@ const pretendard = localFont({
   variable: '--font-pretendard',
 })
 
+const APP_NAME = '옷짱 | OZZ'
+const APP_DEFAULT_TITLE = '옷짱 | OZZ'
+const APP_TITLE_TEMPLATE = '%s '
+const APP_DESCRIPTION = '내 손안의 작은 옷장'
+
 export const metadata = {
-  title: '옷짱: OZZ',
-  description: '내 손안의 작은 옷장',
+  applicationName: APP_NAME,
+  title: {
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE,
+  },
+  description: APP_DESCRIPTION,
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: APP_DEFAULT_TITLE,
+    // startUpImage: [],
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary',
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
   icons: {
     icon: '/favicon-144x144.png',
     other: [
@@ -91,7 +127,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#daf1a2',
+  themeColor: '#3e3e3e',
 }
 
 export default function RootLayout({
