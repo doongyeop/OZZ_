@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react'
 import { deleteCoordinate, getCoordinate } from '@/services/clothingApi'
 import Toast from '@/components/Toast'
 import { useRouter } from 'next/navigation'
-import { downloadFile } from '@/services/fileApi'
+import { downloadFile, getFile } from '@/services/fileApi'
 
 interface Coordinate {
   coordinateId: number
@@ -41,6 +41,50 @@ interface Coordinate {
   }
 }
 
+// 컴포넌트 밖으로 이동
+function ClothesItem({
+  clothesId,
+  imageFileId,
+}: {
+  clothesId: number
+  imageFileId: number
+}) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const data = await getFile(imageFileId)
+        const file = await downloadFile(data.filePath)
+        if (file) {
+          setImageUrl(URL.createObjectURL(file))
+        }
+      } catch (error) {
+        console.error('이미지를 가져오는 중 오류 발생:', error)
+      }
+    }
+
+    fetchImage()
+  }, [imageFileId])
+
+  return (
+    <Link href={`/closet/modify/${clothesId}`}>
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={`Item-${clothesId}`}
+          width={0}
+          height={0}
+          sizes="100%"
+          className="aspect-square w-auto h-full object-contain shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
+        />
+      ) : (
+        <div className="aspect-square w-auto h-full bg-gray-200" />
+      )}
+    </Link>
+  )
+}
+
 export default function SavedCoordiPage({
   params,
 }: {
@@ -54,6 +98,10 @@ export default function SavedCoordiPage({
 
   const toggleModal = () => {
     setDeleteModal((prev) => !prev)
+  }
+
+  const updateCoordi = () => {
+    router.push('/fix')
   }
 
   // 코디 데이터 및 이미지 가져오기
@@ -98,8 +146,8 @@ export default function SavedCoordiPage({
         <Image
           src={imageUrl}
           alt={coordinate?.name || '코디 이미지'}
-          width={720} // 적절한 너비 설정
-          height={1280} // 적절한 높이 설정 (9:16 비율)
+          width={720}
+          height={1280}
           sizes="100vw"
           className="w-full h-auto"
         />
@@ -107,7 +155,11 @@ export default function SavedCoordiPage({
       <div className="m-4">
         <h1 className="text-xl font-semibold">{coordinate?.name}</h1>
         <div className="my-4 flex gap-4">
-          <OutlineButton>
+          <OutlineButton
+            onClick={() => {
+              updateCoordi()
+            }}
+          >
             <IoPencil className="text-primary-400" />
             <span className="ms-2 text-sm">코디 수정하기</span>
           </OutlineButton>
@@ -129,24 +181,12 @@ export default function SavedCoordiPage({
         <div>
           <h4 className="font-semibold">코디에 사용된 아이템</h4>
           <div className="h-32 flex gap-4 my-2">
-            {coordinate?.clothesList.map((clothesItem, index) => (
-              <Link
-                href={`/closet/modify/${clothesItem.clothes.clothesId}`}
+            {coordinate?.clothesList.map((clothesItem) => (
+              <ClothesItem
                 key={clothesItem.clothes.clothesId}
-              >
-                <Image
-                  src={
-                    clothesItem.clothes.imageFileId
-                      ? `/api/files/${clothesItem.clothes.imageFileId}` // 실제 이미지 경로로 수정
-                      : '/placeholder.png'
-                  }
-                  alt={`Item-${index}`}
-                  width={100} // 적절한 너비 설정
-                  height={160} // 적절한 높이 설정 (9:16 비율)
-                  sizes="100%"
-                  className="w-auto h-full object-cover"
-                />
-              </Link>
+                clothesId={clothesItem.clothes.clothesId}
+                imageFileId={clothesItem.clothes.imageFileId}
+              />
             ))}
           </div>
         </div>
