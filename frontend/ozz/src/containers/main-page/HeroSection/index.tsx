@@ -89,7 +89,7 @@ export default function HeroSection() {
           </CarouselContent>
           <div className="absolute bottom-12 text-white text-center">
             <p className="text-2xl font-medium">{formattedDate}</p>
-            <p className="text-4xl font-extrabold">오늘의 인기 코디</p>
+            <p className="text-4xl font-extrabold">오늘의 추천 코디</p>
           </div>
           <div className="absolute bottom-2 right-6 bg-secondary bg-opacity-50 rounded-full px-3 py-0.5 text-white text-sm">
             {current} / {count}

@@ -59,7 +59,7 @@ export default function Preview({ title, items }: PreviewProps) {
                 width={0}
                 height={0}
                 sizes="100%"
-                className="aspect-square object-cover w-auto h-full shadow-md"
+                className="aspect-square object-cover w-auto h-full shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
               />
             </Link>
           ))}

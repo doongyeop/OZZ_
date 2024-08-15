@@ -8,6 +8,8 @@ import com.ssafy.ozz.clothes.global.querydsl.Querydsl4RepositorySupport;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
+import java.util.List;
+
 import static com.ssafy.ozz.clothes.clothes.domain.QClothes.clothes;
 
 public class ClothesQueryRepositoryImpl extends Querydsl4RepositorySupport<Clothes, QClothes> implements ClothesQueryRepository {
@@ -27,6 +29,17 @@ public class ClothesQueryRepositoryImpl extends Querydsl4RepositorySupport<Cloth
                         nameContainKeyword(condition.keyword())
                 )
         );
+    }
+
+    @Override
+    public List<Clothes> findByUserId(Long userId, ClothesSearchCondition condition) {
+        return  selectFrom(clothes)
+                .where(
+                        userIdEq(userId),
+                        categoryLowEq(condition.categoryLowId()),
+                        categoryHighEq(condition.categoryHighId()),
+                        nameContainKeyword(condition.keyword())
+                ).fetch();
     }
 
     public BooleanExpression userIdEq(Long userId){
