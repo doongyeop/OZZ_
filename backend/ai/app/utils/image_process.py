@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 from rembg import remove
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
@@ -14,6 +13,9 @@ from app.utils.image_utils import download_img
 # Load the processor and model
 processor = SegformerImageProcessor.from_pretrained("sayeed99/segformer-b2-fashion")
 segformer_model = AutoModelForSemanticSegmentation.from_pretrained("sayeed99/segformer-b2-fashion")
+
+clothes_processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
+clothes_segformer_model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/segformer_b2_clothes")
 
 category2label = {
     "top": ["top, t-shirt, sweatshirt", "shirt, blouse", "sweater", "hood", "vest", "jacket", "cardigan"],
@@ -41,6 +43,9 @@ category_name_to_label = {
     "악세서리": accessory_to_label
 }
 
+clothes_category_name_to_label = {
+    "신발": [9, 10],
+}
 
 class MultiClassSegmentObjectExtractor:
     def __init__(self, processor, model, category_to_labels: dict[str, list[int] | dict[str, list[int]]]):
@@ -96,7 +101,7 @@ class MultiClassSegmentObjectExtractor:
 
         return cropped_image
 
-    def extract_objects(self, image, high_category_name: str, low_category_name: str = None) -> Union[None, Image]:
+    def extract_objects(self, image, high_category_name: str, low_category_name: str = None):
         # 전체 파이프라인 실행 (여러 클래스 대상)
         target_classes = self.category_name_to_label(high_category_name, low_category_name)
         mask = self.segment_image(image, target_classes)
@@ -106,22 +111,33 @@ class MultiClassSegmentObjectExtractor:
             return None
 
         transparent_image = self.apply_mask(image, mask)
+        transparent_image.save("transparent.png")
+        logging.info("객체 인식 및 배경 제거")
         cropped_image = self.crop_to_object(transparent_image, mask)
+        cropped_image.save("cropped.png")
+        logging.info("이미지 잘라내기")
 
         return cropped_image
 
 
-extractor = MultiClassSegmentObjectExtractor(processor, segformer_model, category_name_to_label)
+fashion_extractor = MultiClassSegmentObjectExtractor(processor, segformer_model, category_name_to_label)
+clothes_extractor = MultiClassSegmentObjectExtractor(clothes_processor, clothes_segformer_model, clothes_category_name_to_label)
 
 
 def process(image: Image, high_category: str, low_category: str = None, basic_remove_bg: bool = False) -> Image:
     if basic_remove_bg:
+        logging.info("단순 배경 제거")
         return remove(image)
 
     if high_category in ["accessory", "악세서리"]:
-        processing_image = extractor.extract_objects(image, "악세서리", low_category)
+        print("패션 인식기")
+        processing_image = fashion_extractor.extract_objects(image, "악세서리", low_category)
+    elif high_category in ["신발"]:
+        print("옷 인식기")
+        processing_image = clothes_extractor.extract_objects(image, "신발")
     else:
-        processing_image = extractor.extract_objects(image, high_category)
+        print("패션 인식기")
+        processing_image = fashion_extractor.extract_objects(image, high_category)
 
     # 인식된 객체가 없다면 단순 배경 제거후 리턴
     if processing_image is None:
