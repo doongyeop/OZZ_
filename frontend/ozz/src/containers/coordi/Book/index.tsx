@@ -1,7 +1,5 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { HiPencil, HiPlus } from 'react-icons/hi'
@@ -32,7 +30,7 @@ export default function CoordiBook() {
 
   const fetchFavoritesGroupList = async () => {
     try {
-      const response: Coordibook[] = await getFavoritesGroupListOfUsers() // 타입 명시
+      const response: Coordibook[] = await getFavoritesGroupListOfUsers()
       setGroups(response)
 
       // 각 그룹의 이미지를 다운로드하는 작업을 수행
@@ -43,7 +41,7 @@ export default function CoordiBook() {
             .map(async (image) => {
               const file = await downloadFile(image.filePath)
               if (file) {
-                return { src: URL.createObjectURL(file), fileId: image.fileId } // Blob URL 생성 및 fileId 저장
+                return { src: URL.createObjectURL(file), fileId: image.fileId }
               }
               return { src: '', fileId: image.fileId }
             })
@@ -90,9 +88,8 @@ export default function CoordiBook() {
 
     const requestData = { name: newGroupName }
     try {
-      const response = await createFavoriteGroup(requestData)
+      await createFavoriteGroup(requestData)
       setNewGroupName('')
-      // 코디북 생성 후 즐겨찾기 목록 다시 불러오기
       fetchFavoritesGroupList()
     } catch (error) {
       console.error('코디북 생성 중 오류 발생:', error)
@@ -103,7 +100,7 @@ export default function CoordiBook() {
     longPressTimeout.current = setTimeout(() => {
       setSelectedGroupId(groupId)
       setDeleteModal(true)
-    }, 500) // 0.5초 이상 클릭 시 롱프레스 발생
+    }, 500)
   }
 
   const handlePointerUpOrLeave = () => {
@@ -135,7 +132,7 @@ export default function CoordiBook() {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
-          className="relative h-full w-full overflow-hidden shadow-md"
+          className="grid grid-cols-1 grid-rows-1 h-full w-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
           onPointerDown={() => handlePointerDown(group.favoriteGroupId)}
           onPointerUp={handlePointerUpOrLeave}
@@ -154,13 +151,13 @@ export default function CoordiBook() {
                     alt={group.name}
                     fill
                     style={{ objectFit: 'cover' }}
-                    className="absolute w-full h-full"
+                    className="col-start-1 row-start-1 w-full h-full"
                   />
                 )
 
               default:
                 return (
-                  <div className="grid grid-cols-2 grid-rows-2 w-full h-full">
+                  <div className="grid grid-cols-2 grid-rows-2 w-full h-full col-start-1 row-start-1">
                     {images.slice(0, 4).map((image) => (
                       <div
                         key={image.fileId}
