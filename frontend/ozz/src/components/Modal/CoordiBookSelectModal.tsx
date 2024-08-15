@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Button } from '../ui/button'
-import CreateCoordiBookModal from '@/components/Modal/CreateCoordiBookModal'
-import AlertModal from './AlertModal'
 
+import { Button } from '../ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import CreateCoordiBookModal from './CreateCoordibookModal'
+import AlertModal from './AlertModal'
 import { FavoriteGroupCreateRequest } from '@/types/favorite/data-contracts'
 import { createFavoriteGroup } from '@/services/favoriteApi'
 
@@ -80,31 +81,33 @@ export default function CoordiBookSelectModal({
             </svg>
           </button>
         </div>
-        <ul className="space-y-2">
-          {/* 코디북 새로 생성하기 버튼 */}
-          <li>
-            <Button
-              type="button"
-              variant={'default'}
-              onClick={() => setIsCreateModalOpen(true)}
-              className="w-full text-left py-2 px-4 rounded-lg border-primary-400"
-            >
-              + 코디북 새로 생성하기
-            </Button>
-          </li>
-          {favoriteGroups.map((group) => (
-            <li key={group.favoriteGroupId}>
+        <ScrollArea className="h-[30vh] scroll-area">
+          <ul className="space-y-2">
+            {/* 코디북 새로 생성하기 버튼 */}
+            <li>
               <Button
                 type="button"
-                variant={'outline'}
-                onClick={() => onSelect(group.favoriteGroupId)}
-                className="w-full text-left py-2 px-4 rounded-lg"
+                variant={'default'}
+                onClick={() => setIsCreateModalOpen(true)}
+                className="w-full text-left py-2 px-4 rounded-lg border-primary-400"
               >
-                {group.name}
+                + 코디북 새로 생성하기
               </Button>
             </li>
-          ))}
-        </ul>
+            {favoriteGroups.map((group) => (
+              <li key={group.favoriteGroupId}>
+                <Button
+                  type="button"
+                  variant={'outline'}
+                  onClick={() => onSelect(group.favoriteGroupId)}
+                  className="w-full text-left py-2 px-4 rounded-lg"
+                >
+                  {group.name}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
       </div>
       {isCreateModalOpen && (
         <CreateCoordiBookModal

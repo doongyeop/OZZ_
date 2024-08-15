@@ -87,6 +87,7 @@ export default function FittingContainer() {
   const router = useRouter()
   const [isCoordiModalOpen, setIsCoordiModalOpen] = useState(false) // 코디 이름 설정 모달
   const [isStyleModalOpen, setIsStyleModalOpen] = useState(false) // 스타일 태그 설정 모달
+  const [isCoordiBookModalOpen, setIsCoordiBookModalOpen] = useState(false)
   const [isToastOpen, setIsToastOpen] = useState(false) // 확인 모달
   const [coordiName, setCoordiName] = useState('') // 코디 이름
   const [styleList, setStyleList] = useState<Style[]>([]) // 스타일 태그
@@ -94,7 +95,6 @@ export default function FittingContainer() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState<string[]>([])
-  const [isCoordiBookModalOpen, setIsCoordiBookModalOpen] = useState(false)
   const [favoriteGroups, setFavoriteGroups] = useState<
     FavoriteGroupImageResponse[]
   >([])
