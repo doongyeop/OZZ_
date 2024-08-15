@@ -112,6 +112,48 @@ export async function generateCoordiImage(
   }
 }
 
+export async function saveCoordi(
+  imageFile: File,
+  coordinateRequest: CoordinateCreateRequest,
+) {
+  try {
+    // Prepare the API request payload with coordinate information
+    const payload: CreateCoordinatePayload = {
+      imageFile,
+      request: coordinateRequest,
+    }
+
+    // Call the API to create the coordinate
+    const coordinateId = await createCoordinate(payload)
+
+    // Retrieve favorite groups (i.e., coordinate books)
+    const favoriteGroups = await getFavoritesGroupListOfUsers()
+
+    let targetFavoriteGroupId: number
+
+    // If no favorite group exists, create a default one
+    if (favoriteGroups.length === 0) {
+      const requestData: FavoriteGroupCreateRequest = {
+        name: '기본 코디북',
+      }
+      const createdGroup = await createFavoriteGroup(requestData)
+      targetFavoriteGroupId = createdGroup[0].favoriteGroupId
+    } else {
+      // If a favorite group exists, use the ID of the first one
+      targetFavoriteGroupId = favoriteGroups[0].favoriteGroupId
+    }
+
+    // Add the coordinate to the favorite group
+    await addFavorite(targetFavoriteGroupId, coordinateId)
+
+    // Handle success (e.g., update the UI outside this function)
+    return coordinateId
+  } catch (error) {
+    console.error('Failed to create coordinate:', error)
+    throw error // Re-throw error for handling outside the function
+  }
+}
+
 export default function FittingContainer() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false) // 사이드바 열고 닫는 변수
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 사이드바에 카테고리 설정하기
