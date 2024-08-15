@@ -233,7 +233,7 @@ export default function CoordiBookDetailPage({
         <ConfirmModal
           onClose={() => setDeleteModal(false)}
           onConfirm={deleteCoordi}
-          message="코디북을 삭제하시겠습니까?"
+          message="코디를 삭제하시겠습니까?"
         />
       )}
 
