@@ -61,7 +61,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> getClothesOfUserWithFile(Long userId, ClothesSearchCondition condition, Pageable pageable) {
-        if(condition.keyword() != null){
+        if(condition.keyword() == null){
             return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }else{
             return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
