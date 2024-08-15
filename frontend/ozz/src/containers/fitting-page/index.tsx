@@ -307,7 +307,8 @@ export default function FittingContainer() {
   const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
     try {
       if (!coordinateId) return
-      await addFavorite(favoriteGroupId, coordinateId)
+      const res = await addFavorite(favoriteGroupId, coordinateId)
+      console.log('res', res)
       setIsToastOpen(true)
     } catch (error) {
       console.error('코디 추가 실패:', error)
