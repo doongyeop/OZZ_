@@ -270,8 +270,8 @@ export default function FittingContainer() {
         ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
       })
 
-      const dataUrl = canvas.toDataURL('image/png')
-      setPreviewUrl(dataUrl)
+      // const dataUrl = canvas.toDataURL('image/png')
+      // setPreviewUrl(dataUrl)
 
       // 5. 숨겨진 요소 다시 표시
       /* eslint-disable no-param-reassign */
