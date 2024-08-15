@@ -16,7 +16,7 @@ export default function Preview({ title, items }: PreviewProps) {
       itemName: '옷',
     },
     코디북: {
-      link: '/coordi',
+      link: '/book',
       itemName: '코디',
     },
   }
