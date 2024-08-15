@@ -142,33 +142,42 @@ export default function CoordiBook() {
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent
-            className={`object-cover p-0 flex flex-wrap ${
-              images.length >= 4 ? 'w-full h-full' : ''
-            }`}
-          >
-            {images.length > 0 ? (
-              images.slice(0, 4).map((image) => (
-                <div
-                  key={image.fileId} // fileId를 key로 사용
-                  className={`${
-                    images.length >= 4
-                      ? 'w-1/2 h-1/2 overflow-hidden'
-                      : 'h-full w-full'
-                  }`}
-                >
-                  <Image
-                    src={image.src}
-                    alt={group.name} // alt 속성에서 중복된 이미지 관련 단어 제거
-                    layout="fill"
-                    objectFit="cover"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="hidden"> </div>
-            )}
+          <CardContent className="object-cover p-0 flex flex-wrap w-full h-full">
+            {(() => {
+              switch (true) {
+                case images.length === 0:
+                  return <div className="hidden"> </div>
+
+                case images.length < 4:
+                  return (
+                    <div className="w-full h-full">
+                      <Image
+                        src={images[0].src}
+                        alt={group.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )
+
+                default:
+                  return images.slice(0, 4).map((image) => (
+                    <div
+                      key={image.fileId}
+                      className="w-1/2 h-1/2 overflow-hidden"
+                    >
+                      <Image
+                        src={image.src}
+                        alt={group.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))
+              }
+            })()}
           </CardContent>
         </Card>
         <CardTitle
