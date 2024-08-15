@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Modal from '@/components/Modal'
 import { Button } from '@/components/ui/button'
 import { HiPencil } from 'react-icons/hi'
+import AlertModal from './AlertModal'
 
 type CoordiNameModalProps = {
   onClose: () => void
@@ -15,13 +16,20 @@ export default function CoordiNameModal({
   setValue,
 }: CoordiNameModalProps) {
   const [coordiName, setCoordiName] = useState('')
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const handleSave = () => {
     if (coordiName.trim() === '') {
-      alert('코디 이름을 입력하세요.')
+      setAlertMessage(['코디 이름을 입력해주세요'])
+      setIsAlertOpen(true)
       return
     }
     setValue(coordiName)
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -44,6 +52,9 @@ export default function CoordiNameModal({
           다음
         </Button>
       </div>
+      {isAlertOpen && (
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </Modal>
   )
 }

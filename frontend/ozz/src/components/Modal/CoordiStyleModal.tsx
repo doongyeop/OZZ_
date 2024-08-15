@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Modal from '@/components/Modal'
 import { Button } from '@/components/ui/button'
 import { Style, styleMap } from '@/types/clothing'
+import AlertModal from '@/components/Modal/AlertModal'
 
 type StyleModalProps = {
   onClose: () => void
@@ -32,6 +33,8 @@ export default function CoordiStyleModal({
     스트릿: false,
     캐주얼: false,
   })
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const toggleSeason = (style: string) => {
     setSelectedStyles((prevStyles) => ({
@@ -42,7 +45,8 @@ export default function CoordiStyleModal({
 
   const handleSave = () => {
     if (!selectedStyles) {
-      alert('적어도 하나의 스타일 태그를 선택하세요.')
+      setAlertMessage(['적어도 하나의 스타일', ' 태그를 선택하세요'])
+      setIsAlertOpen(true)
       return
     }
     const selected: Style[] = (
@@ -51,6 +55,9 @@ export default function CoordiStyleModal({
       .filter((s) => selectedStyles[s])
       .map((s) => styleMap[s])
     setValue(selected)
+  }
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -87,6 +94,9 @@ export default function CoordiStyleModal({
           다음
         </Button>
       </div>
+      {isAlertOpen && (
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </Modal>
   )
 }
