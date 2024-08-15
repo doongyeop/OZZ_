@@ -40,7 +40,7 @@ export default function CoordiBookSelectModal({
     try {
       const createdGroup = await createFavoriteGroup(requestData)
       // 새로운 코디북을 선택된 것으로 처리
-      onSelect(createdGroup[0].favoriteGroupId)
+      onSelect(createdGroup.favoriteGroupId)
       setIsCreateModalOpen(false)
     } catch (error) {
       console.error('코디북 생성 실패:', error)
