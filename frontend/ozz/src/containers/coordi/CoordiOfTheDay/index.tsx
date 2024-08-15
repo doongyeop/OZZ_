@@ -134,13 +134,16 @@ export default function CoordiOfTheDay({ token }: { token: string }) {
     if (tag === '전체') {
       setSelectedTags(['전체'])
     } else {
-      setSelectedTags((prevTags) =>
-        prevTags.includes(tag)
-          ? prevTags.length === 1
+      setSelectedTags((prevTags) => {
+        if (prevTags.includes(tag)) {
+          return prevTags.length === 1
             ? ['전체']
             : prevTags.filter((t) => t !== tag)
-          : [...prevTags.filter((t) => t !== '전체'), tag],
-      )
+        }
+        // tag가 선택되지 않은 경우
+        // '전체'가 선택된 경우에는 '전체'를 제외하고 tag를 추가
+        return [...prevTags.filter((t) => t !== '전체'), tag]
+      })
     }
   }
 
@@ -198,14 +201,15 @@ export default function CoordiOfTheDay({ token }: { token: string }) {
         <span className="ms-1">AI 코디 추천 받기</span>
       </OutlineButton>
 
-      {isPending ? (
+      {isPending && (
         <div className="mt-16 flex flex-col items-center">
           <ImSpinner8 size="70" className="animate-spin text-gray-dark" />
           <div className="text-center font-semibold my-4">
             추천 코디 생성 중...
           </div>
         </div>
-      ) : isError || (coordinations && coordinations.length === 0) ? (
+      )}
+      {isError || (coordinations && coordinations.length === 0) ? (
         <div className="mt-10 flex flex-col items-center">
           <RxCross2 size="90" className="text-gray-dark" />
           <div className="text-center font-semibold">
