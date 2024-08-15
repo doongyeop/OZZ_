@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -25,11 +26,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class ClothesSearchQueryRepositoryImpl implements ClothesSearchQueryRepository {
 
     private final ElasticsearchOperations operations;
     private final WebClient webClient;
+
+    public ClothesSearchQueryRepositoryImpl(ElasticsearchOperations operations, WebClient webClient) {
+        operations.withRefreshPolicy(RefreshPolicy.WAIT_UNTIL);
+        this.operations = operations;
+        this.webClient = webClient;
+    }
 
     public float[] getVector(String text) {
         return Objects.requireNonNull(webClient.post()

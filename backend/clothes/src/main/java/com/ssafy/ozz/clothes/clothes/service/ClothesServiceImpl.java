@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
@@ -82,7 +84,9 @@ public class ClothesServiceImpl implements ClothesService {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
         Long imageFileId = fileInfo.fileId();
-        return clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
+        Clothes clothes = clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
+        clothesSearchRepository.save(new ClothesDocument(clothes));
+        return clothes;
     }
 
     @Override
@@ -104,6 +108,8 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.changePattern(toBits(request.patternList()));
         clothes.changeExtra(request.extra());
         clothes.updateProcessing(request.processing());
+        clothes.changeUpdatedDate();
+
         return clothes;
     }
 
@@ -118,6 +124,12 @@ public class ClothesServiceImpl implements ClothesService {
         }else{
             // 기존 이미지 파일 불러오기
             fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow();
+        }
+        Optional<ClothesDocument> optionalDocument = clothesSearchRepository.findById(clothesId);
+        if (optionalDocument.isPresent()) {
+            ClothesDocument document = optionalDocument.get();
+            document.update(clothes);
+            clothesSearchRepository.save(document);
         }
 
         return new ClothesWithFileResponse(clothes, fileInfo);
