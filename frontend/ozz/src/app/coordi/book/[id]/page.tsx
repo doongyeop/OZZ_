@@ -239,7 +239,12 @@ export default function CoordiBookDetailPage({
 
       <PlusButton onClick={() => setShowModal(true)} />
 
-      {showModal && <CoordiViewModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <CoordiViewModal
+          onClose={() => setShowModal(false)}
+          favoriteGroupId={params.id}
+        />
+      )}
     </div>
   )
 }
