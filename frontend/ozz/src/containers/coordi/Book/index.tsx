@@ -163,7 +163,7 @@ export default function CoordiBook() {
                   return images.slice(0, 4).map((image) => (
                     <div
                       key={image.fileId}
-                      className="relative w-1/2 h-1/2 overflow-hidden"
+                      className="relative grid grid-cols-2 overflow-hidden"
                     >
                       <Image
                         src={image.src}
