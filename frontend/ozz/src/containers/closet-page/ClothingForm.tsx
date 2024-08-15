@@ -39,6 +39,7 @@ import {
   colorInvMap,
   patternInvMap,
   categoryNameToLowIdMap,
+  categoryLowNameToHighName,
 } from '@/types/clothing'
 import { extractClothing } from '@/services/clothingApi'
 import {
@@ -92,7 +93,9 @@ export default function ClothingForm({
     if (initialData) {
       setName(initialData.name || '')
       setBrandName(initialData.brandName || '')
-      setCategoryName(initialData.categoryName || '')
+      const categoryHighName =
+        categoryLowNameToHighName[initialData.categoryName || '']
+      setCategoryName(`${categoryHighName} > ${initialData.categoryName}` || '')
       setPurchaseDate(initialData.purchaseDate || null)
       setPurchaseSite(initialData.purchaseSite || null)
       setSeason(initialData.season || [])
@@ -156,9 +159,11 @@ export default function ClothingForm({
 
       const [categoryHighName] = categoryName.split(' > ')
       try {
+        console.log('이미지 분석 시작')
+        console.log('imageFile ', imageFile)
         const result = await extractClothing(imageFile, categoryHighName)
 
-        setName(result.name || '')
+        setName(name || '')
         setBrandName(result.brand || '')
         setCategoryName(
           `${result.categoryHigh.name} > ${result.categoryLow.name}`,
