@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getUserInfo } from '@/services/userApi'
 import { getFile, downloadFile } from '@/services/fileApi'
-import { syncTokensWithCookies, logout } from '@/services/authApi'
+import { syncTokensWithCookies } from '@/services/authApi'
 import Image from 'next/image'
 import Modal from '@/components/Modal'
 import { FaUser } from 'react-icons/fa6'
@@ -14,6 +14,14 @@ import { HiPhotograph, HiBell } from 'react-icons/hi'
 import { IoIosSettings } from 'react-icons/io'
 import { FaChevronRight } from 'react-icons/fa'
 import LoadingPage from '@/components/Loading/loading'
+
+export const deleteAllCookies = () => {
+  const cookies = document.cookie.split(';')
+  cookies.forEach((cookie) => {
+    const cookieName = cookie.split('=')[0].trim()
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+  })
+}
 
 export default function MyPageIndex() {
   const router = useRouter()
@@ -69,7 +77,8 @@ export default function MyPageIndex() {
 
   const logOut = async () => {
     try {
-      await logout()
+      deleteAllCookies()
+      // await logout()
       router.push('/login')
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error)
