@@ -76,7 +76,7 @@ export default function CoordiBook() {
   }, [])
 
   const goToCoordiBook = (id: number, name: string) => {
-    router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
+    router.push(`/book/${id}?name=${encodeURIComponent(name)}`)
   }
 
   const closeModal = () => {

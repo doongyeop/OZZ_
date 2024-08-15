@@ -187,6 +187,11 @@ export default function CoordiBookDetailPage({
     )
   }
 
+  const handleCloseModal = () => {
+    setShowModal(false)
+    fetchCoordiBook(params.id) // 모달이 닫힐 때 다시 데이터 가져오기
+  }
+
   return (
     <div>
       <HeaderWithBackward title="코디북" />
@@ -241,7 +246,7 @@ export default function CoordiBookDetailPage({
 
       {showModal && (
         <CoordiViewModal
-          onClose={() => setShowModal(false)}
+          onClose={handleCloseModal} // 모달이 닫힐 때 handleCloseModal 호출
           favoriteGroupId={params.id}
         />
       )}

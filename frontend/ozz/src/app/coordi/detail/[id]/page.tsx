@@ -132,7 +132,7 @@ export default function SavedCoordiPage({
       if (res.status === 200) {
         console.log('삭제 완료')
         setToastMessage('삭제 완료')
-        router.push('/coordi/book')
+        router.push('/book')
       }
     } catch (error) {
       console.error('코디 삭제 중 오류 발생:', error)
