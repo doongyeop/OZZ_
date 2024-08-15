@@ -1,5 +1,5 @@
 {
-  "theme_color": "#daf1a2",
+  "theme_color": "#3e3e3e",
   "background_color": "#3e3e3e",
   "icons": [
     {
@@ -15,14 +15,13 @@
       "type": "image/png"
     }
   ],
-  "orientation": "any",
+  "orientation": "portrait",
   "display": "standalone",
   "dir": "auto",
   "lang": "ko-KR",
-  "name": "옷짱 : OZZ",
+  "name": "옷짱 | OZZ",
   "short_name": "OZZ",
-  "start_url": "https://i11a804.p.ssafy.io",
-  "scope": ".",
+  "start_url": "https://i11a804.p.ssafy.io/",
   "description": "디지털 옷장 관리 서비스",
   "id": "https://i11a804.p.ssafy.io"
 }
