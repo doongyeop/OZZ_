@@ -4,9 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { IoIosArrowDown } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-
 import {
   Popover,
   PopoverContent,
@@ -14,42 +14,136 @@ import {
 } from '@/components/ui/popover'
 import TagButton from '@/components/Button/TagButton'
 import { useWeather } from '@/contexts/WeatherContext'
-import Image from 'next/image'
+import { useSelectedColor } from '@/contexts/SelectedColorContext'
+import { ClothingItem, useSelectedItem } from '@/contexts/SelectedItemContext'
+import { Color, Style, styleMap } from '@/types/clothing'
+import { ImSpinner8 } from 'react-icons/im'
+import OutlineButton from '@/components/Button/OutlineButton'
+import { LuBrainCircuit } from 'react-icons/lu'
+import CoordiImage from '@/containers/coordi/CoordiImage'
 
-const styleTags = [
-  '전체',
-  '스트릿',
-  '캐주얼',
-  '스포티',
-  '포멀',
-  '로맨틱',
-  '엘레강스',
-  '매니시',
-  '모던',
-  '내추럴',
-  '에스닉',
-]
+export interface CoordiItem {
+  id: number
+  imgPath: string
+  offset: number
+}
+export interface Coordination {
+  title: string
+  items: CoordiItem[]
+  style: Style
+}
 
-export default function CoordiOfTheDay({
-  coordinations,
+const styleTags = ['전체', ...Object.keys(styleMap)]
+
+const fetchRecommendations = async ({
+  selectedWeather,
+  selectedTags,
+  selectedColors,
+  selectedItem,
+  token,
 }: {
-  coordinations: { id: string; image: string }[]
-}) {
+  selectedWeather: any
+  selectedTags: string[]
+  selectedColors: Color[]
+  selectedItem: ClothingItem | null
+  token: string
+}): Promise<Coordination[]> => {
+  const pointColor =
+    selectedColors.length > 0
+      ? selectedColors.map((color: Color) => color.code)
+      : null
+  const essential: number[] | null = selectedItem
+    ? [selectedItem.clothesId]
+    : null
+  const style =
+    selectedTags[0] !== '전체'
+      ? selectedTags.map((tag) => styleMap[tag]).join(',')
+      : null
+
+  const requestBody = {
+    weather: {
+      temperature: Math.round(
+        (selectedWeather.minTemp + selectedWeather.maxTemp) / 2,
+      ),
+      weather: selectedWeather.description,
+    },
+    pointColor,
+    essential,
+    style,
+  }
+
+  const response = await fetch('https://i11a804.p.ssafy.io/api/ai/recommend', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(requestBody),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch recommendations')
+  }
+
+  const data = await response.json()
+  console.log(data)
+
+  return data.map((item: Coordination) => ({
+    title: item.title,
+    items: item.items,
+    style: item.style,
+  }))
+}
+
+export default function CoordiOfTheDay({ token }: { token: string }) {
   const { selectedWeather } = useWeather()
+  const { selectedColor } = useSelectedColor()
+  const { selectedItem } = useSelectedItem()
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
+
+  const queryClient = useQueryClient()
+
+  // 캐시된 코디 데이터를 가져오는 useQuery
+  const { data: coordinations } = useQuery<Coordination[] | null>({
+    queryKey: ['coordiRecommendations'],
+    staleTime: Infinity, // 데이터를 오래 유지
+    queryFn: () => {
+      const cachedData = queryClient.getQueryData<Coordination[]>([
+        'coordiRecommendations',
+      ])
+      return cachedData ?? null
+    },
+  })
+
+  // 새로운 코디 데이터를 요청하는 useMutation
+  const { mutate, isPending, isError } = useMutation({
+    mutationFn: () =>
+      fetchRecommendations({
+        selectedWeather,
+        selectedTags,
+        selectedColors: selectedColor,
+        selectedItem,
+        token,
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['coordiRecommendations'], data)
+    },
+  })
 
   const handleTagClick = (tag: string) => {
     if (tag === '전체') {
       setSelectedTags(['전체'])
     } else {
-      setSelectedTags((prevTags) =>
-        // eslint-disable-next-line no-nested-ternary
-        prevTags.includes(tag)
-          ? prevTags.length === 1
+      setSelectedTags((prevTags) => {
+        if (prevTags.includes(tag)) {
+          return prevTags.length === 1
             ? ['전체']
             : prevTags.filter((t) => t !== tag)
-          : [...prevTags.filter((t) => t !== '전체'), tag],
-      )
+        }
+        // tag가 선택되지 않은 경우
+        // '전체'가 선택된 경우에는 '전체'를 제외하고 tag를 추가
+        return [...prevTags.filter((t) => t !== '전체'), tag]
+      })
     }
   }
 
@@ -77,7 +171,7 @@ export default function CoordiOfTheDay({
               <IoIosArrowDown />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="me-4 bg-gray-light">
+          <PopoverContent align="end" className="bg-gray-light w-60">
             <div className="flex flex-wrap gap-2">
               {styleTags.map((tag) => (
                 <TagButton
@@ -92,7 +186,7 @@ export default function CoordiOfTheDay({
           </PopoverContent>
         </Popover>
       </div>
-      <div>
+      <div className="mb-3">
         <div className="my-2 flex flex-wrap gap-2">
           {selectedTags.map((tag) => (
             <TagButton key={tag} isSelected onClick={() => handleTagClick(tag)}>
@@ -101,24 +195,22 @@ export default function CoordiOfTheDay({
           ))}
         </div>
       </div>
-      {coordinations.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          {coordinations.map((coordination, index) => (
-            <Link key={coordination.id} href={`/coordi/${coordination.id}`}>
-              <Image
-                key={coordination.id}
-                src={coordination.image}
-                alt={`Coordination ${index + 1}`}
-                width={0}
-                height={0}
-                sizes="100%"
-                className="w-full h-auto"
-              />
-            </Link>
-          ))}
+
+      <OutlineButton onClick={() => mutate()}>
+        <LuBrainCircuit className="text-primary-400" />
+        <span className="ms-1">AI 코디 추천 받기</span>
+      </OutlineButton>
+
+      {isPending && (
+        <div className="mt-16 flex flex-col items-center">
+          <ImSpinner8 size="70" className="animate-spin text-gray-dark" />
+          <div className="text-center font-semibold my-4">
+            추천 코디 생성 중...
+          </div>
         </div>
-      ) : (
-        <div className="mt-20 flex flex-col items-center">
+      )}
+      {isError || (coordinations && coordinations.length === 0) ? (
+        <div className="mt-10 flex flex-col items-center">
           <RxCross2 size="90" className="text-gray-dark" />
           <div className="text-center font-semibold">
             <p>AI 코디 추천을 위해서는</p>
@@ -131,6 +223,23 @@ export default function CoordiOfTheDay({
             내 옷장 바로가기
           </Link>
         </div>
+      ) : (
+        coordinations &&
+        coordinations.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            {coordinations.map((coordination, index) => {
+              const href = `coordi/${index}`
+
+              return (
+                <Link key={coordination.title} href={href}>
+                  <div className="aspect-[9/16] shadow-md transition-transform duration-300 ease-in-out hover:scale-105">
+                    <CoordiImage coordi={coordination} />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )
       )}
     </div>
   )

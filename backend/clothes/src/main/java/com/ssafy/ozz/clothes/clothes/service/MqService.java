@@ -19,7 +19,6 @@ public class MqService {
         try {
             String message = objectMapper.writeValueAsString(extractAttribute);
             rabbitTemplate.convertAndSend("", "extract-attribute", message);
-            rabbitTemplate.convertAndSend("", "image-process", message);
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

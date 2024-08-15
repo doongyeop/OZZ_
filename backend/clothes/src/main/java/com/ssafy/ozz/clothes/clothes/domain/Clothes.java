@@ -163,6 +163,9 @@ public class Clothes {
     public void changePattern(Integer pattern){
         if(pattern != null) this.pattern = pattern;
     }
+    public void changeUpdatedDate(){
+        this.updatedDate = LocalDateTime.now();
+    }
 
     public void updateImageFile(Long imageFileId) {
         if(imageFileId != null) this.imageFileId = imageFileId;
