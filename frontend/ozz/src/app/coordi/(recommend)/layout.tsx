@@ -8,7 +8,7 @@ export default function CoordiRecommendLayout({
 }: {
   children: React.ReactNode
 }) {
-  const rightButton = <HeaderButton icon={<FaBookmark />} href="/coordi/book" />
+  const rightButton = <HeaderButton icon={<FaBookmark />} href="/book" />
 
   return (
     <WeatherProvider>
