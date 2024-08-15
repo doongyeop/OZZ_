@@ -125,11 +125,12 @@ public class ClothesServiceImpl implements ClothesService {
             // 기존 이미지 파일 불러오기
             fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow();
         }
+
         Optional<ClothesDocument> optionalDocument = clothesSearchRepository.findById(clothesId);
         if (optionalDocument.isPresent()) {
             ClothesDocument document = optionalDocument.get();
             document.update(clothes);
-            clothesSearchRepository.save(document);
+            clothesRepository.update(document);
         }
 
         return new ClothesWithFileResponse(clothes, fileInfo);
