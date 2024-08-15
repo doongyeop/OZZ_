@@ -5,7 +5,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { HiPencil, HiPlus } from 'react-icons/hi'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardTitle } from '@/components/ui/card'
 import Modal from '@/components/Modal'
 import ConfirmModal from '@/components/Modal/ConfirmModal'
 import { Coordibook } from '@/types/coordibook'
@@ -15,7 +15,7 @@ import {
   deleteFavoriteGroup,
 } from '@/services/favoriteApi'
 import { downloadFile } from '@/services/fileApi'
-import Image from 'next/image' // next/image 컴포넌트 import
+import Image from 'next/image'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
@@ -135,45 +135,50 @@ export default function CoordiBook() {
     return (
       <div key={group.favoriteGroupId} className="aspect-square">
         <Card
-          className="flex items-center h-full overflow-hidden shadow-md"
+          className="relative h-full w-full overflow-hidden shadow-md"
           onClick={() => goToCoordiBook(group.favoriteGroupId, group.name)}
           onPointerDown={() => handlePointerDown(group.favoriteGroupId)}
           onPointerUp={handlePointerUpOrLeave}
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent className="relative w-full h-full">
-            {(() => {
-              switch (true) {
-                case images.length === 0:
-                  return <div className="hidden"> </div>
+          {(() => {
+            switch (true) {
+              case images.length === 0:
+                return <div className="hidden"> </div>
 
-                case images.length < 4:
-                  return (
-                    <Image
-                      src={images[0].src}
-                      alt={group.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="absolute w-full h-full"
-                    />
-                  )
+              case images.length < 4:
+                return (
+                  <Image
+                    src={images[0].src}
+                    alt={group.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="absolute w-full h-full"
+                  />
+                )
 
-                default:
-                  return images.slice(0, 4).map((image) => (
-                    <div key={image.fileId} className="relative w-1/2 h-1/2">
-                      <Image
-                        src={image.src}
-                        alt={group.name}
-                        layout="fill"
-                        objectFit="cover"
-                        className="absolute w-full h-full"
-                      />
-                    </div>
-                  ))
-              }
-            })()}
-          </CardContent>
+              default:
+                return (
+                  <div className="grid grid-cols-2 grid-rows-2 w-full h-full">
+                    {images.slice(0, 4).map((image) => (
+                      <div
+                        key={image.fileId}
+                        className="relative w-full h-full"
+                      >
+                        <Image
+                          src={image.src}
+                          alt={group.name}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                          className="absolute w-full h-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )
+            }
+          })()}
         </Card>
         <CardTitle
           className="text-left text-black font-medium text-sm mt-2"

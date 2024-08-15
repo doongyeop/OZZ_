@@ -18,7 +18,10 @@ export default function ClothesRegistButton() {
           <FaPlus size={20} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full border-0 shadow-none bg-none">
+      <PopoverContent
+        align="end"
+        className="w-full border-0 shadow-none bg-none"
+      >
         <RegistMenu />
       </PopoverContent>
     </Popover>
