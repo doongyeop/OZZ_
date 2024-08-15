@@ -54,6 +54,7 @@
 - Docker 27.1.1
 - Docker Compose 2.28.1
 - Jenkins 2.471
+- RabbitMQ 3.13.6
 <br><br>
 
 ## 2. 빌드 시 사용되는 환경 변수
@@ -314,6 +315,9 @@ chown root:docker /var/run/docker.sock
 
 ## 4. 외부 서비스
 
-### Kakao Oauth2.0 카카오 로그인
-
-### Naver Oauth2.0 네이버 로그인
+#### Kakao Oauth2.0 카카오 로그인
+#### Naver Oauth2.0 네이버 로그인
+#### OpenAI 
+#### Open Weather API
+#### YOLOv8
+#### SegFormer
