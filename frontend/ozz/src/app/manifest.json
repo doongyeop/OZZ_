@@ -23,5 +23,8 @@
   "short_name": "OZZ",
   "start_url": "https://i11a804.p.ssafy.io/",
   "description": "디지털 옷장 관리 서비스",
-  "id": "https://i11a804.p.ssafy.io"
+  "id": "https://i11a804.p.ssafy.io",
+  "permissions": [
+    "geolocation"
+  ]
 }
