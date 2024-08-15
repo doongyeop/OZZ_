@@ -89,8 +89,8 @@ public class ClothesDocument {
         this.id = String.valueOf(clothes.getClothesId());
         this.clothesId = clothes.getClothesId();
         this.name = clothes.getName();
-        this.size = clothes.getSize().ordinal();
-        this.fit = clothes.getFit().ordinal();
+        this.size = clothes.getSize() != null ? clothes.getSize().ordinal() : null;
+        this.fit = clothes.getFit() != null ? clothes.getFit().ordinal() : null;
         this.memo = clothes.getMemo();
         this.brand = clothes.getBrand();
         this.createdDate = clothes.getCreatedDate();
@@ -110,8 +110,8 @@ public class ClothesDocument {
 
     public void update(Clothes clothes) {
         this.name = clothes.getName();
-        this.size = clothes.getSize().ordinal();
-        this.fit = clothes.getFit().ordinal();
+        this.size = clothes.getSize() != null ? clothes.getSize().ordinal() : null;
+        this.fit = clothes.getFit() != null ? clothes.getFit().ordinal() : null;
         this.memo = clothes.getMemo();
         this.brand = clothes.getBrand();
         this.updatedDate = clothes.getUpdatedDate();
