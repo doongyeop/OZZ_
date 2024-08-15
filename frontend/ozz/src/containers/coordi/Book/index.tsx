@@ -170,7 +170,7 @@ export default function CoordiBook() {
                         alt={group.name}
                         fill
                         style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
-                        className="absolute w-full h-full"
+                        className="w-full h-full"
                       />
                     </div>
                   ))
