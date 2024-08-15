@@ -59,12 +59,18 @@ const placeholderImages: { [key: string]: string } = {
 }
 
 // 랜덤한 파스텔톤 색상을 생성하는 함수
+const pastelColors = [
+  { name: 'Light Baby Blue', hex: '#D0E7FF' },
+  { name: 'Pale Lavender', hex: '#E6E6FA' },
+  { name: 'Soft Peach', hex: '#FFE5D9' },
+  { name: 'Mint Cream', hex: '#F5FFFA' },
+  { name: 'Blush Pink', hex: '#FFDDE1' },
+  { name: 'Lemon Chiffon', hex: '#FFF9DB' },
+]
+
 const generateRandomPastelColor = () => {
-  const randomValue = () => Math.floor(Math.random() * 128 + 127).toString(16) // 127~255 사이의 값으로 파스텔톤 생성
-  const r = randomValue()
-  const g = randomValue()
-  const b = randomValue()
-  return `#${r}${g}${b}`
+  const randomIndex = Math.floor(Math.random() * pastelColors.length)
+  return pastelColors[randomIndex].hex
 }
 
 export default function FittingContainer() {
@@ -204,6 +210,32 @@ export default function FittingContainer() {
     setIsCoordiModalOpen(false)
     setIsStyleModalOpen(true)
   }
+  const closeModal = () => {
+    setIsCoordiModalOpen(false) // 코디 이름 설정 모달
+    setIsStyleModalOpen(false) // 스타일 태그 설정 모달
+    setIsToastOpen(false)
+  }
+  const handleConfirm = () => {
+    closeModal()
+    setIsToastOpen(false)
+    router.push('/coordi/book')
+  }
+
+  const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
+    try {
+      if (!coordinateId) return
+
+      await addFavorite(favoriteGroupId, coordinateId)
+      setIsToastOpen(true)
+    } catch (error) {
+      console.error('코디 추가 실패:', error)
+      setAlertMessage(['코디 추가에 실패했습니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
+    } finally {
+      setIsCoordiBookModalOpen(false)
+      handleConfirm()
+    }
+  }
 
   const handleStyleSubmit = async (selectedStyles: Style[]) => {
     // console.log('코디이름 : ', coordiName)
@@ -305,26 +337,26 @@ export default function FittingContainer() {
         // console.log('payload ', payload)
 
         try {
-          const coordinateId = await createCoordinate(payload)
-          setCoordinateId(coordinateId)
+          const coordiId = await createCoordinate(payload)
+          setCoordinateId(coordiId)
 
           // 코디북 조회
-          const favoriteGroups = await getFavoritesGroupListOfUsers()
+          const favGroups = await getFavoritesGroupListOfUsers()
           // 코디북이 없으면 기본 코디북 생성
-          if (favoriteGroups.length === 0) {
+          if (favGroups.length === 0) {
             const requestData: FavoriteGroupCreateRequest = {
               name: '기본 코디북',
             }
             const createdGroup = await createFavoriteGroup(requestData)
             // console.log('createdGroup', createdGroup)
             handleFavoriteGroupSelect(createdGroup[0].favoriteGroupId)
-          } else if (favoriteGroups.length === 1) {
+          } else if (favGroups.length === 1) {
             // 코디북이 하나만 있으면 바로 사용
-            handleFavoriteGroupSelect(favoriteGroups[0].favoriteGroupId)
+            handleFavoriteGroupSelect(favGroups[0].favoriteGroupId)
           } else {
             // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
             // 코디북이 여러 개 있으면 선택 모달을 띄움
-            setFavoriteGroups(favoriteGroups)
+            setFavoriteGroups(favGroups)
             setIsCoordiBookModalOpen(true)
           }
 
@@ -361,42 +393,9 @@ export default function FittingContainer() {
     }
   }
 
-  const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
-    try {
-      if (!coordinateId) return
-
-      await addFavorite(favoriteGroupId, coordinateId)
-      setIsToastOpen(true)
-    } catch (error) {
-      console.error('코디 추가 실패:', error)
-      setAlertMessage(['코디 추가에 실패했습니다', ' 다시 시도해주세요'])
-      setIsAlertOpen(true)
-    } finally {
-      setIsCoordiBookModalOpen(false)
-      handleConfirm()
-    }
-  }
-
   const handlePrevFromStyle = () => {
     setIsStyleModalOpen(false)
     setIsCoordiModalOpen(true)
-  }
-
-  const handlePrevFromConfirm = () => {
-    setIsToastOpen(false)
-    setIsStyleModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsCoordiModalOpen(false) // 코디 이름 설정 모달
-    setIsStyleModalOpen(false) // 스타일 태그 설정 모달
-    setIsToastOpen(false)
-  }
-
-  const handleConfirm = () => {
-    closeModal()
-    setIsToastOpen(false)
-    router.push('/coordi/book')
   }
 
   const handleAlertClose = () => {

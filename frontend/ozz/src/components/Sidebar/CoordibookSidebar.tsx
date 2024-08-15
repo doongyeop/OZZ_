@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { FaChevronDown } from 'react-icons/fa'
 import styles from '@/styles/CoordibookSidebar.module.css'
-import CreateCoordibookModal from '@/components/Modal/CreateCoordibookModal'
+import CreateCoordibookModal from '@/components/Modal/CreateCoordiBookModal'
 
 type CoordibookSidebarProps = {
   boardId: number

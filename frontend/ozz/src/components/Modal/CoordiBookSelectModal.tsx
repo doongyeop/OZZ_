@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-import { Button } from '../ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import CreateCoordiBookModal from './CreateCoordibookModal'
-import AlertModal from './AlertModal'
 import { FavoriteGroupCreateRequest } from '@/types/favorite/data-contracts'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { createFavoriteGroup } from '@/services/favoriteApi'
+import CreateCoordiBookModal from './CreateCoordiBookModal'
+import AlertModal from './AlertModal'
+import { Button } from '../ui/button'
 
 type FavoriteGroup = {
   favoriteGroupId: number
@@ -87,7 +87,6 @@ export default function CoordiBookSelectModal({
             <li>
               <Button
                 type="button"
-                variant={'default'}
                 onClick={() => setIsCreateModalOpen(true)}
                 className="w-full text-left py-2 px-4 rounded-lg border-primary-400"
               >
@@ -98,7 +97,7 @@ export default function CoordiBookSelectModal({
               <li key={group.favoriteGroupId}>
                 <Button
                   type="button"
-                  variant={'outline'}
+                  variant="outline"
                   onClick={() => onSelect(group.favoriteGroupId)}
                   className="w-full text-left py-2 px-4 rounded-lg"
                 >
