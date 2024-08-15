@@ -130,8 +130,7 @@ const fetchOrderDataUsingPuppeteer = async (
   let moreData = true
 
   while (moreData) {
-    // 여기 기간 바꿔둠!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    const orderListUrl = `https://api.a-bly.com/webview/orders/?page=${pageNum}&query=&min_ordered_at=2024-03-20&max_ordered_at=2024-12-31`
+    const orderListUrl = `https://api.a-bly.com/webview/orders/?page=${pageNum}&query=&min_ordered_at=2016-01-01&max_ordered_at=2024-12-31`
 
     // eslint-disable-next-line no-await-in-loop
     const response = await page.evaluate(
