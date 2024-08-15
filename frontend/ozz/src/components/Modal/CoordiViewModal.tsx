@@ -1,10 +1,13 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight } from 'react-icons/hi'
+import { HiChevronLeft, HiChevronRight, HiX } from 'react-icons/hi'
+import Image from 'next/image'
 import { getCoordinateList } from '@/services/clothingApi'
 import { downloadFile } from '@/services/fileApi'
 import { addFavorite } from '@/services/favoriteApi' // addFavorite 함수 import
 
-export default function CoordiViewModal() {
+export default function CoordiViewModal({ onClose }: { onClose: () => void }) {
   const [coordinates, setCoordinates] = useState<any[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -13,10 +16,7 @@ export default function CoordiViewModal() {
   >(null)
   const itemsPerPage = 10
 
-  useEffect(() => {
-    fetchCoordinates(currentPage)
-  }, [currentPage])
-
+  // `fetchCoordinates` 함수 선언을 먼저 합니다.
   const fetchCoordinates = async (page: number) => {
     setLoading(true)
 
@@ -43,14 +43,17 @@ export default function CoordiViewModal() {
     }
   }
 
+  useEffect(() => {
+    fetchCoordinates(currentPage)
+  }, [currentPage])
+
   // 즐겨찾기 추가 함수
   const handleAddFavorite = async (favoriteGroupId: number) => {
     if (selectedCoordinateId === null) return
 
     try {
-      const response = await addFavorite(favoriteGroupId, selectedCoordinateId)
-      console.log('즐겨찾기 추가 성공:', response)
-      // 추가 성공 후 로직
+      await addFavorite(favoriteGroupId, selectedCoordinateId)
+      // 추가 성공 후 로직 처리
     } catch (error) {
       console.error('즐겨찾기 추가 중 오류 발생:', error)
     }
@@ -68,13 +71,18 @@ export default function CoordiViewModal() {
   }
 
   return (
-    <div className="fixed inset-0 bg-secondary bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-4 rounded-lg w-[90%] max-w-[600px] h-[80%] flex flex-col">
+    <div className="fixed inset-0 bg-secondary bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-4 rounded-lg w-[90%] max-w-[600px] h-[80%] flex flex-col relative">
         {/* 모달 헤더 */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">코디 보기</h2>
-          <button onClick={() => setCurrentPage(1)} className="text-gray-500">
-            닫기
+          <button
+            onClick={onClose}
+            className="text-gray-500"
+            type="button"
+            aria-label="닫기"
+          >
+            <HiX className="w-6 h-6" />
           </button>
         </div>
 
@@ -95,13 +103,20 @@ export default function CoordiViewModal() {
                     : ''
                 }`}
                 onClick={() => setSelectedCoordinateId(coordinate.coordinateId)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setSelectedCoordinateId(coordinate.coordinateId)
+                  }
+                }}
+                role="button"
+                tabIndex={0}
               >
                 {/* 다운로드된 이미지 표시 */}
-                <img
-                  src={coordinate.imageUrl}
+                <Image
+                  src={coordinate.imageUrl || '/placeholder.png'}
                   alt="coordinate"
-                  className="object-cover w-full h-full"
-                  style={{ aspectRatio: '9 / 16' }}
+                  layout="fill"
+                  objectFit="cover"
                 />
               </div>
             ))}
@@ -114,6 +129,7 @@ export default function CoordiViewModal() {
             <button
               className="px-4 py-2 bg-primary-400 text-white rounded-lg"
               onClick={() => handleAddFavorite(1)} // favoriteGroupId는 예시로 1을 넣었습니다.
+              type="button"
             >
               즐겨찾기 추가
             </button>
@@ -122,8 +138,13 @@ export default function CoordiViewModal() {
 
         {/* 페이지네이션 */}
         <div className="mt-4 flex items-center justify-center space-x-4">
-          <button onClick={handlePrevPage} disabled={currentPage === 1}>
-            <ChevronLeft className="w-5 h-5" />
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            type="button"
+            aria-label="이전 페이지"
+          >
+            <HiChevronLeft className="w-5 h-5" />
           </button>
           <span className="text-sm font-medium">
             {currentPage} / {Math.ceil(coordinates.length / itemsPerPage)}
@@ -133,8 +154,10 @@ export default function CoordiViewModal() {
             disabled={
               currentPage === Math.ceil(coordinates.length / itemsPerPage)
             }
+            type="button"
+            aria-label="다음 페이지"
           >
-            <ChevronRight className="w-5 h-5" />
+            <HiChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>

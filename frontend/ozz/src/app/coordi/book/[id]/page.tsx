@@ -20,7 +20,7 @@ import { FavoriteDetail } from '@/types/coordibook'
 import { styleMap, styleInvMap, Style } from '@/types/clothing'
 import { getFavoritesByGroup, addFavorite } from '@/services/favoriteApi'
 import PlusButton from '@/components/Button/PlusButton'
-import CoordiViewModal from '@/components/CoordiViewModal' // CoordiViewModal 컴포넌트 import
+import CoordiViewModal from '@/components/Modal/CoordiViewModal'
 
 interface CoordiBookDetailPageProps {
   params: { id: number }
