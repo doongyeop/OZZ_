@@ -1,9 +1,9 @@
 import json
 import logging
 import os
-from io import BytesIO
 import traceback
 import time
+from io import BytesIO
 
 import pika
 from pika import exceptions
@@ -11,9 +11,9 @@ import requests
 from requests_toolbelt import MultipartEncoder
 
 from app.core.client.ExtractAttribute import ExtractAttributesURL
-from app.schemas.attributes import NormalizedClothes
-from app.utils.image_process import process
-from app.utils.image_utils import resize_and_convert_to_png
+from app.schemas.attributes import NormalizedClothes, ImageMetadata
+from app.utils.image_process import process, process_url
+from app.utils.image_utils import resize_and_convert_to_png, image_to_base64str
 
 
 def parseToBaseModel(body) -> list[NormalizedClothes] | None:
@@ -27,13 +27,16 @@ def parseToBaseModel(body) -> list[NormalizedClothes] | None:
 
 
 def EAcallback(ch, method, properties, body):
-    data = parseToBaseModel(body)
-    if not data:
+    raw_data = parseToBaseModel(body)
+    if not raw_data:
         return
-    logging.info(f"속성 추출 :  {data}")
+    logging.info(f"속성 추출 :  {raw_data}")
 
+    key_to_imgurl={a.clothId:a.imgUrl for a in raw_data}
+
+    data=None
     try:
-        client = ExtractAttributesURL(data)
+        client = ExtractAttributesURL(raw_data)
         data = client.get_result()
     except Exception as e:
         logging.error(traceback.format_exc())
@@ -54,6 +57,15 @@ def EAcallback(ch, method, properties, body):
             )
             # PUT 요청 보내기
             response = requests.put(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+
+            image_metadata={
+                "clothId": key,
+                "categoryLowId": attr_data["categoryLowId"],
+                "imgUrl": key_to_imgurl[key],
+                "isWorn": attr_data["isWorn"],
+            }
+            ch.basic_publish(exchange='', routing_key="image-process", body=json.dumps(image_metadata))
+
             # 응답 출력
             logging.info(response)
     except Exception as e:
@@ -61,37 +73,38 @@ def EAcallback(ch, method, properties, body):
 
 
 def IPcallback(ch, method, properties, body):
-    data = parseToBaseModel(body)
+    data: ImageMetadata = ImageMetadata(**json.loads(body))
+
     if not data:
         return
-    logging.info(f"이미지 처리 :  {data}")
+    logging.info(f"이미지 처리 :  {str(data)}")
 
     try:
-        for datum in data:
-            processed_image = process(datum.imgUrl, datum.category)
-            #이미지 크기 및 확장자 정규화
-            processed_image = resize_and_convert_to_png(processed_image)
-            # BytesIO 객체에 이미지 저장
-            image_byte_array = BytesIO()
-            processed_image.save(image_byte_array, format='PNG')
-            image_byte_array.seek(0)
+        processed_image = process_url(data)
+        #이미지 크기 및 확장자 정규화
+        processed_image = resize_and_convert_to_png(processed_image)
+        processed_image.save("convertImage.png")
+        # BytesIO 객체에 이미지 저장
+        image_byte_array = BytesIO()
+        processed_image.save(image_byte_array, format='PNG')
+        image_byte_array.seek(0)
 
-            # 엔드포인트 URL 및 clothesId 설정
-            url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{datum.clothId}/image"
+        # 엔드포인트 URL 및 clothesId 설정
+        url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{data.clothId}/image"
 
-            mp_encoder = MultipartEncoder(
-                fields={
-                    "imageFile": (f'{datum.clothId}.png', image_byte_array, "image/png")
-                }
-            )
+        mp_encoder = MultipartEncoder(
+            fields={
+                "imageFile": (f'{data.clothId}.png', image_byte_array, "image/png")
+            }
+        )
 
-            logging.info(f"이미지 등록 :  {url}")
+        logging.info(f"이미지 등록 :  {url}")
 
-            # patch 요청 보내기
-            response = requests.patch(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+        # patch 요청 보내기
+        response = requests.patch(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
 
-            # 응답 출력
-            logging.info(response)
+        # 응답 출력
+        logging.info(response)
     except Exception as e:
         logging.error(traceback.format_exc())
 

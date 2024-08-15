@@ -138,7 +138,7 @@ class ExtractAttributesURL(ExtractAttribute):
             }])
         return content_list
 
-    def get_result(self):
+    def get_result(self) -> dict[int, Attributes]:
         return self.parse_response(self.get_response())
 
 

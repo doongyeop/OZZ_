@@ -17,6 +17,9 @@ const pretendard = localFont({
 export const metadata = {
   title: '옷짱: OZZ',
   description: '내 손안의 작은 옷장',
+  icons: {
+    icon: '/favicon-144x144.png',
+  },
 }
 
 export const viewport: Viewport = {

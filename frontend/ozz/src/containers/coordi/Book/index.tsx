@@ -163,14 +163,14 @@ export default function CoordiBook() {
                   return images.slice(0, 4).map((image) => (
                     <div
                       key={image.fileId}
-                      className="relative w-1/2 h-1/2 overflow-hidden"
+                      className="relative grid grid-cols-2 overflow-hidden"
                     >
                       <Image
                         src={image.src}
                         alt={group.name}
                         fill
                         style={{ objectFit: 'cover' }} // objectFit을 인라인 스타일로 설정
-                        className="absolute w-full h-full"
+                        className="w-full h-full"
                       />
                     </div>
                   ))

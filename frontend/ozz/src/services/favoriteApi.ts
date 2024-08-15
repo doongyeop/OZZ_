@@ -3,18 +3,6 @@ import {
   FavoriteGroupCreateRequest,
   FavoriteListDeleteRequest,
 } from '../types/favorite/data-contracts'
-// import { Api as FavoriteApi } from '@/types/favorite/Api'
-
-// const token =
-//   'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiMTEiLCJpYXQiOjE3MjM2MjA4NDcsImV4cCI6MTcyMzY4MDg0N30.aJDVsoH0rx7iw5ROFBtaq729db1OzqN3d0wQ0sVpARE'
-
-// const favoriteApi = new FavoriteApi({
-//   securityWorker: async () => ({
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }),
-// })
 
 // 즐겨찾기 그룹 생성 함수
 export const createFavoriteGroup = async (
