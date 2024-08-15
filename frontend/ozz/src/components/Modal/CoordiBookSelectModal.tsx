@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { FavoriteGroupCreateRequest } from '@/types/favorite/data-contracts'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { createFavoriteGroup } from '@/services/favoriteApi'
-import CreateCoordiBookModal from './CreateCoordiBookModal'
+import CreateCoordibookModal from './CreateCoordibookModal'
 import AlertModal from './AlertModal'
 import { Button } from '../ui/button'
 
@@ -109,7 +109,7 @@ export default function CoordiBookSelectModal({
         </ScrollArea>
       </div>
       {isCreateModalOpen && (
-        <CreateCoordiBookModal
+        <CreateCoordibookModal
           onClose={() => setIsCreateModalOpen(false)}
           onCreate={handleCreateCoordiBook}
         />
