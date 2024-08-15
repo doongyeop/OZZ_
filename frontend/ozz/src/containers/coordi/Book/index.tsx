@@ -16,6 +16,7 @@ import {
 } from '@/services/favoriteApi'
 import { downloadFile } from '@/services/fileApi'
 import Image from 'next/image' // next/image 컴포넌트 import
+import AlertModal from '@/components/Modal/AlertModal'
 
 export default function CoordiBook() {
   const [createModal, setCreateModal] = useState(false)
@@ -29,6 +30,8 @@ export default function CoordiBook() {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const router = useRouter()
   const longPressTimeout = useRef<NodeJS.Timeout | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const fetchFavoritesGroupList = async () => {
     try {
@@ -73,7 +76,7 @@ export default function CoordiBook() {
   }, [])
 
   const goToCoordiBook = (id: number, name: string) => {
-    router.push(`/coordi/book/${id}?name=${encodeURIComponent(name)}`)
+    router.push(`/book/${id}?name=${encodeURIComponent(name)}`)
   }
 
   const closeModal = () => {
@@ -82,7 +85,9 @@ export default function CoordiBook() {
 
   async function createCoordiBook() {
     if (newGroupName.length > 10 || newGroupName.length <= 0) {
-      alert('코디북 이름은 1-10글자여야 합니다.')
+      // alert('코디북 이름은 1-10글자여야 합니다.')
+      setAlertMessage(['코디북 이름은', ' 1-10글자여야 합니다'])
+      setIsAlertOpen(true)
       return
     }
 
@@ -96,6 +101,8 @@ export default function CoordiBook() {
       fetchFavoritesGroupList()
     } catch (error) {
       console.error('코디북 생성 중 오류 발생:', error)
+      setAlertMessage(['코디북 생성에 실패했습니다', ' 다시 시도해주세요'])
+      setIsAlertOpen(true)
     }
   }
 
@@ -123,7 +130,9 @@ export default function CoordiBook() {
       if (res.status === 204) {
         fetchFavoritesGroupList()
       } else {
-        console.log('삭제 요청은 갔지만 문제가 발생했습니다.')
+        // console.log('삭제 요청은 갔지만 문제가 발생했습니다.')
+        setAlertMessage(['코디북 삭제에 실패했습니다', ' 다시 시도해주세요'])
+        setIsAlertOpen(true)
       }
     } catch (err) {
       console.log(err)
@@ -142,7 +151,7 @@ export default function CoordiBook() {
           onPointerLeave={handlePointerUpOrLeave}
           draggable={false}
         >
-          <CardContent className="relative w-full h-full">
+          <CardContent className="p-0 relative w-full h-full">
             {images.length >= 4 ? (
               <div className="grid grid-cols-2 grid-rows-2 w-full h-full">
                 {images.slice(0, 4).map((image) => (
@@ -178,6 +187,10 @@ export default function CoordiBook() {
         </CardTitle>
       </div>
     )
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -230,6 +243,9 @@ export default function CoordiBook() {
           onConfirm={deleteCoordiBook}
           message="코디북을 삭제하시겠습니까?"
         />
+      )}
+      {isAlertOpen && (
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
       )}
     </div>
   )

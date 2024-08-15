@@ -30,13 +30,14 @@ export default function CoordiViewModal({
 
   const itemsPerPage = 10
 
-  const fetchCoordinates = async (page: number) => {
+  // 모든 코디 이미지 불러오기
+  const fetchAllCoordinates = async () => {
     setLoading(true)
 
     const condition = {}
     const pageable = {
-      page: page - 1,
-      size: itemsPerPage,
+      page: 0,
+      size: 1000, // 대략적인 최대 개수를 설정
     }
 
     try {
@@ -65,7 +66,12 @@ export default function CoordiViewModal({
         selectedCoordinateId,
       )
       if (response.status === 204) {
-        fetchCoordinates(currentPage) // 삭제 후 목록 갱신
+        // 삭제된 코디를 상태에서 제거
+        setCoordinates((prev) =>
+          prev.filter(
+            (coordinate) => coordinate.coordinateId !== selectedCoordinateId,
+          ),
+        )
         setShowConfirmModal(false)
         setToastMessage('코디가 삭제되었습니다.')
       }
@@ -75,8 +81,8 @@ export default function CoordiViewModal({
   }
 
   useEffect(() => {
-    fetchCoordinates(currentPage)
-  }, [currentPage])
+    fetchAllCoordinates() // 모든 코디를 처음에 불러옴
+  }, [])
 
   const handleAddFavorite = async () => {
     if (selectedCoordinateId === null) return
@@ -114,6 +120,12 @@ export default function CoordiViewModal({
     }
   }
 
+  // 현재 페이지에 표시할 코디 데이터
+  const paginatedCoordinates = coordinates.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  )
+
   return (
     <div className="fixed inset-0 bg-secondary bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-secondary rounded-lg w-[90%] max-w-[600px] h-[80%] flex flex-col relative">
@@ -135,7 +147,7 @@ export default function CoordiViewModal({
           </div>
         ) : (
           <div className="flex-grow grid grid-cols-2 gap-2 overflow-y-auto">
-            {coordinates.map((coordinate) => (
+            {paginatedCoordinates.map((coordinate) => (
               <div
                 key={coordinate.coordinateId}
                 className={`relative w-full bg-secondary ${

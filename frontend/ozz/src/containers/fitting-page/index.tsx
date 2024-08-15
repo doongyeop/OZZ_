@@ -77,18 +77,17 @@ export async function generateCoordiImage(
   fittingContainerRef: React.RefObject<HTMLDivElement>,
 ): Promise<File | null> {
   try {
-    const width = 900 // 9:16 비율의 가로 크기
-    const height = 1600 // 9:16 비율의 세로 크기
-
     const fittingContainerElement = fittingContainerRef.current
     if (!fittingContainerElement) {
       throw new Error('Fitting container element not found')
     }
 
+    const { width, height } = fittingContainerElement.getBoundingClientRect()
     // HTML을 캔버스로 변환
     const canvas = await html2canvas(fittingContainerElement, {
-      width,
-      height,
+      width: Math.round(width),
+      height: Math.round(height),
+      logging: true,
       ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
     })
 
@@ -274,7 +273,7 @@ export default function FittingContainer() {
     // console.log('사이드바에서 선택 ', category)
   }
 
-  const handleSaveCoordi = () => {
+  const handleSaveCoordi = async () => {
     if (selectedClothes.length === 0) {
       setAlertMessage([
         '적어도 한 가지 아이템을',
@@ -292,21 +291,22 @@ export default function FittingContainer() {
     setIsCoordiModalOpen(false)
     setIsStyleModalOpen(true)
   }
+
   const closeModal = () => {
     setIsCoordiModalOpen(false) // 코디 이름 설정 모달
     setIsStyleModalOpen(false) // 스타일 태그 설정 모달
     setIsToastOpen(false)
   }
+
   const handleConfirm = () => {
     closeModal()
     setIsToastOpen(false)
-    router.push('/coordi/book')
+    router.push('/book')
   }
 
   const handleFavoriteGroupSelect = async (favoriteGroupId: number) => {
     try {
       if (!coordinateId) return
-
       await addFavorite(favoriteGroupId, coordinateId)
       setIsToastOpen(true)
     } catch (error) {
@@ -347,35 +347,128 @@ export default function FittingContainer() {
 
     // 1. 랜덤 파스텔톤 배경색 생성
     const randomBackgroundColor = generateRandomPastelColor()
-    const fittingContainerElement = fittingContainerRef.current
-
-    if (!fittingContainerElement) {
-      alert('피팅 컨테이너를 찾을 수 없습니다.')
-      return
-    }
-
     const originalBackgroundColor =
-      fittingContainerElement.style.backgroundColor
+      fittingContainerRef.current!.style.backgroundColor
 
-    // 2. 배경색 적용
-    fittingContainerElement.style.backgroundColor = randomBackgroundColor
+    // 2. 이미지 생성 전에 배경색 적용
+    fittingContainerRef.current!.style.backgroundColor = randomBackgroundColor
+
+    // 3. null 이미지를 가진 요소 숨기기
+    const hiddenElements: HTMLElement[] = []
+    fittingItems.forEach((item, index) => {
+      if (item.image === null) {
+        const element = fittingContainerRef.current!.querySelectorAll(
+          `.${styles.clothingItem}`,
+        )[index] as HTMLElement
+
+        const imageElement = element.querySelector('img') as HTMLImageElement
+        if (imageElement) {
+          imageElement.style.opacity = '0' // 이미지가 투명해지도록 설정
+        }
+        hiddenElements.push(imageElement)
+      }
+    })
 
     try {
-      const imageFile = await generateCoordiImage(fittingContainerRef)
+      const gridElement = fittingContainerRef.current!
+      const { width, height } = gridElement.getBoundingClientRect()
 
-      // 3. 이미지가 성공적으로 생성되었는지 확인 후 저장
-      if (imageFile) {
-        await saveCoordi(imageFile, coordinateRequest)
+      const canvas = await html2canvas(gridElement, {
+        width: Math.round(width),
+        height: Math.round(height),
+        backgroundColor: null, // 배경 투명으로 설정
+        logging: true,
+        ignoreElements: (element) => element.tagName === 'BUTTON', // BUTTON 태그 무시
+      })
 
-        // 코디 저장 성공 시 토스트 메시지 표시
-        setIsToastOpen(true)
-      }
+      // const dataUrl = canvas.toDataURL('image/png')
+      // setPreviewUrl(dataUrl)
+
+      // 5. 숨겨진 요소 다시 표시
+      /* eslint-disable no-param-reassign */
+      hiddenElements.forEach((element) => {
+        element.style.opacity = '0.1'
+      })
+      /* eslint-disable no-param-reassign */
+
+      // 6. 캔버스를 Blob (이미지 파일)로 변환
+      canvas.toBlob(async (blob) => {
+        fittingContainerRef.current!.style.backgroundColor =
+          originalBackgroundColor
+        if (!blob) {
+          alert('이미지 생성에 실패했습니다.')
+          setAlertMessage([
+            '이미지 생성에',
+            '실패했습니다',
+            ' 다시 시도해주세요',
+          ])
+          setIsAlertOpen(true)
+          return
+        }
+
+        const imageFile = new File([blob], 'coordinate.png', {
+          type: 'image/png',
+        })
+
+        // 7. 코디 정보 생성 후 API 요청 데이터 준비
+        const payload: CreateCoordinatePayload = {
+          imageFile,
+          request: coordinateRequest,
+        }
+
+        // console.log('payload ', payload)
+
+        try {
+          const coordiId = await createCoordinate(payload)
+          setCoordinateId(coordiId)
+
+          // 코디북 조회
+          const favGroups = await getFavoritesGroupListOfUsers()
+          // 코디북이 없으면 기본 코디북 생성
+          if (favGroups.length === 0) {
+            const requestData: FavoriteGroupCreateRequest = {
+              name: '기본 코디북',
+            }
+            const createdGroup = await createFavoriteGroup(requestData)
+            // console.log('createdGroup', createdGroup)
+            handleFavoriteGroupSelect(createdGroup[0].favoriteGroupId)
+          } else {
+            // TODO: 코디북 선택 모달을 띄워 사용자에게 선택하게 할 수 있습니다.
+            // 코디북이 여러 개 있으면 선택 모달을 띄움
+            setFavoriteGroups(favGroups)
+            setIsCoordiBookModalOpen(true)
+          }
+
+          // const response = await addFavorite(
+          //   targetFavoriteGroupId,
+          //   coordinateId,
+          // )
+          // // console.log('response ', response)
+          // setIsToastOpen(true)
+        } catch (error) {
+          console.error('코디 생성 실패:', error)
+          // 실패 처리 (예: 에러 메시지 표시)
+          setAlertMessage(['코디 생성에 실패했습니다', ' 다시 시도해주세요'])
+          setIsAlertOpen(true)
+        }
+      })
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
-      alert('코디 저장 중 오류가 발생했습니다.')
-    } finally {
-      // 배경색 원래대로 복원
-      fittingContainerElement.style.backgroundColor = originalBackgroundColor
+      setAlertMessage([
+        '코디 저장 중 오류가',
+        '발생했습니다',
+        ' 다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
+      fittingContainerRef.current!.style.backgroundColor =
+        originalBackgroundColor
+
+      // 5. 숨겨진 요소 다시 표l (오류 발생 시에도 복원)
+      /* eslint-disable no-param-reassign */
+      hiddenElements.forEach((element) => {
+        element.style.opacity = '0.1'
+      })
+      /* eslint-disable no-param-reassign */
     }
   }
 
@@ -390,13 +483,13 @@ export default function FittingContainer() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center mb-5">
         {/* <div
           className="relative w-full max-w-[360px] h-auto aspect-w-9 aspect-h-16"
           ref={fittingContainerRef}
         > */}
         <div
-          className="relative w-full max-w-[360px] h-auto"
+          className="relative w-full max-w-[360px] h-auto mb-20"
           ref={fittingContainerRef} // gridRef를 설정합니다.
           style={{
             aspectRatio: '9 / 16', // 9:16 비율을 적용
@@ -461,121 +554,122 @@ export default function FittingContainer() {
             ))}
           </div>
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="w-full max-w-md mt-4">
-          <h2 className="text-xl font-semibold pl-10 m-2">선택한 옷</h2>
-          {selectedClothes.length > 0 ? (
-            <ul className="mt-2 px-6">
-              {selectedClothes.map((item) => (
-                <li key={item.clothesId} className="mb-2 p-3 border-b">
-                  <div className="flex items-center cursor-pointer">
-                    <Link href={`/closet/modify/${item.clothesId}`} passHref>
-                      <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.name ?? 'No name'}
-                          width={75}
-                          height={75}
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                            width: 'auto',
-                            height: 'auto',
-                            objectFit: 'contain',
+        <div className="flex justify-center">
+          <div className="w-full max-w-md mt-4">
+            <h2 className="text-xl font-semibold pl-10 m-2">선택한 옷</h2>
+            {selectedClothes.length > 0 ? (
+              <ul className="mt-2 px-6">
+                {selectedClothes.map((item) => (
+                  <li key={item.clothesId} className="mb-2 p-3 border-b">
+                    <div className="flex items-center cursor-pointer">
+                      <Link href={`/closet/modify/${item.clothesId}`} passHref>
+                        <div className="flex justify-center items-center w-16 h-16 bg-gray-light mr-4">
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.name ?? 'No name'}
+                            width={75}
+                            height={75}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                              width: 'auto',
+                              height: 'auto',
+                              objectFit: 'contain',
+                            }}
+                          />
+                        </div>
+                      </Link>
+                      <div className="flex flex-row w-full justify-between">
+                        <div className="flex flex-col">
+                          <p className="mb-2">{item.categoryLow?.name}</p>
+                          <p className="text-md font-semibold">{item.name}</p>
+                        </div>
+                        <button
+                          type="button"
+                          aria-label="제거"
+                          onClick={() => {
+                            const categoryLowId =
+                              item.categoryLow?.categoryLowId
+                            if (categoryLowId !== undefined) {
+                              const highCategoryName =
+                                categoryLowIdToHighNameMap[categoryLowId]
+                              handleRemoveItem(highCategoryName)
+                            } else {
+                              console.error('카테고리 ID가 유효하지 않습니다.')
+                              setAlertMessage([
+                                '카테고리 ID가',
+                                '유효하지 않습니다',
+                              ])
+                              setIsAlertOpen(true)
+                            }
                           }}
-                        />
+                          className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
+                        >
+                          <FaMinus />
+                        </button>
                       </div>
-                    </Link>
-                    <div className="flex flex-row w-full justify-between">
-                      <div className="flex flex-col">
-                        <p className="mb-2">{item.categoryLow?.name}</p>
-                        <p className="text-md font-semibold">{item.name}</p>
-                      </div>
-                      <button
-                        type="button"
-                        aria-label="제거"
-                        onClick={() => {
-                          const categoryLowId = item.categoryLow?.categoryLowId
-                          if (categoryLowId !== undefined) {
-                            const highCategoryName =
-                              categoryLowIdToHighNameMap[categoryLowId]
-                            handleRemoveItem(highCategoryName)
-                          } else {
-                            console.error('카테고리 ID가 유효하지 않습니다.')
-                            setAlertMessage([
-                              '카테고리 ID가',
-                              '유효하지 않습니다',
-                            ])
-                            setIsAlertOpen(true)
-                          }
-                        }}
-                        className="flex items-center justify-center bg-secondary text-primary-400 rounded-full h-6 w-6"
-                      >
-                        <FaMinus />
-                      </button>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-dark text-center mb-10">
-              아직 추가된 옷이 없어요
-            </p>
-          )}
-          <div className="mt-4 flex justify-around">
-            <SaveCoordiButton
-              onClick={handleSaveCoordi}
-              disabled={selectedClothes.length === 0}
-            />
-            <ShareCommunityButton onClick={closeModal} disabled />
-          </div>
-          {/* 미리보기 영역 */}
-          {previewUrl && (
-            <div className="mt-4">
-              <h2 className="text-xl font-semibold">코디 미리보기</h2>
-              <Image
-                src={previewUrl}
-                alt="코디 미리보기"
-                width={300}
-                height={300}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-dark text-center mb-10">
+                아직 추가된 옷이 없어요
+              </p>
+            )}
+            <div className="my-6 flex justify-around">
+              <SaveCoordiButton
+                onClick={handleSaveCoordi}
+                disabled={selectedClothes.length === 0}
               />
+              <ShareCommunityButton onClick={closeModal} disabled />
             </div>
-          )}
-          {isCoordiModalOpen && (
-            <Modal onClose={() => setIsCoordiModalOpen(false)}>
-              <CoordiNameModal
-                setValue={handleCoordiNameSubmit}
-                onClose={closeModal}
+            {/* 미리보기 영역 */}
+            {previewUrl && (
+              <div className="mt-4">
+                <h2 className="text-xl font-semibold">코디 미리보기</h2>
+                <Image
+                  src={previewUrl}
+                  alt="코디 미리보기"
+                  width={300}
+                  height={300}
+                />
+              </div>
+            )}
+            {isCoordiModalOpen && (
+              <Modal onClose={() => setIsCoordiModalOpen(false)}>
+                <CoordiNameModal
+                  setValue={handleCoordiNameSubmit}
+                  onClose={closeModal}
+                />
+              </Modal>
+            )}
+            {isStyleModalOpen && (
+              <Modal onClose={() => setIsStyleModalOpen(false)}>
+                <CoordiStyleModal
+                  setValue={handleStyleSubmit}
+                  onPrev={handlePrevFromStyle}
+                  onClose={closeModal}
+                />
+              </Modal>
+            )}
+            {isCoordiBookModalOpen && (
+              <CoordiBookSelectModal
+                favoriteGroups={favoriteGroups}
+                onSelect={handleFavoriteGroupSelect}
+                onClose={() => setIsCoordiBookModalOpen(false)}
               />
-            </Modal>
-          )}
-          {isStyleModalOpen && (
-            <Modal onClose={() => setIsStyleModalOpen(false)}>
-              <CoordiStyleModal
-                setValue={handleStyleSubmit}
-                onPrev={handlePrevFromStyle}
-                onClose={closeModal}
+            )}
+            {isToastOpen && (
+              <Toast
+                onClose={() => handleConfirm()}
+                message="코디북에 저장되었습니다!"
               />
-            </Modal>
-          )}
-          {isCoordiBookModalOpen && (
-            <CoordiBookSelectModal
-              favoriteGroups={favoriteGroups}
-              onSelect={handleFavoriteGroupSelect}
-              onClose={() => setIsCoordiBookModalOpen(false)}
-            />
-          )}
-          {isToastOpen && (
-            <Toast
-              onClose={() => handleConfirm()}
-              message="코디북에 저장되었습니다!"
-            />
-          )}
-          {isAlertOpen && (
-            <AlertModal onClose={handleAlertClose} messages={alertMessage} />
-          )}
+            )}
+            {isAlertOpen && (
+              <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+            )}
+          </div>
         </div>
       </div>
 

@@ -1,3 +1,9 @@
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -6,7 +12,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'image.msscdn.net',
         port: '',
-        pathname: '**',
+        pathname: '/**',
       },
     ],
   },
@@ -27,4 +33,4 @@ const nextConfig = {
   // },
 }
 
-export default nextConfig
+export default withPWA(nextConfig);

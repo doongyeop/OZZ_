@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import Loading from '@/app/closet/loading'
 import Image from 'next/image'
+import AlertModal from '@/components/Modal/AlertModal'
 
 const FormSchema = z.object({
   userId: z.string().min(1, { message: '아이디를 입력해 주세요.' }),
@@ -31,6 +32,8 @@ export function InputForm({ mall }: { mall: string }) {
   })
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false) // 로딩 상태 추가
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true) // 요청 시작 시 로딩 상태를 true로 설정
@@ -47,19 +50,29 @@ export function InputForm({ mall }: { mall: string }) {
       console.log(result)
 
       if (result.error) {
-        alert(result.error)
+        // alert(result.error)
+        setAlertMessage(['다시 시도해주세요'])
+        setIsAlertOpen(true)
+
         setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
       } else {
         router.push('/closet')
       }
     } catch (error) {
-      alert('아이디 또는 비밀번호를 확인하세요.')
+      // alert('아이디 또는 비밀번호를 확인하세요.')
+      setAlertMessage(['아이디 또는', ' 비밀번호를 확인하세요.'])
+      setIsAlertOpen(true)
+
       setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
     }
   }
 
   if (isLoading) {
     return <Loading /> // 로딩 중일 때 로딩 컴포넌트를 표시
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -98,6 +111,10 @@ export function InputForm({ mall }: { mall: string }) {
           로그인
         </button>
       </form>
+
+      {isAlertOpen && (
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </Form>
   )
 }

@@ -16,7 +16,7 @@ export default function Preview({ title, items }: PreviewProps) {
       itemName: '옷',
     },
     코디북: {
-      link: '/coordi',
+      link: '/book',
       itemName: '코디',
     },
   }
@@ -50,7 +50,7 @@ export default function Preview({ title, items }: PreviewProps) {
         </Link>
       </div>
       {items.length > 0 ? (
-        <div className="mx-3 h-32 flex justify-around">
+        <div className="mx-3 h-32 flex space-x-3">
           {items.map((item, index) => (
             <Link href={`/closet/modify/${item.id}`} key={item.image}>
               <Image
@@ -59,7 +59,7 @@ export default function Preview({ title, items }: PreviewProps) {
                 width={0}
                 height={0}
                 sizes="100%"
-                className="aspect-square object-cover w-auto h-full shadow-md"
+                className="aspect-square object-cover w-auto h-full shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
               />
             </Link>
           ))}

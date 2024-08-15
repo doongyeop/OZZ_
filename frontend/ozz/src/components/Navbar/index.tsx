@@ -12,7 +12,7 @@ const links = [
   { name: 'closet', href: '/closet', icon: BiCloset },
   { name: 'coordi', href: '/coordi', icon: GiClothes },
   // { name: 'community', href: '/community', icon: HiHashtag },
-  { name: 'bookmark', href: '/coordi/bookmark', icon: FaBookmark },
+  { name: 'bookmark', href: '/book', icon: FaBookmark },
   { name: 'mypage', href: '/mypage', icon: BiSolidUser },
 ]
 
