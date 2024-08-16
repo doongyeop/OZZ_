@@ -206,9 +206,32 @@ export default function ClothingForm({
         const byteArray = new Uint8Array(byteNumbers)
         const img = new Blob([byteArray], { type: 'image/png' })
 
-        const imageFileObj = new File([img], 'extracted-image.png', {
+        let imageFileObj = new File([img], 'extracted-image.png', {
           type: 'image/png',
         })
+
+        // 이미지 파일 크기가 1MB를 초과하는 경우 압축
+        if (imageFileObj.size > 1 * 1024 * 1024) {
+          const options = {
+            maxSizeMB: 1, // 1MB로 압축
+            maxWidthOrHeight: 1920, // 너비 또는 높이를 1920px 이하로
+            useWebWorker: true, // Web Worker를 사용하여 성능 향상
+          }
+
+          try {
+            const compressedBlob = await imageCompression(imageFileObj, options)
+            // 압축된 Blob을 다시 File로 변환
+            imageFileObj = new File([compressedBlob], 'extracted-image.png', {
+              type: 'image/png',
+            })
+          } catch (error) {
+            console.error('이미지 압축 중 오류 발생:', error)
+            // 오류 처리 (예: 에러 메시지 표시)
+            setAlertMessage(['이미지 압축 실패', ' 다시 시도해주세요'])
+            setIsAlertOpen(true)
+          }
+        }
+
         setImageFile(imageFileObj)
         setImagePreview(URL.createObjectURL(imageFileObj))
       } catch (error: any) {
