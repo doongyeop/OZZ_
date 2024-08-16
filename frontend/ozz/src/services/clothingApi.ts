@@ -172,9 +172,9 @@ export const extractClothing = async (
 
   // console.log('requestOptions ', requestOptions)
   // console.log('image : ', file)
-  formData.forEach((value, key) => {
-    console.log(`${key}:`, value)
-  })
+  // formData.forEach((value, key) => {
+  //   console.log(`${key}:`, value)
+  // })
 
   try {
     const response = await fetch(url, requestOptions)

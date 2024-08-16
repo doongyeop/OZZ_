@@ -45,7 +45,7 @@ export default function ModifyPage({ params }: { params: { id: number } }) {
   ) => {
     try {
       const response = await updateClothing(params.id, imageFile, request)
-      console.log('Clothes added successfully', response)
+      // console.log('Clothes added successfully', response)
       router.push('/closet')
     } catch (error) {
       console.error('Failed to add clothes', error)
