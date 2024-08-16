@@ -157,14 +157,14 @@ const sendPurchaseHistoryToServer = async (
   purchaseHistory: Order[],
   accessToken: string,
 ) => {
-  console.log(purchaseHistory)
-  console.log('구매내역', purchaseHistory.length, '개')
+  // console.log(purchaseHistory)
+  // console.log('구매내역', purchaseHistory.length, '개')
 
   const api = createClothesApi(accessToken)
 
   try {
     const responseData = await api.startBatch(purchaseHistory)
-    console.log('Response data:', responseData)
+    // console.log('Response data:', responseData)
     return responseData
   } catch (error) {
     console.error('Error response:', error)

@@ -2,8 +2,6 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// import { Api as ClothesApi } from '@/types/clothes/Api'
-// import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData, colors, colorCodeMap, colorMap } from '@/types/clothing'
 import {
   ClothesSearchCondition,
@@ -172,8 +170,8 @@ export const extractClothing = async (
     redirect: 'follow',
   }
 
-  console.log('requestOptions ', requestOptions)
-  console.log('image : ', file)
+  // console.log('requestOptions ', requestOptions)
+  // console.log('image : ', file)
   formData.forEach((value, key) => {
     console.log(`${key}:`, value)
   })
@@ -299,9 +297,9 @@ export async function updateCoordinate(
 
 export async function deleteCoordinate(coordinateId: number) {
   const clothesApi = await getClothesApi()
-  console.log('삭제 요청 보낼게요')
+  // console.log('삭제 요청 보낼게요')
   const response = await clothesApi.deleteCoordinate(coordinateId)
-  console.log('삭제 완료 response는', response)
+  // console.log('삭제 완료 response는', response)
   return response
 }
 

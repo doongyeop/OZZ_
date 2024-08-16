@@ -10,8 +10,8 @@ export async function GET(request: Request) {
   const accessToken = cookies.access
   const refreshToken = cookies.refresh
 
-  console.log('Access Token:', accessToken)
-  console.log('Refresh Token:', refreshToken)
+  // console.log('Access Token:', accessToken)
+  // console.log('Refresh Token:', refreshToken)
 
   if (accessToken && refreshToken) {
     return NextResponse.json({ accessToken, refreshToken })

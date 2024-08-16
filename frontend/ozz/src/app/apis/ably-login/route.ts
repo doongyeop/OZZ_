@@ -52,8 +52,8 @@ const sendPurchaseHistoryToServer = async (
   purchaseHistory: OrderData[],
   accessToken: string,
 ) => {
-  console.log(purchaseHistory)
-  console.log('구매내역', purchaseHistory.length, '개')
+  // console.log(purchaseHistory)
+  // console.log('구매내역', purchaseHistory.length, '개')
 
   const api = createClothesApi(accessToken)
 

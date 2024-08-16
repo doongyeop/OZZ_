@@ -130,7 +130,7 @@ export default function SavedCoordiPage({
     try {
       const res = await deleteCoordinate(Number(params.id))
       if (res.status === 200) {
-        console.log('삭제 완료')
+        // console.log('삭제 완료')
         setToastMessage('삭제 완료')
         router.push('/book')
       }

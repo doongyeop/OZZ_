@@ -159,8 +159,8 @@ export default function ClothingForm({
 
       const [categoryHighName] = categoryName.split(' > ')
       try {
-        console.log('이미지 분석 시작')
-        console.log('imageFile ', imageFile)
+        // console.log('이미지 분석 시작')
+        // console.log('imageFile ', imageFile)
         const result = await extractClothing(imageFile, categoryHighName)
 
         setName(name || '')

@@ -10,9 +10,9 @@ export const createFavoriteGroup = async (
 ) => {
   const favoriteApi = getFavoriteApi()
   const response = await favoriteApi.createFavoriteGroup(requestData)
-  console.log('favoritAPi.ts 코디북생성 res:', response)
+  // console.log('favoritAPi.ts 코디북생성 res:', response)
   const data = await response.json()
-  console.log('favoritAPi.ts 코디북 생성 data:', data)
+  // console.log('favoritAPi.ts 코디북 생성 data:', data)
   return data
 }
 

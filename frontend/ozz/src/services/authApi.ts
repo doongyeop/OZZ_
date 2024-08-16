@@ -190,7 +190,7 @@ export const logout = async () => {
   if (!authApi) throw new Error('API not initialized')
   const response = await authApi.deleteRefreshTokenOfUser()
   const data = await response.text()
-  console.log('로그아웃api에 대한 응답', data)
+  // console.log('로그아웃api에 대한 응답', data)
   removeTokens()
 }
 
