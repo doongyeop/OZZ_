@@ -164,6 +164,11 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     @Override
+    public void deleteClothesList(List<Long> clothesIdList){
+        clothesIdList.forEach(this::deleteClothes);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Clothes> getClothesInCoordinate(Long coordinateId) {
         return List.of();

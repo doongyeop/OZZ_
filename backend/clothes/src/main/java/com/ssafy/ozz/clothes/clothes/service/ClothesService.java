@@ -35,6 +35,7 @@ public interface ClothesService {
     Long updateClothes(Long clothesId, MultipartFile imageFile);
 
     void deleteClothes(Long clothesId);
+    void deleteClothesList(List<Long> clothesId);
 
     List<Clothes> getClothesInCoordinate(Long coordinateId);
 
