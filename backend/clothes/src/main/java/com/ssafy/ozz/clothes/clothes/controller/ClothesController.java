@@ -97,6 +97,13 @@ public class ClothesController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping()
+    @Operation(summary = "옷 목록 삭제", description = "ID를 통해 특정 옷을 삭제합니다.")
+    public ResponseEntity<Void> deleteClothesList(@RequestBody List<Long> clothesIdList) {
+        clothesService.deleteClothesList(clothesIdList);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/properties/colors")
     @Operation(summary = "색상 목록 정보 조회", description = "색상 목록 정보를 조회합니다.")
     public ResponseEntity<List<ColorResponse>> getColorList() {
