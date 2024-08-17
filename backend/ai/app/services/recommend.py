@@ -4,7 +4,7 @@ import os
 import requests
 
 from app.core.client.clothesMetadata import ClothesMetadata, clothesMetadata
-from app.core.client.outfitRecommend import OutfitRecommendation
+from app.core.client.outfitRecommend import OutfitRecommendation, OutfitRecommendationV2
 from app.schemas.recommend import Clothes, Recommend, Consider, RecommendationsResponse, RecommendedClothes
 
 
@@ -41,7 +41,7 @@ class RecommendService:
             return None
         id_2_clothes: dict[int, Clothes] = {clothes.id: clothes for clothes in recommend_info.clothes}
         logging.info("코디 추천 요청 : " + str(recommend_info))
-        outfitRecommendtaion = OutfitRecommendation(recommend_info)
+        outfitRecommendtaion = OutfitRecommendationV2(recommend_info)
         recommendation_result = outfitRecommendtaion.get_result()
         logging.info("코디 추천 결과 : " + str(recommendation_result))
         return_outfit: list[RecommendationsResponse] = []
