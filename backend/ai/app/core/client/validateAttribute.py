@@ -1,5 +1,10 @@
 ﻿import json
 import logging
+from typing import Literal, Union
+
+from pydantic import BaseModel, validator, field_validator
+from pydantic.v1 import Field
+from pydantic_core.core_schema import ValidationInfo
 
 from app.core.client.openAIClient import OpenAIClient
 
@@ -233,6 +238,47 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
         return valid_data
 
 
+from enum import Enum
+
+
+class TopCategory(BaseModel):
+    parent: Literal["상의"]
+    subCategory: Literal["탑", "블라우스", "티셔츠", "니트웨어", "셔츠", "브라탑", "후드티"]
+
+class BottomCategory(BaseModel):
+    parent: Literal["하의"]
+    subCategory: Literal["청바지", "팬츠", "스커트", "레깅스", "조거팬츠"]
+
+class OuterCategory(BaseModel):
+    parent: Literal["아우터"]
+    subCategory: Literal["코트", "재킷", "점퍼", "패딩", "베스트", "가디건", "짚업"]
+
+class DressCategory(BaseModel):
+    parent: Literal["원피스"]
+    subCategory: Literal["드레스", "점프수트"]
+
+class ShoesCategory(BaseModel):
+    parent: Literal["신발"]
+    subCategory: Literal["운동화", "구두", "샌들"]
+
+class AccessoryCategory(BaseModel):
+    parent: Literal["악세서리"]
+    subCategory: Literal["주얼리", "기타", "모자"]
+
+class BagCategory(BaseModel):
+    parent: Literal["가방"]
+    subCategory: Literal["가방", "백팩", "힙색"]
+
+# ItemModel 정의
+class ItemModel(BaseModel):
+    id: int
+    category: Union[BagCategory, AccessoryCategory, ShoesCategory, DressCategory, OuterCategory, BottomCategory, TopCategory]
+
+
+class ValidateCategoryResponse(BaseModel):
+    result: list[ItemModel]
+
+
 class ValidateCategoryV2(OpenAIClient):
     system_prompt: str = """
 Here are the parent categories and subcategories that have already been defined.
@@ -245,9 +291,9 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
     invalid_items = {}
 
     def get_response(self) -> dict[str, dict[str, str]]:
-        response = self.client.chat.completions.create(
+        response = self.client.beta.chat.completions.parse(
             model="gpt-4o-mini",
-            response_format={"type": "json_object"},
+            response_format=ValidateCategoryResponse,
             messages=[
                 {
                     "role": "system",
@@ -274,7 +320,8 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
             frequency_penalty=0,
             presence_penalty=0,
         )
-        return json.loads(response.choices[0].message.content)
+        logging.info(response.choices[0].message.parsed.result)
+        return response.choices[0].message.parsed.result
 
     def make_assistant_content(self):
         assistant_content = []
@@ -317,10 +364,8 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
         if len(self.invalid_items) != 0:
             is_clear = False
             valid_items = self.get_response()
-            for k, v in valid_items.items():
-                if isinstance(k, str):
-                    k = int(k)
-                raw_data[k].subCategory = v["subCategory"]
+            for v in valid_items:
+                raw_data[v.id].subCategory = v.category.subCategory
 
         valid_data = {}
         for key, datum in raw_data.items():
