@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Union
 
 
@@ -25,6 +25,12 @@ class AttributeBase(BaseModel):
     styleList: Union[list[str] | None] = None
     textureList: Union[list[str] | None] = None
     extra: str
+
+    @field_validator('*', mode='before')
+    def replace_null_string_with_none(cls, value):
+        if value == "null":
+            return None
+        return value
 
 
 class Attributes(AttributeBase):
