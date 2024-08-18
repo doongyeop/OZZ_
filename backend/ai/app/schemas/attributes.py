@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Union
 
 
@@ -14,7 +14,7 @@ class ImageMetadata(BaseModel):
     clothId: int
     categoryLowId: int
     imgUrl: str
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class AttributeBase(BaseModel):
@@ -26,16 +26,22 @@ class AttributeBase(BaseModel):
     textureList: Union[list[str] | None] = None
     extra: str
 
+    @field_validator('*', mode='before')
+    def replace_null_string_with_none(cls, value):
+        if value == "null":
+            return None
+        return value
+
 
 class Attributes(AttributeBase):
     categoryLowId: int
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class GPTAttrResponse(AttributeBase):
     parentCategory: str
     subCategory: str
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class LowCategoryResponse(BaseModel):

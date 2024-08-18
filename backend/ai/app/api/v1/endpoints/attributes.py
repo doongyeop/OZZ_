@@ -28,10 +28,10 @@ async def extract_attributes(image: UploadFile = File(...), highCategory: str = 
     print(result)
     highCate, lowCate = client.clothes_metadata.low_categoryId_to_low_high_response(result.categoryLowId)
     print(str(highCate), str(lowCate))
-    image = process(image, highCate.name, lowCate.name, not result.isWorn)
+    image = process(image, highCate.name, lowCate.name, result.isOnlyItem)
     image.save("temp.png")
 
-    return {**result.model_dump(exclude={"categoryLowId", "isWorn"}),
+    return {**result.model_dump(exclude={"categoryLowId", "isOnlyItem"}),
             "categoryHigh": highCate,
             "categoryLow": lowCate,
             "image": image_to_base64str(image)}

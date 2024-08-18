@@ -54,7 +54,7 @@ Attributes:
 <가방>가방, 백팩, 힙색</가방>
 </possibleValues>
 </category>
-8. <isWorn><Constraint>`true` if the item is worn, `false` if not</Constraint><possibleValues>`true`, `false`</possibleValues><isWorn>
+8. <isOnlyItem><Constraint>`true` if the photo contains only items, `false` otherwise.</Constraint><possibleValues>`true`, `false`</possibleValues><isOnlyItem>
 
 Follow these steps to extract the properties:
 step1 - If <color> exists, ignore the color guessed from the photo and use the <possibleValues> from <colorList> that most closely resembles the <color> value.
@@ -66,7 +66,7 @@ step5 - Please list the properties of items that cannot be expressed using `Attr
 Response Format:
 Please return it in JSON format as in the following example.
 {
-<order> value :{"fit" : "OVER_FIT","colorList" : ["BLACK", "YELLOW"],"patternList" : ["STRIPED"],"seasonList" : ["SPRING", "SUMMER", "AUTUMN"],"styleList" : ["CASUAL", "SPORTY"],"textureList" : ["MESH"],"extra" : "sleeveless, cropped","parentCategory" : "상의","subCategory":"탑", "isWorn":true|false}
+<order> value :{"fit" : "OVER_FIT","colorList" : ["BLACK", "YELLOW"],"patternList" : ["STRIPED"],"seasonList" : ["SPRING", "SUMMER", "AUTUMN"],"styleList" : ["CASUAL", "SPORTY"],"textureList" : ["MESH"],"extra" : "sleeveless, cropped","parentCategory" : "상의","subCategory":"탑", "isOnlyItem":true|false}
 }
 """
 
@@ -83,7 +83,7 @@ Please return it in JSON format as in the following example.
     def get_response(self) -> dict[Any, Any]:
         user_content: list = self.make_user_content()
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             response_format={"type": "json_object"},
             messages=[
                 {
