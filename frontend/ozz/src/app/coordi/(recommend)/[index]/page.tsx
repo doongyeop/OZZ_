@@ -17,6 +17,7 @@ import { generateCoordiImage, saveCoordi } from '@/containers/fitting-page'
 import { useRef, useState } from 'react'
 import Modal from '@/components/Modal'
 import Toast from '@/components/Toast'
+import AlertModal from '@/components/Modal/AlertModal'
 
 export default function CoordiDetailPage({
   params,
@@ -24,6 +25,8 @@ export default function CoordiDetailPage({
   params: { index: number }
 }) {
   const [isToastOpen, setIsToastOpen] = useState(false) // 확인 모달
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const queryClient = useQueryClient()
   const coordinations = queryClient.getQueryData<Coordination[]>([
@@ -59,7 +62,8 @@ export default function CoordiDetailPage({
     const fittingContainerElement = fittingContainerRef.current
 
     if (!fittingContainerElement) {
-      alert('피팅 컨테이너를 찾을 수 없습니다.')
+      setAlertMessage(['피팅 컨테이너를 찾을 수 없습니다.', '다시 시도해주세요'])
+setIsAlertOpen(true)
       return
     }
 
@@ -75,8 +79,13 @@ export default function CoordiDetailPage({
       }
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
-      alert('코디 저장 중 오류가 발생했습니다.')
+      setAlertMessage(['코디 저장 중 오류가 발생했습니다.', ' 다시 시도해주세요'])
+setIsAlertOpen(true)
     }
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -133,6 +142,9 @@ export default function CoordiDetailPage({
           />
         </Modal>
       )}
+      {isAlertOpen && (
+  <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+)}
     </>
   )
 }
