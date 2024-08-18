@@ -21,7 +21,6 @@ import {
 import { getFile, downloadFile } from '@/services/fileApi'
 import { syncTokensWithCookies } from '@/services/authApi'
 import Toast from '@/components/Toast'
-import UploadModal from './modal'
 
 interface FieldProps {
   label: string
@@ -50,7 +49,6 @@ function ProfileEdit() {
   const [user, setUser] = useState<User | null>(null)
   const [profileModal, setProfileModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
-  const [uploadModal, setUploadModal] = useState(false)
   const [profileSrc, setProfileSrc] = useState('')
   const [errorText, setErrorText] = useState('')
   const [nickname, setNickname] = useState('')
@@ -65,9 +63,7 @@ function ProfileEdit() {
   const getProfilePic = async (picId: number) => {
     try {
       const fileData = await getFile(picId)
-      // console.log('getFile 성공', fileData)
       const picture = await downloadFile(fileData.filePath)
-      // console.log('downloadFile 성공', picture)
       if (picture !== undefined) {
         const pictureUrl = URL.createObjectURL(picture)
         setProfileSrc(pictureUrl)
@@ -150,25 +146,17 @@ function ProfileEdit() {
   }
 
   const toggleProfileModal = useCallback(() => {
-    if (profileModal) {
-      setUploadModal(false)
-    }
     setProfileModal((prev) => !prev)
-  }, [profileModal])
+  }, [])
 
   const toggleDeleteModal = useCallback(() => {
     setDeleteModal((prev) => !prev)
-  }, [])
-
-  const toggleUploadModal = useCallback(() => {
-    setUploadModal((prev) => !prev)
   }, [])
 
   const resetProfilePic = async () => {
     if (user?.profileFileId) {
       try {
         await deleteProfileImage()
-        // console.log('프로필 삭제지우는즁')
         await fetchUserInfo()
         toggleProfileModal()
       } catch (err) {
@@ -181,14 +169,18 @@ function ProfileEdit() {
     await resetProfilePic()
   }, [resetProfilePic])
 
-  const handleFileSelect = async (file: File) => {
-    try {
-      const response = await uploadProfileImage(file)
-      // console.log('프로필 이미지 업로드 성공:', response)
-      await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
-      toggleProfileModal()
-    } catch (error) {
-      console.error('프로필 이미지 업로드 실패:', error)
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      try {
+        await uploadProfileImage(file)
+        await fetchUserInfo() // 업로드 성공 후 유저 정보 다시 불러오기
+        toggleProfileModal()
+      } catch (error) {
+        console.error('프로필 이미지 업로드 실패:', error)
+      }
     }
   }
 
@@ -228,13 +220,15 @@ function ProfileEdit() {
             className="overflow-visible"
           >
             <div className="relative text-sm text-white flex flex-col space-y-4 px-3">
-              <button
-                type="button"
-                onClick={toggleUploadModal}
-                className="text-left"
-              >
+              <label htmlFor="file-upload" className="text-left cursor-pointer">
                 사진 올리기
-              </button>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </label>
               <button
                 type="button"
                 onClick={handleResetProfilePic}
@@ -242,16 +236,9 @@ function ProfileEdit() {
               >
                 기본 이미지로 변경
               </button>
-              {uploadModal && (
-                <UploadModal
-                  onClose={toggleUploadModal}
-                  onFileSelect={handleFileSelect} // 파일 선택 시 업로드 처리
-                />
-              )}
             </div>
           </Modal>
         )}
-        {}
       </div>
 
       {/* User Information Section */}
