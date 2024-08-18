@@ -35,13 +35,23 @@ def EAcallback(ch, method, properties, body):
     key_to_imgurl={a.clothId:a.imgUrl for a in raw_data}
 
     data=None
+    removed_data=[]
     try:
         client = ExtractAttributesURL(raw_data)
-        data = client.get_result()
+        data,removed_data = client.get_result()
     except Exception as e:
         logging.error(traceback.format_exc())
 
     try:
+        if len(removed_data) > 0:
+            try:
+                logging.info(f"속성 추출 실패한 옷 삭제 : {str(removed_data)}")
+                removed_data=list(map(int,removed_data))
+                url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes"
+                requests.delete(url, json=removed_data)
+            except Exception as e:
+                logging.error(f"속성 추출 실패한 옷 삭제에러: {str(removed_data)}")
+        
         for key in data.keys():
             # 엔드포인트 URL 및 clothesId 설정
             url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/{key}"

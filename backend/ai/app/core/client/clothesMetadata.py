@@ -56,7 +56,7 @@ class Properties:
         return ", ".join(self.properties)
 
     def validate(self, input_value: str | list[str] | None):
-        if input_value is None:
+        if input_value is None or (isinstance(input_value,str) and input_value=="null"):
             if self.is_essential:
                 return False
             else:

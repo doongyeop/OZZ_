@@ -141,6 +141,7 @@ export default function ClosetSidebar({
     queryKey: ['image', item.imageFile?.filePath],
     queryFn: () => fetchImage(item.imageFile?.filePath || ''),
     enabled: !!item.imageFile?.filePath,
+    staleTime: 0,
   }))
 
   const imageResults = useQueries({ queries: imageQueries })

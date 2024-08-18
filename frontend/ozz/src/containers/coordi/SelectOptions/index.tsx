@@ -12,6 +12,7 @@ import OutlineButton from '@/components/Button/OutlineButton'
 import { useSelectedItem } from '@/contexts/SelectedItemContext'
 import { useSelectedColor } from '@/contexts/SelectedColorContext'
 import { Color } from '@/types/clothing'
+import AlertModal from '@/components/Modal/AlertModal'
 
 export default function SelectOptions() {
   const router = useRouter()
@@ -20,11 +21,15 @@ export default function SelectOptions() {
 
   const [isColorModalOpen, setIsColorModalOpen] = useState(false)
 
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+const [alertMessage, setAlertMessage] = useState<string[]>([])
+
   const handleColorSelect = (colors: Color[]) => {
     if (colors.length <= 2) {
       setSelectedColor(colors)
     } else {
-      alert('최대 2개의 색상만 선택할 수 있습니다.')
+      setAlertMessage(['최대 2개의 색상만', '선택할 수 있습니다.', '다시 시도해주세요'])
+setIsAlertOpen(true)
     }
   }
 
@@ -35,6 +40,10 @@ export default function SelectOptions() {
     const b = parseInt(hex.substring(4, 6), 16)
     const brightness = (r * 299 + g * 587 + b * 114) / 1000
     return brightness > 186
+  }
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false)
   }
 
   return (
@@ -104,6 +113,9 @@ export default function SelectOptions() {
           setValue={handleColorSelect}
         />
       )}
+      {isAlertOpen && (
+  <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+)}
     </>
   )
 }

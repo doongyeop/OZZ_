@@ -384,7 +384,7 @@ validateProperty = ValidateProperty()
 validateCategoryV2 = ValidateCategoryV2()
 
 
-def run_validate(raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
+def run_validate(raw_data: dict[int, GPTAttrResponse]) -> tuple[dict[int, Attributes], list[str]]:
     init_keys = list(raw_data.keys())
     category_validated_data = validateCategoryV2.process(raw_data)
     valid_data = validateProperty.process(category_validated_data)
@@ -397,4 +397,4 @@ def run_validate(raw_data: dict[int, GPTAttrResponse]) -> dict[int, Attributes]:
         logging.info(f"key : {', '.join(removed_data)}| 속성 검증 필터링 됨")
     logging.info(f"key : {', '.join(map(str, valid_keys))}| 최종 속성 검증")
 
-    return valid_data
+    return valid_data,removed_data

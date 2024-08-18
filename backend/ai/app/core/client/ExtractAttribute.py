@@ -70,7 +70,7 @@ Please return it in JSON format as in the following example.
 }
 """
 
-    def parse_response(self, response: dict) -> dict[int, Attributes]:
+    def parse_response(self, response: dict) -> tuple[dict[int, Attributes], list[str]]:
         raw_data = {}
         for k, v in response.items():
             if isinstance(k, str):
@@ -138,7 +138,7 @@ class ExtractAttributesURL(ExtractAttribute):
             }])
         return content_list
 
-    def get_result(self) -> dict[int, Attributes]:
+    def get_result(self) -> tuple[dict[int, Attributes], list[str]]:
         return self.parse_response(self.get_response())
 
 
@@ -164,4 +164,4 @@ class ExtractAttributesImage(ExtractAttribute):
         }]
 
     def get_result(self) -> Attributes:
-        return self.parse_response(self.get_response())[0]
+        return self.parse_response(self.get_response())[0][0]
