@@ -22,14 +22,18 @@ export default function SelectOptions() {
   const [isColorModalOpen, setIsColorModalOpen] = useState(false)
 
   const [isAlertOpen, setIsAlertOpen] = useState(false)
-const [alertMessage, setAlertMessage] = useState<string[]>([])
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const handleColorSelect = (colors: Color[]) => {
     if (colors.length <= 2) {
       setSelectedColor(colors)
     } else {
-      setAlertMessage(['최대 2개의 색상만', '선택할 수 있습니다.', '다시 시도해주세요'])
-setIsAlertOpen(true)
+      setAlertMessage([
+        '최대 2개의 색상만',
+        '선택할 수 있습니다.',
+        '다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
     }
   }
 
@@ -114,8 +118,8 @@ setIsAlertOpen(true)
         />
       )}
       {isAlertOpen && (
-  <AlertModal onClose={handleAlertClose} messages={alertMessage} />
-)}
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </>
   )
 }

@@ -395,7 +395,7 @@ export default function FittingContainer() {
         fittingContainerRef.current!.style.backgroundColor =
           originalBackgroundColor
         if (!blob) {
-          //alert('이미지 생성에 실패했습니다.')
+          // alert('이미지 생성에 실패했습니다.')
           setAlertMessage([
             '이미지 생성에',
             '실패했습니다',

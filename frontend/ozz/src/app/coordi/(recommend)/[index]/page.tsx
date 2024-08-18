@@ -26,7 +26,7 @@ export default function CoordiDetailPage({
 }) {
   const [isToastOpen, setIsToastOpen] = useState(false) // 확인 모달
   const [isAlertOpen, setIsAlertOpen] = useState(false)
-const [alertMessage, setAlertMessage] = useState<string[]>([])
+  const [alertMessage, setAlertMessage] = useState<string[]>([])
 
   const queryClient = useQueryClient()
   const coordinations = queryClient.getQueryData<Coordination[]>([
@@ -62,8 +62,11 @@ const [alertMessage, setAlertMessage] = useState<string[]>([])
     const fittingContainerElement = fittingContainerRef.current
 
     if (!fittingContainerElement) {
-      setAlertMessage(['피팅 컨테이너를 찾을 수 없습니다.', '다시 시도해주세요'])
-setIsAlertOpen(true)
+      setAlertMessage([
+        '피팅 컨테이너를 찾을 수 없습니다.',
+        '다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
       return
     }
 
@@ -79,8 +82,11 @@ setIsAlertOpen(true)
       }
     } catch (error) {
       console.error('코디 저장 중 오류 발생:', error)
-      setAlertMessage(['코디 저장 중 오류가 발생했습니다.', ' 다시 시도해주세요'])
-setIsAlertOpen(true)
+      setAlertMessage([
+        '코디 저장 중 오류가 발생했습니다.',
+        ' 다시 시도해주세요',
+      ])
+      setIsAlertOpen(true)
     }
   }
 
@@ -143,8 +149,8 @@ setIsAlertOpen(true)
         </Modal>
       )}
       {isAlertOpen && (
-  <AlertModal onClose={handleAlertClose} messages={alertMessage} />
-)}
+        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+      )}
     </>
   )
 }
