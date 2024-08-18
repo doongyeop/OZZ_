@@ -14,7 +14,7 @@ class ImageMetadata(BaseModel):
     clothId: int
     categoryLowId: int
     imgUrl: str
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class AttributeBase(BaseModel):
@@ -35,13 +35,13 @@ class AttributeBase(BaseModel):
 
 class Attributes(AttributeBase):
     categoryLowId: int
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class GPTAttrResponse(AttributeBase):
     parentCategory: str
     subCategory: str
-    isWorn: bool
+    isOnlyItem: bool
 
 
 class LowCategoryResponse(BaseModel):

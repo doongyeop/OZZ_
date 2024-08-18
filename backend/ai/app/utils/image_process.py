@@ -156,5 +156,4 @@ def process(image: Image, high_category: str, low_category: str = None, basic_re
 def process_url(image_metadata: ImageMetadata) -> Image:
     high_category, low_category = clothesMetadata.low_categoryId_to_low_high_response(image_metadata.categoryLowId)
 
-    return process(download_img(image_metadata.imgUrl), high_category.name, low_category.name,
-                   not image_metadata.isWorn)
+    return process(download_img(image_metadata.imgUrl), high_category.name, low_category.name, image_metadata.isOnlyItem)

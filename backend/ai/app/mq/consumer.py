@@ -12,8 +12,8 @@ from requests_toolbelt import MultipartEncoder
 
 from app.core.client.ExtractAttribute import ExtractAttributesURL
 from app.schemas.attributes import NormalizedClothes, ImageMetadata
-from app.utils.image_process import process, process_url
-from app.utils.image_utils import resize_and_convert_to_png, image_to_base64str
+from app.utils.image_process import process_url
+from app.utils.image_utils import resize_and_convert_to_png
 
 
 def parseToBaseModel(body) -> list[NormalizedClothes] | None:
@@ -72,7 +72,7 @@ def EAcallback(ch, method, properties, body):
                 "clothId": key,
                 "categoryLowId": attr_data["categoryLowId"],
                 "imgUrl": key_to_imgurl[key],
-                "isWorn": attr_data["isWorn"],
+                "isOnlyItem": attr_data["isOnlyItem"],
             }
             ch.basic_publish(exchange='', routing_key="image-process", body=json.dumps(image_metadata))
 
@@ -93,7 +93,6 @@ def IPcallback(ch, method, properties, body):
         processed_image = process_url(data)
         #이미지 크기 및 확장자 정규화
         processed_image = resize_and_convert_to_png(processed_image)
-        processed_image.save("convertImage.png")
         # BytesIO 객체에 이미지 저장
         image_byte_array = BytesIO()
         processed_image.save(image_byte_array, format='PNG')
