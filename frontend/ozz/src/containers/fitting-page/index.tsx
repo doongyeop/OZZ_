@@ -232,8 +232,8 @@ export default function FittingContainer() {
       return
     }
 
-    const categoryLowId = item.categoryLow?.categoryLowId
-    const categoryHighName = categoryLowId
+    const categoryLowId = item.categoryLow?.categoryLowId // 선택한 아이템의 하위 카테고리 아이디
+    const categoryHighName = categoryLowId // 선택한 아이템의 상위 카테고리 이름
       ? categoryLowIdToHighNameMap[categoryLowId]
       : undefined
 
@@ -247,8 +247,7 @@ export default function FittingContainer() {
       return imageholder.category === categoryHighName
     })
 
-    // console.log('placeholder ', placeholder)
-    if (!placeholder || placeholder.category !== selectedCategory) {
+    if (!placeholder || placeholder.category !== categoryHighName) {
       setAlertMessage(['잘못된 위치입니다', ' 다시 시도해주세요'])
       setIsAlertOpen(true)
       return
