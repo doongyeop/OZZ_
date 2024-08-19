@@ -201,15 +201,15 @@ export default function CoordiOfTheDay({ token }: { token: string }) {
         <span className="ms-1">AI 코디 추천 받기</span>
       </OutlineButton>
 
-      {isPending && (
+      {/* eslint-disable-next-line no-nested-ternary */}
+      {isPending ? (
         <div className="mt-16 flex flex-col items-center">
           <ImSpinner8 size="70" className="animate-spin text-gray-dark" />
           <div className="text-center font-semibold my-4">
             추천 코디 생성 중...
           </div>
         </div>
-      )}
-      {isError || (coordinations && coordinations.length === 0) ? (
+      ) : isError || (coordinations && coordinations.length === 0) ? (
         <div className="mt-10 flex flex-col items-center">
           <RxCross2 size="90" className="text-gray-dark" />
           <div className="text-center font-semibold">
