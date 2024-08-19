@@ -2,6 +2,8 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { Api as ClothesApi } from '@/types/clothes/Api'
+import { Api as FileApi } from '@/types/file/Api'
 import { ClothingData, colors, colorCodeMap, colorMap } from '@/types/clothing'
 import {
   ClothesSearchCondition,
@@ -23,11 +25,30 @@ import {
   getFileApi,
 } from '@/services/authApi'
 
+const token =
+  'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImlkIjoiNiIsImlhdCI6MTcyMzczNjQzMiwiZXhwIjoxNzIzNzk2NDMyfQ.0BeNPuXYhuLCTAo8V3eCSQ6jrHFiPoscwSIWYN6kuJU'
+
+const clothesApi = new ClothesApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
+const fileApi = new FileApi({
+  securityWorker: async () => ({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+})
+
 export async function fetchUserClothes(
   pageable: Pageable,
   searchCondition: ClothesSearchCondition,
 ): Promise<GetClothesOfUserData> {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
 
   const response = await clothesApi.getClothesOfUser({
     condition: searchCondition,
@@ -37,7 +58,7 @@ export async function fetchUserClothes(
 }
 
 export async function fetchImage(filePath: string): Promise<string> {
-  const fileApi = await getFileApi()
+  // const fileApi = await getFileApi()
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
@@ -46,7 +67,7 @@ export async function fetchImage(filePath: string): Promise<string> {
 }
 
 export async function fetchImageFile(filePath: string): Promise<File> {
-  const fileApi = await getFileApi()
+  // const fileApi = await getFileApi()
 
   const response = await fileApi.downloadFile(filePath)
   const blob = await response.blob()
@@ -59,7 +80,7 @@ export const createClothing = async (
   imageFile: File,
   request: ClothesCreateRequest,
 ) => {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
   const payload: AddClothesPayload = {
     imageFile,
     request,
@@ -69,7 +90,7 @@ export const createClothing = async (
 }
 
 export async function getClothingDetails(clothesId: number) {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
 
   const response = await clothesApi.getClothes(clothesId)
   const data = await response.json()
@@ -119,7 +140,7 @@ export const updateClothing = async (
   imageFile: File,
   request: ClothesUpdateRequest,
 ) => {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
   const payload: UpdateClothesPayload = {
     imageFile,
     request,
@@ -130,7 +151,7 @@ export const updateClothing = async (
 }
 
 export const deleteClothing = async (id: number) => {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
   const response = await clothesApi.deleteClothes(id)
   return response.data
 }
@@ -190,7 +211,7 @@ export const extractClothing = async (
 }
 
 export const createCoordinate = async (payload: CreateCoordinatePayload) => {
-  const clothesApi = await getClothesApi()
+  // const clothesApi = await getClothesApi()
   const response = await clothesApi.createCoordinate(payload)
   const data = await response.json()
   return data
