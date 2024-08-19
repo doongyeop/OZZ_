@@ -73,29 +73,29 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const fetchLocationAndWeather = useCallback(async () => {
     try {
       const currentPosition = await getLocation()
-      setLocation(currentPosition)
-
       if (
         currentPosition.latitude !== null &&
         currentPosition.longitude !== null
       ) {
-        const response = await fetch(
-          `/apis/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
-          { cache: 'force-cache' },
-        )
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch weather data')
-        }
-
-        const weatherData = await response.json()
-        const formattedWeatherData = weatherData.map((day: any) => ({
-          ...day,
-          date: new Date(day.date),
-        }))
-        setWeather(formattedWeatherData)
-        setSelectedWeather(formattedWeatherData[0])
+        setLocation(currentPosition)
       }
+
+      const response = await fetch(
+        `/apis/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
+        { cache: 'force-cache' },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch weather data')
+      }
+
+      const weatherData = await response.json()
+      const formattedWeatherData = weatherData.map((day: any) => ({
+        ...day,
+        date: new Date(day.date),
+      }))
+      setWeather(formattedWeatherData)
+      setSelectedWeather(formattedWeatherData[0])
     } catch (err: any) {
       setError(err.message)
     }
