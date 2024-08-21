@@ -63,14 +63,18 @@ class RecommendService:
         outfit_category = []
         print(str(items) + "검증 시작")
         for item in items:
-            clothes = id_2_clothes[item]
-            high_category = self.clothes_metadata.lowcategoryName_to_highcategoryId(clothes.subCategory)
-            if high_category is not None and high_category not in outfit_category:
-                outfit_category.append(high_category)
-                outfit_set.append((clothes.id, high_category, clothes.imgPath))
+            try:
+                clothes = id_2_clothes[item]
+                high_category = self.clothes_metadata.lowcategoryName_to_highcategoryId(clothes.subCategory)
+                if high_category is not None and high_category not in outfit_category:
+                    outfit_category.append(high_category)
+                    outfit_set.append((clothes.id, high_category, clothes.imgPath))
+            except Exception as e:
+                logging.error("id : "+str(item)+" 아이템을 찾을 수 없습니다. ChatGPT 의 id 인식 오류")
+                break
         if len(outfit_set) == len(items):
             print(str(items) + str(outfit_set) + str(outfit_category) + "검증 성공")
             return outfit_set
         else:
-            print(str(items) + str(outfit_set) + str(outfit_category) + "검증 성공")
+            print(str(items) + str(outfit_set) + str(outfit_category) + "검증 실패")
             return None
