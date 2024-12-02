@@ -45,7 +45,6 @@ public record ClothesCreateRequest(
                 .imageFileId(imageFileId)
                 .userId(userId)
                 .extra(extra)
-                .processing(0)
                 .build();
     }
 }
